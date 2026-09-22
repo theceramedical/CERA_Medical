@@ -64,6 +64,7 @@ export {
 } from './content.ts';
 
 export {
+  ENQUIRY_FIXTURE_KEYS,
   ENQUIRY_MESSAGE_STRINGS,
   enquiryByKey,
   enquiryFixtures,

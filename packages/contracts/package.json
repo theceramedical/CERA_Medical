@@ -57,7 +57,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run",
-    "test:contract": "vitest run"
+    "test:contract": "vitest run",
+    "snapshot": "node --experimental-strip-types src/tools/snapshot-cli.ts",
+    "snapshot:check": "node --experimental-strip-types src/tools/snapshot-cli.ts --check"
   },
   "dependencies": {
     "uuidv7": "catalog:",

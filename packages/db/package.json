@@ -33,12 +33,12 @@
     "seed:reset": "node --experimental-strip-types src/seed.ts --reset"
   },
   "dependencies": {
+    "@cera/config": "workspace:*",
     "@cera/contracts": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:"
   },
   "devDependencies": {
-    "@cera/config": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",

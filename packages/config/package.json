@@ -30,6 +30,10 @@
       "types": "./src/env/index.d.ts",
       "default": "./src/env/index.js"
     },
+    "./env/load": {
+      "types": "./src/env/load.d.ts",
+      "default": "./src/env/load.js"
+    },
     "./tsconfig/base": "./src/tsconfig/base.json",
     "./tsconfig/node": "./src/tsconfig/node.json",
     "./tsconfig/next": "./src/tsconfig/next.json",

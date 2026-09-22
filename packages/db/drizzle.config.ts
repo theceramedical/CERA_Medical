@@ -1,4 +1,7 @@
+import { loadRootEnv } from '@cera/config/env/load';
 import { defineConfig } from 'drizzle-kit';
+
+loadRootEnv();
 
 /**
  * `drizzle-kit` configuration for the `cera_app` database.

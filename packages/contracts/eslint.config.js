@@ -19,4 +19,11 @@ export default [
     files: ['src/fixtures/deterministic.ts'],
     rules: { 'no-restricted-imports': 'off' },
   },
+  {
+    // The snapshot CLI reports to a developer at a terminal and to a CI log. Its
+    // output is the whole point of it, and routing that through the pino logger
+    // would wrap a human-readable diff in JSON envelopes.
+    files: ['src/tools/snapshot-cli.ts'],
+    rules: { 'no-console': 'off' },
+  },
 ];

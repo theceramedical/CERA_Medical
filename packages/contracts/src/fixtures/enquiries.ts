@@ -218,6 +218,11 @@ const ENQUIRY_SEEDS: readonly EnquirySeed[] = [
 
 const HOURS_PER_STEP_DEFAULT = 6;
 
+/** `Alex Fixture` becomes `alex.fixture`, the way a real address usually would. */
+function emailLocalPart(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '.');
+}
+
 function serviceIdFor(seed: EnquirySeed): string {
   const service = serviceByKey(seed.serviceKey);
 
@@ -253,7 +258,17 @@ function buildEnquiry(seed: EnquirySeed): Fixture<Enquiry> {
       // a test written against it would pass while the real comparison failed.
       customerSubjectId: seed.claimed ? verifiedCustomerProfile.subjectId : null,
       name: seed.name,
-      email: seed.claimed ? verifiedCustomerProfile.email : email(`enquiry-${seed.key}`),
+      /**
+       * Derived from the name, never from the fixture key.
+       *
+       * The key encodes the internal status - `triaging`, `rejected-spam` - and the
+       * email is customer-facing data that legitimately appears in a Zoho payload. An
+       * address built from the key therefore puts internal vocabulary into a field the
+       * leak tests have to treat as safe, so `expect(payload).not.toContain('triaging')`
+       * fails on a fixture artefact rather than a leak. A test that cries wolf is a
+       * test that gets weakened, and this one is load-bearing.
+       */
+      email: seed.claimed ? verifiedCustomerProfile.email : email(emailLocalPart(seed.name)),
       phone: seed.withPhone === true ? phone(`enquiry-${seed.key}`) : null,
       serviceId: serviceIdFor(seed),
       message: seed.message,
@@ -333,6 +348,16 @@ const STATUS_REASONS: Record<InternalStatus, string | null> = {
 };
 
 export const enquiryFixtures: readonly Fixture<Enquiry>[] = ENQUIRY_SEEDS.map(buildEnquiry);
+
+/**
+ * Every enquiry key, in fixture order.
+ *
+ * Exported so a test that needs to run over all twelve can iterate keys and reach the
+ * enquiry, its history, and its notes through the lookups - rather than iterating
+ * `enquiryFixtures` and then mapping an id back to a key, which is the shape that
+ * invites a hard-coded list in the test file that nobody updates.
+ */
+export const ENQUIRY_FIXTURE_KEYS: readonly string[] = ENQUIRY_SEEDS.map((seed) => seed.key);
 
 export const enquiryStatusEventFixtures: readonly Fixture<EnquiryStatusEvent>[] =
   ENQUIRY_SEEDS.flatMap((seed, index) => buildStatusEvents(seed, enquiryFixtures[index]!.id));

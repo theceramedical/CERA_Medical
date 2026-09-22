@@ -87,31 +87,76 @@ DELETE` trigger that raises. Application discipline is not enough for an audit t
 
 ### WP-02.5 Contract tests
 
-- [ ] Every schema round-trips: valid input parses, invalid input fails with the expected issue path
-- [ ] The transition table is exhaustive: every internal status appears, terminal states have no
+- [x] Every schema round-trips: valid input parses, invalid input fails with the expected issue path
+      — driven off the export map rather than a hand-written list, so a new schema is covered the
+      moment it is exported and cannot be forgotten
+- [x] The transition table is exhaustive: every internal status appears, terminal states have no
       outgoing edge, and every non-edge is rejected
-- [ ] `toCustomerStatus()` is total over the internal enum
-- [ ] **Leak tests.** Serialise the customer projection and the Zoho payload for a fixture enquiry that
+- [x] `toCustomerStatus()` is total over the internal enum
+- [x] **Leak tests.** Serialise the customer projection and the Zoho payload for a fixture enquiry that
       has notes, an owner, an internal status, and a transition reason, then assert that none of those
       strings appears anywhere in the output. This is the automated form of PRD 8's exposure rules.
-- [ ] Error envelope shape is stable, and no envelope contains a stack trace
-- [ ] Reference generation: format, character set, and no collision across 100k draws
+      — asserted against `INTERNAL_ONLY_STATUSES` rather than the whole internal enum, because
+      `received`, `in_progress`, and `completed` legitimately map to themselves and asserting their
+      absence would be asserting the projection is broken
+- [x] Error envelope shape is stable, and no envelope contains a stack trace, a `cause`, or the
+      `internalDetail` carried on `ApiError` for the log
+- [x] Reference generation: format, character set, and no collision across 100k draws, plus a check
+      that the output spreads over the whole Crockford alphabet — a generator stuck on a subset
+      passes a collision count while having far less entropy than the format implies
+
+### WP-02.6 Incompatible-change job
+
+The three services deploy as separate containers, so on every deploy an old client talks to a new
+server for a minute or two. A field dropped from a response schema is not a build error on either
+side — each compiles against its own copy — so nothing in the repository catches it. `pnpm
+contracts:check` is that check.
+
+- [x] `contract-snapshot.json`, a committed JSON Schema view of all 83 exported schemas
+- [x] `pnpm contracts:check` classifies a diff, failing only on the five changes that break a
+      deployed client: schema removed, property removed, optional property became required, enum
+      value removed, and type changed. Additive changes pass silently — a gate that flags every
+      change is a gate that gets turned off
+- [x] Each failure names the schema, the path, and the runtime consequence, because "contract
+      changed" tells whoever is mid-release nothing about whether to stop
+- [x] `CERA_ALLOW_BREAKING_CONTRACT_CHANGE=true` for the intended break, which forces the decision
+      to appear in the diff of whoever set it rather than in a silently refreshed snapshot
+- [x] Verified end to end by editing the committed baseline to claim a field and an enum member that
+      no longer exist, and confirming a non-zero exit naming both
+
+## Carried back into Phase 01
+
+Running the verification commands in a shell with nothing exported showed that `pnpm migrate` failed
+with `DATABASE_URL is not set. Copy .env.example to .env first.` — on a checkout where `.env` existed.
+Nothing in the repository read the file. Every command had only ever worked because the variables were
+also exported by hand, which is an undocumented prerequisite that the error message actively denies.
+
+- [x] `@cera/config/env/load` loads the workspace-root `.env`, located by walking up to the
+      `pnpm-workspace.yaml` rather than counting `..` segments, so it behaves the same imported from
+      `packages/*` and `apps/*`
+- [x] Variables already in the environment always win. This is the tested property: an explicit
+      `DATABASE_URL=… pnpm seed:reset` must not be redirected by a stale `.env`
+- [x] Imported by `migrate.ts`, `seed.ts`, and `drizzle.config.ts`. Under Compose and in CI it finds
+      no file and does nothing, so it changes only the terminal path
 
 ## Verification
 
 ```bash
-pnpm --filter @cera/contracts test
+pnpm --filter @cera/contracts test      # 313 tests
+pnpm contracts:check                    # no breaking change against the committed snapshot
 pnpm migrate && pnpm migrate:status     # no pending drift
-pnpm seed
-pnpm --filter @cera/observability test  # redaction proven
-pnpm typecheck
+pnpm seed && pnpm seed                  # second run proves idempotency
+pnpm --filter @cera/observability test   # redaction proven
+pnpm --filter @cera/db test             # constraints and triggers, against a real Postgres
+pnpm typecheck && pnpm lint
 ```
 
 ## Exit gate
 
-- [ ] FND-003: `apps/web`, `apps/api`, and the test suites import the same contracts, and a
+- [x] FND-003: `apps/web`, `apps/api`, and the test suites import the same contracts, and a
       deliberately incompatible schema change is shown to fail the contract job
-- [ ] Migrations apply to an empty database and are re-runnable
-- [ ] Append-only triggers reject an update and a delete
-- [ ] Leak tests pass for both the customer and the Zoho projection
-- [ ] Redaction test proves no enquiry free text reaches a log
+- [x] Migrations apply to an empty database and are re-runnable — CI runs `pnpm migrate` twice
+- [x] Append-only triggers reject an update and a delete, proven against a real Postgres rather
+      than asserted from the migration text
+- [x] Leak tests pass for both the customer and the Zoho projection
+- [x] Redaction test proves no enquiry free text reaches a log

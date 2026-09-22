@@ -1,3 +1,4 @@
+import { loadRootEnv } from '@cera/config/env/load';
 import {
   auditEventFixtures,
   claimTokenFixtures,
@@ -26,6 +27,10 @@ import {
   outbox,
 } from './schema/index.ts';
 import { assertSeedAllowed } from './seed-guard.ts';
+
+// Before anything reads `process.env` - including the seed guard, which decides
+// whether to run at all based on the shape of `DATABASE_URL`.
+loadRootEnv();
 
 /**
  * Loads the contract fixtures into `cera_app`.

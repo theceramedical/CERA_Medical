@@ -2,10 +2,15 @@ import { readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { loadRootEnv } from '@cera/config/env/load';
 import { sql } from 'drizzle-orm';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 
 import { createDatabase } from './client.ts';
+
+// Before anything reads `process.env`. Under Compose and in CI this finds no file
+// and does nothing; from a terminal it is what makes `DATABASE_URL` present.
+loadRootEnv();
 
 /**
  * The migration runner for `cera_app`.

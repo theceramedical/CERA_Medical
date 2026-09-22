@@ -16,6 +16,7 @@ import {
 import { AuditTargetTypeSchema, RoleSchema } from '../enums.ts';
 import { EnquiryReferenceSchema, hashToken, Uuidv7Schema } from '../primitives.ts';
 import {
+  ALL_CUSTOMER_STATUSES,
   ALL_INTERNAL_STATUSES,
   canTransition,
   isTerminalStatus,
@@ -189,6 +190,33 @@ describe('contact details are unreachable', () => {
     expect(numbers.length).toBeGreaterThan(0);
     for (const number of numbers) {
       expect(number).toMatch(/^\+44 7700 900\d{3}$/);
+    }
+  });
+
+  it('keeps internal vocabulary out of customer-facing fields', () => {
+    /**
+     * Regression guard. The enquiry addresses were originally derived from the fixture
+     * key, which encodes the internal status - so `enquiry-triaging@...` put the word
+     * `triaging` into a field that legitimately reaches a Zoho payload, and the leak
+     * test asserting no internal status appears there failed on a fixture artefact.
+     *
+     * The fix was to derive the address from the person's name. This keeps it fixed,
+     * because the failure it prevents is subtle in the wrong direction: it makes a
+     * real leak test look broken, and the path of least resistance is to weaken the
+     * leak test rather than to fix the fixture.
+     */
+    const internalOnly = ALL_INTERNAL_STATUSES.filter(
+      (status) => !(ALL_CUSTOMER_STATUSES as readonly string[]).includes(status),
+    );
+
+    for (const enquiry of enquiryFixtures) {
+      const customerFacing = [enquiry.email, enquiry.name, enquiry.reference].join(' ');
+
+      for (const status of internalOnly) {
+        expect(customerFacing).not.toContain(status);
+        // Also in hyphenated form, which is how the fixture keys are spelled.
+        expect(customerFacing).not.toContain(status.replace(/_/g, '-'));
+      }
     }
   });
 

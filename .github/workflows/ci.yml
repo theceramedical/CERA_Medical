@@ -188,6 +188,38 @@ jobs:
           if-no-files-found: ignore
 
   # ---------------------------------------------------------------------------
+  # Contract compatibility. The web app, the API, and the worker deploy as separate
+  # containers, so during every deploy an old client talks to a new server. A field
+  # removed from a response schema is not a compile error anywhere - both sides
+  # type-check against their own copy - it is a runtime failure in whichever client
+  # has not been replaced yet. This is the only check that sees it.
+  #
+  # Additive changes pass silently, by design. A gate that flagged every change is a
+  # gate that gets switched off.
+  # ---------------------------------------------------------------------------
+  contracts:
+    name: Contract compatibility
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check for breaking contract changes
+        run: pnpm contracts:check
+
+  # ---------------------------------------------------------------------------
   # Schema drift. Asserts that the committed migrations describe the committed
   # schema, which is the failure this catches: someone edits a Drizzle table,
   # tests pass locally against a database they migrated by hand, and the migration
@@ -261,7 +293,7 @@ jobs:
   ci-complete:
     name: CI complete
     if: always()
-    needs: [lint, typecheck, test, migrations, build]
+    needs: [lint, typecheck, test, migrations, contracts, build]
     runs-on: ubuntu-24.04
     steps:
       - name: Verify every job succeeded
