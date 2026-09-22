@@ -57,19 +57,19 @@ DELETE` trigger that raises. Application discipline is not enough for an audit t
 
 ### WP-02.3 `packages/observability`
 
-- [ ] Pino logger emitting JSON with `requestId`, `environment`, `release`, `service`, and `durationMs`
-- [ ] **Redaction by allow-list, not deny-list.** Only explicitly listed fields are logged; everything
+- [x] Pino logger emitting JSON with `requestId`, `environment`, `release`, `service`, and `durationMs`
+- [x] **Redaction by allow-list, not deny-list.** Only explicitly listed fields are logged; everything
       else is `[redacted]`. A deny-list fails the day a field is added, which is exactly when it
       matters.
-- [ ] `message`, note bodies, transition reasons, tokens, cookies, and `authorization` are never
+- [x] `message`, note bodies, transition reasons, tokens, cookies, and `authorization` are never
       loggable, enforced by a test that logs a fully populated enquiry and asserts none of its free
       text appears in the output
-- [ ] Request ID propagation: accept an inbound `X-Request-Id` when it matches a safe pattern,
+- [x] Request ID propagation: accept an inbound `X-Request-Id` when it matches a safe pattern,
       otherwise generate one; return it on every response; carry it through the outbox into worker logs
       so one identifier spans the whole enquiry lifecycle
-- [ ] GlitchTip helpers with `beforeSend` scrubbing user email, IP, cookies, and authorization headers,
+- [x] GlitchTip helpers with `beforeSend` scrubbing user email, IP, cookies, and authorization headers,
       `sendDefaultPii: false`, and parameterised transaction names
-- [ ] A domain error hierarchy mapping cleanly onto the error envelope
+- [x] A domain error hierarchy mapping cleanly onto the error envelope
 
 ### WP-02.4 Fixtures
 
