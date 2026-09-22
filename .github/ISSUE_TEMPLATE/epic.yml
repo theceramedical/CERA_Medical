@@ -1,0 +1,57 @@
+name: Epic
+description: A delivery phase or a group of related features
+labels: ["epic"]
+body:
+  - type: input
+    id: phase
+    attributes:
+      label: Phase
+      placeholder: Phase 08 Enquiry core
+    validations:
+      required: true
+
+  - type: input
+    id: prd-section
+    attributes:
+      label: PRD section
+      placeholder: PRD 6.3, 8.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: One paragraph. What is true after this epic that was not true before.
+    validations:
+      required: true
+
+  - type: textarea
+    id: exit-gate
+    attributes:
+      label: Exit gate
+      description: The conditions that make this epic closeable. Each must be verifiable by someone who did not write the code.
+      placeholder: |
+        - [ ] ENQ-401: submitting a valid enquiry returns a reference and persists an audit event
+        - [ ] ENQ-403: a second identical submission within 60 seconds is deduplicated
+        - [ ] Rate limits are enforced per IP and per email address
+    validations:
+      required: true
+
+  - type: textarea
+    id: children
+    attributes:
+      label: Child issues
+      placeholder: |
+        - [ ] #12 ENQ-401 enquiry validation and persistence
+        - [ ] #13 ENQ-402 reference generation
+    validations:
+      required: false
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Known risks and open questions
+      description: Including anything awaiting a CERA decision or credential.
+    validations:
+      required: false

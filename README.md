@@ -45,6 +45,11 @@ pnpm health
 query, a real queue write, and confirms the S3 bucket. That distinction is what catches a service
 whose logs look clean but which nothing can actually reach.
 
+**If something fails**, [`docs/runbooks/local-development.md`](docs/runbooks/local-development.md) has
+the specific fix for each failure seen so far: wrong Node version, CRLF line endings breaking container
+scripts, Postgres skipping its init script, SeaweedFS healthy but unreachable, port conflicts, and
+missing binaries.
+
 ## Local services
 
 | Service      | URL                   | Purpose                                    |

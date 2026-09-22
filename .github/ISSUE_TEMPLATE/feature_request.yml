@@ -1,0 +1,86 @@
+name: Feature
+description: A unit of deliverable work traceable to the PRD
+labels: ["feature", "triage"]
+body:
+  - type: input
+    id: prd-reference
+    attributes:
+      label: PRD feature ID
+      description: Every feature must trace to the PRD. If there is no ID, this is a change request and needs approval before it is scheduled.
+      placeholder: WEB-301
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Delivery phase
+      options:
+        - "00 Readiness"
+        - "01 Foundation"
+        - "02 Contracts"
+        - "03 Design system"
+        - "04 Web shell and homepage"
+        - "05 Payload CMS"
+        - "06 Vendure catalogue"
+        - "07 Public content and SEO"
+        - "08 Enquiry core"
+        - "09 Identity and RBAC"
+        - "10 Integrations"
+        - "11 Customer portal"
+        - "12 Staff operations"
+        - "13 Edge, deploy, observability"
+        - "14 Quality and security"
+        - "15 Release and handover"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User story
+      placeholder: As a prospective patient, I want to filter services by category so that I can find the right specialism quickly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: Written so that a reviewer can verify each line without asking a question. State the observable outcome, not the implementation.
+      placeholder: |
+        - [ ] Selecting a category filters the list without a full page reload
+        - [ ] The selected filter appears in the URL and survives a refresh
+        - [ ] Clearing the filter restores the full list
+        - [ ] The result count is announced to screen readers
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Explicitly out of scope
+      description: The cheapest way to prevent scope creep is to write down what this does not include.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: cross-cutting
+    attributes:
+      label: Cross-cutting requirements that apply
+      description: Tick each one that applies; each becomes a review item on the pull request.
+      options:
+        - label: Touches personal data, so consent and minimisation apply (PRD 10)
+        - label: Needs a server-side authorisation check
+        - label: Calls an external provider, so it must be idempotent and go through the outbox
+        - label: Adds or changes a database table or column, so it needs a migration
+        - label: Adds a new UI surface, so it needs design tokens and a WCAG 2.2 AA pass
+        - label: Changes a public URL, so it needs a redirect and a sitemap update
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Blocked by
+      description: Issues or CERA-supplied prerequisites that must land first.
+    validations:
+      required: false

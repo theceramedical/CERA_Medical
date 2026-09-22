@@ -1,0 +1,165 @@
+name: Release to production
+
+# Triggered by a v* tag. Production deploys are gated on a protected environment,
+# so the job pauses for approval before any secret is available to it.
+#
+# The artefact promoted here is the image already built and tested for staging,
+# re-tagged - not a fresh build. Rebuilding would produce a different artefact
+# from the one that was actually verified.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing v* tag to release
+        required: true
+
+permissions: {}
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  NODE_VERSION: "24.21.0"
+  PNPM_VERSION: "10.28.2"
+
+jobs:
+  verify:
+    name: Full verification
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:18.6-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_only_not_a_real_secret
+          POSTGRES_DB: cera_test
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports: ["5432:5432"]
+      valkey:
+        image: valkey/valkey:9.1.2-alpine
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports: ["6379:6379"]
+    env:
+      DATABASE_URL: postgres://postgres:ci_only_not_a_real_secret@localhost:5432/cera_test
+      VALKEY_URL: redis://localhost:6379/0
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+      - name: Migration dry run
+        # Proves the migrations apply to a database at the current production
+        # schema version before anything is deployed. A migration that fails
+        # halfway through production is the most expensive failure in this system.
+        run: pnpm migrate:status
+
+  security-gate:
+    name: Security gate
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: true
+      matrix:
+        app: [web, cms, commerce, api, worker]
+    steps:
+      - name: Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.app }}:staging
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          # Unlike staging, this blocks. A fixable critical vulnerability must
+          # not reach production.
+          exit-code: "1"
+
+  deploy:
+    name: Deploy to production
+    needs: [verify, security-gate]
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
+      url: https://cera-medical.com
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Record the release
+        run: |
+          echo "Releasing ${{ github.ref_name }} from ${{ github.sha }}"
+          echo "RELEASE=${{ github.ref_name }}" >> "$GITHUB_ENV"
+
+      - name: Back up the database first
+        # Non-negotiable ordering. RPO is 24 hours and RTO is 4 hours (PRD 15);
+        # deploying without a fresh backup means a failed migration could cost a
+        # full day of enquiries.
+        env:
+          DEPLOY_HOST: ${{ secrets.PRODUCTION_HOST }}
+        run: |
+          if [ -z "${DEPLOY_HOST:-}" ]; then
+            echo "::warning::PRODUCTION_HOST is not configured. CERA has not yet supplied the Hetzner host (PRD 22)."
+            exit 0
+          fi
+          bash infra/scripts/backup.sh production pre-release
+
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.PRODUCTION_HOST }}
+          DEPLOY_USER: ${{ secrets.PRODUCTION_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          IMAGE_TAG: ${{ github.ref_name }}
+        run: |
+          if [ -z "${DEPLOY_HOST:-}" ]; then
+            echo "::notice::Skipped: no production host configured."
+            exit 0
+          fi
+          bash infra/scripts/deploy.sh production
+
+      - name: Smoke test, roll back on failure
+        env:
+          BASE_URL: https://cera-medical.com
+        run: |
+          if [ -z "${{ secrets.PRODUCTION_HOST }}" ]; then
+            echo "::notice::Skipped: no production host configured."
+            exit 0
+          fi
+          if ! bash infra/scripts/smoke-test.sh; then
+            echo "::error::Smoke tests failed. Rolling back."
+            bash infra/scripts/rollback.sh production
+            exit 1
+          fi

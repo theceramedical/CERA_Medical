@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+# Enforce Conventional Commits (PRD 11.2).
+#
+# Implemented as a self-contained check rather than by adding commitlint: the
+# rule set is small enough that a dependency, its config file, and its plugin
+# resolution are more moving parts than the problem needs. The error message
+# below does the real work - a rejected commit must tell you how to fix it.
+set -e
+
+MSG_FILE="$1"
+FIRST_LINE=$(head -n1 "$MSG_FILE")
+
+# Let git's own housekeeping commits through untouched.
+case "$FIRST_LINE" in
+  "Merge "*|"Revert "*|"fixup! "*|"squash! "*|"Reapply "*) exit 0 ;;
+esac
+
+# type(optional-scope)!: subject
+PATTERN='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?: .{1,}$'
+
+if ! printf '%s' "$FIRST_LINE" | grep -Eq "$PATTERN"; then
+  cat >&2 <<'EOF'
+
+  Commit message rejected: the subject line is not a Conventional Commit.
+
+  Expected:  <type>(<optional scope>): <subject>
+
+  Types:
+    feat      a user-facing capability
+    fix       a bug fix
+    docs      documentation only
+    style     formatting with no behaviour change
+    refactor  restructuring with no behaviour change
+    perf      a performance improvement
+    test      tests only
+    build     build system or dependencies
+    ci        CI configuration
+    chore     maintenance that fits nothing above
+    revert    reverts an earlier commit
+
+  Examples:
+    feat(enquiry): capture consent timestamp on submission
+    fix(api): reject an enquiry whose service id does not exist
+    chore(deps): move Playwright to 1.63.0
+
+  Add ! before the colon for a breaking change, and explain it in the body:
+    feat(api)!: require an explicit service id on every enquiry
+
+EOF
+  exit 1
+fi
+
+SUBJECT=$(printf '%s' "$FIRST_LINE" | sed -E 's/^[a-z]+(\([^)]*\))?!?: //')
+
+# A 72-character subject is the point where `git log --oneline` and the GitHub
+# commit list start truncating.
+if [ ${#FIRST_LINE} -gt 72 ]; then
+  echo "" >&2
+  echo "  Commit message rejected: subject line is ${#FIRST_LINE} characters (limit 72)." >&2
+  echo "  Move the detail into the body, after a blank line." >&2
+  echo "" >&2
+  exit 1
+fi
+
+# "fix(api): Reject the request" reads inconsistently against the type prefix.
+case "$SUBJECT" in
+  [A-Z]*)
+    echo "" >&2
+    echo "  Commit message rejected: the subject should not start with a capital letter." >&2
+    echo "  Write '${SUBJECT}' in lower case, unless it begins with a proper noun or identifier." >&2
+    echo "" >&2
+    exit 1
+    ;;
+esac
+
+case "$SUBJECT" in
+  *.)
+    echo "" >&2
+    echo "  Commit message rejected: the subject should not end with a full stop." >&2
+    echo "" >&2
+    exit 1
+    ;;
+esac

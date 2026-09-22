@@ -1,0 +1,13 @@
+{
+  "//": "This package is authored in plain JS so ESLint and Prettier can load it without a build step. The only TypeScript here is the .env.example drift test, and it needs a tsconfig so typed lint rules can run on it - a file outside every tsconfig fails with 'not found by the project service'. Nothing is emitted.",
+  "extends": "@cera/config/tsconfig/node",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "rootDir": ".",
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "src/**/*.d.ts"]
+}

@@ -41,8 +41,8 @@
   "scripts": {
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
-    "typecheck": "echo 'no typecheck: config package is plain JS and JSON'",
-    "test": "vitest run --passWithNoTests"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@eslint/js": "9.39.5",
@@ -56,9 +56,12 @@
     "eslint-plugin-react-hooks": "7.0.1",
     "globals": "16.4.0",
     "prettier": "catalog:",
-    "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:",
     "zod": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@types/node": "catalog:"
   }
 }

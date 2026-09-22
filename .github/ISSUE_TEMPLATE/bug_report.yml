@@ -1,0 +1,100 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you file:** never paste a real customer name, email address, phone
+        number, or enquiry message into this issue. Use the enquiry reference
+        (`CERA-000000-XXXXX`) instead. PRD section 10 treats an issue tracker as an
+        uncontrolled location for personal data.
+
+  - type: input
+    id: prd-reference
+    attributes:
+      label: PRD feature ID
+      description: The affected feature, if known. For example WEB-301 or ENQ-402.
+      placeholder: ENQ-402
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options: [local, staging, production]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: |
+        Critical - customers cannot submit enquiries, or data is being lost or exposed.
+        High - a core journey is broken with no workaround.
+        Medium - a feature is broken but has a workaround.
+        Low - cosmetic or minor.
+      options: [Critical, High, Medium, Low]
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to /services/cardiology
+        2. Submit the enquiry form with a valid email
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: input
+    id: reference
+    attributes:
+      label: Enquiry reference or request ID
+      description: The enquiry reference or the `x-request-id` from the response. This is how the logs get found without personal data.
+      placeholder: CERA-000123-A4B7Z
+    validations:
+      required: false
+
+  - type: input
+    id: glitchtip
+    attributes:
+      label: GlitchTip issue URL
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Browser, device, and assistive technology
+      description: Include screen reader and version if the problem is an accessibility one.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: This issue contains no personal or customer data
+          required: true
+        - label: I searched for an existing issue before filing
+          required: true
