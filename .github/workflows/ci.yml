@@ -164,6 +164,17 @@ jobs:
         # release.
         run: pnpm migrate && pnpm migrate:status
 
+      - name: Seed, and verify seeding is idempotent
+        # The fixtures are validated against their Zod schemas by the unit tests, but
+        # only a real INSERT proves they satisfy the database: the check constraints,
+        # the foreign keys, and the column widths are not expressible in Zod. A
+        # fixture that violates one of them would otherwise fail for the first
+        # developer who ran `pnpm seed`, not here.
+        #
+        # Run twice for the same reason migrations are: a seed that fails on its own
+        # output makes "reset the database" the normal response to any error.
+        run: pnpm seed && pnpm seed && pnpm seed:reset
+
       - name: Run tests
         run: pnpm test
 

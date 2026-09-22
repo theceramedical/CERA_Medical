@@ -35,3 +35,15 @@ export {
   outbox,
   outboxStatusEnum,
 } from './schema/index.ts';
+
+/**
+ * Exported so the guard can be asserted from a test rather than only from a CLI
+ * run. Nothing in the applications should call it: seeding is a developer action.
+ */
+export {
+  assertSeedAllowed,
+  evaluateSeedGuard,
+  SEED_OVERRIDE_VALUE,
+  type SeedGuardEnvironment,
+  type SeedGuardResult,
+} from './seed-guard.ts';

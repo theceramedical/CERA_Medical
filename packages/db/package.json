@@ -28,7 +28,9 @@
     "generate": "drizzle-kit generate",
     "migrate": "node --experimental-strip-types src/migrate.ts",
     "migrate:status": "node --experimental-strip-types src/migrate.ts --status",
-    "drift": "drizzle-kit check"
+    "drift": "drizzle-kit check",
+    "seed": "node --experimental-strip-types src/seed.ts",
+    "seed:reset": "node --experimental-strip-types src/seed.ts --reset"
   },
   "dependencies": {
     "@cera/contracts": "workspace:*",

@@ -1,3 +1,4 @@
+import { TEST_EMAIL_DOMAIN } from '@cera/contracts/fixtures';
 import { generateEnquiryReference } from '@cera/contracts/primitives';
 import { sql } from 'drizzle-orm';
 import { uuidv7 } from 'uuidv7';
@@ -67,6 +68,66 @@ async function expectDbFailure(operation: Promise<unknown>, pattern: RegExp): Pr
   expect(chain.join('\n')).toMatch(pattern);
 }
 
+/**
+ * A tag unique to this run, so cleanup removes this run's rows and nothing else.
+ *
+ * Without it these tests accumulate rows in the local database forever - fifty-odd
+ * per run, never removed, indistinguishable from real data. That is not only untidy:
+ * it makes `pnpm seed`'s "does this database hold real data" guard fire on every
+ * developer machine, and a guard that always fires is one that gets removed.
+ */
+const RUN_TAG = `constraints-${Date.now().toString(36)}`;
+
+/**
+ * Removes the rows this run created, children first.
+ *
+ * Has to disable the append-only triggers to do it, which reads as undoing the
+ * guarantee the suite just spent forty assertions proving - and is the honest cost of
+ * enforcing immutability in the database rather than the application. Deleting an
+ * audit row is only possible for the role that owns the table, which is precisely the
+ * property that makes the trigger worth having.
+ *
+ * Note what is *not* used here: `SET session_replication_role = 'replica'`, the usual
+ * way to bypass triggers, is superuser-only and fails as `cera_app`. Disabling a named
+ * trigger needs table ownership instead. The difference is the guarantee - no
+ * application-level access bypasses these triggers, whatever it tries.
+ */
+async function removeRunRows(handle: DatabaseHandle): Promise<void> {
+  const runEmail = `${RUN_TAG}@${TEST_EMAIL_DOMAIN}`;
+
+  try {
+    await handle.db.execute(
+      sql`alter table enquiry_status_events disable trigger enquiry_status_events_append_only`,
+    );
+    await handle.db.execute(sql`alter table audit_events disable trigger audit_events_append_only`);
+
+    await handle.db.execute(
+      sql`delete from outbox where aggregate_id in (select id from enquiries where email = ${runEmail})`,
+    );
+    await handle.db.execute(
+      sql`delete from internal_notes where enquiry_id in (select id from enquiries where email = ${runEmail})`,
+    );
+    await handle.db.execute(
+      sql`delete from integration_deliveries where enquiry_id in (select id from enquiries where email = ${runEmail})`,
+    );
+    await handle.db.execute(
+      sql`delete from enquiry_claim_tokens where enquiry_id in (select id from enquiries where email = ${runEmail})`,
+    );
+    await handle.db.execute(
+      sql`delete from enquiry_status_events where enquiry_id in (select id from enquiries where email = ${runEmail})`,
+    );
+    await handle.db.execute(sql`delete from audit_events where request_id = ${RUN_TAG}`);
+    await handle.db.execute(sql`delete from enquiries where email = ${runEmail}`);
+  } finally {
+    // Re-enabled in a `finally`: a failed cleanup must not leave the audit trail
+    // mutable for whatever runs next against this database.
+    await handle.db.execute(
+      sql`alter table enquiry_status_events enable trigger enquiry_status_events_append_only`,
+    );
+    await handle.db.execute(sql`alter table audit_events enable trigger audit_events_append_only`);
+  }
+}
+
 describeWithDb('constraints and triggers', () => {
   let handle: DatabaseHandle;
 
@@ -75,7 +136,10 @@ describeWithDb('constraints and triggers', () => {
     id: uuidv7(),
     reference: generateEnquiryReference(),
     name: 'Alex Morgan',
-    email: 'alex.morgan@example.com',
+    // The reserved test domain, not `example.com`. `.invalid` cannot resolve, so a
+    // row that escapes into a send path reaches nobody, and the suffix is what tells
+    // the seeder this is not a real customer.
+    email: `${RUN_TAG}@${TEST_EMAIL_DOMAIN}`,
     serviceId: 'svc-knee-replacement',
     message: 'I would like to discuss a consultation for a knee replacement.',
     consentAt: new Date().toISOString(),
@@ -115,7 +179,9 @@ describeWithDb('constraints and triggers', () => {
       targetType: 'enquiry',
       targetId: uuidv7(),
       safeDiff: null,
-      requestId: 'req-test-1',
+      // Tagged, because an audit event has no email column to identify it by and
+      // otherwise could not be cleaned up at all.
+      requestId: RUN_TAG,
     });
 
     return { id };
@@ -134,7 +200,10 @@ describeWithDb('constraints and triggers', () => {
   });
 
   afterAll(async () => {
-    await handle?.close();
+    if (handle !== undefined) {
+      await removeRunRows(handle);
+      await handle.close();
+    }
   });
 
   describe('enquiries', () => {
@@ -486,19 +555,30 @@ describeWithDb('constraints and triggers', () => {
 
       const text = plan.rows.map((row) => String(row['QUERY PLAN'])).join('\n');
 
-      // Postgres may legitimately prefer a sequential scan on a tiny table, so
-      // this asserts the index is *usable*, by disabling the alternative.
-      await handle.db.execute(sql`set local enable_seqscan = off`);
+      /**
+       * Postgres legitimately prefers a sequential scan on a table of eight rows, so
+       * the assertion is that the index is *usable* - established by removing the
+       * alternative and re-planning.
+       *
+       * Inside a transaction, which is the part that matters. `SET LOCAL` outside a
+       * transaction block is a no-op that only raises a warning, so run against
+       * autocommit this disabled nothing and the test passed or failed purely on how
+       * many rows happened to be in the table. It passed for months and then failed
+       * the first time the table was small, which is the wrong way round.
+       */
+      const forcedText = await handle.db.transaction(async (tx) => {
+        await tx.execute(sql`set local enable_seqscan = off`);
 
-      const forced = await handle.db.execute(sql`
-        explain (format text)
-        select id from outbox
-        where status = 'pending' and available_at <= now()
-        order by available_at
-        limit 5
-      `);
+        const forced = await tx.execute(sql`
+          explain (format text)
+          select id from outbox
+          where status = 'pending' and available_at <= now()
+          order by available_at
+          limit 5
+        `);
 
-      const forcedText = forced.rows.map((row) => String(row['QUERY PLAN'])).join('\n');
+        return forced.rows.map((row) => String(row['QUERY PLAN'])).join('\n');
+      });
 
       expect(text.length).toBeGreaterThan(0);
       expect(forcedText).toContain('outbox_pending_available_idx');

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Single source of truth for entity schemas, status machines, error envelopes, and projections",
+  "//exports": "Every key must be a subpath. Node rejects the whole map if one is not, so a `//comment` key here silently breaks every import from this package - which is why this note lives outside it. `./fixtures` is a subpath rather than part of the root export so importing a schema never pulls twelve enquiries and their histories into an application bundle.",
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -40,6 +41,10 @@
     "./api": {
       "types": "./src/api.ts",
       "default": "./src/api.ts"
+    },
+    "./fixtures": {
+      "types": "./src/fixtures/index.ts",
+      "default": "./src/fixtures/index.ts"
     }
   },
   "files": [

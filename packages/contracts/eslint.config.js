@@ -10,4 +10,13 @@ export default [
     files: ['src/primitives.ts'],
     rules: { 'no-restricted-imports': 'off' },
   },
+  {
+    // The fixtures need a stable hash to derive identifiers from names, which is
+    // not the email-and-token hashing path the restriction protects: these values
+    // are never compared against anything a customer supplies. Claim token and
+    // email hashes in the fixtures still go through `primitives.ts`, so the one
+    // derivation that must not diverge does not.
+    files: ['src/fixtures/deterministic.ts'],
+    rules: { 'no-restricted-imports': 'off' },
+  },
 ];

@@ -15,12 +15,22 @@ export default mergeConfig(
          * constraint tests in `src/integration/`, which is a far stronger check
          * than "the module was imported".
          *
-         * `src/migrate.ts` is a CLI whose behaviour is applying migrations to a
-         * real database. It is exercised by the integration suite and by every CI
-         * run; unit-testing it would mean mocking the migrator, which would
-         * assert that the mock was called.
+         * `src/migrate.ts` and `src/seed.ts` are CLIs whose behaviour is changing a
+         * real database. They are exercised by the integration suite and by every CI
+         * run; unit-testing them would mean mocking the migrator or the driver, which
+         * would assert that the mock was called.
+         *
+         * The one part of the seeder that cannot be verified by running it - the
+         * guard that refuses to seed production - is in `src/seed-guard.ts` precisely
+         * so it is covered here rather than excluded with the CLI around it.
          */
-        exclude: ['src/schema/**', 'src/migrate.ts', 'drizzle.config.ts', '**/*.test.ts'],
+        exclude: [
+          'src/schema/**',
+          'src/migrate.ts',
+          'src/seed.ts',
+          'drizzle.config.ts',
+          '**/*.test.ts',
+        ],
         thresholds: { lines: 80, functions: 80, branches: 70, statements: 80 },
       },
     },

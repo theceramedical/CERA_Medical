@@ -73,12 +73,17 @@ DELETE` trigger that raises. Application discipline is not enough for an audit t
 
 ### WP-02.4 Fixtures
 
-- [ ] The fixture set specified in `data-contracts.md` section 7, built **from the schemas** so a
+- [x] The fixture set specified in `data-contracts.md` section 7, built **from the schemas** so a
       contract change breaks fixture compilation immediately
-- [ ] Deterministic seeded generation, so a fixture-dependent test failure reproduces exactly
-- [ ] Every record carries `__fixture: true`
-- [ ] `pnpm seed` idempotently loads them; `pnpm seed:reset` truncates and reloads
-- [ ] A guard refusing to seed when `NODE_ENV=production`
+- [x] Deterministic seeded generation, so a fixture-dependent test failure reproduces exactly
+- [x] Every record carries `__fixture: true`
+- [x] `pnpm seed` idempotently loads them; `pnpm seed:reset` removes and reloads them
+      — implemented as a marker-scoped `DELETE` rather than `TRUNCATE`, because `TRUNCATE` is
+      rejected outright by the append-only triggers on `enquiry_status_events` and `audit_events`,
+      and because it would also remove any non-fixture row it found
+- [x] A guard refusing to seed when `NODE_ENV=production`, plus a second check on the shape of
+      `DATABASE_URL` and a third that refuses if the database contains any enquiry that is not
+      fixture or test data
 
 ### WP-02.5 Contract tests
 
