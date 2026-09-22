@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790076264642,
+      "tag": "0000_initial_cera_app_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790076266913,
+      "tag": "0001_append_only_audit_trail",
+      "breakpoints": true
+    }
+  ]
+}

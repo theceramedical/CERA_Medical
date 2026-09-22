@@ -95,6 +95,7 @@ cera-platform/
     worker/       BullMQ - outbox consumer for Zoho, Resend, reconciliation
   packages/
     contracts/    Zod schemas, API types, status machines, fixtures
+    db/           Drizzle schema, migrations, and pool factory for cera_app (ADR-009)
     ui/           design tokens and accessible components
     config/       shared ESLint, TypeScript, Prettier, Vitest config
     observability/ structured logging, request IDs, GlitchTip helpers
@@ -138,7 +139,7 @@ the `catalog:` block in `pnpm-workspace.yaml`; this table is its narrative form.
 | Vendure           | 3.7.3            | React Dashboard; Angular admin deprecated and unmaintained after July 2026                                                                                        |
 | Tailwind CSS      | 4.3.3            | CSS-first `@theme`, `@tailwindcss/postcss`                                                                                                                        |
 | Fastify           | 5.12.5           | `apps/api`, with helmet, cors, and rate-limit plugins                                                                                                             |
-| Drizzle ORM / Kit | 0.45.3 / 0.31.11 | `apps/api` and `apps/worker` schema and migrations                                                                                                                |
+| Drizzle ORM / Kit | 0.45.3 / 0.31.11 | `packages/db` owns the `cera_app` schema and migrations; `apps/api` and `apps/worker` consume it (ADR-009)                                                        |
 | Zod               | 4.6.5            | `packages/contracts`                                                                                                                                              |
 | openid-client     | 6.8.8            | OIDC relying party                                                                                                                                                |
 | jose              | 6.2.12           | JWE cookie sealing, JWKS verification                                                                                                                             |

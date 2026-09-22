@@ -1,0 +1,12 @@
+{
+  "//": "Editor and lint configuration; includes tests so typed ESLint rules apply to them. Emit uses tsconfig.build.json.",
+  "extends": "@cera/config/tsconfig/node",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "*.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

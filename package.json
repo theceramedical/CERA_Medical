@@ -26,10 +26,13 @@
     "test:e2e": "pnpm --filter web test:e2e",
     "test:a11y": "pnpm --filter web test:a11y",
     "test:authz": "pnpm --filter api test:authz",
-    "migrate": "pnpm --filter api migrate && pnpm --filter cms migrate && pnpm --filter commerce migrate",
-    "migrate:status": "pnpm --filter api migrate:status",
-    "seed": "pnpm --filter api seed && pnpm --filter cms seed && pnpm --filter commerce seed",
-    "seed:reset": "pnpm --filter api seed:reset",
+    "//migrate": "cera_app migrations are owned by @cera/db (ADR-009) and run once per deploy, before any app starts: two containers racing drizzle-kit against one database is a real failure mode. Payload (cera_cms) and Vendure (cera_commerce) own their own databases and add their own migrate steps here in phases 05 and 06.",
+    "migrate": "pnpm --filter @cera/db migrate",
+    "migrate:status": "pnpm --filter @cera/db migrate:status",
+    "migrate:generate": "pnpm --filter @cera/db generate",
+    "migrate:drift": "pnpm --filter @cera/db drift",
+    "seed": "pnpm --filter @cera/db seed",
+    "seed:reset": "pnpm --filter @cera/db seed:reset",
     "health": "bash infra/scripts/health-check.sh",
     "smoke": "bash infra/scripts/smoke-test.sh",
     "reconcile": "pnpm --filter worker reconcile",
@@ -49,9 +52,10 @@
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
+  "//lint-staged": "The ESLint flag makes config resolution per-file rather than per-CWD. Without it, lint-staged runs from the repo root and every staged file is linted against the root eslint.config.js, ignoring each package's own config - so `pnpm lint` inside a package and the pre-commit hook disagree, and a file can pass CI and be blocked by the hook. The flag is ESLint 10's default behaviour, available in 9.x under this name; it comes out when the ESLint 10 hold in ADR-002 is lifted.",
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs}": [
-      "eslint --fix",
+      "eslint --flag v10_config_lookup_from_file --fix",
       "prettier --write"
     ],
     "*.{json,md,css,yaml,yml}": [

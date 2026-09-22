@@ -152,6 +152,18 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
+      # Applied before the tests, not by them. The constraint and trigger suite in
+      # @cera/db asserts against the real schema, so an unmigrated database would
+      # report forty "relation does not exist" failures instead of one clear one.
+      - name: Apply migrations
+        run: pnpm migrate
+
+      - name: Verify migrations are re-runnable
+        # A second run must be a no-op. A migration that fails on its own output
+        # breaks every redeploy, and that is cheaper to catch here than in a
+        # release.
+        run: pnpm migrate && pnpm migrate:status
+
       - name: Run tests
         run: pnpm test
 
@@ -163,6 +175,53 @@ jobs:
           path: "**/coverage/"
           retention-days: 7
           if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
+  # Schema drift. Asserts that the committed migrations describe the committed
+  # schema, which is the failure this catches: someone edits a Drizzle table,
+  # tests pass locally against a database they migrated by hand, and the migration
+  # SQL is never generated. The next clean deploy then builds the old schema.
+  # ---------------------------------------------------------------------------
+  migrations:
+    name: Migration drift
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check the journal for collisions
+        run: pnpm migrate:drift
+
+      - name: Generate and assert nothing changed
+        run: |
+          pnpm migrate:generate
+          if ! git diff --quiet --exit-code -- packages/db/drizzle; then
+            echo "::error::The Drizzle schema has changed without a generated migration."
+            echo "Run 'pnpm migrate:generate' and commit the result."
+            git --no-pager diff --stat -- packages/db/drizzle
+            exit 1
+          fi
+          # Also catches a brand-new migration file, which `git diff` alone misses
+          # because it is untracked rather than modified.
+          untracked="$(git ls-files --others --exclude-standard -- packages/db/drizzle)"
+          if [ -n "$untracked" ]; then
+            echo "::error::Generating produced new migration files that are not committed:"
+            echo "$untracked"
+            exit 1
+          fi
+          echo "No schema drift."
 
   build:
     name: Build
@@ -191,7 +250,7 @@ jobs:
   ci-complete:
     name: CI complete
     if: always()
-    needs: [lint, typecheck, test, build]
+    needs: [lint, typecheck, test, migrations, build]
     runs-on: ubuntu-24.04
     steps:
       - name: Verify every job succeeded

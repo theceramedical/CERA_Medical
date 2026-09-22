@@ -1,0 +1,68 @@
+{
+  "name": "@cera/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Single source of truth for entity schemas, status machines, error envelopes, and projections",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./enums": {
+      "types": "./src/enums.ts",
+      "default": "./src/enums.ts"
+    },
+    "./primitives": {
+      "types": "./src/primitives.ts",
+      "default": "./src/primitives.ts"
+    },
+    "./entities": {
+      "types": "./src/entities.ts",
+      "default": "./src/entities.ts"
+    },
+    "./status": {
+      "types": "./src/status.ts",
+      "default": "./src/status.ts"
+    },
+    "./errors": {
+      "types": "./src/errors.ts",
+      "default": "./src/errors.ts"
+    },
+    "./pagination": {
+      "types": "./src/pagination.ts",
+      "default": "./src/pagination.ts"
+    },
+    "./projections": {
+      "types": "./src/projections.ts",
+      "default": "./src/projections.ts"
+    },
+    "./api": {
+      "types": "./src/api.ts",
+      "default": "./src/api.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:contract": "vitest run"
+  },
+  "dependencies": {
+    "uuidv7": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cera/config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

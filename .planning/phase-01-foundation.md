@@ -136,10 +136,59 @@ git ls-files | grep -E '\.env$|\.env\.local$'   # must return nothing
 
 ## Exit gate
 
-- [ ] FND-001: a fresh clone installs and every workspace command runs; `git ls-files` shows no
+- [x] FND-001: a fresh clone installs and every workspace command runs; `git ls-files` shows no
       secret, no `.env`, and no generated artefact
-- [ ] FND-002: README steps reach every health endpoint inside 30 minutes on a clean machine
-- [ ] FND-004: CI jobs report independently and a deliberately failing job is shown to block
-- [ ] FND-005: `.env.example` carries placeholders only, and the drift test passes
-- [ ] Postgres has five databases with five roles, and cross-database access is proven denied
-- [ ] Neither Postgres nor Valkey is reachable from the public network
+- [x] FND-002: README steps reach every health endpoint inside 30 minutes on a clean machine
+- [~] FND-004: CI jobs report independently and a deliberately failing job is shown to block -
+  **authored and validated, not executed.** Requires the GitHub organisation (PRD 22)
+- [x] FND-005: `.env.example` carries placeholders only, and the drift test passes
+- [x] Postgres has five databases with five roles, and cross-database access is proven denied
+- [x] Neither Postgres nor Valkey is reachable from the public network
+
+## Completion record
+
+Closed 2026-09-21. Commits `5fa5941` and `fc0d027`.
+
+### Verified, with the evidence
+
+| Claim                                      | How it was proven                                                                                                                                                                              |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Five databases, five least-privilege roles | `pg_database` lists all five with the correct owner                                                                                                                                            |
+| Cross-database access denied               | `cera_app` to `cera_cms` and `cera_cms` to `cera_app` both return `permission denied ... does not have CONNECT privilege`. Asserted in both directions, and re-asserted on every `pnpm health` |
+| Extensions present                         | `pg_trgm` in `cera_app` for search; `btree_gist` in `cera_commerce` for Vendure. Both created by the superuser so no app role needs elevated rights                                            |
+| Valkey durable                             | `PING`, a write/read round trip, and `appendonly=yes`                                                                                                                                          |
+| S3 usable                                  | endpoint returns 200 and the `cera-media` bucket exists                                                                                                                                        |
+| Email capture usable                       | Mailpit API returns 200                                                                                                                                                                        |
+| API reaches the real database              | `/health/ready` returned `{"status":"ready"}` with `database: ok` against live PostgreSQL                                                                                                      |
+| Liveness and readiness are distinct        | 6 tests, including that `/health` returns 200 while every dependency is down, and that neither endpoint leaks a connection string                                                              |
+| Shutdown ordering                          | 5 tests on the extracted handler: strict sequencing, pool still released when the queue fails, duplicate SIGTERM ignored, deliberate timeout instead of hanging                                |
+| `.env.example` matches the schemas         | 10 tests, including a non-vacuity guard and a real-credential-format scan                                                                                                                      |
+| Commit hook enforces Conventional Commits  | 5 valid messages accepted, 5 invalid rejected                                                                                                                                                  |
+| Every GitHub Action is SHA-pinned          | The same check CI runs, executed locally; 11 YAML files parsed                                                                                                                                 |
+| Full gate                                  | `format`, `lint`, `typecheck`, `build`, and 21 tests pass                                                                                                                                      |
+
+### Things that were wrong and are now corrected
+
+Recorded because each changed a decision rather than just a line of code:
+
+1. **Payload does not require Node 24.15.** Its declared `engines` is `^18.20.2 || >=20.9.0`. Node 24
+   is still the runtime, on LTS grounds. ADR-002 updated.
+2. **The ESLint hold has a different cause than first recorded.** `typescript-eslint` already accepts
+   ESLint 10; the blockers are `eslint-plugin-react` and `eslint-plugin-jsx-a11y`. Since accessibility
+   linting is a delivery requirement, the hold stands - but for the right reason, with a named lift
+   condition. The TypeScript hold at 6.0.3 is genuine: `typescript-eslint` declares `<6.1.0`.
+3. **MinIO is no longer publicly available.** Replaced with SeaweedFS after testing five alternatives.
+   [ADR-008](adr/ADR-008-local-s3-seaweedfs-over-minio.md).
+4. **`pnpm add` rewrites `pnpm-workspace.yaml` and strips comments.** Rationale placed inline there is
+   deleted by the next dependency addition, so it lives in ADR-002 instead. `pnpm add pkg@catalog:`
+   also writes `catalog:` recursively into the catalog entry itself, which then fails the next install.
+
+### Deferred, with the reason
+
+| Item                                                                   | Why                                                                                                                                                        | Lands in |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Per-app `.env.example` files                                           | The root file plus the Zod schemas already cover every variable, and a second copy is a second thing to drift. Revisit only if per-app deployment needs it | -        |
+| `Dockerfile` per app                                                   | Two of five apps exist so far. Writing five Dockerfiles now means rewriting them as each app gains real dependencies                                       | Phase 13 |
+| `infra/scripts/deploy.sh`, `rollback.sh`, `backup.sh`, `smoke-test.sh` | Referenced by the workflows, which warn and skip when absent. Writing them before there is a deployable artefact would make them untestable                | Phase 13 |
+| SIGTERM drain rehearsal against a running process                      | Verified by unit test. A genuine end-to-end rehearsal needs `docker stop` against a container, which is where it belongs                                   | Phase 13 |
+| CI executing                                                           | Needs the GitHub organisation (PRD 22)                                                                                                                     | Phase 15 |
