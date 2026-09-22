@@ -1,0 +1,13 @@
+{
+  "//": "Emit-only configuration. rewriteRelativeImportExtensions lets the source use explicit .ts specifiers (required by Node's type stripping in dev) while the compiled output correctly imports .js.",
+  "extends": "@cera/config/tsconfig/node",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "noEmit": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+}

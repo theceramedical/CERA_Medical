@@ -1,0 +1,45 @@
+# Code owners.
+#
+# Required by PRD section 13. Review is not uniform: the paths below carry
+# security, data-protection, or brand consequences that a general reviewer
+# cannot reasonably assess, so they name a specific owner.
+#
+# Placeholders until CERA supplies the GitHub organisation and the two owner
+# accounts (PRD 22). Replace every @cera-medical/* team reference before the
+# first push; CODEOWNERS silently ignores teams that do not exist, which would
+# leave these paths unprotected while appearing configured.
+
+# Default owner for everything not matched below.
+*                                   @cera-medical/platform
+
+# Design tokens are the single source of visual truth (ADR-001). An unreviewed
+# change here alters every surface at once.
+/packages/ui/src/styles/            @cera-medical/design @cera-medical/platform
+/.planning/design-language.md       @cera-medical/design @cera-medical/platform
+
+# Shared contracts. A breaking change propagates to every app.
+/packages/contracts/                @cera-medical/platform
+
+# Authentication, authorisation, and session handling.
+/apps/web/src/lib/auth/             @cera-medical/security @cera-medical/platform
+/apps/api/src/auth/                 @cera-medical/security @cera-medical/platform
+/apps/api/src/authz/                @cera-medical/security @cera-medical/platform
+
+# Personal data leaves the platform here. PRD 10 requires consent and
+# minimisation to hold at every boundary.
+/apps/worker/src/integrations/      @cera-medical/security @cera-medical/platform
+/apps/api/src/enquiry/              @cera-medical/security @cera-medical/platform
+
+# Infrastructure, edge configuration, and secret plumbing.
+/infra/                             @cera-medical/platform
+/compose.yaml                       @cera-medical/platform
+/.github/workflows/                 @cera-medical/platform
+/.env.example                       @cera-medical/security @cera-medical/platform
+
+# Database schema and migrations are effectively irreversible in production.
+/apps/api/src/db/                   @cera-medical/platform
+/apps/api/drizzle/                  @cera-medical/platform
+
+# Architecture decisions.
+/.planning/adr/                     @cera-medical/platform
+/docs/adr/                          @cera-medical/platform

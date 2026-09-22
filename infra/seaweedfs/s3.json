@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "SeaweedFS S3 identities for LOCAL DEVELOPMENT ONLY.",
+    "These credentials are intentionally non-secret and match the placeholder",
+    "values in .env.example. They grant access to a throwaway container on",
+    "localhost and are never valid against staging or production, which use",
+    "Cloudflare R2 tokens scoped to a single bucket.",
+    "The anonymous Read identity reproduces an R2 bucket with a public custom",
+    "domain, so the media URLs the CMS generates behave the same locally."
+  ],
+  "identities": [
+    {
+      "name": "cera-local",
+      "credentials": [
+        {
+          "accessKey": "localdevminio",
+          "secretKey": "localdevminio123"
+        }
+      ],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    },
+    {
+      "name": "anonymous",
+      "actions": ["Read"]
+    }
+  ]
+}

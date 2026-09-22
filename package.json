@@ -1,0 +1,70 @@
+{
+  "name": "cera-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CERA Medical platform - public website, service catalogue, and controlled enquiry platform",
+  "license": "UNLICENSED",
+  "type": "module",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=24.11.0",
+    "pnpm": ">=10.28.0"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --stream dev",
+    "build": "pnpm -r build",
+    "start": "pnpm -r --parallel --stream start",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css,yaml,yml}\"",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:unit": "pnpm -r test:unit",
+    "test:contract": "pnpm -r test:contract",
+    "test:integration": "pnpm -r test:integration",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "test:a11y": "pnpm --filter web test:a11y",
+    "test:authz": "pnpm --filter api test:authz",
+    "migrate": "pnpm --filter api migrate && pnpm --filter cms migrate && pnpm --filter commerce migrate",
+    "migrate:status": "pnpm --filter api migrate:status",
+    "seed": "pnpm --filter api seed && pnpm --filter cms seed && pnpm --filter commerce seed",
+    "seed:reset": "pnpm --filter api seed:reset",
+    "health": "bash infra/scripts/health-check.sh",
+    "smoke": "bash infra/scripts/smoke-test.sh",
+    "reconcile": "pnpm --filter worker reconcile",
+    "stack:up": "docker compose -f compose.yaml -f infra/compose/compose.local.yaml up -d",
+    "stack:down": "docker compose -f compose.yaml -f infra/compose/compose.local.yaml down",
+    "stack:logs": "docker compose -f compose.yaml -f infra/compose/compose.local.yaml logs -f",
+    "stack:reset": "docker compose -f compose.yaml -f infra/compose/compose.local.yaml down -v",
+    "clean": "pnpm -r exec rm -rf dist .next node_modules/.cache && rm -rf node_modules",
+    "prepare": "husky"
+  },
+  "//devDependencies": "eslint and prettier are root dependencies because lint-staged resolves binaries from the root node_modules/.bin, not from the workspace a staged file happens to live in.",
+  "devDependencies": {
+    "@cera/config": "workspace:*",
+    "eslint": "catalog:",
+    "husky": "9.1.7",
+    "lint-staged": "17.5.1",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yaml,yml}": [
+      "prettier --write"
+    ]
+  },
+  "pnpm": {
+    "//onlyBuiltDependencies": "An explicit allow-list of packages permitted to run install scripts. Everything else is blocked, which is the supply-chain control reviewed in Phase 14. unrs-resolver is required: without its native binary, eslint-plugin-import-x cannot resolve TypeScript paths and every import rule silently stops working.",
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}

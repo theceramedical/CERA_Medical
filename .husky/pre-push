@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Catches what lint-staged cannot see: a type error caused by a change in
+# another file. Runs on push rather than commit so local iteration stays fast.
+set -e
+
+echo "[pre-push] typecheck"
+pnpm -r typecheck
+
+echo "[pre-push] unit tests"
+pnpm -r test:unit

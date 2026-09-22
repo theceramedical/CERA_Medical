@@ -1,0 +1,64 @@
+{
+  "name": "@cera/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared TypeScript, ESLint, Prettier, and Vitest configuration for the CERA platform",
+  "type": "module",
+  "//exports": "Each JS entry pairs with a hand-written .d.ts. The package is authored in plain JS so that ESLint and Prettier can load it without a build step - a config package that must be compiled before it can lint is a bootstrapping problem - and the declarations give consumers types anyway.",
+  "exports": {
+    "./eslint": {
+      "types": "./src/eslint/index.d.ts",
+      "default": "./src/eslint/index.js"
+    },
+    "./eslint/react": {
+      "types": "./src/eslint/react.d.ts",
+      "default": "./src/eslint/react.js"
+    },
+    "./eslint/node": {
+      "types": "./src/eslint/node.d.ts",
+      "default": "./src/eslint/node.js"
+    },
+    "./prettier": {
+      "types": "./src/prettier/index.d.ts",
+      "default": "./src/prettier/index.js"
+    },
+    "./vitest": {
+      "types": "./src/vitest/index.d.ts",
+      "default": "./src/vitest/index.js"
+    },
+    "./env": {
+      "types": "./src/env/index.d.ts",
+      "default": "./src/env/index.js"
+    },
+    "./tsconfig/base": "./src/tsconfig/base.json",
+    "./tsconfig/node": "./src/tsconfig/node.json",
+    "./tsconfig/next": "./src/tsconfig/next.json",
+    "./tsconfig/react-library": "./src/tsconfig/react-library.json"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "echo 'no typecheck: config package is plain JS and JSON'",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@eslint/js": "9.39.5",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-import-x": "4.16.1",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "globals": "16.4.0",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:",
+    "zod": "catalog:"
+  }
+}

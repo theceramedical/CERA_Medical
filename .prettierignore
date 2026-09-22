@@ -1,0 +1,28 @@
+# Generated or vendored: reformatting these creates noisy diffs and, for the
+# lockfile, risks changing a file that must match what pnpm wrote.
+pnpm-lock.yaml
+node_modules/
+.pnpm-store/
+
+dist/
+build/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+
+**/payload-types.ts
+**/*.generated.ts
+**/drizzle/**/*.sql
+
+# Binary and asset files
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.avif
+*.ico
+*.woff
+*.woff2
+*.pdf

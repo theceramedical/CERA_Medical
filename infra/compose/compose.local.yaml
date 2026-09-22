@@ -1,0 +1,122 @@
+# =============================================================================
+# Local development overlay
+# =============================================================================
+#   docker compose -f compose.yaml -f infra/compose/compose.local.yaml up -d
+#
+# Adds, for development only:
+#   - host port publishing on PostgreSQL and Valkey so local tooling can connect
+#   - MinIO standing in for Cloudflare R2
+#   - Mailpit standing in for Resend
+#
+# None of this exists in the staging or production overlays. The stand-ins sit
+# behind the same StoragePort and EmailPort interfaces as the live providers, so
+# switching is an environment change (see docs/runbooks/prerequisites.md).
+# =============================================================================
+
+volumes:
+  seaweed-data:
+
+services:
+  postgres:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - cera-private
+      - cera-public
+
+  valkey:
+    ports:
+      - "${VALKEY_PORT:-6379}:6379"
+    networks:
+      - cera-private
+      - cera-public
+
+  # ---------------------------------------------------------------------------
+  # SeaweedFS - Cloudflare R2 stand-in over the S3 API.
+  #
+  # MinIO was the obvious choice and is no longer available: its community
+  # images are not publicly pullable, and Bitnami's catalogue moved behind a
+  # subscription. SeaweedFS is Apache 2.0, publishes pinnable tags, and
+  # implements the parts of S3 this platform actually uses - multipart upload,
+  # presigned URLs, and anonymous read. See ADR-008.
+  #
+  # Differences from R2 worth remembering: R2 requires region 'auto' and a
+  # custom endpoint, and presigned URLs never work on an R2 custom domain.
+  # Ports: 9333 master, 8080 volume, 8888 filer, 9001 S3.
+  # ---------------------------------------------------------------------------
+  seaweedfs:
+    image: chrislusf/seaweedfs:3.97
+    restart: unless-stopped
+    # -ip.bind=0.0.0.0 is required, not optional. SeaweedFS otherwise binds only
+    # to loopback inside the container, and Docker forwards published ports to
+    # the container's bridge IP - so the S3 endpoint is unreachable from the
+    # host and every service healthcheck fails while the logs look perfectly
+    # healthy.
+    command: >
+      server
+      -dir=/data
+      -ip.bind=0.0.0.0
+      -s3
+      -s3.port=9001
+      -s3.config=/etc/seaweedfs/s3.json
+      -master.volumeSizeLimitMB=128
+      -volume.max=0
+    ports:
+      - "9001:9001"
+      - "9333:9333"
+      - "8888:8888"
+    volumes:
+      - seaweed-data:/data
+      - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    networks:
+      - cera-private
+      - cera-public
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # One-shot bucket setup. Runs to completion, then apps gate on it with
+  # `condition: service_completed_successfully`.
+  seaweedfs-init:
+    image: chrislusf/seaweedfs:3.97
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    environment:
+      S3_BUCKET: ${S3_BUCKET:-cera-media}
+    networks:
+      - cera-private
+    entrypoint: >
+      /bin/sh -c "
+      set -e;
+      echo \"s3.bucket.create -name $${S3_BUCKET}\" | weed shell -master=seaweedfs:9333 || true;
+      echo \"[seaweedfs-init] bucket $${S3_BUCKET} ready\";
+      "
+    restart: "no"
+
+  # ---------------------------------------------------------------------------
+  # Mailpit - Resend stand-in. SMTP on 1025, web UI on 8025.
+  # Lets Phase 10 render and inspect every template without a Resend account.
+  # ---------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit:v1.27.11
+    restart: unless-stopped
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - cera-private
+      - cera-public
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s

@@ -1,0 +1,207 @@
+name: CI
+
+# Every action is pinned to a full commit SHA, not a tag. A tag is mutable: an
+# attacker who compromises an action repository can repoint v4 at malicious code
+# and it runs with this workflow's token. The version in the trailing comment is
+# for humans, and Dependabot updates both together.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Default to no permissions and grant per job. The default token is otherwise
+# write-capable on contents, which a lint job has no business holding.
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24.21.0"
+  PNPM_VERSION: "10.28.2"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # One install, shared by everything downstream. Splitting the jobs gives a
+  # readable failure - "typecheck failed" rather than "the build step failed" -
+  # and lets them run in parallel.
+  # ---------------------------------------------------------------------------
+  setup:
+    name: Install and cache
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: Install Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        # --frozen-lockfile fails rather than silently resolving a new version,
+        # which is what makes the build reproducible (PRD 10).
+        run: pnpm install --frozen-lockfile
+
+  lint:
+    name: Lint and format
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: ESLint
+        run: pnpm lint
+
+      - name: Prettier
+        run: pnpm format:check
+
+  typecheck:
+    name: Typecheck
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+
+  test:
+    name: Unit and contract tests
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    # Real services rather than mocks. A mocked PostgreSQL cannot catch a
+    # constraint violation or a migration that fails on existing data.
+    services:
+      postgres:
+        image: postgres:18.6-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_only_not_a_real_secret
+          POSTGRES_DB: cera_test
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+      valkey:
+        image: valkey/valkey:9.1.2-alpine
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 6379:6379
+    env:
+      DATABASE_URL: postgres://postgres:ci_only_not_a_real_secret@localhost:5432/cera_test
+      VALKEY_URL: redis://localhost:6379/0
+      NODE_ENV: test
+      CERA_ENV: local
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: "**/coverage/"
+          retention-days: 7
+          if-no-files-found: ignore
+
+  build:
+    name: Build
+    needs: [lint, typecheck]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+  # ---------------------------------------------------------------------------
+  # A single required status check. Branch protection references this one job, so
+  # adding or renaming a job above never silently un-protects main.
+  # ---------------------------------------------------------------------------
+  ci-complete:
+    name: CI complete
+    if: always()
+    needs: [lint, typecheck, test, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify every job succeeded
+        run: |
+          results='${{ join(needs.*.result, ' ') }}'
+          echo "Job results: $results"
+          for result in $results; do
+            if [ "$result" != "success" ]; then
+              echo "::error::A required job did not succeed ($result)."
+              exit 1
+            fi
+          done
+          echo "All required jobs succeeded."

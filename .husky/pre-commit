@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+# Fast, staged-files-only checks. Anything slower belongs in pre-push or CI:
+# a pre-commit hook that takes 30 seconds is a hook people bypass.
+set -e
+
+pnpm exec lint-staged
+
+# Block committed secrets. PRD 15 prohibits credentials in the repository, and
+# a rejected commit is far cheaper than rewriting history after a push.
+if pnpm exec gitleaks --version >/dev/null 2>&1; then
+  pnpm exec gitleaks protect --staged --redact --no-banner
+fi

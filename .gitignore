@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+.vendure-cache/
+apps/commerce/static/
+apps/cms/media/
+
+# Environment and secrets - FND-005 and PRD 15.
+# Only .env.example may ever be tracked.
+.env
+.env.*
+!.env.example
+!.env.*.example
+secrets/
+*.pem
+*.key
+!**/testdata/*.key
+*.p12
+*.pfx
+
+# Database dumps and backups - never in the repository, per PRD 15
+*.dump
+*.dump.age
+*.dump.gpg
+*.sql.gz
+backups/
+
+# Test and coverage output
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+*.lcov
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor and OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.recommended.json
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Generated types
+apps/cms/src/payload-types.ts
+apps/commerce/src/generated-*.ts
+next-env.d.ts
+
+# Local scratch
+.scratch/
+tmp/
