@@ -14,15 +14,33 @@ a page instead of inventing styling. This is where the reference image becomes c
 
 ### WP-03.1 Tokens
 
-- [ ] `packages/ui/src/styles/theme.css` as a single Tailwind v4 `@theme` block holding every scale and
+- [x] `packages/ui/src/styles/theme.css` as a single Tailwind v4 `@theme` block holding every scale and
       semantic token from `design-language.md` sections 1.2, 1.3, 2.1, and 3
-- [ ] `@import "tailwindcss"` and `@tailwindcss/postcss` wiring; no `tailwind.config.ts`, which is
-      legacy in v4
-- [ ] Fluid type scale with `clamp()` between 360px and 1280px
-- [ ] Motion tokens, with a global `prefers-reduced-motion` block that neutralises every duration
-- [ ] Semantic tokens structured so a `[data-theme="dark"]` block can be added later without touching
-      components
-- [ ] Verify the `no-raw-color` ESLint rule from Phase 01 fires on a deliberate violation
+- [x] `@import "tailwindcss"`; no `tailwind.config.ts`, which is legacy in v4
+- [x] Fluid type scale with `clamp()` between 360px and 1280px
+- [x] Motion tokens, with a global `prefers-reduced-motion` block that neutralises every duration
+- [x] Semantic tokens structured so a `[data-theme="dark"]` block can be added later without touching
+      components — every semantic token is `var()` onto a ramp step, and no component names a step
+- [x] Verify the `no-raw-color` ESLint rule from Phase 01 fires on a deliberate violation — proven
+      against all four forms it claims to catch (hex, `rgb()`, `oklch()`, `bg-[#…]`), with
+      `transparent` correctly allowed through
+
+`theme.css` is compiled by the real Tailwind engine in `styles/theme.test.ts` rather than only
+parsed. The `@theme` contract fails silently: `--text-body--lineheight` instead of
+`--text-body--line-height` is not an error and emits no line-height, and on the page that reads as
+"the spacing looks slightly off" rather than as a broken token. 93 assertions cover it.
+
+**Three defects the tests caught, none of which would have surfaced in review:**
+
+1. `--text-body` and `--color-body` both generate `.text-body`. Tailwind builds that utility from
+   two namespaces, one declaration wins, and the colour won — so a component asking for body _type_
+   would have received a colour, looking correct wherever the inherited size happened to match. The
+   paragraph colour is now `--color-copy`, and a test fails on any future name present in both
+   namespaces rather than leaving the next one to be found on a page.
+2. `--duration-*` is not a Tailwind theme namespace, unlike `--ease-*`. The tokens existed and
+   generated nothing, so every transition would have run at the browser default while the tokens sat
+   in the file looking authoritative. Declared with `@utility` instead.
+3. The sampled control border fails WCAG 1.4.11 — see WP-03.3.
 
 ### WP-03.2 Typography
 
@@ -35,13 +53,49 @@ a page instead of inventing styling. This is where the reference image becomes c
 
 ### WP-03.3 Colour contrast gate
 
-- [ ] A test computing WCAG 2.2 contrast for every pairing in `design-language.md` section 1.4 and
-      failing below threshold
-- [ ] Apply the two documented resolutions: `neutral-500` restricted to 18px and above, and `teal-700`
-      substituted for `teal-600` behind labels under 16px
-- [ ] Record measured ratios in the phase log so a reviewer sees numbers, not assurances
+- [x] A test computing WCAG 2.2 contrast for every pairing in `design-language.md` section 1.4 and
+      failing below threshold — 25 text pairings, each recorded at the size it is actually used at,
+      plus 12 non-text pairings at 3:1, the gradient at both stops and the midpoint, and the disabled
+      state
+- [x] Apply the documented resolutions: `--color-muted` is `neutral-600` and `--color-accent-fill` is
+      `teal-700`, and the _rejected_ values are asserted to fail so that consolidating them back looks
+      like the regression it is
+- [x] Record measured ratios in the phase log so a reviewer sees numbers, not assurances
 
 This test is the reason a contrast regression cannot ship: it is a unit test, not a review step.
+
+**Corrections it forced.**
+
+- **The "large text" threshold was wrong.** WCAG defines large as 18pt, which is **24px**, not 18px.
+  An earlier draft of `design-language.md` section 1.4 said 18px, and that error relaxes the
+  requirement from 4.5:1 to 3:1 across 18–24px — the range body and sub-heading text occupies. The
+  gate implements 24px, and a test pins it.
+- **The sampled control border fails 1.4.11.** `neutral-300` on white measures **1.54:1** where a
+  control boundary needs 3:1. A card hairline is decoration and is exempt; the edge of an input is
+  the only thing telling you where the control is, and is not. `--color-border-control` is therefore
+  `neutral-500` — the lightest step clearing 3:1 against every band background — and it reads darker
+  than the reference mockup. That is the trade `design-language.md` already declared: accessibility
+  over visual fidelity. This is the first place the two actually conflicted.
+
+**Measured ratios.** Tightest first; `headroom` is the margin over the threshold that applies at that
+size. Full table is printed by `pnpm --filter @cera/ui test:contrast`.
+
+| Pairing                            | Ratio | Required | Size | Headroom |
+| ---------------------------------- | ----- | -------- | ---- | -------- |
+| muted on footer tint at caption    | 4.51  | 4.5      | 13px | **0.01** |
+| muted on subtle surface at caption | 4.65  | 4.5      | 13px | 0.15     |
+| muted on white at caption          | 4.87  | 4.5      | 13px | 0.37     |
+| label on accent fill               | 5.08  | 4.5      | 15px | 0.58     |
+| pill label on accent fill          | 5.08  | 4.5      | 11px | 0.58     |
+| copy on process tint / icon disc   | 5.27  | 4.5      | 16px | 0.77     |
+| copy on hero tint                  | 5.47  | 4.5      | 16px | 0.97     |
+| copy on white                      | 6.00  | 4.5      | 16px | 1.50     |
+| accent headline on hero tint       | 4.62  | 3.0      | 32px | 1.62     |
+| heading ink on white               | 14.51 | 4.5      | 16px | 10.01    |
+
+`muted` on the footer tint at caption size passes by 0.01. It is the one pairing with no practical
+margin, so any future change to either token fails the gate — which is the intended behaviour, but
+worth knowing before someone adjusts the footer tint and is surprised.
 
 ### WP-03.4 Primitives
 

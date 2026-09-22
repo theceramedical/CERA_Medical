@@ -1,0 +1,10 @@
+{
+  "//": "Matches packages/contracts and packages/db: relative imports carry the .ts extension so Node's --experimental-strip-types can run this source directly, which tsc only permits when it is not emitting.",
+  "extends": "@cera/config/tsconfig/react-library",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "*.config.ts"],
+  "exclude": ["node_modules", "dist", "coverage"]
+}

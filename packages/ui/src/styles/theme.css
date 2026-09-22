@@ -1,0 +1,413 @@
+/**
+ * CERA Medical design tokens.
+ *
+ * The only file in the repository permitted to contain a colour value. The
+ * `no-raw-color` ESLint rule allow-lists this directory and nothing else, so a hex
+ * literal anywhere in a component is a lint failure rather than a review comment
+ * (design-language.md section 7, ADR-001).
+ *
+ * Values are measurements, not choices. They were sampled from the approved reference
+ * image - modal colour over flat regions, mean of the darkest 12% of pixels over text.
+ * Anchor steps are marked; the rest of each ramp is interpolated by holding hue and
+ * chroma and walking lightness, which is what keeps a hover state from drifting off-hue.
+ *
+ * Structure, and the reason for it:
+ *
+ *   1. `@theme` scales - the raw ramps. Tailwind generates utilities from these.
+ *   2. Semantic tokens - what component code actually names. A component says
+ *      `text-foreground`, never `text-navy-900`.
+ *
+ * The indirection is what makes `[data-theme="dark"]` a later possibility rather than a
+ * rewrite: a dark block reassigns the semantic layer and every component follows, because
+ * no component ever named a scale step. Dark mode is out of scope for this release
+ * (design-language.md section 7 rule 6) but the shape is set now, since retrofitting it
+ * means touching every component.
+ */
+
+@import 'tailwindcss';
+
+@theme {
+  /* ---------------------------------------------------------------------------
+   * Colour ramps - design-language.md section 1.2
+   * ------------------------------------------------------------------------ */
+
+  --color-navy-50: #f2f5f9;
+  --color-navy-100: #e3e9f1;
+  --color-navy-200: #c3cede;
+  --color-navy-300: #9cadc5;
+  --color-navy-400: #6d82a2;
+  --color-navy-500: #465d82;
+  --color-navy-600: #2c436a;
+  --color-navy-700: #1d3558;
+  --color-navy-800: #182f4f;
+  --color-navy-900: #13294b; /* anchor: headings, wordmark */
+  --color-navy-950: #0c1b33;
+
+  --color-primary-50: #eff7fb;
+  --color-primary-100: #daedf6;
+  --color-primary-200: #b2d8eb;
+  --color-primary-300: #7fbcd9;
+  --color-primary-400: #4795bf;
+  --color-primary-500: #1e74a2;
+  --color-primary-600: #0f6490;
+  --color-primary-700: #0a5378; /* anchor: filled buttons */
+  --color-primary-800: #0b4260;
+  --color-primary-900: #143047; /* anchor: deepest hero button edge */
+  --color-primary-950: #0a1f30;
+
+  --color-teal-50: #edf8f9;
+  --color-teal-100: #d6f0f2;
+  --color-teal-200: #a7e0e4;
+  --color-teal-300: #6fc9d0;
+  --color-teal-400: #34aab4;
+  --color-teal-500: #0f959f;
+  --color-teal-600: #0e8a93; /* anchor: accent line, pills */
+  --color-teal-700: #0a7a84;
+  --color-teal-800: #0b6269;
+  --color-teal-900: #0c4e54;
+  --color-teal-950: #063236;
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-25: #fcfdfe;
+  --color-neutral-50: #f7fafc;
+  --color-neutral-100: #eff4f8;
+  --color-neutral-200: #dce7ef; /* anchor: hairlines */
+  --color-neutral-300: #c3d2df;
+  --color-neutral-400: #9baab9;
+  --color-neutral-500: #7a8896; /* anchor: muted text - see the 18px rule below */
+  --color-neutral-600: #647380;
+  --color-neutral-700: #546575; /* anchor: body copy */
+  --color-neutral-800: #3d4a57;
+  --color-neutral-900: #27313b;
+
+  /* Validation and status. Not present in the reference image - chosen to sit beside
+   * the palette without competing with the teal accent, which carries brand meaning
+   * and must not read as "success". */
+  --color-success-50: #ecfaf3;
+  --color-success-500: #10855a;
+  --color-success-700: #0a6244;
+
+  --color-warning-50: #fef6ea;
+  --color-warning-500: #b7791f;
+  --color-warning-700: #8a5a12;
+
+  --color-danger-50: #fdf1f1;
+  --color-danger-500: #c0392b;
+  --color-danger-700: #96271b;
+
+  /* ---------------------------------------------------------------------------
+   * Semantic colour - design-language.md section 1.3
+   *
+   * The names component code uses. Assigned from the ramps above via `var()` so the
+   * relationship stays visible: changing an anchor moves every semantic token that
+   * depends on it, which is the point of having ramps at all.
+   * ------------------------------------------------------------------------ */
+
+  --color-background: var(--color-neutral-0);
+  --color-surface: var(--color-neutral-0);
+  --color-surface-subtle: var(--color-neutral-50);
+
+  /* Band tints. Sampled individually rather than taken from a ramp: the reference uses
+   * three slightly different blues for hero, process band, and footer, and flattening
+   * them to one step visibly changes the page. */
+  --color-surface-tint: #ebf6fc;
+  --color-surface-tint-2: #e6f2fa;
+  --color-surface-footer: #f0f7fd;
+  --color-icon-disc: #e6f2f8;
+
+  --color-foreground: var(--color-navy-900);
+
+  /* `copy`, not `body`, and the reason is mechanical rather than stylistic.
+   *
+   * Tailwind generates `text-*` utilities from both `--text-*` (font size) and `--color-*`
+   * (colour). `--text-body` and a `--color-body` would both produce `.text-body`, one would
+   * win, and a component asking for body *type* would silently receive a colour - correct
+   * on screen wherever the inherited size happened to match, wrong everywhere else. The
+   * collision test in styles/theme.test.ts now fails on any new pair like this. */
+  --color-copy: var(--color-neutral-700);
+
+  /* `muted` is neutral-600, not the sampled neutral-500. neutral-500 on white measures
+   * 4.36:1, which fails AA for text below 18px, and muted text is overwhelmingly used at
+   * caption size. neutral-500 remains available as `--color-muted-large` for 18px and
+   * above (design-language.md section 1.4). Defaulting to the compliant value means the
+   * accessible choice is the one you get by not thinking about it. */
+  --color-muted: var(--color-neutral-600);
+  --color-muted-large: var(--color-neutral-500);
+
+  /* Two border tokens, because the requirement differs by what the border is doing.
+   *
+   * A card hairline is decoration: it groups content that is already grouped by layout, so
+   * WCAG 1.4.11 does not apply and the sampled neutral-200 (1.25:1 on white) is fine.
+   *
+   * The boundary of an input or an outline button is the control - it is the only thing
+   * telling you where you may type or click - so 1.4.11 requires 3:1, and the sampled
+   * neutral-300 measures 1.54:1. neutral-500 is the lightest step on the ramp that clears
+   * 3:1 against every band background in the design (3.62 on white, 3.18 on the darkest
+   * tint). It reads darker than the reference mockup, which is the documented trade:
+   * design-language.md gives accessibility precedence over visual fidelity. */
+  --color-border: var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-300);
+  --color-border-control: var(--color-neutral-500);
+
+  --color-primary: var(--color-primary-700);
+  --color-primary-hover: var(--color-primary-800);
+  --color-primary-active: var(--color-primary-900);
+
+  /* Same reasoning as `muted`. White on teal-600 measures 3.53:1 and fails AA for small
+   * text, so the fill behind a label is teal-700. teal-600 is kept for the accent
+   * headline and rules, which are large text or non-text. */
+  --color-accent: var(--color-teal-600);
+  --color-accent-hover: var(--color-teal-700);
+  --color-accent-fill: var(--color-teal-700);
+
+  --color-on-primary: var(--color-neutral-0);
+  --color-on-accent: var(--color-neutral-0);
+  --color-focus-ring: var(--color-teal-600);
+
+  --color-gradient-from: #1b5882;
+  --color-gradient-to: #005b7d;
+
+  /* ---------------------------------------------------------------------------
+   * Typography - design-language.md sections 2 and 2.1
+   *
+   * The families are assigned by apps/web from `next/font`, which generates the
+   * variable names. Fallbacks are listed here so a component rendered in a test
+   * environment or before the font loads still measures sensibly.
+   * ------------------------------------------------------------------------ */
+
+  --font-sans: var(--font-source-sans-3), ui-sans-serif, system-ui, sans-serif;
+  --font-wordmark: var(--font-montserrat), var(--font-sans);
+
+  /* Fluid between the 360px and 1280px viewports. The `vw` coefficient is derived, not
+   * guessed: for a size going from `min` to `max` across that range, the slope is
+   * (max - min) / (1280px - 360px) expressed in vw, and the intercept is what makes the
+   * line pass through `min` at 360px. */
+  --text-display-1: clamp(2rem, 1.35rem + 2.9vw, 3rem);
+  --text-display-1--line-height: 1.12;
+  --text-display-1--letter-spacing: -0.02em;
+  --text-display-1--font-weight: 700;
+
+  --text-h1: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+  --text-h1--line-height: 1.18;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h1--font-weight: 700;
+
+  --text-h2: clamp(1.5rem, 1.2rem + 1.3vw, 2rem);
+  --text-h2--line-height: 1.22;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 700;
+
+  --text-h3: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.005em;
+  --text-h3--font-weight: 600;
+
+  --text-h4: 1rem;
+  --text-h4--line-height: 1.4;
+  --text-h4--letter-spacing: 0em;
+  --text-h4--font-weight: 600;
+
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--font-weight: 400;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.55;
+  --text-body-sm--font-weight: 400;
+
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.5;
+  --text-caption--font-weight: 400;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.14em;
+  --text-eyebrow--font-weight: 600;
+
+  --text-pill: 0.6875rem;
+  --text-pill--line-height: 1.3;
+  --text-pill--letter-spacing: 0.08em;
+  --text-pill--font-weight: 700;
+
+  --text-button: 0.9375rem;
+  --text-button--line-height: 1.2;
+  --text-button--letter-spacing: 0.01em;
+  --text-button--font-weight: 600;
+
+  /* `MEDICAL` beneath the wordmark. Wide enough that it needs naming rather than an
+   * arbitrary value at the one call site. */
+  --tracking-wordmark: 0.28em;
+
+  /* ---------------------------------------------------------------------------
+   * Space - design-language.md section 3
+   *
+   * Tailwind derives `p-4` and friends from `--spacing` by multiplication, so the base
+   * unit is all that is strictly needed. The named steps exist for the places that read
+   * a token directly, such as an inline SVG's geometry.
+   * ------------------------------------------------------------------------ */
+
+  --spacing: 4px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-pill: 9999px;
+
+  /* Shadows are navy-tinted rather than neutral black. A grey shadow under a blue-tinted
+   * surface reads as dirt; this is the same hue as the ink. */
+  --shadow-xs: 0 1px 2px rgb(19 41 75 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(19 41 75 / 0.07), 0 1px 2px rgb(19 41 75 / 0.04);
+  --shadow-md: 0 4px 12px rgb(19 41 75 / 0.08);
+  --shadow-lg: 0 12px 28px rgb(19 41 75 / 0.1);
+  --shadow-card-hover: 0 8px 20px rgb(10 83 120 / 0.12);
+
+  /* ---------------------------------------------------------------------------
+   * Motion - design-language.md section 3
+   *
+   * Deliberately minimal. This is a medical service being used by people who may be
+   * anxious or unwell, and movement costs attention.
+   * ------------------------------------------------------------------------ */
+
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 260ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---------------------------------------------------------------------------
+   * Layout - design-language.md section 4
+   * ------------------------------------------------------------------------ */
+
+  --container-site: 1200px;
+  --spacing-header: 80px;
+
+  /* The sub-heading cap from section 5.7. A measure token rather than a utility class so
+   * the value is stated once. */
+  --spacing-measure: 65ch;
+}
+
+/**
+ * Motion utilities.
+ *
+ * Declared explicitly because `duration-*` is not one of Tailwind v4's theme namespaces -
+ * unlike `--color-*`, `--text-*`, `--ease-*`, and the rest, a `--duration-base` token
+ * generates no utility at all. It is a plain custom property that nothing consumes, and the
+ * only symptom is a transition that runs at the browser default while the token sits in the
+ * file looking authoritative.
+ *
+ * `@utility` is the v4 mechanism for closing that gap, and naming these keeps component code
+ * away from `duration-[180ms]`, which would put a raw timing back at the call site - the same
+ * problem `no-raw-color` solves for colour.
+ */
+@utility duration-fast {
+  transition-duration: var(--duration-fast);
+}
+
+@utility duration-base {
+  transition-duration: var(--duration-base);
+}
+
+@utility duration-slow {
+  transition-duration: var(--duration-slow);
+}
+
+/**
+ * Focus visibility.
+ *
+ * Applied globally rather than per component, because the failure mode of per-component
+ * focus styling is a control somewhere with none - and that is invisible to everyone
+ * except the keyboard user who hits it. `:focus-visible` rather than `:focus` so a mouse
+ * click does not leave a ring behind.
+ *
+ * WCAG 2.2 added 2.4.11 Focus Not Obscured and 2.4.13 Focus Appearance; the 2px ring at
+ * 2px offset satisfies the thickness and contrast requirements of the latter.
+ */
+@layer base {
+  :where(:focus-visible) {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Never remove the outline without replacing it. Listed here so the intent is explicit
+   * rather than implied by the absence of a reset. */
+  :where(:focus:not(:focus-visible)) {
+    outline: none;
+  }
+
+  html {
+    /* An in-page anchor must not land under the sticky header (WCAG 2.4.11). */
+    scroll-padding-top: calc(var(--spacing-header) + var(--spacing) * 4);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-copy);
+    font-family: var(--font-sans);
+
+    /* Source Sans 3 is a humanist face with open apertures; antialiasing it sharper than
+     * the browser default thins the strokes enough to cost contrast at caption size. The
+     * default is deliberately left alone, and this comment exists so nobody "improves"
+     * it with `-webkit-font-smoothing: antialiased`. */
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings inherit the ink colour rather than each heading component setting it. */
+  :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--color-foreground);
+  }
+}
+
+/**
+ * Reduced motion.
+ *
+ * A blanket neutralisation, not a per-animation opt-out. The per-component approach means
+ * every new transition is a new chance to forget, and the person affected has no way to
+ * report what they cannot see.
+ *
+ * `0.01ms` rather than `0s` because a zero duration prevents `transitionend` and
+ * `animationend` from firing in some engines, and code that waits for those to clean up
+ * then hangs. This keeps the events while making the motion imperceptible.
+ *
+ * `scroll-behavior: auto` matters as much as the durations: a smooth scroll is motion the
+ * duration rules do not touch.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * Forced colours (Windows high contrast).
+ *
+ * The system palette replaces every colour, so anything whose meaning was carried by a
+ * background - a filled button, a focus ring drawn as a shadow - flattens out. These
+ * declarations restore the boundaries using system colours, which is the only palette
+ * available in this mode.
+ */
+@media (forced-colors: active) {
+  :where(:focus-visible) {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+
+  /* Keeps a filled button distinguishable from the canvas, since its background is
+   * discarded. */
+  :where(button, [role='button'], input, select, textarea) {
+    border: 1px solid ButtonBorder;
+  }
+}

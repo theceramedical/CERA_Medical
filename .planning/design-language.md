@@ -68,6 +68,12 @@ info     = primary
 
 These are the names application code uses. Component code never references a scale step directly.
 
+**Naming constraint.** Tailwind generates `text-*` utilities from two namespaces: `--text-*` for font
+size and `--color-*` for colour. A name present in both — `--text-body` and `--color-body` — produces
+two `.text-body` rules, one silently wins, and a component asking for body _type_ receives a colour.
+The paragraph colour is therefore `--color-copy`. A test in `packages/ui/src/styles/theme.test.ts`
+fails on any future collision rather than leaving it to be found on a page.
+
 | Token                    | Light value   | Used for                           |
 | ------------------------ | ------------- | ---------------------------------- |
 | `--color-background`     | `neutral-0`   | Page canvas                        |
@@ -78,10 +84,11 @@ These are the names application code uses. Component code never references a sca
 | `--color-surface-subtle` | `neutral-50`  | Table stripes, disabled fills      |
 | `--color-icon-disc`      | `#E6F2F8`     | Icon containers                    |
 | `--color-foreground`     | `navy-900`    | Headings                           |
-| `--color-body`           | `neutral-700` | Paragraph text                     |
+| `--color-copy`           | `neutral-700` | Paragraph text                     |
 | `--color-muted`          | `neutral-500` | Secondary text                     |
-| `--color-border`         | `neutral-200` | Hairlines                          |
-| `--color-border-strong`  | `neutral-300` | Inputs, outline buttons            |
+| `--color-border`         | `neutral-200` | Decorative hairlines on cards      |
+| `--color-border-strong`  | `neutral-300` | Dividers, table rules              |
+| `--color-border-control` | `neutral-500` | Inputs, selects, outline buttons   |
 | `--color-primary`        | `primary-700` | Filled buttons, links              |
 | `--color-primary-hover`  | `primary-800` |                                    |
 | `--color-primary-active` | `primary-900` |                                    |
@@ -109,14 +116,30 @@ Every pairing below is required to pass before Phase 03 exits. Ratios are agains
 | `neutral-0`   | `gradient-from`/`gradient-to` | 4.5:1    | CTA band copy at both stops                      |
 | `focus-ring`  | adjacent surface              | 3:1      | Focus visibility                                 |
 
+**On "large text".** WCAG defines large as 18pt, or 14pt bold. Those are point sizes: at the CSS
+reference 96dpi they are **24px and 18.66px**, not 18px. An earlier draft of this section said 18px,
+which relaxes the requirement from 4.5:1 to 3:1 across 18-24px — precisely the range body and
+sub-heading text occupies. The gate in `packages/ui/src/contrast.ts` implements 24px.
+
 Two pairs are known to be marginal and carry explicit instructions:
 
-- **`neutral-500` on white** measures close to 4.5:1. Caption and helper text must use
-  `neutral-600` (`#647380`) at sizes below 18px. `neutral-500` is permitted only at 18px+ or for
-  non-essential decoration.
-- **White on `teal-600`** is below 4.5:1 for small text. The header CTA and category pills therefore
-  use `teal-700` as the fill when the label is under 16px, which is what the reference's pill
-  regions actually sample closest to.
+- **`neutral-500` on white** measures 4.38:1 and therefore **fails** AA for normal-size text. All
+  caption, helper, and secondary text uses `neutral-600` (`#647380`), which measures 5.37:1. The
+  semantic token `--color-muted` resolves to `neutral-600` so that the compliant value is the one
+  obtained by not thinking about it. `neutral-500` survives as `--color-muted-large`, restricted to
+  24px+ text and to non-text decoration, and there is currently no component that qualifies.
+- **White on `teal-600`** measures 3.42:1, below AA for normal-size text. Anything placing a label
+  on a filled accent — the header CTA, category pills — fills with `teal-700` instead, exposed as
+  `--color-accent-fill`. `teal-600` remains correct for the accent headline, which is `display-1`
+  and so large text, and for the 3px section rule, which is non-text at 3:1.
+- **Control borders.** The sampled hairline `neutral-300` measures **1.54:1** on white. That is
+  acceptable for a card border, which is decoration over content layout has already grouped, but
+  WCAG 1.4.11 requires **3:1** for the boundary of an input, select, or outline button, because that
+  boundary is the only thing indicating where the control is. `--color-border-control` is therefore
+  `neutral-500`, the lightest step clearing 3:1 against every band background (3.62:1 on white,
+  3.18:1 on `surface-tint-2`). It reads darker than the reference mockup. That is the intended
+  trade: the authority note at the top of this document gives accessibility precedence over visual
+  fidelity, and this is the first place the two actually conflict.
 
 ---
 
@@ -194,6 +217,10 @@ duration  fast:120ms  base:180ms  slow:260ms
 easing    standard: cubic-bezier(0.2, 0, 0, 1)
 ```
 
+`--ease-*` is a Tailwind theme namespace, so `ease-standard` is generated. `--duration-*` is **not**,
+so `duration-fast|base|slow` are declared with `@utility` in `theme.css`. Without that the tokens
+exist but generate nothing, and transitions quietly run at the browser default.
+
 Every transition and animation must be suppressed under `@media (prefers-reduced-motion: reduce)`.
 
 ---
@@ -248,13 +275,13 @@ reference cannot express. Both are binding.
 
 ### 5.1 Button
 
-| Variant   | Fill          | Label         | Border              | Use in reference                         |
-| --------- | ------------- | ------------- | ------------------- | ---------------------------------------- |
-| `primary` | `primary-700` | `neutral-0`   | none                | Explore Services, Read More, Subscribe   |
-| `accent`  | `teal-700`    | `neutral-0`   | none                | Header "Make an Enquiry"                 |
-| `outline` | `neutral-0`   | `navy-900`    | 1px `border-strong` | Hero "Make an Enquiry"                   |
-| `ghost`   | transparent   | `primary-700` | none                | "View All Services", "View All Articles" |
-| `on-dark` | `neutral-0`   | `primary-700` | none                | CTA band "Make an Enquiry"               |
+| Variant   | Fill          | Label         | Border               | Use in reference                         |
+| --------- | ------------- | ------------- | -------------------- | ---------------------------------------- |
+| `primary` | `primary-700` | `neutral-0`   | none                 | Explore Services, Read More, Subscribe   |
+| `accent`  | `teal-700`    | `neutral-0`   | none                 | Header "Make an Enquiry"                 |
+| `outline` | `neutral-0`   | `navy-900`    | 1px `border-control` | Hero "Make an Enquiry"                   |
+| `ghost`   | transparent   | `primary-700` | none                 | "View All Services", "View All Articles" |
+| `on-dark` | `neutral-0`   | `primary-700` | none                 | CTA band "Make an Enquiry"               |
 
 Sizes `sm` 36px, `md` 44px, `lg` 48px tall; horizontal padding `space-5`/`space-6`/`space-6`.
 Buttons carrying the `→` glyph render it as an `aria-hidden` icon with `gap: space-2`, and the glyph
@@ -347,7 +374,8 @@ at the midpoint. Gradient text is forbidden.
 tagline; Quick Links; Support; Stay Connected as 32px social icon buttons; and the newsletter block
 with an `h4`, a `caption` line, and an inline email input plus `primary` Subscribe button. A
 separate lighter bottom bar holds "© 2026 CERA Medical. All rights reserved." on the left and
-"A Healthier Tomorrow, Together." on the right, both `caption` `neutral-500`.
+"A Healthier Tomorrow, Together." on the right, both `caption` `neutral-600` — the sampled
+`neutral-500` fails AA at 13px, per section 1.4.
 
 Accessibility contract: `<footer>` with `<nav aria-label>` per link column; social icon buttons carry
 visually hidden names ("CERA Medical on LinkedIn") and `rel="noopener noreferrer"`; the newsletter
@@ -356,7 +384,7 @@ its result is announced through a polite live region.
 
 ### 5.10 Form controls
 
-Input, textarea, and select: 44px minimum height, `neutral-0` fill, 1px `border-strong`,
+Input, textarea, and select: 44px minimum height, `neutral-0` fill, 1px `border-control`,
 `radius-md`, `space-3` padding, `body` type. Focus shows a 2px `focus-ring` at 2px offset and keeps
 the border. Error state shifts the border to `danger-500` and renders `caption` `danger-700` help
 text beneath.
