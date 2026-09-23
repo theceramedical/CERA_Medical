@@ -93,5 +93,30 @@ export default defineConfig({
       testMatch: /.*\.e2e\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'visual',
+      testMatch: /.*\.visual\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        /**
+         * Motion off, and that is what makes the baselines committable.
+         *
+         * Every transition in the design system is gated on `prefers-reduced-motion` already, so
+         * emulating it removes the entire class of "the screenshot caught an element mid-fade" diff
+         * without needing per-test animation handling. The cost is that the suite cannot see a
+         * transition's resting state - which is fine, because a resting state is what it captures.
+         */
+        reducedMotion: 'reduce',
+        // The viewport is set per test; this is only the value before the first `setViewportSize`.
+        viewport: { width: 1280, height: 900 },
+      },
+      /**
+       * A deterministic 1x raster.
+       *
+       * The default follows the host display, so a run on a HiDPI laptop produces baselines at twice
+       * the resolution of the ones CI then compares against, and every test fails on size alone.
+       */
+      expect: { toHaveScreenshot: { scale: 'css' } },
+    },
   ],
 });

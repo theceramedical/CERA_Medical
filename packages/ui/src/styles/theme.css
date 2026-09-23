@@ -134,6 +134,24 @@
   --color-muted: var(--color-neutral-600);
   --color-muted-large: var(--color-neutral-500);
 
+  /* Muted ink for the tinted bands, and nothing in a component ever names it directly - the
+   * cascade rule below swaps it in wherever a tint background is applied.
+   *
+   * neutral-600 measures 4.44:1 on `surface-tint` and 4.28:1 on `surface-tint-2`, both just
+   * short of the 4.5:1 that text below 18px needs. Found by the browser-level axe sweep in
+   * Phase 04, not by the unit gate, because the pairing table only listed muted against
+   * white, the footer tint, and the subtle surface - the two bands the homepage actually
+   * uses were missing from it. Both are in `pairings.ts` now, so this fails in a second
+   * rather than in a browser.
+   *
+   * The value is neutral-700, which is also `copy`. That does collapse the muted/body
+   * distinction on those two bands, and it is the honest outcome: there is no step on the
+   * ramp between neutral-600 and neutral-700 that clears 4.5:1 on the darker tint, and
+   * inventing one would put muted and body within 1.1:1 of each other - a distinction only
+   * a colour picker can see. The hierarchy on those bands is carried by size and weight
+   * instead, which it largely already was. */
+  --color-muted-on-tint: var(--color-neutral-700);
+
   /* Two border tokens, because the requirement differs by what the border is doing.
    *
    * A card hairline is decoration: it groups content that is already grouped by layout, so
@@ -370,6 +388,25 @@
   /* Headings inherit the ink colour rather than each heading component setting it. */
   :where(h1, h2, h3, h4, h5, h6) {
     color: var(--color-foreground);
+  }
+
+  /**
+   * Tinted bands darken their own muted ink.
+   *
+   * `text-muted` compiles to `color: var(--color-muted)`, so redeclaring that variable on the
+   * element carrying the tint re-points every muted descendant at the compliant value. Nothing
+   * downstream changes and no component has to know which band it is sitting on - which is the
+   * whole point, because "remember to use the darker token on the tinted sections" is an
+   * instruction that holds until the second person builds a section.
+   *
+   * Keyed on the utility class rather than a hand-applied marker for the same reason: applying
+   * the tint *is* the trigger, so the two cannot drift apart. The coupling to Tailwind's
+   * generated class name is the cost, and `styles/theme.test.ts` asserts that every tint
+   * background token has a rule here, so renaming the token fails a test instead of silently
+   * dropping the correction.
+   */
+  :where(.bg-surface-tint, .bg-surface-tint-2) {
+    --color-muted: var(--color-muted-on-tint);
   }
 }
 

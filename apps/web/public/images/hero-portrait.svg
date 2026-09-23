@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  A placeholder for the hero photograph, pending CERA's own asset (PRD 22).
+
+  Deliberately obvious rather than a stock photograph or a plausible grey rectangle. A convincing
+  placeholder is the kind that reaches production, and a grey rectangle is indistinguishable from an
+  image that failed to load - so this one says what it is, on the page, where a reviewer will see it.
+
+  Drawn at the same 640x800 the component declares, so the box `next/image` reserves matches the real
+  photograph's aspect ratio and swapping the file in changes no layout.
+
+  Colours are literal hex rather than tokens because an SVG in `public/` is served as a file and never
+  passes through Tailwind - there is no token available to it. They are copied from theme.css
+  (`primary-100`, `primary-300`, `neutral-600`) so the placeholder is at least in palette.
+
+  `primary-100` and not `surface-tint`, which would have been the natural choice: the hero band is
+  `surface-tint`, so a placeholder filled with it is invisible - the figure appears to float on the page
+  with no image box at all, which reads as a broken layout rather than a pending asset. One step down the
+  ramp makes the box legible while staying inside the palette.
+
+  The caption sits above the figure rather than below it because the hero's badge card overlaps the
+  bottom-left of this image by design (design-language.md section 5.6), and a caption down there is
+  covered by it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" width="640" height="800" role="img" aria-label="Placeholder image">
+  <rect width="640" height="800" fill="#daedf6" />
+
+  <g fill="#647380" font-family="system-ui, sans-serif" text-anchor="middle">
+    <text x="320" y="104" font-size="26" font-weight="600">Placeholder image</text>
+    <text x="320" y="142" font-size="18">Awaiting the hero photograph</text>
+  </g>
+
+  <g fill="none" stroke="#7fbcd9" stroke-width="3">
+    <circle cx="320" cy="360" r="78" />
+    <path d="M190 620c0-72 58-130 130-130s130 58 130 130" stroke-linecap="round" />
+  </g>
+</svg>

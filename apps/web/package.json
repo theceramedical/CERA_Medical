@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "next build",
+    "//build": "The budget runs as part of the build, not as a separate check, so exceeding it fails the build rather than producing a report nobody opens.",
+    "build": "next build && node scripts/bundle-budget.mjs",
     "start": "next start --port 3000",
     "//lint": "src and e2e both, or a spec can reach a commit with an unused import while `pnpm lint` reports clean.",
     "lint": "eslint src e2e --max-warnings 0",
@@ -14,7 +15,10 @@
     "test": "vitest run",
     "//test:a11y": "The accessibility gate. Separate from test:e2e because it has to be runnable on its own in seconds during design work, while the E2E suite grows through phases 07 to 12 and will not be.",
     "test:a11y": "playwright test --project a11y",
-    "test:e2e": "playwright test --project e2e"
+    "test:e2e": "playwright test --project e2e",
+    "//test:visual": "Baselines are committed, so a regeneration is a reviewable diff. Use `test:visual:update` deliberately and read the resulting images before committing them.",
+    "test:visual": "playwright test --project visual",
+    "test:visual:update": "playwright test --project visual --update-snapshots"
   },
   "//dependencies": "lucide-react is a direct dependency rather than something re-exported by @cera/ui. Icon takes a LucideIcon rather than an icon name, so this app imports the two dozen glyphs it uses and the other 3,676 are never bundled - re-exporting them from the design system would defeat that.",
   "dependencies": {

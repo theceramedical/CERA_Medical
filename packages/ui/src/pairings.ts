@@ -50,6 +50,20 @@ export const TEXT_PAIRINGS: readonly Pairing[] = [
   { label: 'muted on footer tint at caption', fg: 'muted', bg: 'surface-footer', sizePx: 13 },
   { label: 'muted on subtle surface at caption', fg: 'muted', bg: 'surface-subtle', sizePx: 13 },
 
+  /**
+   * The two homepage bands, which this table did not cover until Phase 04's browser sweep found
+   * them. `muted` itself fails both - 4.44:1 and 4.28:1 - which is why `muted-on-tint` exists and
+   * why theme.css re-points `--color-muted` wherever either background is applied. Listed here so
+   * the failure is a one-second unit test rather than a two-minute Playwright run.
+   */
+  { label: 'muted on hero tint at caption', fg: 'muted-on-tint', bg: 'surface-tint', sizePx: 13 },
+  {
+    label: 'muted on process tint at caption',
+    fg: 'muted-on-tint',
+    bg: 'surface-tint-2',
+    sizePx: 13,
+  },
+
   // Button labels. `button` type is 15px, below the 24px large threshold, so 4.5:1 applies.
   { label: 'label on filled primary', fg: 'on-primary', bg: 'primary', sizePx: 15 },
   { label: 'label on primary hover', fg: 'on-primary', bg: 'primary-hover', sizePx: 15 },

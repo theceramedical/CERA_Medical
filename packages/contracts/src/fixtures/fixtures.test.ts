@@ -228,8 +228,10 @@ describe('contact details are unreachable', () => {
 });
 
 describe('services', () => {
-  it('has the six from the reference image', () => {
-    expect(serviceFixtures).toHaveLength(6);
+  it('has the six from the reference image, in order, plus the withdrawn one', () => {
+    // Order matters: the homepage renders these in sequence and the design review compares
+    // that sequence against the reference. The withdrawn service is last and is not one of
+    // the six, so a homepage card can never link to a page that 404s.
     expect(serviceFixtures.map((service) => service.title)).toEqual([
       'General Health',
       'Cardiology',
@@ -237,6 +239,7 @@ describe('services', () => {
       "Women's Health",
       'Diagnostic Tests',
       'Wellness & Preventive Care',
+      'Travel Vaccinations',
     ]);
   });
 
@@ -261,22 +264,22 @@ describe('services', () => {
     const inactive = serviceFixtures.filter((service) => service.status === 'inactive');
 
     expect(inactive).toHaveLength(1);
-    expect(inactive[0]!.slug).toBe('wellness-preventive-care');
+    expect(inactive[0]!.slug).toBe('travel-vaccinations');
   });
 
-  it('excludes the inactive service from listings', () => {
-    expect(listableServiceFixtures).toHaveLength(5);
+  it('excludes the inactive service from listings, leaving the reference six', () => {
+    expect(listableServiceFixtures).toHaveLength(6);
     expect(listableServiceFixtures.map((service) => service.slug)).not.toContain(
-      'wellness-preventive-care',
+      'travel-vaccinations',
     );
   });
 
   it('excludes both from the enquirable set', () => {
-    expect(enquirableServiceFixtures).toHaveLength(4);
+    expect(enquirableServiceFixtures).toHaveLength(5);
     const slugs = enquirableServiceFixtures.map((service) => service.slug);
 
     expect(slugs).not.toContain('diagnostic-tests');
-    expect(slugs).not.toContain('wellness-preventive-care');
+    expect(slugs).not.toContain('travel-vaccinations');
   });
 
   it('never exposes a parseable price', () => {

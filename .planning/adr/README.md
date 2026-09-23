@@ -17,3 +17,4 @@ accepted; it is superseded by a new record that references it.
 | [ADR-007](ADR-007-resend-idempotency-and-webhooks.md)     | Resend idempotency keys and webhook verification           | Accepted |
 | [ADR-008](ADR-008-local-s3-seaweedfs-over-minio.md)       | SeaweedFS as the local S3 stand-in, not MinIO              | Accepted |
 | [ADR-009](ADR-009-packages-db-separate-from-contracts.md) | Drizzle schema in `packages/db`, separate from contracts   | Accepted |
+| [ADR-010](ADR-010-csp-nonce-and-dynamic-rendering.md)     | CSP nonce, at the cost of static HTML rendering            | Accepted |

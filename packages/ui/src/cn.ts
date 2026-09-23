@@ -37,6 +37,9 @@ export const COLOR_TOKENS = [
   'copy',
   'muted',
   'muted-large',
+  // Listed so `tailwind-merge` treats it as a colour, not because components should reach for it -
+  // the cascade rule in theme.css applies it on the tinted bands and nothing names it directly.
+  'muted-on-tint',
   'border',
   'border-strong',
   'border-control',

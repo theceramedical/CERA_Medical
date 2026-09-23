@@ -322,6 +322,42 @@ describe('semantic colour tokens resolve to the ramp', () => {
   });
 });
 
+describe('the tinted bands correct their own muted ink', () => {
+  /**
+   * The cascade rule in theme.css is keyed on Tailwind's generated `bg-*` class names, so it is
+   * coupled to the tint token names. Renaming `surface-tint-2` would generate a different utility
+   * and leave the rule matching nothing - no error, no visual change worth noticing, and muted text
+   * quietly back below 4.5:1 on that band. These two tests are what turn that into a failure.
+   */
+  const TINT_BACKGROUNDS = ['surface-tint', 'surface-tint-2'] as const;
+
+  it('declares a muted override for every tint background', () => {
+    const rule = /:where\(([^)]*)\)\s*\{\s*--color-muted:\s*var\(--color-muted-on-tint\)/.exec(
+      themeSource,
+    );
+
+    expect(
+      rule,
+      'theme.css has no rule re-pointing --color-muted on the tinted bands',
+    ).not.toBeNull();
+
+    for (const token of TINT_BACKGROUNDS) {
+      expect(rule?.[1], `the override does not cover .bg-${token}`).toContain(`.bg-${token}`);
+    }
+  });
+
+  it('keeps every tint background token declared', () => {
+    const tokens = readColorTokens(themeSource);
+
+    for (const token of TINT_BACKGROUNDS) {
+      expect(
+        tokens.get(token),
+        `--color-${token} is gone, so the override matches nothing`,
+      ).toBeDefined();
+    }
+  });
+});
+
 describe('reduced motion is neutralised globally', () => {
   it('suppresses animation, transition, and smooth scrolling', () => {
     const block = themeSource.slice(themeSource.indexOf('prefers-reduced-motion'));

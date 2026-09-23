@@ -4,24 +4,30 @@ import { at, days, uuid } from './deterministic.ts';
 import { fixture, type Fixture } from './marker.ts';
 
 /**
- * The six services from the reference image, plus the two that prove exclusion.
+ * The six services from the reference image, plus a seventh that proves withdrawal.
  *
  * Owned by Vendure in production; these exist so `apps/web` and `apps/api` can be
  * built and tested before the catalogue exists (PRD 16.1). Titles and summaries
  * are the reference image's copy verbatim, so the homepage fixture render and the
  * design review are looking at the same words.
  *
- * Two of the six are deliberately not enquirable:
+ * Two records are deliberately not enquirable, so the exclusion logic has data
+ * behind it rather than a branch nobody exercises:
  *
- * - `diagnostic-tests` has `enquiryEnabled: false`, so "this service exists and is
- *   browsable but its enquiry form must not render" is a case with a fixture
- *   behind it rather than a branch nobody exercises.
- * - `wellness-preventive-care` is `inactive`, so "excluded from listings entirely"
- *   is equally covered.
+ * - `diagnostic-tests` has `enquiryEnabled: false`, covering "this service exists
+ *   and is browsable but its enquiry form must not render".
+ * - `travel-vaccinations` is `inactive`, covering "excluded from listings entirely,
+ *   and its page 404s".
  *
- * Without both, the exclusion logic is written once and never proven, and the
- * first time it is wrong is when a customer submits an enquiry against a service
- * that does not accept them.
+ * **The inactive one is a seventh record rather than one of the reference's six, and
+ * that is the correction to an earlier mistake worth recording.** It was originally
+ * `wellness-preventive-care`, which was cheap - no new fixture - and wrong: the
+ * reference image shows all six services on the homepage, so marking one of them
+ * withdrawn made Phase 04's homepage link to a page that must 404. The conflict only
+ * surfaced because `apps/web/src/content/homepage.test.ts` asserts the homepage copy
+ * and these fixtures name the same services. A withdrawn service is a record the
+ * business used to offer; it is not one of the six it currently advertises, and the
+ * fixture set should say so.
  */
 
 const SERVICE_CREATED_AT = at(-days(90));
@@ -113,8 +119,22 @@ const SERVICE_SEEDS: readonly ServiceSeed[] = [
     category: PRIMARY_CARE,
     displayPrice: null,
     availabilityText: null,
+    enquiryEnabled: true,
+    status: 'active',
+  },
+  {
+    key: 'travel-vaccinations',
+    slug: 'travel-vaccinations',
+    title: 'Travel Vaccinations',
+    summary: 'No longer offered.',
+    category: PRIMARY_CARE,
+    displayPrice: null,
+    availabilityText: null,
     // Withdrawn from the catalogue. Must not appear in any listing, sitemap entry,
     // or service picker, and its page must 404 rather than render.
+    //
+    // Not one of the reference image's six, deliberately - see the docblock. The copy
+    // says what it is, so a screenshot that somehow contains this card is obviously wrong.
     enquiryEnabled: false,
     status: 'inactive',
   },

@@ -287,17 +287,28 @@ jobs:
       - run: pnpm build
 
   # ---------------------------------------------------------------------------
-  # Accessibility. A required gate rather than an advisory report, because the
-  # product commits to WCAG 2.2 AA (PRD QA-1102) and an advisory a11y job is one
-  # nobody reads.
+  # The suites that need a real browser. Both are required gates rather than advisory
+  # reports: the product commits to WCAG 2.2 AA (PRD QA-1102), and the CSP check is
+  # guarding against a failure that is invisible without a browser enforcing the policy.
   #
-  # Needs a real browser, which is why it is separate from the unit job: the rules
-  # that matter most here - colour contrast, target size, reflow - all depend on
-  # layout, and jsdom has none. The component-level sweep in packages/ui runs the
-  # same engine over the rules that do work without layout, and this covers the rest.
+  # One job for both because the expensive part is installing Chromium, and doing that
+  # twice to keep the report headings tidy is a minute of CI per push for no benefit.
+  #
+  # The accessibility rules that matter most here - colour contrast, target size,
+  # reflow - all depend on layout, and jsdom has none, which is why this cannot fold
+  # into the unit job. The component-level sweep in packages/ui covers the rules that
+  # do work without layout; this covers the rest, on assembled pages.
+  #
+  # The visual suite is deliberately absent. Playwright tags screenshot baselines with
+  # the platform that produced them, and they are committed from a Windows workstation
+  # (`-visual-win32.png`), so a Linux runner would find no baseline and write one rather
+  # than compare against it - a job that passes unconditionally. Enforcing it in CI means
+  # generating Linux baselines inside the Playwright container, which Phase 14 does along
+  # with the cross-browser matrix. Until then `pnpm test:visual` is a local gate and the
+  # committed images are the reviewable record of how the pages looked.
   # ---------------------------------------------------------------------------
-  a11y:
-    name: Accessibility
+  browser:
+    name: Browser suites
     needs: setup
     runs-on: ubuntu-24.04
     permissions:
@@ -328,11 +339,17 @@ jobs:
         # and dev-tools indicator.
         run: pnpm test:a11y
 
+      - name: Run the security and behaviour suite
+        # `if: always()` so a failing accessibility run does not hide a broken CSP. The
+        # two answer different questions and a push that breaks both should report both.
+        if: always()
+        run: pnpm test:e2e
+
       - name: Upload the report
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-a11y-report
+          name: playwright-report
           path: |
             apps/web/playwright-report/
             apps/web/test-results/
@@ -346,7 +363,7 @@ jobs:
   ci-complete:
     name: CI complete
     if: always()
-    needs: [lint, typecheck, test, migrations, contracts, a11y, build]
+    needs: [lint, typecheck, test, migrations, contracts, browser, build]
     runs-on: ubuntu-24.04
     steps:
       - name: Verify every job succeeded

@@ -140,6 +140,16 @@ Two pairs are known to be marginal and carry explicit instructions:
   3.18:1 on `surface-tint-2`). It reads darker than the reference mockup. That is the intended
   trade: the authority note at the top of this document gives accessibility precedence over visual
   fidelity, and this is the first place the two actually conflict.
+- **Muted text on the tinted bands.** Added in Phase 04, because the table above compares foregrounds
+  against white, the footer tint, and the subtle surface — and the homepage puts muted text on
+  `surface-tint` and `surface-tint-2`, which were not listed. `neutral-600` measures **4.44:1** on
+  `surface-tint` and **4.28:1** on `surface-tint-2`: both fail AA for text below 24px, and the hero's
+  supporting copy, the trust row, and every section description are exactly that. `--color-muted-on-tint`
+  resolves to `neutral-700`, and `theme.css` re-points `--color-muted` to it on any element carrying
+  either tint background, so no component has to know which band it is on. Nothing on the ramp between
+  `neutral-600` and `neutral-700` clears 4.5:1 on the darker tint, so muted and body ink are the same
+  colour on those two bands; hierarchy there is carried by size and weight. Found by the browser-level
+  axe sweep rather than by the unit gate, which is the argument for having both.
 
 ---
 

@@ -42,6 +42,10 @@
       "types": "./src/api.ts",
       "default": "./src/api.ts"
     },
+    "./session": {
+      "types": "./src/session.ts",
+      "default": "./src/session.ts"
+    },
     "./fixtures": {
       "types": "./src/fixtures/index.ts",
       "default": "./src/fixtures/index.ts"

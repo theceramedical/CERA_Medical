@@ -25,6 +25,7 @@
     "test:integration": "pnpm -r test:integration",
     "test:e2e": "pnpm --filter web test:e2e",
     "test:a11y": "pnpm --filter web test:a11y",
+    "test:visual": "pnpm --filter web test:visual",
     "test:authz": "pnpm --filter api test:authz",
     "//migrate": "cera_app migrations are owned by @cera/db (ADR-009) and run once per deploy, before any app starts: two containers racing drizzle-kit against one database is a real failure mode. Payload (cera_cms) and Vendure (cera_commerce) own their own databases and add their own migrate steps here in phases 05 and 06.",
     "migrate": "pnpm --filter @cera/db migrate",
