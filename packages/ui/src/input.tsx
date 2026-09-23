@@ -1,9 +1,16 @@
+'use client';
+
 import { controlClasses, useFieldContext } from './field.tsx';
 
 import type { ComponentPropsWithoutRef } from 'react';
 
 /**
  * Text inputs, textareas, and selects.
+ *
+ * Client components, because reading the `Field` context is a `useContext` call. The directive is on
+ * this file as well as on `field.tsx` rather than relying on the import: a server module importing a
+ * hook from a client module gets a reference it cannot call, which fails at request time rather than
+ * at build time.
  *
  * All three take their id, description, and invalid state from the surrounding `Field` rather than
  * from props, so a call site cannot render one without a label. The three share

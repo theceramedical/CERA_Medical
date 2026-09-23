@@ -1,9 +1,22 @@
+'use client';
+
 import { createContext, useContext, useId, type ReactNode } from 'react';
 
 import { cn } from './cn.ts';
 
 /**
  * The wiring that makes every control in this design system accessible by default.
+ *
+ * **Why this is a client component.** The id that ties the label to the control has to be the same
+ * string on the server and after hydration, and `useId` is the only generator that guarantees that.
+ * A module-level counter produces a different sequence depending on render order and a random id
+ * produces a hydration mismatch, both of which break the label silently.
+ *
+ * The rejected alternative was a required `id` prop, which would keep forms on the server. It was
+ * rejected because duplicate ids are silent in exactly the same way the missing attributes were: two
+ * `Field id="email"` instances on one page render two controls sharing an id, and clicking the
+ * second label focuses the first. Trading a guaranteed-correct id for a client boundary is worth it,
+ * and every form in this product is interactive anyway.
  *
  * `Field` owns the ids and hands them to the control through context, which is the whole point.
  * The alternative - each call site writing `id`, `htmlFor`, `aria-describedby`, and `aria-invalid`

@@ -13,6 +13,7 @@ import {
   roundRatio,
   toHex,
 } from './contrast.ts';
+import { measurePairings, NON_TEXT_PAIRINGS, TEXT_PAIRINGS, type Pairing } from './pairings.ts';
 import { readColorTokens } from './tokens.ts';
 
 /**
@@ -42,85 +43,25 @@ function color(name: string): string {
   return value;
 }
 
-interface Pairing {
-  readonly label: string;
-  readonly fg: string;
-  readonly bg: string;
-  /** The size the pairing is actually used at, which is what sets the threshold. */
-  readonly sizePx: number;
-  readonly bold?: boolean;
-}
-
-/**
- * Every pairing from design-language.md section 1.4, at the size it is really used.
- *
- * The size is the load-bearing column. A pairing is not "compliant" in the abstract - white
- * on teal-600 passes for a hero headline and fails for a pill label, and recording the size
- * is what stops the table from being reinterpreted later to suit whatever needs to pass.
- */
-const PAIRINGS: readonly Pairing[] = [
-  // Headings. display-1 floors at 32px, h4 is 16px, so the tightest heading case is h4.
-  { label: 'heading ink on white', fg: 'foreground', bg: 'background', sizePx: 16 },
-  { label: 'heading ink on hero tint', fg: 'foreground', bg: 'surface-tint', sizePx: 16 },
-  { label: 'heading ink on process tint', fg: 'foreground', bg: 'surface-tint-2', sizePx: 16 },
-  { label: 'heading ink on footer tint', fg: 'foreground', bg: 'surface-footer', sizePx: 16 },
-
-  // Body copy. The token is `copy` rather than `body` to avoid a Tailwind utility collision;
-  // see the note in design-language.md section 1.3.
-  { label: 'copy on white', fg: 'copy', bg: 'background', sizePx: 16 },
-  { label: 'copy on hero tint', fg: 'copy', bg: 'surface-tint', sizePx: 16 },
-  { label: 'copy on process tint', fg: 'copy', bg: 'surface-tint-2', sizePx: 16 },
-  { label: 'copy on icon disc', fg: 'copy', bg: 'icon-disc', sizePx: 16 },
-
-  // Muted text at caption size - 13px, the tightest case in the system.
-  { label: 'muted on white at caption', fg: 'muted', bg: 'background', sizePx: 13 },
-  { label: 'muted on footer tint at caption', fg: 'muted', bg: 'surface-footer', sizePx: 13 },
-  { label: 'muted on subtle surface at caption', fg: 'muted', bg: 'surface-subtle', sizePx: 13 },
-
-  // Button labels. `button` type is 15px, below the 24px large threshold, so 4.5:1 applies.
-  { label: 'label on filled primary', fg: 'on-primary', bg: 'primary', sizePx: 15 },
-  { label: 'label on primary hover', fg: 'on-primary', bg: 'primary-hover', sizePx: 15 },
-  { label: 'label on primary active', fg: 'on-primary', bg: 'primary-active', sizePx: 15 },
-  { label: 'label on accent fill', fg: 'on-accent', bg: 'accent-fill', sizePx: 15 },
-  { label: 'outline button ink on white', fg: 'foreground', bg: 'surface', sizePx: 15 },
-  { label: 'ghost button ink on white', fg: 'primary', bg: 'background', sizePx: 15 },
-  { label: 'ghost button ink on process tint', fg: 'primary', bg: 'surface-tint-2', sizePx: 15 },
-  { label: 'on-dark button ink on white', fg: 'primary', bg: 'on-primary', sizePx: 15 },
-
-  // Pill labels are 11px - the smallest text in the system, so the strictest case.
-  { label: 'pill label on accent fill', fg: 'on-accent', bg: 'accent-fill', sizePx: 11 },
-
-  // The accent headline is display-1, which floors at 32px and so is large text.
-  { label: 'accent headline on hero tint', fg: 'accent-hover', bg: 'surface-tint', sizePx: 32 },
-
-  // Validation. Error help text is caption size.
-  { label: 'danger help text on white', fg: 'danger-700', bg: 'background', sizePx: 13 },
-  { label: 'danger help text on danger tint', fg: 'danger-700', bg: 'danger-50', sizePx: 13 },
-  { label: 'success text on success tint', fg: 'success-700', bg: 'success-50', sizePx: 13 },
-  { label: 'warning text on warning tint', fg: 'warning-700', bg: 'warning-50', sizePx: 13 },
-];
-
 /**
  * Measured once, up front, rather than accumulated as the assertions run.
  *
  * Building the report by pushing from inside each test makes it depend on execution order
  * and on every test having passed - so the first failure also empties the table, exactly
  * when the numbers are most wanted.
+ *
+ * The pairing list itself lives in `pairings.ts`, shared with the `/dev/design` preview. Two
+ * lists would defeat the purpose of having either: the preview would show a table of
+ * comfortable numbers while the gate checked something else, and the one people look at is
+ * the one that is wrong.
  */
-const MEASURED = PAIRINGS.map(({ label, fg, bg, sizePx, bold = false }) => {
-  const ratio = roundRatio(contrastRatio(color(fg), color(bg)));
-  const required = requiredRatio(sizePx, bold);
-
-  return {
-    pairing: label,
-    ratio,
-    required,
-    size: `${sizePx}px${bold ? ' bold' : ''}`,
-    // Rounded, or binary floating point renders 0.01 as 0.009999999999999787 and the column
-    // becomes unreadable in exactly the place it is meant to be read.
-    headroom: Math.round((ratio - required) * 100) / 100,
-  };
-});
+const MEASURED = measurePairings(TEXT_PAIRINGS, tokens).map((measured) => ({
+  pairing: measured.label,
+  ratio: measured.ratio,
+  required: measured.required,
+  size: measured.size,
+  headroom: measured.headroom,
+}));
 
 describe('token pairings meet WCAG 2.2 AA', () => {
   it.each(MEASURED)('$pairing', ({ pairing, ratio, required, size }) => {
@@ -137,7 +78,7 @@ describe('token pairings meet WCAG 2.2 AA', () => {
     // assurance that the pairings were checked. `no-console` is off for test files.
     console.table([...MEASURED].sort((a, b) => a.headroom - b.headroom));
 
-    expect(MEASURED).toHaveLength(PAIRINGS.length);
+    expect(MEASURED).toHaveLength(TEXT_PAIRINGS.length);
   });
 });
 
@@ -168,36 +109,10 @@ describe('non-text contrast', () => {
   /**
    * WCAG 1.4.11 at 3:1. Applies to anything conveying state or boundary without being text:
    * the focus ring, an input border, the section rule.
+   *
+   * The list lives in `pairings.ts` alongside the text pairings, for the same reason.
    */
-  const NON_TEXT: readonly Pairing[] = [
-    { label: 'focus ring on white', fg: 'focus-ring', bg: 'background', sizePx: 0 },
-    { label: 'focus ring on hero tint', fg: 'focus-ring', bg: 'surface-tint', sizePx: 0 },
-    { label: 'focus ring on process tint', fg: 'focus-ring', bg: 'surface-tint-2', sizePx: 0 },
-    { label: 'focus ring on footer tint', fg: 'focus-ring', bg: 'surface-footer', sizePx: 0 },
-    { label: 'control border on white', fg: 'border-control', bg: 'background', sizePx: 0 },
-    { label: 'control border on hero tint', fg: 'border-control', bg: 'surface-tint', sizePx: 0 },
-    {
-      label: 'control border on process tint',
-      fg: 'border-control',
-      bg: 'surface-tint-2',
-      sizePx: 0,
-    },
-    {
-      label: 'control border on footer tint',
-      fg: 'border-control',
-      bg: 'surface-footer',
-      sizePx: 0,
-    },
-    {
-      label: 'control border on subtle surface',
-      fg: 'border-control',
-      bg: 'surface-subtle',
-      sizePx: 0,
-    },
-    { label: 'section rule on white', fg: 'accent', bg: 'background', sizePx: 0 },
-    { label: 'section rule on process tint', fg: 'accent', bg: 'surface-tint-2', sizePx: 0 },
-    { label: 'error border on white', fg: 'danger-500', bg: 'background', sizePx: 0 },
-  ];
+  const NON_TEXT: readonly Pairing[] = NON_TEXT_PAIRINGS;
 
   it.each(NON_TEXT)('$label', ({ label, fg, bg }) => {
     const ratio = contrastRatio(color(fg), color(bg));

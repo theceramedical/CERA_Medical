@@ -360,11 +360,96 @@ pnpm --filter @cera/ui lint
 
 ### WP-03.7 Token preview route
 
-- [ ] `/dev/design` in `apps/web`, available outside production only, rendering every token, type
+- [x] `/dev/design` in `apps/web`, available outside production only, rendering every token, type
       step, component, and state
-- [ ] Contrast ratios displayed next to each pairing
-- [ ] Used as the Playwright and axe target, so the design system is tested independently of page
+- [x] Contrast ratios displayed next to each pairing
+- [x] Used as the Playwright and axe target, so the design system is tested independently of page
       composition
+
+**Values are parsed, never restated.** Every colour, type step, spacing, radius, shadow, duration,
+easing, container, and tracking token on the page is read out of `theme.css` by `tokens.ts` at request
+time. A preview built from a hand-maintained list is a second source of truth, and it fails in the
+worst direction: it keeps displaying a design system that no longer exists, and it is the artefact
+people trust. `export const dynamic = 'force-dynamic'` is load-bearing for the same reason - a
+statically rendered page would freeze the values at build time and reintroduce exactly that drift.
+
+**The contrast pairings moved into `packages/ui/src/pairings.ts`**, shared by the gate and the
+preview. They were previously inline in `contrast.test.ts`. Two lists would have defeated the purpose
+of having either: the preview would show a comfortable table while CI checked a different set, and the
+one people look at is the one that is wrong. `measurePairings` also had to stop delegating to
+`requiredRatio` for non-text pairings - `requiredRatio(0)` returns 4.5, because 0px is not large text,
+which would hold focus rings to a threshold SC 1.4.11 does not ask for and fail the build over a
+compliant design. `pairings.test.ts` pins both thresholds from this side, including 24px rather than
+18px as the large-text boundary.
+
+**Defects found by building it.** This is the return on the work package, and it was immediate.
+
+1. **`Field`, `Input`, and `Checkbox`/`RadioGroup` could not be server-rendered at all.** They use
+   `createContext`, `useContext`, and `useId` with no `'use client'` directive, so `next build` failed
+   the moment a server component rendered a form. Nothing in the unit suite could catch it: Vitest
+   treats the directive as a no-op, so all 460 tests passed against code that could not be built. The
+   three files now carry the directive. The rejected alternative was a required `id` prop, which would
+   keep forms on the server - rejected because duplicate ids are silent in precisely the way the
+   missing attributes were, and every form in this product is interactive regardless.
+2. **The decorative script phrases rendered as gibberish.** "Care Support Wellness" came out as
+   "ArzSopctr Wsllnzss" and "Your Health Matters" as "Yory Hzalh Mattzrs". The cause was structural
+   rather than a typo: forty unrelated `<path>` elements, one run per phrase, with nothing tying the
+   `e` in "Care" to the `e` in "Wellness", so each letter was drawn again slightly wrong. The only way
+   to check any of it was to look at a rendered page, and nobody looks at ornament.
+
+   `script-lettering.ts` replaces it with a monoline stroke alphabet: each glyph is authored once in a
+   shared em box, a phrase is a string, and the slant is one `skewX` on the group. This is not a font
+   and does not become one - nothing is fetched, so section 2's objection to a third family (a
+   render-blocking request and a layout shift for decoration) is untouched. What was rejected there was
+   the fetch, not the reuse of a letter shape. The CTA heart's position is now computed from the last
+   line's advance width, because the hard-coded x it previously used sat on top of the word "Health".
+
+   `script-lettering.test.ts` cannot assert legibility - that is what the preview page is for - but it
+   asserts everything around it, and the original defect would have failed several: every character of
+   both real phrases resolves to a glyph, an unknown character throws by name rather than being
+   skipped, keys are unique, the pen only advances forwards, and the `viewBox` encloses the content
+   plus the slant and the stroke.
+
+**Production gating is a 404, not a redirect.** A 302 to the homepage confirms something is there; a
+404 states the route does not exist, which is the truth as far as production is concerned. The
+condition is a production block rather than a development allow-list, because `NODE_ENV` is `test`
+under Playwright and an allow-list would make every E2E run fail on a 404 that looks like a routing
+bug. `guard.test.ts` pins all three cases. The guard does not remove the route from the production
+bundle - the code ships and returns 404 - and the honest trade is that the guard is one line while a
+build-time exclusion is a config mechanism to maintain. Phase 13 adds the defence that keeps the
+request off the app entirely: Caddy rejects `/dev/*` in the production overlay.
+
+**States are separate instances, not something to hover or click.** A reviewer comparing a resting
+button against its disabled twin needs both on screen, and axe only sees the state that is rendered -
+a variant reachable only by a click is a variant the gate never checks. Hover and active are the two
+exceptions, since faking them with a class would test the fake; their contrast is proven by the ratio
+table instead. Only three examples genuinely need state, and they are isolated in one client island:
+a toast has to be fired, a focus trap has to be operated, and a loading placeholder has to resolve.
+
+**The page's own structure is part of the deliverable.** It is the axe and keyboard-walk target for
+WP-03.8, so a broken outline here would report failures that belong to the harness rather than to the
+library. `PreviewSection` and `PreviewCase` fix the heading level rather than accepting one, which is
+what keeps the rendered page at one `h1`, one `h2` per section, and no level skipped. The skip link is
+real rather than demonstrated, because the page is long enough that this is genuinely the case SC 2.4.1
+is about.
+
+**`lucide-react` is a direct dependency of `apps/web`,** not something re-exported by `@cera/ui`.
+`Icon` takes a `LucideIcon` rather than an icon name, so the app imports the two dozen glyphs it uses
+and the other 3,676 are never bundled; re-exporting them from the design system would defeat that.
+
+**Verification.**
+
+```
+pnpm --filter @cera/ui test        # 484 passing across 13 files
+pnpm --filter web test             # 9 passing, including the production guard
+pnpm --filter web build            # /dev/design listed as dynamic, everything else static
+pnpm lint && pnpm typecheck && pnpm format:check
+```
+
+Rendered and inspected at 1280px with zero console errors: every token group, all 24 text pairings and
+12 non-text pairings with measured ratios, all three gradient samples, every type step, all five button
+variants at three sizes plus disabled and loading, every form control including its error state, and
+both script phrases now legible.
 
 ### WP-03.8 Accessibility baseline
 

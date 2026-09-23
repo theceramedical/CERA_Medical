@@ -1,3 +1,5 @@
+'use client';
+
 import {
   createContext,
   useContext,
@@ -10,6 +12,10 @@ import { cn } from './cn.ts';
 
 /**
  * Checkbox and radio group.
+ *
+ * Client components, for the same reason as `Field`: `useId` is the only id generator that produces
+ * the same value on the server and after hydration, and a checkbox whose label points at the wrong
+ * id is unlabelled in the only way that matters.
  *
  * These do not use `Field`, and the reason is structural rather than stylistic. `Field` puts the
  * label above the control, which is right for a text input. A checkbox's label belongs beside it,

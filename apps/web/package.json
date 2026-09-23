@@ -12,16 +12,20 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
+  "//dependencies": "lucide-react is a direct dependency rather than something re-exported by @cera/ui. Icon takes a LucideIcon rather than an icon name, so this app imports the two dozen glyphs it uses and the other 3,676 are never bundled - re-exporting them from the design system would defeat that.",
   "dependencies": {
     "@cera/config": "workspace:*",
     "@cera/contracts": "workspace:*",
     "@cera/observability": "workspace:*",
     "@cera/ui": "workspace:*",
+    "lucide-react": "catalog:",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@playwright/test": "catalog:",
     "@tailwindcss/postcss": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
