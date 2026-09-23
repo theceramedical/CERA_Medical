@@ -48,7 +48,9 @@ export interface BadgeProps extends VariantProps<typeof badgeVariants> {
    * announcement is a complete statement.
    */
   readonly srPrefix?: string;
-  readonly className?: string;
+  // `| undefined` explicitly, because `exactOptionalPropertyTypes` is on: without it a caller
+  // forwarding its own optional `className` straight through is a type error.
+  readonly className?: string | undefined;
   /** Required. A badge with no text is a coloured shape, which SC 1.4.1 does not permit. */
   readonly children: ReactNode;
 }

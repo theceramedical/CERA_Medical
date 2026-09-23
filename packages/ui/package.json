@@ -14,6 +14,7 @@
     "./contrast": "./src/contrast.ts",
     "./typography": "./src/typography.tsx",
     "./alert": "./src/alert.tsx",
+    "./article-card": "./src/article-card.tsx",
     "./badge": "./src/badge.tsx",
     "./breadcrumbs": "./src/breadcrumbs.tsx",
     "./button": "./src/button.tsx",
@@ -27,10 +28,15 @@
     "./input": "./src/input.tsx",
     "./link": "./src/link.tsx",
     "./pagination": "./src/pagination.tsx",
+    "./process-step": "./src/process-step.tsx",
+    "./section-header": "./src/section-header.tsx",
+    "./service-card": "./src/service-card.tsx",
     "./skeleton": "./src/skeleton.tsx",
     "./skip-link": "./src/skip-link.tsx",
     "./spinner": "./src/spinner.tsx",
+    "./status-badge": "./src/status-badge.tsx",
     "./table": "./src/table.tsx",
+    "./timeline": "./src/timeline.tsx",
     "./toast": "./src/toast.tsx",
     "./visually-hidden": "./src/visually-hidden.tsx"
   },
@@ -42,7 +48,9 @@
     "test": "vitest run",
     "test:contrast": "vitest run src/contrast"
   },
+  "//dependencies": "@cera/contracts is here for StatusBadge, which takes its label text from CUSTOMER_STATUS_LABELS. The alternative is a second copy of the customer-facing wording in this package, which can drift from what the API and the emails say with nothing failing.",
   "dependencies": {
+    "@cera/contracts": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "lucide-react": "catalog:",

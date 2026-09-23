@@ -2,9 +2,10 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Alert } from './alert.tsx';
+import { ArticleCard } from './article-card.tsx';
 import { Badge, Pill } from './badge.tsx';
 import { Breadcrumbs } from './breadcrumbs.tsx';
-import { Button } from './button.tsx';
+import { Button, ButtonLink } from './button.tsx';
 import { Card } from './card.tsx';
 import { Checkbox, Radio, RadioGroup } from './choice.tsx';
 import { Divider, SectionRule } from './divider.tsx';
@@ -14,11 +15,16 @@ import { IconDisc } from './icon-disc.tsx';
 import { Input, Select, Textarea } from './input.tsx';
 import { Link } from './link.tsx';
 import { Pagination } from './pagination.tsx';
+import { ProcessStep, ProcessSteps } from './process-step.tsx';
+import { SectionHeader } from './section-header.tsx';
+import { ServiceCard } from './service-card.tsx';
 import { Skeleton, SkeletonRegion } from './skeleton.tsx';
 import { MainContent, SkipLink } from './skip-link.tsx';
 import { Spinner } from './spinner.tsx';
+import { StatusBadge } from './status-badge.tsx';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './table.tsx';
 import { checkA11y } from './testing/axe.ts';
+import { Timeline, TimelineItem } from './timeline.tsx';
 import { Heading, Text } from './typography.tsx';
 import { VisuallyHidden } from './visually-hidden.tsx';
 
@@ -52,6 +58,10 @@ const CASES: readonly (readonly [name: string, render: () => ReactElement])[] = 
   ['Button with icon', () => <Button iconEnd={<svg />}>Read more</Button>],
   ['Button loading', () => <Button loading>Sending</Button>],
   ['Button disabled', () => <Button disabled>Unavailable</Button>],
+  [
+    'ButtonLink',
+    () => <ButtonLink href="https://example.org/services">Explore services</ButtonLink>,
+  ],
 
   ['Link', () => <Link href="https://example.org">Our accreditation</Link>],
   [
@@ -218,6 +228,79 @@ const CASES: readonly (readonly [name: string, render: () => ReactElement])[] = 
           <Heading level={1}>Services</Heading>
         </MainContent>
       </>
+    ),
+  ],
+
+  [
+    'ServiceCard',
+    () => (
+      <ul>
+        <ServiceCard
+          title="Cardiology"
+          description="Assessment and ongoing care for heart conditions."
+          href="https://example.org/services/cardiology"
+          icon={<svg />}
+        />
+      </ul>
+    ),
+  ],
+
+  [
+    'ArticleCard',
+    () => (
+      <ul>
+        <ArticleCard
+          title="Understanding blood pressure"
+          excerpt="What the two numbers mean and when to act on them."
+          href="https://example.org/articles/blood-pressure"
+          category="Wellness"
+          cover={<img src="/cover.jpg" alt="" />}
+        />
+      </ul>
+    ),
+  ],
+
+  [
+    'ProcessSteps',
+    () => (
+      <ProcessSteps>
+        <ProcessStep ordinal={1} title="Explore" description="Browse our services." hasNext />
+        <ProcessStep ordinal={2} title="Connect" description="We reply within a day." />
+      </ProcessSteps>
+    ),
+  ],
+
+  [
+    'SectionHeader',
+    () => (
+      <SectionHeader
+        level={2}
+        heading="Our services"
+        subheading="Care built around your needs."
+        action={<Link href="https://example.org/services">View all services</Link>}
+      />
+    ),
+  ],
+
+  ['StatusBadge', () => <StatusBadge status="action_needed" />],
+
+  [
+    'Timeline',
+    () => (
+      <Timeline>
+        <TimelineItem
+          dateTime="2026-09-21T09:15:00.000Z"
+          dateLabel="21 September 2026"
+          title="We received your enquiry"
+        />
+        <TimelineItem
+          dateTime="2026-09-23T14:02:00.000Z"
+          dateLabel="23 September 2026"
+          title="Your enquiry is being reviewed"
+          marker={<StatusBadge status="in_review" />}
+          isLast
+        />
+      </Timeline>
     ),
   ],
 

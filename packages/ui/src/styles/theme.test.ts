@@ -68,6 +68,8 @@ const CANDIDATES = [
   'outline-focus-ring',
   'text-danger-700',
   'border-danger-500',
+  'divide-border',
+  'rounded-t-lg',
 
   'rounded-md',
   'rounded-lg',

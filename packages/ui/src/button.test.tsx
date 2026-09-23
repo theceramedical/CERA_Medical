@@ -2,7 +2,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Button } from './button.tsx';
+import { Button, ButtonLink } from './button.tsx';
+
+import type { ReactNode } from 'react';
 
 /**
  * The assertions that matter here are the loading and disabled behaviours.
@@ -249,5 +251,80 @@ describe('Button', () => {
 
     // A native <button> handles both keys. This asserts nothing has replaced it with a div.
     expect(onClick).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('ButtonLink', () => {
+  it('renders an anchor, so navigation behaves like navigation', () => {
+    /**
+     * A button used for navigation has no href, so middle-click, ctrl-click, "copy link address",
+     * and the browser's status bar preview all stop working - none of which is visible in a
+     * screenshot, and all of which users notice.
+     */
+    render(<ButtonLink href="/services">Explore services</ButtonLink>);
+
+    const link = screen.getByRole('link', { name: 'Explore services' });
+
+    expect(link).toHaveAttribute('href', '/services');
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('carries no type attribute', () => {
+    // `type` on an anchor means the MIME type of the destination, not a button behaviour.
+    render(<ButtonLink href="/services">Explore services</ButtonLink>);
+
+    expect(screen.getByRole('link')).not.toHaveAttribute('type');
+  });
+
+  it('looks identical to the equivalent Button', () => {
+    // The two share `buttonVariants`, which is the point of keeping the recipe separate from the
+    // element: a visual difference between a link-button and a button is a design bug that a
+    // screenshot review would have to catch.
+    const { container: buttonContainer } = render(<Button variant="accent">Enquire</Button>);
+    const { container: linkContainer } = render(
+      <ButtonLink href="/enquire" variant="accent">
+        Enquire
+      </ButtonLink>,
+    );
+
+    const buttonClasses = new Set(buttonContainer.firstElementChild?.className.split(' '));
+
+    for (const className of linkContainer.firstElementChild?.className.split(' ') ?? []) {
+      // `no-underline` is the one addition, because an anchor inherits `text-decoration` where a
+      // button does not.
+      if (className === 'no-underline') continue;
+
+      expect(buttonClasses).toContain(className);
+    }
+  });
+
+  it('renders through a supplied link component', () => {
+    // `apps/web` passes `next/link`. Without this the design system would have to import it, which
+    // would make the package Next-only.
+    function FakeLink({ href, children, ...rest }: { href: string; children: ReactNode }) {
+      return (
+        <a href={href} data-routed="true" {...rest}>
+          {children}
+        </a>
+      );
+    }
+
+    render(
+      <ButtonLink as={FakeLink} href="/services">
+        Explore services
+      </ButtonLink>,
+    );
+
+    expect(screen.getByRole('link')).toHaveAttribute('data-routed', 'true');
+  });
+
+  it('hides a decorative icon', () => {
+    const { container } = render(
+      <ButtonLink href="/services" iconEnd={<svg data-testid="arrow" />}>
+        Explore services
+      </ButtonLink>,
+    );
+
+    expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull();
   });
 });

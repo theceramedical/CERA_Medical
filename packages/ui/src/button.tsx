@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from './cn.ts';
 import { Spinner } from './spinner.tsx';
 
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 
 /**
  * Button, per design-language.md section 5.1.
@@ -185,6 +185,64 @@ export function Button({
         {iconEnd}
       </IconWrapper>
     </button>
+  );
+}
+
+export interface ButtonLinkProps
+  extends Omit<ComponentPropsWithoutRef<'a'>, 'color'>, VariantProps<typeof buttonVariants> {
+  readonly href: string;
+  /** The element to render. Defaults to `a`; `apps/web` passes `next/link`. */
+  readonly as?: ElementType;
+  readonly iconStart?: ReactNode;
+  readonly iconEnd?: ReactNode;
+  readonly children: ReactNode;
+}
+
+/**
+ * Something that looks like a button and navigates.
+ *
+ * A separate component rather than an `as` prop on `Button`, because the distinction it encodes is
+ * the one people get wrong: a control that *navigates* must be an anchor and a control that *acts*
+ * must be a button. Getting it backwards breaks things that are invisible in a screenshot - an
+ * anchor-shaped button has no Enter/Space parity, and a button used for navigation has no href, so
+ * middle-click, ctrl-click, "copy link address", and the browser's own status bar all stop working.
+ *
+ * Being separate also means it cannot accept `loading` or `disabled`. Neither exists for a link:
+ * there is no `disabled` attribute on an anchor, and the usual workaround - `aria-disabled` plus a
+ * click handler that calls `preventDefault` - leaves a control that is still focusable, still
+ * reports an href, and does nothing. A destination that is unavailable should not be a link.
+ */
+export function ButtonLink({
+  variant,
+  size = 'md',
+  fullWidth,
+  as: Component = 'a',
+  iconStart,
+  iconEnd,
+  className,
+  children,
+  ...rest
+}: ButtonLinkProps) {
+  return (
+    <Component
+      className={cn(
+        buttonVariants({ variant, size, fullWidth }),
+        size === 'sm' && HIT_AREA_EXPANSION,
+        // An anchor inherits `text-decoration` from the cascade in a way a button does not, and an
+        // underlined button reads as a mistake.
+        'no-underline',
+        className,
+      )}
+      {...rest}
+    >
+      <IconWrapper>{iconStart}</IconWrapper>
+
+      {children}
+
+      <IconWrapper className="transition-transform duration-base ease-standard group-hover:translate-x-0.5 motion-reduce:transform-none">
+        {iconEnd}
+      </IconWrapper>
+    </Component>
   );
 }
 

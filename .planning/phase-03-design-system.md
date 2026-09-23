@@ -227,16 +227,67 @@ pnpm --filter @cera/ui lint
 Coverage: 95.17% statements, 88.38% branches, 99.01% functions, 98.71% lines — against thresholds of
 85/80/85/85.
 
-### WP-03.5 Composites
+### WP-03.5 Composites — complete
 
-- [ ] `ServiceCard` per section 5.2 - title is the link, "Learn More" is a second link with a distinct
+- [x] `ServiceCard` per section 5.2 - title is the link, "Learn More" is a second link with a distinct
       accessible name, whole card is not a link
-- [ ] `ArticleCard` per section 5.4 - decorative cover, pill prefixed with a visually hidden
+- [x] `ArticleCard` per section 5.4 - decorative cover, pill prefixed with a visually hidden
       "Category:", two-line clamp that keeps full text in the DOM
-- [ ] `ProcessStep` per section 5.3 - `<ol>` semantics with the visible ordinal `aria-hidden`
-- [ ] `SectionHeader` per section 5.7 - teal rule, `h2`, sub-heading capped at 65ch, optional "View all"
-- [ ] `StatusBadge` mapping customer status to label and tone, colour never the sole carrier
-- [ ] `Timeline` as an ordered list with accessible datetimes
+- [x] `ProcessStep` per section 5.3 - `<ol>` semantics with the visible ordinal `aria-hidden`
+- [x] `SectionHeader` per section 5.7 - teal rule, `h2`, sub-heading capped at 65ch, optional "View all"
+- [x] `StatusBadge` mapping customer status to label and tone, colour never the sole carrier
+- [x] `Timeline` as an ordered list with accessible datetimes
+
+**`ButtonLink`, added to `button.tsx`.** Both cards need an action that looks like a button and
+navigates, and `Button` renders a `<button>`. A separate component rather than an `as` prop, because
+the distinction it encodes is the one that gets muddled: a control that navigates must be an anchor
+and a control that acts must be a button. Getting it backwards breaks things no screenshot shows —
+an anchor-shaped button loses Enter/Space parity, and a button used for navigation has no href, so
+middle-click, ctrl-click, "copy link address", and the status-bar preview all stop working. Being
+separate also means it cannot accept `loading` or `disabled`: there is no `disabled` attribute on an
+anchor, and the usual workaround leaves a control that is focusable, reports an href, and does
+nothing. A test asserts the two render the same class list apart from `no-underline`, so they cannot
+drift apart visually.
+
+**`packages/ui` now depends on `@cera/contracts`.** `StatusBadge` takes its label text from
+`CUSTOMER_STATUS_LABELS` rather than a map in the UI package. The alternative is a second copy of
+the customer-facing wording, which can drift from what the API and the emails say with nothing
+failing. Tone stays local, because which of five tints reads as "waiting on you" is a design
+decision with no meaning outside a rendered page. Both maps are
+`satisfies Record<CustomerStatus, …>`, so a new status cannot be added without a label _and_ a tone.
+
+`StatusBadge` accepts `CustomerStatus` only. `InternalStatus` distinguishes `rejected_spam`,
+`closed_withdrawn`, and `closed_no_response`, all of which collapse to `closed` for a customer, so a
+component that accepted either would be one prop away from telling someone their enquiry was marked
+as spam. The type makes that unrepresentable rather than merely discouraged.
+
+**The `Page2` defect has a second home.** `Timeline` originally rendered a visually hidden `Updated `
+followed by the visible date, which computes to the accessible name `Updated23 September 2026` for
+exactly the reason `Pagination` did — accessible-name computation trims each node's text before
+concatenating, so a trailing space inside a hidden span is discarded. Both now put the whole phrase
+in one text node with the painted value `aria-hidden`. Worth recording as a pattern rather than two
+incidents: **a visually hidden prefix never works; the hidden node has to carry the complete
+phrase.**
+
+**Date formatting is the caller's job.** `TimelineItem` takes `dateTime` (ISO, for the attribute) and
+`dateLabel` (formatted, for reading) as separate props and formats nothing. A component reaching for
+`toLocaleString()` has neither a locale nor a time zone, so it renders the server's zone during SSR
+and the user's on hydration — a date that changes after the page settles, and a React hydration
+mismatch.
+
+**A test fixture surfaced a content problem.** Using "Enquiry received" as a timeline title alongside a
+`StatusBadge` for `received` produced two identical strings in one row, because the contract label
+for that status _is_ "Enquiry received". The fixture now words the title as the event ("We received
+your enquiry") and leaves the status to the badge. Flagged for Phase 11: the portal timeline must not
+repeat the status label as the entry title.
+
+**Verification.**
+
+```
+pnpm --filter @cera/ui test        # 405 passing across 10 files
+pnpm --filter @cera/ui typecheck
+pnpm --filter @cera/ui lint
+```
 
 ### WP-03.6 Icons and artwork
 
