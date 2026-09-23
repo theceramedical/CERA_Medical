@@ -57,6 +57,18 @@ const CANDIDATES = [
   'bg-accent-fill',
   'border-border',
   'border-border-control',
+
+  /**
+   * Utilities whose namespace is easy to get wrong, listed because the form controls depend on
+   * them and a missing one is invisible: an unstyled `accent-color` still shows a working
+   * checkbox, just in the browser's blue, and an `outline-*` colour that emits nothing leaves
+   * the focus ring at the browser default.
+   */
+  'accent-primary',
+  'outline-focus-ring',
+  'text-danger-700',
+  'border-danger-500',
+
   'rounded-md',
   'rounded-lg',
   'rounded-pill',

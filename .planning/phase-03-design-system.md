@@ -126,24 +126,106 @@ size. Full table is printed by `pnpm --filter @cera/ui test:contrast`.
 margin, so any future change to either token fails the gate — which is the intended behaviour, but
 worth knowing before someone adjusts the footer tint and is surprised.
 
-### WP-03.4 Primitives
+### WP-03.4 Primitives — complete
 
-Each component ships with tests, an axe assertion, and an entry in the token preview route.
+Each component ships with tests, an axe assertion, and an entry in the token preview route. The
+preview entries land with WP-03.7; everything else is done.
 
-- [ ] `Button` - five variants and three sizes per section 5.1, with icon slot, loading state that
+- [x] `Button` - five variants and three sizes per section 5.1, with icon slot, loading state that
       preserves width and sets `aria-busy`, and a visible focus ring on every variant including
       `on-dark`
-- [ ] `Link` - inline and standalone, with an external-link affordance and an accessible name
-- [ ] `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup` - all with persistent visible labels,
+- [x] `Link` - inline and standalone, with an external-link affordance and an accessible name
+- [x] `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup` - all with persistent visible labels,
       `aria-describedby` error wiring, `aria-invalid`, and a 44px minimum height
-- [ ] `Field` - the label, hint, error, and required-marker wrapper that makes the above consistent
-- [ ] `Card`, `Badge`, `Pill`, `IconDisc`, `Divider`, `SectionRule`
-- [ ] `EmptyState`, `Skeleton`, `Spinner`, `Toast` with `role="status"` for success and `role="alert"`
+- [x] `Field` - the label, hint, error, and required-marker wrapper that makes the above consistent
+- [x] `Card`, `Badge`, `Pill`, `IconDisc`, `Divider`, `SectionRule`
+- [x] `EmptyState`, `Skeleton`, `Spinner`, `Toast` with `role="status"` for success and `role="alert"`
       for error, never auto-dismissing an error
-- [ ] `Alert`, `Breadcrumbs` with `aria-current`, `Pagination` in a labelled `<nav>`
-- [ ] `VisuallyHidden`, `SkipLink`, `FocusTrap`
-- [ ] `Table` with a proper `<caption>`, scoped headers, and a horizontal-scroll wrapper that is
+- [x] `Alert`, `Breadcrumbs` with `aria-current`, `Pagination` in a labelled `<nav>`
+- [x] `VisuallyHidden`, `SkipLink`, `FocusTrap`
+- [x] `Table` with a proper `<caption>`, scoped headers, and a horizontal-scroll wrapper that is
       keyboard reachable
+
+**Where the wiring lives.** `Field` owns the control ids and passes them through context, so `Input`,
+`Textarea`, and `Select` take their `id`, `aria-describedby`, and `aria-invalid` from the wrapper
+rather than from props. A control rendered outside `Field` throws. That is harsher than it needs to
+be for a rendering concern, and it is the only way to make the failure loud: an unlabelled input
+looks completely normal, because the label is positioned above it whether or not `for` and `id`
+agree.
+
+`Checkbox` and `RadioGroup` deliberately do **not** use `Field`. A checkbox's label belongs beside
+it, and a radio group needs two levels of labelling — a question for the group and a label per
+option — which one `<label>` cannot express. Forcing them through `Field` produces a group whose
+question is associated with nothing.
+
+**Component-level axe.** `src/testing/axe.ts` runs `axe-core` over each rendered primitive in jsdom
+at the same WCAG 2.2 AA tags the Playwright run will use in WP-03.8, and `src/a11y.test.tsx` sweeps
+all 29 cases. The two halves are not interchangeable: jsdom has no layout or stylesheets, so every
+rule needing a computed colour or box is disabled with a stated reason (contrast is proved
+arithmetically in `contrast.test.ts` instead). What jsdom _can_ check is the part that lives in the
+markup — roles, accessible names, `aria-*` pointing at nothing, required parent-child relationships,
+heading order — which is exactly what a component gets wrong in isolation, and a failure here names
+the component rather than a page that happens to use it.
+
+Two negative controls assert the harness has teeth, on different rule families. A suite of 29 passing
+axe checks is indistinguishable from an engine that silently checked nothing.
+
+**Defects found by building it.**
+
+- **`Pagination` announced "Page2".** The obvious construction — a visually hidden `Page ` followed
+  by `{page}` — computes to the accessible name `Page2`. Accessible-name computation concatenates
+  child text and then trims, and with no whitespace text node between the hidden span and the number
+  there is nothing to survive the trim. It is correct on screen and wrong in the ear, so only a
+  name assertion finds it. The whole string now lives in one text node with the visible digit
+  rendered separately and hidden; SC 2.5.3 Label in Name still holds because the visible "2" is
+  contained in "Page 2".
+- **`FocusTrap`'s visibility filter made the component untestable.** `offsetParent`/`getClientRects`
+  is the standard way to exclude hidden elements and returns "hidden" for _everything_ in jsdom,
+  which has no layout — so the trap focused nothing at all and four tests failed identically. Fixed
+  by preferring `Element.checkVisibility()` (present in every current engine, absent in jsdom 30)
+  with an ancestor-walking computed-style fallback. An untested focus trap is the kind that ships
+  subtly broken, so the fallback earns its lines.
+- **`userEvent` deadlocks against faked timers.** Eight toast tests timed out at 10s each. The toast
+  rules that matter are timing rules, so the clock has to be controlled; `fireEvent` is sufficient
+  because none of the assertions depends on a realistic event sequence. Recorded because the symptom
+  — a timeout with no error — reads like a hung component rather than a harness problem.
+- **`lucide-react` 1.x dropped the deprecated icon aliases.** `CheckCircle2`, `XCircle`,
+  `AlertTriangle`, and `Loader2` no longer exist; the current names are `CircleCheckBig`, `CircleX`,
+  `TriangleAlert`, and `LoaderCircle`. Worth noting before WP-03.6, where most of the icon set
+  arrives.
+
+**Deliberate rejections.**
+
+- **No whole-card link.** A `Card` has no `href` and no `onClick`. Wrapping the card gives a
+  comfortable target and produces one link whose accessible name is every word in the card, with any
+  nested link now invalid markup. Section 5.2 makes the title the link, and the component enforces
+  it by having nowhere to put a URL.
+- **Native `<select>`.** A custom listbox would have to reimplement type-ahead, keyboard paging, the
+  mobile wheel picker, and off-viewport rendering, and that reimplementation is where combobox
+  accessibility bugs come from. Nothing in the reference needs it.
+- **`accent-color` on checkboxes and radios rather than `appearance: none`.** The custom-glyph route
+  has to rebuild the indeterminate state, the disabled state, the focus ring, and forced-colours
+  rendering; recolouring the native widget keeps all four. The 44px target comes from the padded
+  label row, since a 44px checkbox glyph looks wrong but a 44px clickable row does not.
+- **`aria-disabled` nowhere.** At a pagination boundary and on a loading button the control is
+  removed or genuinely `disabled`. `aria-disabled` announces a control as unavailable while leaving
+  it fully clickable, which is worse than either.
+- **`no-restricted-syntax` off for `packages/ui/src`.** The shared rule pushes raw anchors towards
+  `next/link` and is right for `apps/web`. This package must never acquire a Next dependency —
+  `Link`, `Breadcrumbs`, and `Pagination` take the link component through a prop precisely so
+  `apps/web` can bind `next/link` — so a bare `<a>` is both the documented default and the only
+  thing a fixture can render.
+
+**Verification.**
+
+```
+pnpm --filter @cera/ui test        # 354 passing across 9 files
+pnpm --filter @cera/ui typecheck
+pnpm --filter @cera/ui lint
+```
+
+Coverage: 95.17% statements, 88.38% branches, 99.01% functions, 98.71% lines — against thresholds of
+85/80/85/85.
 
 ### WP-03.5 Composites
 
