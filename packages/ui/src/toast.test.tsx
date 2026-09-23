@@ -56,18 +56,54 @@ describe('ToastProvider', () => {
     vi.useRealTimers();
   });
 
-  it('renders the live region before any message exists', () => {
-    /**
-     * The single most common reason a toast implementation appears correct and is silent in
-     * practice. A live region created at the same moment as its content is frequently not
-     * announced, because the screen reader has to have been observing the node to notice it
-     * changed.
-     */
-    const { container } = renderWithProvider(<Harness toast={{ tone: 'info', title: 'Hello' }} />);
-    const region = container.lastElementChild;
+  /**
+   * The regions are persistent; the messages are what come and go.
+   *
+   * This is the single most common reason a toast implementation appears correct and is silent in
+   * practice: a live region created at the same moment as its content is frequently not announced,
+   * because the screen reader has to have been observing the node to notice it changed.
+   *
+   * These assertions are written against the *region*, not the message, and that distinction is the
+   * whole fix. The earlier version of this file asserted `queryByRole('status')` disappeared when a
+   * toast timed out - which passed against an implementation that destroyed the live region along with
+   * its message, the exact bug. The browser accessibility run in WP-03.8 caught it.
+   */
+  it('renders both live regions before any message exists', () => {
+    renderWithProvider(<Harness toast={{ tone: 'info', title: 'Hello' }} />);
 
-    expect(region).not.toBeNull();
-    expect(region).toBeEmptyDOMElement();
+    // Polite for confirmations, assertive for errors. One element cannot be both, so there are two,
+    // and both have to pre-exist for either to be announced.
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    expect(screen.getByRole('alert')).toBeEmptyDOMElement();
+  });
+
+  it('keeps both live regions in the document after a message is dismissed', () => {
+    renderWithProvider(<Harness toast={{ tone: 'success', title: 'Saved' }} />);
+    raise();
+
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+
+    // Present and empty, ready for the next message. A region that is torn down and recreated per
+    // message is a region that announces the first one and nothing after it.
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    expect(screen.getByRole('alert')).toBeEmptyDOMElement();
+  });
+
+  it('puts no live-region role on the message itself', () => {
+    // A live region nested inside a live region gives some screen readers licence to announce the
+    // message twice.
+    renderWithProvider(<Harness toast={{ tone: 'danger', title: 'Could not submit' }} />);
+    raise();
+
+    expect(screen.getAllByRole('alert')).toHaveLength(1);
+
+    // The nearest element carrying a role above the message text is the region itself, with nothing
+    // in between.
+    const title = screen.getByText('Could not submit');
+
+    expect(title.closest('[role]')).toBe(screen.getByRole('alert'));
   });
 
   it('announces a success politely', () => {
@@ -90,13 +126,14 @@ describe('ToastProvider', () => {
     renderWithProvider(<Harness toast={{ tone: 'success', title: 'Saved' }} />);
     raise();
 
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText('Saved')).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(6000);
     });
 
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    // The message goes, the region stays - so these assert on the text rather than on the role.
+    expect(screen.queryByText('Saved')).not.toBeInTheDocument();
   });
 
   it('never dismisses an error on its own, even with a duration set', () => {
@@ -114,7 +151,7 @@ describe('ToastProvider', () => {
       vi.advanceTimersByTime(600_000);
     });
 
-    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not submit');
   });
 
   it('lets the user dismiss an error', () => {
@@ -123,7 +160,8 @@ describe('ToastProvider', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /dismiss/i }));
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByText('Could not submit')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toBeEmptyDOMElement();
   });
 
   it('names the dismiss button after the message it closes', () => {
@@ -143,13 +181,13 @@ describe('ToastProvider', () => {
       vi.advanceTimersByTime(1999);
     });
 
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText('Copied')).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(1);
     });
 
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByText('Copied')).not.toBeInTheDocument();
   });
 
   it('keeps two messages raised in the same tick distinct', () => {
@@ -177,7 +215,10 @@ describe('ToastProvider', () => {
     renderWithProvider(<Pair />);
     raise('Raise both');
 
-    expect(screen.getAllByRole('status')).toHaveLength(2);
+    // Both messages inside the one polite region, rather than one replacing the other.
+    expect(screen.getByRole('status')).toHaveTextContent('First');
+    expect(screen.getByRole('status')).toHaveTextContent('Second');
+    expect(screen.getAllByRole('button', { name: /^Dismiss:/ })).toHaveLength(2);
   });
 
   it('dismisses the right message when several are open', () => {

@@ -254,6 +254,57 @@ describe('RadioGroup', () => {
     expect(screen.getByRole('group', { name: /preferred contact method/i })).toBeInTheDocument();
   });
 
+  /**
+   * `aria-required` on a `<fieldset>` is invalid, and the requirement travels to the radios instead.
+   *
+   * A fieldset maps to the `group` role, and `aria-required` is only defined for widget roles - axe
+   * reports it as `aria-allowed-attr`, and an attribute a browser may ignore is not a way to
+   * communicate anything. Found by the browser accessibility run in WP-03.8; the jsdom axe sweep could
+   * not see it, because the rule needs the computed role.
+   *
+   * HTML defines `required` on a radio as a constraint on the whole group, so setting it on every
+   * option says the same thing in a spelling that is honoured.
+   */
+  it('puts the requirement on the radios, not on the fieldset', () => {
+    render(
+      <RadioGroup legend="Preferred contact method" name="contact" required>
+        <Radio value="email" label="Email" />
+        <Radio value="phone" label="Phone" />
+      </RadioGroup>,
+    );
+
+    expect(screen.getByRole('group')).not.toHaveAttribute('aria-required');
+
+    for (const option of screen.getAllByRole('radio')) {
+      expect(option).toBeRequired();
+    }
+  });
+
+  it('leaves the radios optional when the group is', () => {
+    render(
+      <RadioGroup legend="Preferred contact method" name="contact">
+        <Radio value="email" label="Email" />
+        <Radio value="phone" label="Phone" />
+      </RadioGroup>,
+    );
+
+    for (const option of screen.getAllByRole('radio')) {
+      expect(option).not.toBeRequired();
+    }
+  });
+
+  it('states the requirement visibly in the legend as well', () => {
+    // Belt and braces, and not redundant: `required` on the control drives validation, and the "(required)"
+    // in the legend is what tells a sighted user before they submit.
+    render(
+      <RadioGroup legend="Preferred contact method" name="contact" required>
+        <Radio value="email" label="Email" />
+      </RadioGroup>,
+    );
+
+    expect(screen.getByRole('group', { name: /\(required\)/i })).toBeInTheDocument();
+  });
+
   it('makes the options mutually exclusive by sharing a name', () => {
     render(
       <RadioGroup legend="Preferred contact method" name="contact">

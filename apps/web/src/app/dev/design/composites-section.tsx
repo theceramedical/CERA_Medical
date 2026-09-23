@@ -57,8 +57,16 @@ function CardSection() {
       title="Composites"
       description="Assembled from the primitives, with the same rule throughout: the title is the link and the card is not, so the accessible name of the link is the title rather than the entire card's text."
     >
-      <PreviewCase title="Service card">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <PreviewCase
+        title="Service card"
+        note="Renders an li, so it needs a list parent. A grid of services is a list, and announcing '3 items' before the first one is information a sighted user gets from the layout."
+      >
+        {/*
+          A `ul`, not a `div`. The first version of this page used a plain grid and axe reported
+          `listitem` - a serious violation - for all three cards. The semantics belong to the list, not
+          to the card, so the card cannot supply them itself.
+        */}
+        <ul className="grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
           <ServiceCard
             title="Occupational health"
             description="Pre-placement assessments, fitness-for-work reviews, and management referrals for employers of any size."
@@ -92,7 +100,7 @@ function CardSection() {
             }
             headingLevel={4}
           />
-        </div>
+        </ul>
       </PreviewCase>
 
       <PreviewCase

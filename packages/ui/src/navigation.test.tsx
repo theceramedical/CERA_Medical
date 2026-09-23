@@ -226,6 +226,29 @@ describe('Table', () => {
     expect(screen.getByRole('table', { name: 'Open enquiries' })).toBeInTheDocument();
   });
 
+  /**
+   * The scroll wrapper has to shrink and has to contain, and both were missing.
+   *
+   * jsdom has no layout, so this can only assert the declarations rather than the behaviour - the real
+   * check is the 320px reflow test in `apps/web/e2e/resilience.a11y.spec.ts`, which is what found both.
+   * It is still worth pinning here, because these two classes look like styling and are not:
+   *
+   *   - `min-w-0` - a flex or grid item defaults to `min-width: auto` and refuses to shrink below its
+   *     content, so `overflow-x-auto` never engages and the wrapper drags the document wider instead.
+   *   - `relative` - without a containing block, an absolutely positioned descendant resolves against
+   *     the initial containing block and escapes the clip. The descendants are the visually hidden
+   *     spans in cells, so the symptom was a page scrolling sideways with nothing visible out there.
+   */
+  it('makes the scroll wrapper both shrinkable and a containing block', () => {
+    render(<Queue />);
+
+    const wrapper = screen.getByRole('region', { name: /scrollable/ });
+
+    expect(wrapper).toHaveClass('min-w-0');
+    expect(wrapper).toHaveClass('relative');
+    expect(wrapper).toHaveClass('overflow-x-auto');
+  });
+
   it('keeps the caption in the accessibility tree when it is hidden visually', () => {
     render(
       <Table caption="Open enquiries" captionHidden>

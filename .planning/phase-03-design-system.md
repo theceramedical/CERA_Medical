@@ -453,11 +453,97 @@ both script phrases now legible.
 
 ### WP-03.8 Accessibility baseline
 
-- [ ] `@axe-core/playwright` at the `wcag2a`, `wcag2aa`, `wcag21aa` tag set, zero violations required
-- [ ] Keyboard walk of every interactive component: reachable, operable, visible focus, logical order
-- [ ] 200% zoom and 400% reflow checks with no horizontal scroll and no clipping
-- [ ] `prefers-reduced-motion` verified to suppress all motion
-- [ ] Forced-colours mode leaves every control perceivable
+- [x] `@axe-core/playwright` at the `wcag2a`, `wcag2aa`, `wcag21aa` tag set, zero violations required
+- [x] Keyboard walk of every interactive component: reachable, operable, visible focus, logical order
+- [x] 200% zoom and 400% reflow checks with no horizontal scroll and no clipping
+- [x] `prefers-reduced-motion` verified to suppress all motion
+- [x] Forced-colours mode leaves every control perceivable
+
+`apps/web/playwright.config.ts`, `apps/web/e2e/support/axe.ts`, and three specs —
+`design-system.a11y.spec.ts` (18 checks), `keyboard.a11y.spec.ts` (10), `resilience.a11y.spec.ts` (12).
+40 checks, all passing, wired into CI as a required job.
+
+**Measured against the production build, not the dev server.** The `webServer` block runs
+`pnpm build && next start`, because the dev server injects an error overlay and a dev-tools indicator
+that are themselves focusable DOM — a keyboard walk would tab through scaffolding that does not ship, and
+a reflow check would measure it. It also means the tags cover `wcag22aa` rather than stopping at 2.1: the
+product claims 2.2 (QA-1102), so the gate has to test what is claimed. `best-practice` is deliberately
+excluded — it mixes advisory opinion with conformance, and a gate that reports opinions gets switched off.
+
+**Why this is not redundant with the jsdom sweep in WP-03.4.** That sweep disables every rule needing a
+computed colour or box, because jsdom has neither. The rules it has to skip are the ones that produced
+every defect below: `aria-allowed-attr` on a role that is computed, `color-contrast`, target size, and
+reflow. 490 passing component tests had not found any of them. The two layers answer different questions
+— "is this component's markup right in isolation" and "is the assembled page usable" — and the second
+cannot be answered without layout.
+
+**Four real defects, found by the browser run.** Each now has a unit test that fails against the old code:
+
+- **`aria-required` on a `<fieldset>`.** A fieldset computes to role `group`, and `aria-required` is
+  defined only for widget roles, so a browser may ignore it — an attribute that may be ignored is not a
+  way to communicate a requirement. HTML defines `required` on a radio as a constraint on the whole
+  group, so `RadioGroup` now threads `required` through its context to every option. Three tests in
+  `form.test.tsx` pin the fieldset being clean, the radios carrying it, and the legend still saying
+  "(required)" for people who are not using a screen reader.
+- **`ServiceCard` rendered outside a list.** The component is an `<li>`, and the preview page put a grid
+  of them in a plain `<div>` — a `listitem` with no list, which is a serious violation and not
+  expressible in the type system. The preview now uses `<ul>`, and `ServiceCardProps` documents the
+  requirement. This is exactly the class of bug a component test cannot see, because the component is
+  correct and the call site is not.
+- **Toast live regions were created along with their content.** A live region must exist in the DOM
+  before the text arrives, or there is no mutation for the assistive technology to observe; the file's
+  own header comment said so and the implementation did the opposite. `ToastViewport` now renders two
+  permanent regions and routes by tone, and `Toast` no longer carries a role of its own. Two regions
+  rather than one because a single element cannot be both polite and assertive, and an error interrupting
+  is the whole point of `danger`. Five unit tests had to be rewritten: they asserted `queryByRole`
+  disappeared on timeout, which only passed _because_ of the bug.
+- **The document scrolled sideways at 320px.** Two compounding faults in `Table`, both in one class
+  attribute. A flex or grid item defaults to `min-width: auto` and refuses to shrink below its content,
+  so `overflow-x-auto` never engaged and the wrapper dragged the page wider — `min-w-0`. And the wrapper
+  established no containing block, so the visually hidden `absolute` spans inside its cells resolved
+  against the initial containing block, escaped the clip, and extended `scrollWidth` from outside the
+  scroller — `relative`. The general rule, now written on the component: **a scroll container that is not
+  positioned does not contain anything.** Diagnosed with a throwaway script that bisected the page by
+  hiding sections and then individual nodes, because the symptom pointed at no element in particular.
+
+**Every check is designed to be able to fail.** The axe suite injects a `<button>` with no accessible
+name and requires `button-name` to be reported, so a misconfigured engine is distinguishable from a clean
+page. The focus-visibility walk asserts it found more than fifty focusable elements before checking them,
+so a selector that silently matches nothing cannot pass. The reflow check measures `documentElement`
+rather than trusting a media query. The font check asserts on the computed stack _and_ on the absence of a
+third-party request, since either alone is satisfiable without the other.
+
+**The guard needed an escape hatch, and it is fail-closed.** `next start` forces `NODE_ENV=production`
+with no way to override, so the first run had 26 of 37 checks scanning Next's 404 page — the preview route
+correctly refused to exist. Rather than weaken the guard, `assertDevOnly()` also admits
+`CERA_ENABLE_DEV_ROUTES=1`: compared against the exact string, because `'false'` is truthy and an operator
+who writes `=false` should get what they asked for. It is set only by the Playwright config and appears in
+no Compose file, deployment script, or `.env.example`, so forgetting it yields a 404 rather than an
+exposed route. Nine tests cover the matrix, including `''`, `'0'`, `'false'`, `'true'`, and `' 1'`.
+
+**The reduced-motion assertion was wrong, not the CSS.** The reset uses `0.01ms` rather than `0s` on
+purpose, so `animationend` still fires and a component waiting on it does not hang forever. Asserting
+"duration is zero" therefore failed against correct code. Replaced with a 1ms perceptibility threshold,
+plus separate checks that an infinite animation is clamped to one iteration and that the skeleton is still
+_visible_ — suppressing motion must not suppress the content.
+
+**Deliberate scope.** Chromium only: axe reads the DOM and computed styles rather than engine internals,
+so a second browser re-derives the same answers at triple the runtime, and cross-browser rendering is
+Phase 14's matrix. Manual screen-reader and slow-network verification stay deferred to Phase 14, where
+real pages exist — there is nothing meaningful to narrate on a component gallery.
+
+**Verification.**
+
+```
+pnpm test                          # 1045 passing across 33 files, 33 skipped (need Docker)
+pnpm test:a11y                     # 40 passing in 1.6m against the production build
+pnpm lint && pnpm typecheck && pnpm format:check
+```
+
+One unrelated repair on the way through: `packages/db`'s migration-SQL assertions compared against
+literal `\n`, and a Windows working tree had drifted to CRLF despite `.gitattributes` — so a trigger
+assertion was really an assertion about the developer's git configuration. The SQL loader now normalises
+newlines at the boundary, and `git add --renormalize` confirmed the committed content was already LF.
 
 ## Verification
 
@@ -471,12 +557,12 @@ pnpm lint            # no-raw-color must report zero
 
 ## Exit gate
 
-- [ ] Every token from `design-language.md` exists and is the only source of colour, type, space,
+- [x] Every token from `design-language.md` exists and is the only source of colour, type, space,
       radius, shadow, and motion
-- [ ] `no-raw-color` reports zero across the workspace and is proven to fire on a violation
-- [ ] Contrast test passes for all pairings, with measured ratios recorded
-- [ ] Fonts self-hosted, with no external font request in the network log
-- [ ] axe reports zero violations on `/dev/design`
-- [ ] Keyboard, zoom, reflow, reduced-motion, and forced-colours checks recorded
-- [ ] QA-1102 (automated portion) satisfied; manual screen-reader and slow-network checks are deferred
+- [x] `no-raw-color` reports zero across the workspace and is proven to fire on a violation
+- [x] Contrast test passes for all pairings, with measured ratios recorded
+- [x] Fonts self-hosted, with no external font request in the network log
+- [x] axe reports zero violations on `/dev/design`
+- [x] Keyboard, zoom, reflow, reduced-motion, and forced-colours checks recorded
+- [x] QA-1102 (automated portion) satisfied; manual screen-reader and slow-network checks are deferred
       to Phase 14 where full pages exist

@@ -287,13 +287,66 @@ jobs:
       - run: pnpm build
 
   # ---------------------------------------------------------------------------
+  # Accessibility. A required gate rather than an advisory report, because the
+  # product commits to WCAG 2.2 AA (PRD QA-1102) and an advisory a11y job is one
+  # nobody reads.
+  #
+  # Needs a real browser, which is why it is separate from the unit job: the rules
+  # that matter most here - colour contrast, target size, reflow - all depend on
+  # layout, and jsdom has none. The component-level sweep in packages/ui runs the
+  # same engine over the rules that do work without layout, and this covers the rest.
+  # ---------------------------------------------------------------------------
+  a11y:
+    name: Accessibility
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        # `--with-deps` installs the system libraries the browser needs, which are not
+        # on the runner image. Chromium only: axe's rules read the DOM and the computed
+        # styles rather than engine internals, so a second browser re-derives identical
+        # results at triple the runtime. Cross-browser rendering is Phase 14's matrix.
+        run: pnpm --filter web exec playwright install --with-deps chromium
+
+      - name: Run the accessibility suite
+        # The config builds the app and serves it with `next start`, so this is measured
+        # against production output rather than against the dev server's error overlay
+        # and dev-tools indicator.
+        run: pnpm test:a11y
+
+      - name: Upload the report
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-a11y-report
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
   # A single required status check. Branch protection references this one job, so
   # adding or renaming a job above never silently un-protects main.
   # ---------------------------------------------------------------------------
   ci-complete:
     name: CI complete
     if: always()
-    needs: [lint, typecheck, test, migrations, contracts, build]
+    needs: [lint, typecheck, test, migrations, contracts, a11y, build]
     runs-on: ubuntu-24.04
     steps:
       - name: Verify every job succeeded

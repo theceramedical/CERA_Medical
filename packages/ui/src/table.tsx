@@ -63,7 +63,30 @@ export function Table({
       tabIndex={0}
       aria-label={typeof caption === 'string' ? `${caption}, scrollable` : 'Table, scrollable'}
       className={cn(
-        'overflow-x-auto rounded-lg border border-border',
+        /**
+         * `min-w-0` is what makes `overflow-x-auto` work at all.
+         *
+         * A flex or grid item defaults to `min-width: auto`, which refuses to shrink below its
+         * content's minimum width. The scroll container therefore grew to the table's intrinsic width
+         * and pushed the whole document wider instead of scrolling - a SC 1.4.10 reflow failure that
+         * looked exactly like a correct implementation in the source, and only appeared inside a flex
+         * parent. Found at a 320px viewport by the reflow check in WP-03.8.
+         */
+        /**
+         * `relative` makes this a containing block, which is what confines the overflow.
+         *
+         * Without it, an absolutely positioned descendant resolves against the initial containing
+         * block instead of against this element, and so escapes the scroll container's clip entirely -
+         * contributing to the *document's* scrollable width. The descendants in question are the
+         * visually hidden spans inside cells (`Badge srPrefix`, and `caption` when hidden), which are
+         * 1px and invisible, so the symptom was a page that scrolled sideways by forty-odd pixels with
+         * nothing visible out there to explain it.
+         *
+         * The general rule this encodes: a scroll container has to establish a containing block, or it
+         * does not actually contain anything. That is a property of the scroller rather than of the
+         * hidden text, which is why the fix lives here and not in `visually-hidden.tsx`.
+         */
+        'relative min-w-0 overflow-x-auto rounded-lg border border-border',
         // The scroll container is a tab stop, so it needs a visible focus indicator like any other.
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring',
         className,

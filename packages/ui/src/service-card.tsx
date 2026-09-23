@@ -18,6 +18,12 @@ import type { ElementType, ReactNode } from 'react';
  * "Learn More" therefore points at the same target with a distinct accessible name
  * ("Learn more about Cardiology"), which is what keeps the link list readable while preserving the
  * pointer target the visual design wants.
+ *
+ * **Renders an `<li>`, so it must have a `<ul>` parent.** A set of services is a list, and the count a
+ * sighted reader gets from the grid should be announced rather than inferred. The semantics belong to
+ * the list, so the card cannot supply them itself - which means a call site that forgets the `<ul>`
+ * produces a serious `listitem` violation. That is not enforceable in the type system; the axe sweep
+ * catches it, and it caught it once already on the `/dev/design` page.
  */
 
 export interface ServiceCardProps {

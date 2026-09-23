@@ -23,9 +23,11 @@ function setNodeEnv(value: string): void {
 }
 
 const ORIGINAL = process.env.NODE_ENV;
+const FLAG = 'CERA_ENABLE_DEV_ROUTES';
 
 afterEach(() => {
   setNodeEnv(ORIGINAL ?? 'test');
+  delete process.env[FLAG];
   notFound.mockClear();
 });
 
@@ -51,9 +53,9 @@ describe('assertDevOnly', () => {
   /**
    * The default case, and the one worth asserting explicitly.
    *
-   * A guard written as `if (NODE_ENV !== 'development')` would also 404 under `test`, which would
-   * make every Playwright run against a built app fail with a 404 that looks like a routing bug. The
-   * condition is deliberately a production allow-block rather than a development allow-list.
+   * A guard written as `if (NODE_ENV !== 'development')` would also 404 under `test`, which would make
+   * every Vitest and Playwright run fail with a 404 that looks like a routing bug. The condition is
+   * deliberately a production block rather than a development allow-list.
    */
   it('allows any environment that is not production', async () => {
     for (const env of ['test', 'staging', '']) {
@@ -64,5 +66,42 @@ describe('assertDevOnly', () => {
     }
 
     expect(notFound).not.toHaveBeenCalled();
+  });
+
+  describe(`the ${FLAG} escape hatch`, () => {
+    /**
+     * The accessibility gate needs the route in a production build, because `next start` forces
+     * `NODE_ENV=production` and WP-03.8 deliberately avoids `next dev` - the dev server adds an error
+     * overlay and a dev-tools indicator, which are focusable DOM that no user ever loads.
+     */
+    it('allows production when the flag is exactly "1"', async () => {
+      setNodeEnv('production');
+      process.env[FLAG] = '1';
+      const { assertDevOnly } = await import('./guard.ts');
+
+      assertDevOnly();
+
+      expect(notFound).not.toHaveBeenCalled();
+    });
+
+    /**
+     * The whole point of an opt-in rather than an opt-out: anything other than a deliberate `1` blocks.
+     *
+     * `'false'` and `'0'` are the two that matter. Both are truthy strings, so a guard written as
+     * `if (process.env[FLAG])` would treat `CERA_ENABLE_DEV_ROUTES=false` as permission - which is the
+     * opposite of what whoever typed it meant.
+     */
+    it.each(['', '0', 'false', 'true', 'yes', ' 1'])(
+      'still 404s in production for %j',
+      async (value) => {
+        setNodeEnv('production');
+        process.env[FLAG] = value;
+        const { assertDevOnly } = await import('./guard.ts');
+
+        assertDevOnly();
+
+        expect(notFound).toHaveBeenCalledTimes(1);
+      },
+    );
   });
 });

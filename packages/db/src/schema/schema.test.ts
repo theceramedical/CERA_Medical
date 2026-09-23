@@ -45,10 +45,19 @@ const journal = JSON.parse(readFileSync(join(MIGRATIONS_DIR, 'meta', '_journal.j
   entries: { idx: number; tag: string }[];
 };
 
+/**
+ * Newlines are normalised, because several assertions below span two lines.
+ *
+ * `.gitattributes` stores these files with LF, but a Windows checkout can still leave
+ * CRLF in the working tree - and it did, which turned an assertion about a trigger
+ * definition into an assertion about the developer's git configuration. Normalising at
+ * the boundary keeps the assertions readable, since the alternative is a regex with
+ * `\r?\n` at every line break.
+ */
 const sqlForTag = (match: string): string => {
   const entry = journal.entries.find((candidate) => candidate.tag.includes(match));
   if (entry === undefined) throw new Error(`no migration in the journal matching "${match}"`);
-  return readFileSync(join(MIGRATIONS_DIR, `${entry.tag}.sql`), 'utf8');
+  return readFileSync(join(MIGRATIONS_DIR, `${entry.tag}.sql`), 'utf8').replaceAll('\r\n', '\n');
 };
 
 const initialSql = sqlForTag('initial_cera_app_schema');

@@ -21,6 +21,19 @@ import type { ComponentPropsWithoutRef, ElementType } from 'react';
  * Used for the things design-language.md section 5 requires but does not draw: the "Category:"
  * prefix on an article pill, the accessible name of an icon-only social button, and the second
  * link on a service card.
+ *
+ * **The hazard that comes with `absolute`.** An absolutely positioned element resolves against its
+ * nearest positioned ancestor, so inside a scroll container that is *not* positioned it resolves
+ * against the initial containing block and escapes that container's clipping - which means a 1px
+ * invisible span can extend the whole document's scrollable width. It happened: hidden text inside a
+ * wide `Table` made the page scroll sideways by forty-odd pixels at a 320px viewport, with nothing
+ * visible out there to explain it, and it took a reflow check to find.
+ *
+ * The fix is not here. Making this element behave differently would mean giving up either the
+ * accessibility tree (`display: none`) or the removal from flow (`static`). It belongs to the scroll
+ * container, which has to establish a containing block or it does not actually contain anything - see
+ * the note on the wrapper in `table.tsx`. Anything else in this package that scrolls needs `relative`
+ * for the same reason.
  */
 
 const VISUALLY_HIDDEN =

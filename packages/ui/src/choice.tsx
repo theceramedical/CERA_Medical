@@ -119,6 +119,14 @@ interface RadioGroupContextValue {
   readonly value: string | undefined;
   readonly onChange: ((value: string) => void) | undefined;
   readonly hasError: boolean;
+  /**
+   * Carried down so each radio gets native `required`.
+   *
+   * HTML defines `required` on a radio as a constraint on the whole group - the group must have a
+   * checked member - so setting it on every option is equivalent to setting it on the group, and is the
+   * only spelling a browser and an assistive technology both act on.
+   */
+  readonly required: boolean;
 }
 
 const RadioGroupContext = createContext<RadioGroupContextValue | null>(null);
@@ -166,12 +174,21 @@ export function RadioGroup({
       .join(' ') || undefined;
 
   return (
-    <RadioGroupContext.Provider value={{ name, value, onChange, hasError }}>
+    <RadioGroupContext.Provider value={{ name, value, onChange, hasError, required }}>
+      {/*
+        No `aria-required` here. A `<fieldset>` maps to the `group` role, and `aria-required` is only
+        defined for widget roles - axe reports it as `aria-allowed-attr`, and an attribute a browser is
+        entitled to ignore is not a way to communicate anything.
+
+        The requirement is carried twice instead, both places where it is actually honoured: visibly in
+        the legend, and as native `required` on each radio, which HTML defines as "the group must have a
+        checked member". Found by the browser axe run in WP-03.8; the jsdom sweep could not see it,
+        because the rule needs the computed role.
+      */}
       <fieldset
         className={cn('flex flex-col gap-1', className)}
         aria-describedby={describedBy}
         aria-invalid={hasError || undefined}
-        aria-required={required || undefined}
       >
         <legend className="mb-1 text-body-sm font-semibold text-foreground">
           {legend}
@@ -231,6 +248,7 @@ export function Radio({ label, value, className, ...rest }: RadioProps) {
                 context.onChange?.(value);
               }
         }
+        required={context.required || undefined}
         className={cn(CHOICE_CONTROL, 'mt-0.5 rounded-full')}
         {...rest}
       />

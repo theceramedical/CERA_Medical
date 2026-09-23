@@ -126,13 +126,31 @@ function ToastRegion({
   readonly toasts: readonly ToastMessage[];
   readonly onDismiss: (id: string) => void;
 }) {
+  /**
+   * Two live regions, both present from first render, with each toast routed by tone.
+   *
+   * This is the correction to a real defect, found by the browser accessibility run in WP-03.8. The
+   * roles used to sit on the individual toast, which meant the live region was created at the very
+   * moment its first message appeared - the exact failure the note at the top of this file claims to
+   * avoid. A region inserted together with its content is frequently not announced at all, because an
+   * assistive technology has nothing to have been watching.
+   *
+   * It has to be two regions rather than one, because one element cannot be both polite and assertive.
+   * An error is worth interrupting whatever the screen reader is mid-sentence on; a confirmation is
+   * not, and an assertive confirmation is the behaviour that makes people turn announcements off.
+   *
+   * `aria-live` is written out alongside the role even though `status` and `alert` imply it. The
+   * implication is real but not universally honoured, and the attribute is what the accessibility gate
+   * can assert against.
+   */
+  const polite = toasts.filter(({ tone }) => tone !== 'danger');
+  const assertive = toasts.filter(({ tone }) => tone === 'danger');
+
   return (
     /**
-     * Rendered unconditionally, even when empty - see the note at the top of the file.
-     *
-     * `pointer-events-none` on the container with `pointer-events-auto` on each toast, so the empty
-     * region does not sit invisibly over the bottom-right corner of the page swallowing clicks on
-     * whatever is underneath it.
+     * `pointer-events-none` on the wrapper with `pointer-events-auto` on each toast, so the empty
+     * regions do not sit invisibly over the bottom-right corner of the page swallowing clicks on
+     * whatever is underneath them.
      */
     <div
       className={cn(
@@ -140,9 +158,28 @@ function ToastRegion({
         'sm:inset-x-auto sm:right-0',
       )}
     >
-      {toasts.map((toast) => (
-        <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
-      ))}
+      <div
+        role="status"
+        aria-live="polite"
+        // `aria-relevant` is left at its default of "additions text": a dismissed toast must not be
+        // re-announced as a removal, which is a change the user made and already knows about.
+        className="pointer-events-none flex flex-col items-end gap-2 empty:hidden"
+      >
+        {polite.map((toast) => (
+          <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
+        ))}
+      </div>
+
+      {/* Assertive last, so errors sit closest to the corner where the eye lands. */}
+      <div
+        role="alert"
+        aria-live="assertive"
+        className="pointer-events-none flex flex-col items-end gap-2 empty:hidden"
+      >
+        {assertive.map((toast) => (
+          <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -188,10 +225,12 @@ export function Toast({
   return (
     <div
       /**
-       * `alert` is assertive and interrupts; `status` is polite and waits. An error is worth
-       * interrupting for, a confirmation is not.
+       * No `role` here.
+       *
+       * The live region is the persistent container in `ToastViewport`, which is what makes the
+       * announcement reliable. A role on this element too would nest a live region inside a live region
+       * and give some screen readers licence to announce the message twice.
        */
-      role={tone === 'danger' ? 'alert' : 'status'}
       className={cn(
         'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border bg-surface p-4 shadow-lg',
         TONE_CLASS[tone],
