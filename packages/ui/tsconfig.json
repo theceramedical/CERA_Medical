@@ -5,6 +5,7 @@
     "types": ["node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "*.config.ts"],
+  "//include": "vitest.setup.ts is listed because it is what imports @testing-library/jest-dom's global type augmentation. Left out, every toHaveClass and toHaveTextContent in a component test resolves to nothing, which ESLint reports as an unsafe call on an unresolved type rather than as a missing type declaration.",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "*.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules", "dist", "coverage"]
 }

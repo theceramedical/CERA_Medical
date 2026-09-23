@@ -44,12 +44,41 @@ parsed. The `@theme` contract fails silently: `--text-body--lineheight` instead 
 
 ### WP-03.2 Typography
 
-- [ ] Source Sans 3 (400, 600, 700) and Montserrat (700) through `next/font/google` with
-      `display: 'swap'`, assigned into `--font-sans` and `--font-wordmark`
-- [ ] Self-hosted, subsetted to Latin. No `<link>` to a font CDN, so no third-party request and no
-      layout shift from a blocked domain
-- [ ] `Text` and `Heading` components exposing only scale tokens, so no component sets a raw font size
-- [ ] `size-adjust` fallbacks tuned to minimise CLS during swap
+- [x] Source Sans 3 (400, 600, 700) and Montserrat (600, 700 — `MEDICAL` is 600) through
+      `next/font/google` with `display: 'swap'`, assigned into `--font-sans` and `--font-wordmark`
+- [x] Self-hosted, subsetted to Latin. Verified against the build output: 12 `woff2` files under
+      `.next/static/media`, `@font-face` sources all relative, and zero occurrences of
+      `fonts.googleapis.com` or `fonts.gstatic.com` in the served CSS
+- [x] `Text` and `Heading` components exposing only scale tokens, so no component sets a raw font size
+- [x] `size-adjust` fallbacks tuned to minimise CLS during swap
+
+`Heading` takes `level` and `size` as separate props. Heading level is document structure — a screen
+reader user navigates by it, and a skip from `h2` to `h4` reads as a missing section — while size is
+appearance. They agree most of the time, which is exactly why the one case where they must not (the
+hero is `level={1} size="display-1"`; a footer column heading is `level={2} size="h4"`) gets silently
+broken when a component picks an element in order to get a size.
+
+**Two silent defects found here, both of which had shipped in my first version:**
+
+1. **`tailwind-merge` was deleting font sizes.** It resolves conflicts by class group and recognises
+   stock Tailwind names, so it knows `text-sm` is a size and `text-red-500` is a colour. It knows
+   nothing about `text-button` or `text-copy`, assumes they are the same group, and keeps only the
+   last: `cn('text-button', 'text-copy')` returned `'text-copy'`. Every button would have rendered at
+   the inherited size with a plausible-looking class list and no error anywhere. `cn.ts` now declares
+   both namespaces to `extendTailwindMerge`, and `theme.test.ts` asserts its token lists against
+   `theme.css` so the restated names — restated because `cn.ts` runs in the browser and cannot read
+   the stylesheet — cannot drift.
+2. **A `fallback` array silently disabled CLS protection.** `adjustFontFallback` generates a
+   companion `@font-face` (`"Source Sans 3 Fallback"`, `local("Arial")` plus `ascent-override`,
+   `descent-override`, `size-adjust`) so the stand-in occupies the same space as the webfont and the
+   `swap` handover moves nothing. Supplying `fallback` **replaces** that face rather than appending
+   to it, and nothing warns. Verified by building both ways: with `fallback` the output contained no
+   `Fallback` face and no `size-adjust`; without it, both families gained one. The generic tail is
+   not lost — `theme.css` already appends `ui-sans-serif, system-ui, sans-serif` to `--font-sans`,
+   which is where a design-system default belongs. `fonts.test.ts` pins it.
+
+Also corrected: Next 16 removed `next lint` and rejects the `eslint` key in `next.config.ts`
+outright, which failed the build until removed.
 
 ### WP-03.3 Colour contrast gate
 

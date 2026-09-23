@@ -1,0 +1,23 @@
+/**
+ * The stylesheet entry point for the web app.
+ *
+ * Holds no declarations of its own beyond source registration. Everything visual comes from
+ * `@cera/ui`'s `theme.css`, which is the only file allowed to declare a colour (ADR-001), and
+ * putting so much as one override here would make that claim untrue.
+ */
+
+@import '@cera/ui/styles/theme.css';
+
+/**
+ * Where Tailwind looks for class names.
+ *
+ * v4 detects sources automatically, but only within the project containing the stylesheet.
+ * `@cera/ui` is a sibling workspace package, so without this every utility used inside a
+ * `packages/ui` component is absent from the build - and the failure is not an error. The
+ * component renders with its classes intact and no rules behind them, so it looks unstyled
+ * in production while working perfectly in a unit test.
+ *
+ * `../../../../packages/ui/src` is relative to this file: src/app -> src -> apps/web -> apps
+ * -> repository root.
+ */
+@source "../../../../packages/ui/src";

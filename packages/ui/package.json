@@ -11,11 +11,13 @@
     "./styles/theme.css": "./src/styles/theme.css",
     "./cn": "./src/cn.ts",
     "./tokens": "./src/tokens.ts",
-    "./contrast": "./src/contrast.ts"
+    "./contrast": "./src/contrast.ts",
+    "./typography": "./src/typography.tsx"
   },
   "scripts": {
-    "lint": "eslint src --max-warnings 0",
-    "lint:fix": "eslint src --fix",
+    "//lint": "Whole package, not just src. The pre-commit hook lints staged files wherever they are, so a script scoped to src/ lets the hook fail on a file the package's own lint call never looked at - which is how vitest.setup.ts reached a commit with a parse error.",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:contrast": "vitest run src/contrast"
@@ -28,10 +30,14 @@
   },
   "devDependencies": {
     "@cera/config": "workspace:*",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
+    "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "tailwindcss": "catalog:",

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { compile } from 'tailwindcss';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { COLOR_TOKENS, FONT_SIZE_TOKENS } from '../cn.ts';
 import { readColorTokens, readRawTokens, readResolvedTokens } from '../tokens.ts';
 
 /**
@@ -208,6 +209,43 @@ describe('utility namespaces do not collide', () => {
       `--text-${collisions[0] ?? 'x'} and --color-${collisions[0] ?? 'x'} both generate ` +
         `.text-${collisions[0] ?? 'x'}. Rename one.`,
     ).toEqual([]);
+  });
+
+  /**
+   * `cn.ts` has to restate the token names, because it runs in the browser and cannot read
+   * this file. That duplication is the risk these two tests remove.
+   *
+   * The consequence of drift is not a missing style - it is `tailwind-merge` silently
+   * discarding a class. A font-size token absent from its list is treated as a colour, so
+   * `cn('text-button', 'text-copy')` returns only the colour and the size vanishes from
+   * every button. Nothing errors; the page just looks slightly wrong.
+   */
+  it('lists every font-size token in cn.ts', () => {
+    const declared = [...readRawTokens(themeSource).keys()]
+      .filter((name) => name.startsWith('--text-') && !name.includes('--', 2))
+      .map((name) => name.slice('--text-'.length))
+      .sort();
+
+    expect([...FONT_SIZE_TOKENS].sort()).toEqual(declared);
+  });
+
+  it('lists every semantic colour token in cn.ts', () => {
+    /**
+     * Ramp steps are excluded deliberately: `tailwind-merge` already recognises the
+     * `name-500` shape, so listing sixty of them would be noise that hides a real omission.
+     *
+     * Matched by naming the ramp families rather than by "ends in a number", because
+     * `surface-tint-2` is a semantic token that ends in a number and must stay in the list.
+     */
+    const RAMP_STEP = /^(?:navy|primary|teal|neutral|success|warning|danger)-\d+$/;
+
+    const declared = [...readRawTokens(themeSource).keys()]
+      .filter((name) => name.startsWith('--color-'))
+      .map((name) => name.slice('--color-'.length))
+      .filter((name) => !RAMP_STEP.test(name))
+      .sort();
+
+    expect([...COLOR_TOKENS].sort()).toEqual(declared);
   });
 
   it('keeps every type step reachable as a font-size utility', () => {
