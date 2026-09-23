@@ -21,6 +21,7 @@ export const FONT_SIZE_TOKENS = [
   'eyebrow',
   'pill',
   'button',
+  'wordmark-sub',
 ] as const;
 
 /** The semantic colour tokens that can appear as `text-*`, `bg-*`, or `border-*`. */

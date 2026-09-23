@@ -38,6 +38,7 @@ const CANDIDATES = [
   'text-eyebrow',
   'text-pill',
   'text-button',
+  'text-wordmark-sub',
   'font-sans',
   'font-wordmark',
   'tracking-wordmark',
@@ -149,6 +150,7 @@ describe('type steps carry every property, not just the size', () => {
     'eyebrow',
     'pill',
     'button',
+    'wordmark-sub',
   ];
 
   it.each(STEPS)('text-%s sets a line-height', (step) => {

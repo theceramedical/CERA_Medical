@@ -238,6 +238,17 @@
   --text-button--letter-spacing: 0.01em;
   --text-button--font-weight: 600;
 
+  /* `MEDICAL` beneath the wordmark. The only step below `pill`, and a step rather than an
+   * arbitrary value because size, tracking, and weight have to travel together: applying
+   * `text-pill` plus `tracking-wordmark` would put a `font-size` utility and a `letter-spacing`
+   * utility in conflict, and which one wins depends on their order in the generated stylesheet
+   * rather than on the order they were written. 10px is defensible here and nowhere else - it is a
+   * logotype, not content, and it never carries information on its own. */
+  --text-wordmark-sub: 0.625rem;
+  --text-wordmark-sub--line-height: 1.1;
+  --text-wordmark-sub--letter-spacing: 0.28em;
+  --text-wordmark-sub--font-weight: 600;
+
   /* `MEDICAL` beneath the wordmark. Wide enough that it needs naming rather than an
    * arbitrary value at the one call site. */
   --tracking-wordmark: 0.28em;

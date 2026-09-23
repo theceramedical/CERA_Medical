@@ -289,13 +289,74 @@ pnpm --filter @cera/ui typecheck
 pnpm --filter @cera/ui lint
 ```
 
-### WP-03.6 Icons and artwork
+### WP-03.6 Icons and artwork — complete
 
-- [ ] `lucide-react` as the single icon set, sized on the 4px scale, `aria-hidden` unless it is a
+- [x] `lucide-react` as the single icon set, sized on the 4px scale, `aria-hidden` unless it is a
       control's only content
-- [ ] The cross-and-leaf mark and the `CERA MEDICAL` lock-up as an inline SVG component with a
+- [x] The cross-and-leaf mark and the `CERA MEDICAL` lock-up as an inline SVG component with a
       `title` for the linked instance and `aria-hidden` for decorative instances
-- [ ] The two decorative script phrases as inline SVG paths, `aria-hidden`, so no third font loads
+- [x] The two decorative script phrases as inline SVG paths, `aria-hidden`, so no third font loads
+
+**The wordmark is text, not an SVG.** This departs from the work package as written, which asked for
+the whole lock-up as an inline SVG with a `title`. Only the cross-and-leaf mark is drawn;
+`CERA MEDICAL` is set in Montserrat, which is already loaded for exactly this purpose. Tracing
+lettering into paths costs nothing visually and loses: text that scales with the user's font size,
+text that survives 200% zoom and a 400% reflow without becoming a blurry bitmap, text that can be
+selected and copied, and text a screen reader reads as words rather than as an `alt` string somebody
+maintains separately. The mark is `aria-hidden` rather than carrying a `title`, because it sits
+directly beside the words it stands for — a `title` there would make the header announce
+"CERA Medical logo, CERA MEDICAL".
+
+`Wordmark` is deliberately never a heading. A logo is not a section title, and making it an `h1`
+gives every page the same first heading and demotes the real one, which is both a broken outline and
+an axe failure.
+
+**A new type step, `--text-wordmark-sub`.** `MEDICAL` needs 10px at 0.28em tracking, and the obvious
+spelling — `text-pill` plus `tracking-wordmark` — puts a `font-size` utility and a `letter-spacing`
+utility in conflict, where the winner is decided by their order in the generated stylesheet rather
+than the order they were written. One step keeps size, tracking, and weight together. 10px is
+defensible here and nowhere else: it is a logotype, not content, and it never carries information on
+its own. `cn.ts`'s `FONT_SIZE_TOKENS` and the theme test's step list both had to be extended, which
+is the drift guard from WP-03.1 doing its job.
+
+**`lucide-react` 1.x has no brand icons, so the footer needed its own.** `Linkedin`, `Facebook`,
+`Instagram`, and `Youtube` all existed in 0.x and are gone from 1.x along with the deprecated
+aliases — a reasonable removal, since trademarks carry their own usage rules. Nothing in the
+remaining 3,698 icons substitutes: a `Share2` or `Globe` in place of a recognisable mark leaves the
+user guessing which platform a link goes to, and a visually hidden name is no help to a sighted user
+scanning a row of four identical circles. `social.tsx` therefore draws the four marks as inline paths
+in the same spirit as the wordmark — simplified monochrome silhouettes from `currentColor`, not
+traces of the official brand assets. Discovered by a test failing on the import, which is the cheap
+place to find it; the expensive place is four blank squares in a built footer.
+
+`SocialLink` renders a 20px glyph in a 44px target. The reference draws a 32px button, which is below
+the touch minimum the design contract commits to, and four links this close together is exactly where
+an undersized target produces a mis-tap. The padding grows the target without changing the drawn
+size. The accessible name is the full phrase — "CERA Medical on LinkedIn (opens in a new tab)" —
+including the new-tab clause, because `Link` with `external` announces it too, and a package where one
+external link says so and another does not is a package where someone eventually "fixes" the wrong
+one.
+
+**`Icon` defaults to hidden.** Naming an icon is the thing a call site asks for, not the thing it has
+to remember. The name is rendered as visually hidden text rather than `aria-label` on the `<svg>`,
+because `aria-label` on an SVG is honoured inconsistently — some engines ignore it unless the element
+also has `role="img"` — and hidden text is announced by everything. Sizes are a lookup of complete
+class strings, not `size-${n}`: Tailwind scans source for whole class names, so an interpolation
+generates nothing and leaves every icon at its intrinsic 24px with no error anywhere.
+
+**The script phrases carry no `<title>` and no `role="img"`.** design-language.md section 2 rules both
+decorative. "Care Support Wellness For a Brighter Tomorrow" announced between the hero headline and
+the buttons is an interruption made of marketing copy, and it is unreadable as speech in the order the
+strokes are drawn. They are paths rather than text so no third font loads — a family used on two
+elements is a font file, a render-blocking fetch, and a layout shift, all for ornament.
+
+**Verification.**
+
+```
+pnpm --filter @cera/ui test        # 460 passing across 11 files
+pnpm --filter @cera/ui typecheck
+pnpm --filter @cera/ui lint
+```
 
 ### WP-03.7 Token preview route
 

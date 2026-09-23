@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { ChevronRight, Search } from 'lucide-react';
 import { describe, expect, it } from 'vitest';
 
 import { Alert } from './alert.tsx';
@@ -12,14 +13,17 @@ import { Divider, SectionRule } from './divider.tsx';
 import { EmptyState } from './empty-state.tsx';
 import { Field } from './field.tsx';
 import { IconDisc } from './icon-disc.tsx';
+import { Icon } from './icon.tsx';
 import { Input, Select, Textarea } from './input.tsx';
 import { Link } from './link.tsx';
 import { Pagination } from './pagination.tsx';
 import { ProcessStep, ProcessSteps } from './process-step.tsx';
+import { CtaScript, HeroScript } from './script-art.tsx';
 import { SectionHeader } from './section-header.tsx';
 import { ServiceCard } from './service-card.tsx';
 import { Skeleton, SkeletonRegion } from './skeleton.tsx';
 import { MainContent, SkipLink } from './skip-link.tsx';
+import { SocialLink } from './social.tsx';
 import { Spinner } from './spinner.tsx';
 import { StatusBadge } from './status-badge.tsx';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from './table.tsx';
@@ -27,6 +31,7 @@ import { checkA11y } from './testing/axe.ts';
 import { Timeline, TimelineItem } from './timeline.tsx';
 import { Heading, Text } from './typography.tsx';
 import { VisuallyHidden } from './visually-hidden.tsx';
+import { Wordmark } from './wordmark.tsx';
 
 import type { ReactElement } from 'react';
 
@@ -283,6 +288,34 @@ const CASES: readonly (readonly [name: string, render: () => ReactElement])[] = 
   ],
 
   ['StatusBadge', () => <StatusBadge status="action_needed" />],
+
+  ['Icon decorative', () => <Icon icon={ChevronRight} />],
+  [
+    'Icon as a control\u2019s only content',
+    () => (
+      <button type="button">
+        <Icon icon={Search} label="Search the site" />
+      </button>
+    ),
+  ],
+  ['Wordmark', () => <Wordmark />],
+  ['HeroScript', () => <HeroScript />],
+  ['CtaScript', () => <CtaScript />],
+  [
+    'SocialLink row',
+    () => (
+      <nav aria-label="Stay connected">
+        <ul className="flex">
+          <li>
+            <SocialLink platform="linkedin" href="https://example.org/linkedin" />
+          </li>
+          <li>
+            <SocialLink platform="youtube" href="https://example.org/youtube" />
+          </li>
+        </ul>
+      </nav>
+    ),
+  ],
 
   [
     'Timeline',
