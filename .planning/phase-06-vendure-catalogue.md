@@ -122,17 +122,17 @@ curl -X POST localhost:3002/shop-api -d '{"query":"mutation{addItemToOrder(produ
 
 Recorded at the end of the phase:
 
-| Check                            | Result                                                                 |
-| -------------------------------- | ---------------------------------------------------------------------- |
-| `pnpm --filter commerce typecheck` | clean                                                                |
-| `pnpm --filter api typecheck`    | clean                                                                  |
-| `pnpm --filter commerce lint`    | clean                                                                  |
-| `pnpm --filter api lint`         | clean                                                                  |
-| `pnpm --filter commerce test`    | 10 passed, 1 skipped (live Shop API)                                   |
-| `pnpm --filter api test`         | 14 passed                                                              |
-| `pnpm --filter cms test`         | 22 passed, 1 skipped                                                   |
-| `pnpm --filter commerce migrate` | not run — Docker Desktop engine was down                               |
-| Live `addItemToOrder`            | unit-proven; contract file skips without `VENDURE_SHOP_API_URL`        |
+| Check                              | Result                                                          |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `pnpm --filter commerce typecheck` | clean                                                           |
+| `pnpm --filter api typecheck`      | clean                                                           |
+| `pnpm --filter commerce lint`      | clean                                                           |
+| `pnpm --filter api lint`           | clean                                                           |
+| `pnpm --filter commerce test`      | 10 passed, 1 skipped (live Shop API)                            |
+| `pnpm --filter api test`           | 14 passed                                                       |
+| `pnpm --filter cms test`           | 22 passed, 1 skipped                                            |
+| `pnpm --filter commerce migrate`   | not run — Docker Desktop engine was down                        |
+| Live `addItemToOrder`              | unit-proven; contract file skips without `VENDURE_SHOP_API_URL` |
 
 ## Exit gate
 

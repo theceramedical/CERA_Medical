@@ -107,14 +107,14 @@ pnpm test:a11y -- --grep "services|articles"
 
 Recorded at the end of the phase:
 
-| Check                         | Result                                      |
-| ----------------------------- | ------------------------------------------- |
-| `pnpm --filter web typecheck` | clean                                       |
-| `pnpm --filter api typecheck` | clean                                       |
-| `pnpm --filter web lint`      | clean                                       |
-| `pnpm --filter api lint`      | clean                                       |
-| `pnpm --filter web test`      | 81 passed                                   |
-| `pnpm --filter api test`      | 19 passed                                   |
+| Check                         | Result                                         |
+| ----------------------------- | ---------------------------------------------- |
+| `pnpm --filter web typecheck` | clean                                          |
+| `pnpm --filter api typecheck` | clean                                          |
+| `pnpm --filter web lint`      | clean                                          |
+| `pnpm --filter api lint`      | clean                                          |
+| `pnpm --filter web test`      | 81 passed                                      |
+| `pnpm --filter api test`      | 19 passed                                      |
 | `pnpm --filter web build`     | not re-run here; Phase 04 budget still applies |
 
 ## Exit gate

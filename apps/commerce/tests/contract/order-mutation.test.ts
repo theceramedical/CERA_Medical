@@ -13,16 +13,15 @@ const describeWithShop = shopUrl === undefined ? describe.skip : describe;
 
 describeWithShop('Shop API checkout neutralisation', () => {
   it('rejects addItemToOrder', async () => {
-    const response = await fetch(shopUrl as string, {
+    const response = await fetch(shopUrl!, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        query:
-          'mutation { addItemToOrder(productVariantId: "1", quantity: 1) { __typename } }',
+        query: 'mutation { addItemToOrder(productVariantId: "1", quantity: 1) { __typename } }',
       }),
     });
 
-    const body = (await response.json()) as { errors?: ReadonlyArray<{ message?: string }> };
+    const body = (await response.json()) as { errors?: readonly { message?: string }[] };
     expect(body.errors?.length).toBeGreaterThan(0);
     expect(JSON.stringify(body)).not.toMatch(/"__typename":"Order"/);
   });
