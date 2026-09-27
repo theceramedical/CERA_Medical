@@ -23,87 +23,87 @@ named rather than assumed.
 
 ### WP-15.1 Release mechanics
 
-- [ ] `release/vX.Y.Z` branch and tag flow scripted exactly as PRD 20.1, so the sequence is not retyped
+- [x] `release/vX.Y.Z` branch and tag flow scripted exactly as PRD 20.1, so the sequence is not retyped
       from memory under pressure
-- [ ] Annotated, signed tags, with a tag ruleset restricting `v*` creation to release maintainers
-- [ ] Change log generated from Conventional Commits, grouped by type, with PRD feature IDs resolved so a
+- [x] Annotated, signed tags, with a tag ruleset restricting `v*` creation to release maintainers
+- [x] Change log generated from Conventional Commits, grouped by type, with PRD feature IDs resolved so a
       reader sees features rather than commit subjects
-- [ ] `docs/runbooks/release.md` - the full checklist from pre-flight through post-deploy monitoring
-- [ ] A **rehearsed release** on local Compose: tag, promote by digest, migrate, deploy, smoke-test, and
+- [x] `docs/runbooks/release.md` - the full checklist from pre-flight through post-deploy monitoring
+- [x] A **rehearsed release** on local Compose: tag, promote by digest, migrate, deploy, smoke-test, and
       record - proving the path rather than describing it
 
 ### WP-15.2 Rollback
 
-- [ ] `docs/runbooks/rollback.md` implementing PRD 20.2: stop on any failure, restore the recorded
+- [x] `docs/runbooks/rollback.md` implementing PRD 20.2: stop on any failure, restore the recorded
       digest, prefer a forward database correction unless the migration explicitly supports reversal,
       then verify web, APIs, workers, login, enquiry, database, Zoho queue, Resend queue, and monitoring
-- [ ] A **rehearsed rollback**: deploy a deliberately broken image, confirm health checks fail, confirm
+- [x] A **rehearsed rollback**: deploy a deliberately broken image, confirm health checks fail, confirm
       automatic restoration of the previous digest, and record wall-clock recovery time
-- [ ] An incident record template capturing timeline, symptoms, impact, decision, commands, digest,
+- [x] An incident record template capturing timeline, symptoms, impact, decision, commands, digest,
       database action, and follow-up issue
-- [ ] Severity classification per PRD 17: Sev 1 unavailable or data exposure, Sev 2 critical function
+- [x] Severity classification per PRD 17: Sev 1 unavailable or data exposure, Sev 2 critical function
       impaired, Sev 3 limited defect, Sev 4 minor - with Sev 1 triggering rollback or containment before
       any further feature work
 
 ### WP-15.3 Hotfix path
 
-- [ ] `docs/runbooks/hotfix.md` implementing PRD 20.3, including the second pull request back to
+- [x] `docs/runbooks/hotfix.md` implementing PRD 20.3, including the second pull request back to
       `develop` so a production fix is never lost from the next release
-- [ ] A rehearsed hotfix on the local repository, proving the branch topology behaves
+- [x] A rehearsed hotfix on the local repository, proving the branch topology behaves
 
 ### WP-15.4 Runbooks
 
 Written for an operator who was not present during the build.
 
-- [ ] `deploy.md`, `rollback.md`, `hotfix.md`, `backup-restore.md`, `incident.md`, `access.md`
-- [ ] `content-operations.md` - create, edit, preview, request approval, publish, unpublish, restore a
+- [x] `deploy.md`, `rollback.md`, `hotfix.md`, `backup-restore.md`, `incident.md`, `access.md`
+- [x] `content-operations.md` - create, edit, preview, request approval, publish, unpublish, restore a
       version, and upload media with alt text
-- [ ] `enquiry-operations.md` - filter the queue, assign, transition, add a note, read audit history,
+- [x] `enquiry-operations.md` - filter the queue, assign, transition, add a note, read audit history,
       retry a failed delivery, and interpret a bounce or complaint
-- [ ] `service-catalogue.md` - add and edit a service, set availability text, toggle enquiry eligibility,
+- [x] `service-catalogue.md` - add and edit a service, set availability text, toggle enquiry eligibility,
       and publish or unpublish
-- [ ] `monitoring.md` - read GlitchTip, interpret each alert, and escalate
-- [ ] `vendor-credentials.md` - the register PRD 15 requires: owner, purpose, environment, created date,
+- [x] `monitoring.md` - read GlitchTip, interpret each alert, and escalate
+- [x] `vendor-credentials.md` - the register PRD 15 requires: owner, purpose, environment, created date,
       rotation date, and revocation procedure, **recording no value**
-- [ ] `going-live.md` - the ordered list of what must happen when the real accounts arrive: Cloudflare
+- [x] `going-live.md` - the ordered list of what must happen when the real accounts arrive: Cloudflare
       DNS, Hetzner provisioning, R2 buckets and tokens, Resend domain verification, Zoho OAuth and the
       UI-created External field, Authentik production client, GitHub org and rulesets, secret population,
       and first production deploy
-- [ ] Every runbook validated by following it literally on the local stack and fixing every step that
+- [x] Every runbook validated by following it literally on the local stack and fixing every step that
       assumed knowledge
 
 ### WP-15.5 UAT
 
-- [ ] `docs/uat/` scripts per PRD 16's UAT row: content approval, service management, visitor flow,
+- [x] `docs/uat/` scripts per PRD 16's UAT row: content approval, service management, visitor flow,
       customer flow, operations flow, CRM, email, and release approval
-- [ ] Each script as numbered steps with an explicit expected result and a pass, fail, or blocked field,
+- [x] Each script as numbered steps with an explicit expected result and a pass, fail, or blocked field,
       written in CERA's language rather than in implementation terms
-- [ ] A seeded UAT environment on local Compose with an account per role
-- [ ] A defect register classifying each finding as launch-blocking or follow-up, with an owner and a
+- [x] A seeded UAT environment on local Compose with an account per role
+- [x] A defect register classifying each finding as launch-blocking or follow-up, with an owner and a
       date (REL-1101)
-- [ ] An approval record capturing CERA Product Owner UAT approval and Technical Release Approver
+- [x] An approval record capturing CERA Product Owner UAT approval and Technical Release Approver
       technical approval, with the PRD 21 constraint that a deployment initiator cannot approve their own
       deployment
-- [ ] A self-run pass of every script, with results recorded, so CERA receives a validated script rather
+- [x] A self-run pass of every script, with results recorded, so CERA receives a validated script rather
       than a first draft
 
 ### WP-15.6 Definition of done
 
-- [ ] `docs/definition-of-done.md` reproducing PRD 21 as a checklist, with each item resolved against
+- [x] `docs/definition-of-done.md` reproducing PRD 21 as a checklist, with each item resolved against
       recorded evidence
-- [ ] A launch checklist covering the tag, image digest, deployment record, smoke evidence, backup status,
+- [x] A launch checklist covering the tag, image digest, deployment record, smoke evidence, backup status,
       monitoring release annotation, and rollback target
-- [ ] A traceability report walking all 30 PRD feature IDs to their acceptance evidence, so a reviewer can
+- [x] A traceability report walking all 30 PRD feature IDs to their acceptance evidence, so a reviewer can
       confirm coverage without reading every phase document
 
 ### WP-15.7 Handover
 
-- [ ] `docs/handover.md` - architecture summary, what is where, how to operate it, who owns what, and the
+- [x] `docs/handover.md` - architecture summary, what is where, how to operate it, who owns what, and the
       known limitations
-- [ ] ADRs copied from `.planning/adr/` to `docs/adr/`
-- [ ] An access-transfer checklist: CERA holds every vendor account, developer access is reduced to what
+- [x] ADRs copied from `.planning/adr/` to `docs/adr/`
+- [x] An access-transfer checklist: CERA holds every vendor account, developer access is reduced to what
       support requires, and every secret is rotated after handover as PRD 15 requires
-- [ ] An **open-items register** stating plainly what is not done and why, so nothing is discovered later:
+- [x] An **open-items register** stating plainly what is not done and why, so nothing is discovered later:
 
 | Open item                           | Reason                                                          | Needed from CERA                                |
 | ----------------------------------- | --------------------------------------------------------------- | ----------------------------------------------- |
@@ -116,7 +116,7 @@ Written for an operator who was not present during the build.
 | Legal, clinical, and privacy review | Explicitly outside scope per PRD 3.2                            | CERA counsel and clinical approver              |
 | Named approvers and signatures      | Roles unfilled                                                  | Product Owner and Content and Clinical Approver |
 
-- [ ] A recorded walkthrough script covering the content and enquiry tasks DOC-1201 names
+- [x] A recorded walkthrough script covering the content and enquiry tasks DOC-1201 names
 
 ## Verification
 
@@ -130,15 +130,15 @@ cat docs/definition-of-done.md
 
 ## Exit gate
 
-- [ ] REL-1102: the release checklist, change log, rollback reference, and ownership handover are complete,
+- [x] REL-1102: the release checklist, change log, rollback reference, and ownership handover are complete,
       and both the release and the rollback have been rehearsed with recorded timings
-- [ ] DOC-1201: the content and enquiry runbooks were followed literally by someone working only from the
+- [x] DOC-1201: the content and enquiry runbooks were followed literally by someone working only from the
       documentation, and every gap found was fixed
-- [ ] REL-1101 (deliverable portion): UAT scripts authored, self-run, and recorded; the defect register
+- [x] REL-1101 (deliverable portion): UAT scripts authored, self-run, and recorded; the defect register
       exists with owners and dates; the approval record is prepared for signature
-- [ ] The traceability report resolves all 30 PRD feature IDs to evidence
-- [ ] The open-items register names every outstanding dependency and its owner
-- [ ] No secret in the repository, and the credential register records owners and rotation without values
+- [x] The traceability report resolves all 30 PRD feature IDs to evidence
+- [x] The open-items register names every outstanding dependency and its owner
+- [x] No secret in the repository, and the credential register records owners and rotation without values
 
 ## What cannot be completed in this build
 

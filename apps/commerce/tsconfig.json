@@ -1,0 +1,15 @@
+{
+  "//": "Editor and lint configuration. Includes tests so typed ESLint rules work on them.",
+  "extends": "@cera/config/tsconfig/node",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts", "*.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

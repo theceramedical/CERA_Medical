@@ -23,111 +23,111 @@ target host differs.
 
 ### WP-13.1 Caddy and edge
 
-- [ ] `infra/caddy/Caddyfile` with a `secure` snippet imported by every site block
-- [ ] A custom Caddy build including `caddy-dns/cloudflare` for DNS-01, so wildcard certificates work
+- [x] `infra/caddy/Caddyfile` with a `secure` snippet imported by every site block
+- [x] A custom Caddy build including `caddy-dns/cloudflare` for DNS-01, so wildcard certificates work
       without exposing an HTTP challenge path
-- [ ] Site blocks for `www`, apex, `admin`, `catalogue`, `api`, `auth`, and `status`, each proxying to
+- [x] Site blocks for `www`, apex, `admin`, `catalogue`, `api`, `auth`, and `status`, each proxying to
       its container by service name
-- [ ] Security headers: HSTS with `includeSubDomains` and `preload`, `X-Frame-Options: DENY`,
+- [x] Security headers: HSTS with `includeSubDomains` and `preload`, `X-Frame-Options: DENY`,
       `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
       `Permissions-Policy` denying camera, microphone, and geolocation, and `-Server`
-- [ ] A **nonce-based CSP** with `frame-ancestors 'none'` and `base-uri 'self'`, tuned per site because
+- [x] A **nonce-based CSP** with `frame-ancestors 'none'` and `base-uri 'self'`, tuned per site because
       the Payload and Vendure admin surfaces need more than the public site. No blanket
       `unsafe-inline`.
-- [ ] `request_body max_size 10MB`, matching the Payload and storage-adapter caps so the limit is
+- [x] `request_body max_size 10MB`, matching the Payload and storage-adapter caps so the limit is
       consistent at all three layers
-- [ ] `trusted_proxies static private_ranges` set **globally**, not per handler, so client-IP parsing is
+- [x] `trusted_proxies static private_ranges` set **globally**, not per handler, so client-IP parsing is
       enabled server-wide
-- [ ] Inbound `X-Forwarded-*` discarded and regenerated, which Caddy does by default
-- [ ] Only Caddy publishes host ports. Postgres, Valkey, MinIO, workers, and the Authentik internal
+- [x] Inbound `X-Forwarded-*` discarded and regenerated, which Caddy does by default
+- [x] Only Caddy publishes host ports. Postgres, Valkey, MinIO, workers, and the Authentik internal
       ports publish nothing.
-- [ ] `docs/runbooks/cloudflare.md` recording DNS records, proxy mode, the scoped DNS-edit token, WAF
+- [x] `docs/runbooks/cloudflare.md` recording DNS records, proxy mode, the scoped DNS-edit token, WAF
       rules, and the reasoning that inbound `X-Forwarded-For` is spoofable unless stripped at the edge
 
 ### WP-13.2 Container images
 
-- [ ] Multi-stage Dockerfile per app on `node:24-alpine`: dependency layer, build layer, then a runtime
+- [x] Multi-stage Dockerfile per app on `node:24-alpine`: dependency layer, build layer, then a runtime
       layer holding only the standalone output
-- [ ] Non-root user, `dumb-init` for signal handling, `HEALTHCHECK`, and no source bind mount in
+- [x] Non-root user, `dumb-init` for signal handling, `HEALTHCHECK`, and no source bind mount in
       production
-- [ ] `sharp` present in the `cms` and `web` runtime layers
-- [ ] BuildKit cache mounts for the pnpm store, keeping rebuilds fast
-- [ ] `.dockerignore` excluding `node_modules`, `.next`, `.env*`, tests, and `.planning`
-- [ ] Image size and layer count recorded per app
+- [x] `sharp` present in the `cms` and `web` runtime layers
+- [x] BuildKit cache mounts for the pnpm store, keeping rebuilds fast
+- [x] `.dockerignore` excluding `node_modules`, `.next`, `.env*`, tests, and `.planning`
+- [x] Image size and layer count recorded per app
 
 ### WP-13.3 Compose overlays
 
-- [ ] `compose.yaml` production-safe by default
-- [ ] `infra/compose/compose.local.yaml` adding bind mounts, host ports, MinIO, and Mailpit
-- [ ] `compose.staging.yaml` and `compose.production.yaml` using immutable GHCR images by digest,
+- [x] `compose.yaml` production-safe by default
+- [x] `infra/compose/compose.local.yaml` adding bind mounts, host ports, MinIO, and Mailpit
+- [x] `compose.staging.yaml` and `compose.production.yaml` using immutable GHCR images by digest,
       `restart: unless-stopped`, resource limits, log rotation, and no source mount
-- [ ] One-shot `migrate` services gating apps with `condition: service_completed_successfully`
-- [ ] Top-level `secrets:` from files, mounted at `/run/secrets`, with `*_FILE` environment variants
+- [x] One-shot `migrate` services gating apps with `condition: service_completed_successfully`
+- [x] Top-level `secrets:` from files, mounted at `/run/secrets`, with `*_FILE` environment variants
       rather than plaintext values
-- [ ] `docker compose config` verified for every overlay combination, so a merge error is caught before a
+- [x] `docker compose config` verified for every overlay combination, so a merge error is caught before a
       deploy
 
 ### WP-13.4 Deployment scripts
 
-- [ ] `infra/scripts/deploy.sh` - pull by digest, back up, migrate, start, health-check, smoke-test, and
+- [x] `infra/scripts/deploy.sh` - pull by digest, back up, migrate, start, health-check, smoke-test, and
       **automatically roll back to the previously recorded digest on any failure**
-- [ ] `migrate.sh` running the three migration paths in order with a pre-migration backup
-- [ ] `health-check.sh` polling every endpoint with a timeout and a clear failure summary
-- [ ] `smoke-test.sh` exercising homepage render, a service detail, an enquiry submission, sign-in, a
+- [x] `migrate.sh` running the three migration paths in order with a pre-migration backup
+- [x] `health-check.sh` polling every endpoint with a timeout and a clear failure summary
+- [x] `smoke-test.sh` exercising homepage render, a service detail, an enquiry submission, sign-in, a
       dashboard read, and a CMS publish
-- [ ] `rollback.sh` restoring a recorded digest and re-verifying
-- [ ] `deployment-record.sh` appending version, digest, migration, approver, timestamp, and rollback
+- [x] `rollback.sh` restoring a recorded digest and re-verifying
+- [x] `deployment-record.sh` appending version, digest, migration, approver, timestamp, and rollback
       target to an append-only log, which is what INF-903 requires as evidence
-- [ ] Every script `set -euo pipefail`, idempotent, and safe to re-run
+- [x] Every script `set -euo pipefail`, idempotent, and safe to re-run
 
 ### WP-13.5 CI/CD completion
 
-- [ ] `staging.yml`: build once, tag with the commit SHA, push to GHCR, deploy, health-check, and restore
+- [x] `staging.yml`: build once, tag with the commit SHA, push to GHCR, deploy, health-check, and restore
       the previous image on failure - no manual file copying anywhere in the path (INF-902)
-- [ ] `release.yml`: full suite, security checks, migration dry run, release notes, backup confirmation,
+- [x] `release.yml`: full suite, security checks, migration dry run, release notes, backup confirmation,
       then production deploy **by digest promotion**, never a rebuild, so the artefact tested is the
       artefact shipped
-- [ ] GitHub `production` environment with required reviewers and `prevent self-review`. Required
+- [x] GitHub `production` environment with required reviewers and `prevent self-review`. Required
       reviewers on a private repository need Enterprise, so the workflow **also** verifies a signed
       release-approval issue, which is the PRD 11.3 fallback for exactly this case.
-- [ ] Production secrets scoped to that environment and therefore unavailable to any pull-request
+- [x] Production secrets scoped to that environment and therefore unavailable to any pull-request
       workflow or untrusted branch (INF-903)
-- [ ] All third-party actions pinned to full commit SHAs; `permissions: {}` with per-job escalation
-- [ ] Build provenance attestation on published images
+- [x] All third-party actions pinned to full commit SHAs; `permissions: {}` with per-job escalation
+- [x] Build provenance attestation on published images
 
 ### WP-13.6 Backup and restore
 
 INF-904 requires an actual restore with recorded numbers, not a documented procedure.
 
-- [ ] `backup.sh` running `pg_dump -Fc` per database, piped **straight into age encryption so plaintext
+- [x] `backup.sh` running `pg_dump -Fc` per database, piped **straight into age encryption so plaintext
       never touches disk**
-- [ ] `pg_dumpall --globals-only` for roles, without which a restore lands without its owners
-- [ ] Retention with rotation, copied off-host, with a documented target
-- [ ] `restore.sh` restoring into a scratch database first, verifying integrity, then promoting
-- [ ] **A timed restore rehearsal**, recording wall-clock recovery time, row counts before and after,
+- [x] `pg_dumpall --globals-only` for roles, without which a restore lands without its owners
+- [x] Retention with rotation, copied off-host, with a documented target
+- [x] `restore.sh` restoring into a scratch database first, verifying integrity, then promoting
+- [x] **A timed restore rehearsal**, recording wall-clock recovery time, row counts before and after,
       integrity checks, and whether RPO 24h and RTO 4h were met
-- [ ] Hetzner daily backups and deletion protection documented, with the explicit note that Hetzner
+- [x] Hetzner daily backups and deletion protection documented, with the explicit note that Hetzner
       server backups and snapshots **do not include attached volumes**, so volumes need their own method
-- [ ] A restore-verification job asserting the most recent backup is decryptable and loadable
+- [x] A restore-verification job asserting the most recent backup is decryptable and loadable
 
 ### WP-13.7 Observability
 
-- [ ] GlitchTip 6.2.6 in Compose with `web`, `worker`, a one-shot `migrate`, Postgres, and Valkey
-- [ ] `GLITCHTIP_DOMAIN` including the scheme, `SECRET_KEY` from the secret store, retention set to fit
+- [x] GlitchTip 6.2.6 in Compose with `web`, `worker`, a one-shot `migrate`, Postgres, and Valkey
+- [x] `GLITCHTIP_DOMAIN` including the scheme, `SECRET_KEY` from the secret store, retention set to fit
       the disk, and user registration disabled after the first account
-- [ ] Private behind Caddy on the `status` subdomain, authorised users only
-- [ ] `@sentry/nextjs` 10.x in `apps/web`, plus SDK wiring in `api`, `worker`, `cms`, and `commerce`,
+- [x] Private behind Caddy on the `status` subdomain, authorised users only
+- [x] `@sentry/nextjs` 10.x in `apps/web`, plus SDK wiring in `api`, `worker`, `cms`, and `commerce`,
       each reporting to its own project with `release` set to the commit SHA
-- [ ] Session replay and profiling **not** enabled - GlitchTip does not support them
-- [ ] `beforeSend` stripping user email, IP, cookies, and authorization headers, with
+- [x] Session replay and profiling **not** enabled - GlitchTip does not support them
+- [x] `beforeSend` stripping user email, IP, cookies, and authorization headers, with
       `sendDefaultPii: false` and parameterised transaction names so a route is `/enquiries/:reference`
       rather than a URL containing a real reference
-- [ ] A test asserting that a thrown error carrying a full enquiry produces an event containing none of
+- [x] A test asserting that a thrown error carrying a full enquiry produces an event containing none of
       its free text
-- [ ] Source maps uploaded for readable stack traces, and not served publicly
-- [ ] Uptime checks on every health endpoint; alerts on error rate, queue depth, oldest pending outbox
+- [x] Source maps uploaded for readable stack traces, and not served publicly
+- [x] Uptime checks on every health endpoint; alerts on error rate, queue depth, oldest pending outbox
       row, dead-letter count, disk, and backup age
-- [ ] A deliberate test error endpoint, available outside production, used to prove the pipeline end to
+- [x] A deliberate test error endpoint, available outside production, used to prove the pipeline end to
       end (OBS-1001)
 
 ## Verification
@@ -143,15 +143,15 @@ nmap -p- localhost                     # only 80 and 443 from outside the Compos
 
 ## Exit gate
 
-- [ ] INF-901: only 80 and 443 are public; Postgres, Valkey, and MinIO publish nothing; health checks
+- [x] INF-901: only 80 and 443 are public; Postgres, Valkey, and MinIO publish nothing; health checks
       pass and forwarded headers arrive correctly; all security headers verified including a nonce CSP
-- [ ] INF-902: a merge to `develop` deploys to staging with no manual file copying, and an induced health
+- [x] INF-902: a merge to `develop` deploys to staging with no manual file copying, and an induced health
       check failure restores the previous image automatically
-- [ ] INF-903: production secrets are unreachable before approval; the deployment record captures
+- [x] INF-903: production secrets are unreachable before approval; the deployment record captures
       version, approver, digest, migration, and rollback target
-- [ ] INF-904: a real restore completed and timed, with integrity checks and row counts recorded against
+- [x] INF-904: a real restore completed and timed, with integrity checks and row counts recorded against
       RPO 24h and RTO 4h
-- [ ] OBS-1001: a deliberate error reaches the correct project, and the event contains no secret and no
+- [x] OBS-1001: a deliberate error reaches the correct project, and the event contains no secret and no
       enquiry message content
-- [ ] Alerts fire for error rate, queue depth, dead letters, disk, and backup age
-- [ ] Every image runs as a non-root user with a working healthcheck
+- [x] Alerts fire for error rate, queue depth, dead letters, disk, and backup age
+- [x] Every image runs as a non-root user with a working healthcheck

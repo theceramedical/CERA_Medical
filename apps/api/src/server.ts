@@ -3,10 +3,21 @@ import helmet from '@fastify/helmet';
 import Fastify from 'fastify';
 import pg from 'pg';
 
+import { createSessionReader } from './auth/read-session.ts';
+import { memoryCatalogueCache } from './catalogue/cache.ts';
+import { catalogueRoutes } from './catalogue/routes.ts';
+import { createVendureClient } from './catalogue/vendure-client.ts';
+import { enquiryRoutes } from './enquiry/routes.ts';
 import { healthRoutes } from './health.ts';
+import { opsRoutes } from './ops/routes.ts';
+import { portalRoutes } from './portal/routes.ts';
+import { memoryPortalStore } from './portal/store.ts';
+import { searchRoutes } from './search/routes.ts';
+import { resendWebhookRoutes } from './webhooks/resend.ts';
 
 /**
- * Phase 01 skeleton. Routes arrive in Phase 08 onward; what exists here is the
+ * Authorisation boundary (ADR-003). Catalogue reads arrive in Phase 06;
+ * enquiry and identity routes arrive from Phase 08. What exists here is the
  * shape everything else hangs off: validated configuration, a real connection
  * pool, health endpoints, and graceful shutdown.
  *
@@ -75,6 +86,26 @@ await app.register(cors, {
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   maxAge: 600,
 });
+
+const catalogueClient = createVendureClient(
+  process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api',
+);
+
+await app.register(
+  catalogueRoutes({
+    client: catalogueClient,
+    cache: memoryCatalogueCache(),
+  }),
+);
+
+await app.register(searchRoutes({ catalogue: catalogueClient }));
+await app.register(enquiryRoutes());
+
+const portalStore = memoryPortalStore();
+const readSession = createSessionReader(process.env.SESSION_SECRET ?? 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+await app.register(portalRoutes({ store: portalStore, readSession }));
+await app.register(opsRoutes({ store: portalStore, readSession }));
+await app.register(resendWebhookRoutes(process.env.RESEND_WEBHOOK_SECRET ?? 'whsec_local'));
 
 await app.register(
   healthRoutes({

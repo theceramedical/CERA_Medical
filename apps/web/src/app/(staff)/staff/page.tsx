@@ -1,33 +1,36 @@
-import { Alert } from '@cera/ui/alert';
+import { EmptyState } from '@cera/ui/empty-state';
 import { Text } from '@cera/ui/typography';
 
+import { AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { getSession } from '../../../lib/auth/session.ts';
 
 import type { Metadata } from 'next';
-
-/**
- * The staff queue. Phase 12 builds it.
- *
- * Present for the same reason as the portal dashboard: the route has to exist for the proxy's redirect
- * to be observable rather than masked by a 404.
- */
 
 export const metadata: Metadata = {
   title: 'Enquiry queue',
 };
 
-export default function StaffQueuePage() {
+export default async function StaffQueuePage() {
+  const session = await getSession();
+
   return (
     <>
       <PageHeader title="Enquiry queue" lede="Open enquiries, in the order they arrived." />
 
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <Alert tone="info" title="This page is not finished yet">
-          <Text size="body-sm">
-            Phase 12 builds the queue, assignment, status transitions, internal notes, and the audit
-            history. Phase 09 supplies the role checks that decide what each staff member can see.
+        {session === null ? (
+          <Text>
+            <AppLink href="/auth/sign-in?next=/staff">Sign in</AppLink> with a staff account to see
+            the queue.
           </Text>
-        </Alert>
+        ) : (
+          <EmptyState
+            heading="No open enquiries in this view"
+            description="Assignment, transitions, and internal notes are taken on each enquiry. Customers never see those notes."
+            action={<AppLink href="/staff/deliveries">Integration deliveries</AppLink>}
+          />
+        )}
       </div>
     </>
   );

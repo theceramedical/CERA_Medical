@@ -2,6 +2,7 @@ import { SESSION_COOKIE_NAME } from '@cera/contracts/session';
 import { REQUEST_ID_HEADER, resolveRequestId } from '@cera/observability/request-id';
 import { NextResponse } from 'next/server';
 
+import { resolveRedirect } from './lib/cms/redirects.ts';
 import { buildCsp, STATIC_SECURITY_HEADERS } from './lib/security-headers.ts';
 
 import type { NextRequest } from 'next/server';
@@ -97,6 +98,13 @@ export function proxy(request: NextRequest): NextResponse {
  */
 function redirectOrContinue(request: NextRequest, requestHeaders: Headers): NextResponse {
   const pathname = normalisePath(request.nextUrl.pathname);
+
+  const cmsRedirect = resolveRedirect(pathname, readConfiguredRedirects());
+  if (cmsRedirect !== null) {
+    const target = new URL(cmsRedirect.to, request.nextUrl.origin);
+    return NextResponse.redirect(target, cmsRedirect.permanent ? 308 : 307);
+  }
+
   const needsSession = AUTHENTICATED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
@@ -130,6 +138,34 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
  */
 function normalisePath(pathname: string): string {
   return pathname.replace(/^\/+/, '/');
+}
+
+/**
+ * Static CMS redirects for the edge. Live Payload fetches belong in the
+ * request path of `apps/web` pages, not in every asset match. A JSON env
+ * blob keeps this file free of a network hop on each document request.
+ */
+function readConfiguredRedirects(): readonly { from: string; to: string; permanent: boolean }[] {
+  const raw = process.env.CMS_REDIRECTS_JSON;
+  if (raw === undefined || raw.length === 0) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const redirects: { from: string; to: string; permanent: boolean }[] = [];
+    for (const item of parsed) {
+      if (item === null || typeof item !== 'object') continue;
+      const record = item as Record<string, unknown>;
+      if (typeof record.from !== 'string' || typeof record.to !== 'string') continue;
+      redirects.push({
+        from: record.from,
+        to: record.to,
+        permanent: record.permanent === false ? false : true,
+      });
+    }
+    return redirects;
+  } catch {
+    return [];
+  }
 }
 
 /**

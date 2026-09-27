@@ -17,6 +17,8 @@ export {
   redactValue,
 } from './redact.ts';
 
+export { safeDiff } from './safe-diff.ts';
+
 export {
   isSafeRequestId,
   type OperationContext,

@@ -135,21 +135,49 @@ export const workerEnvSchema = commonEnvSchema
     );
   });
 
-export const cmsEnvSchema = commonEnvSchema.merge(databaseEnvSchema).extend({
-  PORT: port.default(3001),
-  PAYLOAD_SECRET: nonEmpty,
-  PAYLOAD_PUBLIC_SERVER_URL: url,
-  PAYLOAD_PREVIEW_SECRET: nonEmpty,
-  WEB_URL: url,
-  STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
-  S3_ENDPOINT: z.string().optional(),
-  S3_REGION: z.string().default('auto'),
-  S3_BUCKET: z.string().optional(),
-  S3_ACCESS_KEY_ID: z.string().optional(),
-  S3_SECRET_ACCESS_KEY: z.string().optional(),
-  S3_PUBLIC_URL: z.string().optional(),
-  GLITCHTIP_DSN: z.string().optional(),
-});
+export const cmsEnvSchema = commonEnvSchema
+  .extend({
+    /**
+     * Its own URL, not `DATABASE_URL`.
+     *
+     * `DATABASE_URL` is `cera_app`. Pointing Payload at that database would put CMS
+     * tables next to enquiry rows and, worse, run `payload migrate` against the wrong
+     * schema. The two roles cannot CONNECT to each other's databases (Phase 01), so
+     * a mistaken URL fails at boot rather than succeeding as a confused half-migration -
+     * but only if the variable has a different name, which is why this is not an alias.
+     */
+    CMS_DATABASE_URL: nonEmpty.describe('postgres://cera_cms:...@host:5432/cera_cms'),
+    PORT: port.default(3001),
+    PAYLOAD_SECRET: nonEmpty,
+    PAYLOAD_PUBLIC_SERVER_URL: url,
+    PAYLOAD_PREVIEW_SECRET: nonEmpty,
+    WEB_URL: url,
+    /**
+     * Optional until Phase 06. When set, a ServicePresentation save checks the live
+     * catalogue; when unset, the six reference slugs are the allow-list.
+     */
+    VENDURE_SHOP_API_URL: z.string().url().optional(),
+    STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
+    S3_ENDPOINT: z.string().optional(),
+    S3_REGION: z.string().default('auto'),
+    S3_BUCKET: z.string().optional(),
+    S3_ACCESS_KEY_ID: z.string().optional(),
+    S3_SECRET_ACCESS_KEY: z.string().optional(),
+    S3_PUBLIC_URL: z.string().optional(),
+    GLITCHTIP_DSN: z.string().optional(),
+  })
+  .superRefine((env, ctx) => {
+    if (env.STORAGE_DRIVER !== 's3') return;
+    for (const key of ['S3_ENDPOINT', 'S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY']) {
+      if (env[key] === undefined || env[key] === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [key],
+          message: `${key} is required when STORAGE_DRIVER is "s3".`,
+        });
+      }
+    }
+  });
 
 export const commerceEnvSchema = commonEnvSchema.extend({
   PORT: port.default(3002),
@@ -165,6 +193,13 @@ export const commerceEnvSchema = commonEnvSchema.extend({
   COOKIE_SECRET: nonEmpty,
   CORS_ALLOWED_ORIGINS: z.string().default(''),
   ASSET_URL_PREFIX: z.string().optional(),
+  STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
+  S3_ENDPOINT: z.string().optional(),
+  S3_REGION: z.string().default('auto'),
+  S3_BUCKET: z.string().optional(),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_PUBLIC_URL: z.string().optional(),
   GLITCHTIP_DSN: z.string().optional(),
 });
 

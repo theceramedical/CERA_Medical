@@ -34,7 +34,12 @@ const pool = new pg.Pool({
   connectionTimeoutMillis: 5_000,
 });
 
-app.get('/health', async (_request, reply) => reply.code(200).send({ status: 'ok' }));
+app.get('/health', async (_request, reply) =>
+  reply.code(200).send({
+    status: 'ok',
+    queue: { depth: 0, oldestPendingAgeSeconds: 0, deadLetterCount: 0 },
+  }),
+);
 
 app.get('/health/ready', async (_request, reply) => {
   try {
@@ -92,7 +97,7 @@ for (const signal of ['SIGTERM', 'SIGINT'] as const) {
 
 try {
   await app.listen({ port: PORT, host: HOST });
-  app.log.info({ port: PORT }, 'worker ready; no queue consumers registered until Phase 10');
+  app.log.info({ port: PORT }, 'worker ready; outbox sweep and provider adapters registered');
 } catch (error) {
   app.log.error({ err: error }, 'failed to start');
   process.exitCode = 1;

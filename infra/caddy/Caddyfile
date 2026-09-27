@@ -1,0 +1,58 @@
+# CERA edge. Only 80/443 are public. /shop-api is intentionally absent:
+# Vendure Shop API is server-to-server from apps/api (ADR-005).
+
+{
+	email off
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(secure) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+	request_body {
+		max_size 10MB
+	}
+}
+
+www.{$CERA_DOMAIN:localhost} {
+	import secure
+	reverse_proxy web:3000
+}
+
+{$CERA_DOMAIN:localhost} {
+	import secure
+	redir https://www.{$CERA_DOMAIN:localhost}{uri}
+}
+
+api.{$CERA_DOMAIN:localhost} {
+	import secure
+	reverse_proxy api:3003
+}
+
+admin.{$CERA_DOMAIN:localhost} {
+	import secure
+	reverse_proxy cms:3001
+}
+
+catalogue.{$CERA_DOMAIN:localhost} {
+	import secure
+	reverse_proxy commerce:3002
+}
+
+auth.{$CERA_DOMAIN:localhost} {
+	import secure
+	reverse_proxy authentik-server:9000
+}
+
+status.{$CERA_DOMAIN:localhost} {
+	import secure
+	reverse_proxy glitchtip-web:8000
+}

@@ -1,19 +1,97 @@
-import { ComingSoon } from '../../../components/coming-soon.tsx';
+import { Alert } from '@cera/ui/alert';
+import { EmptyState } from '@cera/ui/empty-state';
+import { ServiceCard } from '@cera/ui/service-card';
+import { Text } from '@cera/ui/typography';
+
+import { AppLink } from '../../../components/link.tsx';
+import { PageHeader } from '../../../components/page-header.tsx';
+import { HOMEPAGE_SERVICES } from '../../../content/homepage.ts';
+import { listPublicServices } from '../../../lib/catalogue/client.ts';
+import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Our Medical Services',
-  description:
-    'Explore our range of trusted medical services designed to support your health and wellbeing.',
-};
+export function generateMetadata(): Metadata {
+  return pageMetadata({
+    title: 'Our Medical Services',
+    description:
+      'Explore our range of trusted medical services designed to support your health and wellbeing.',
+    path: '/services',
+  });
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage({
+  searchParams,
+}: {
+  readonly searchParams: Promise<{ category?: string; q?: string }>;
+}) {
+  const params = await searchParams;
+  const { items, degraded } = await listPublicServices();
+
+  const query = params.q?.trim().toLowerCase() ?? '';
+  const category = params.category;
+
+  const filtered = items.filter((service) => {
+    if (category !== undefined && service.category?.slug !== category) return false;
+    if (query.length === 0) return true;
+    return (
+      service.title.toLowerCase().includes(query) || service.summary.toLowerCase().includes(query)
+    );
+  });
+
   return (
-    <ComingSoon
-      title="Our Medical Services"
-      lede="Explore our range of trusted medical services designed to support your health and wellbeing."
-      plan="Phase 06 loads the service catalogue from Vendure and Phase 07 builds this index with its filters and individual service pages. The six services shown on the homepage are the same records."
-    />
+    <>
+      <PageHeader
+        title="Our Medical Services"
+        lede="Explore our range of trusted medical services designed to support your health and wellbeing."
+      />
+
+      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        {degraded ? (
+          <Alert className="mb-8" tone="info">
+            Live catalogue data is temporarily unavailable. Showing the last known services.
+          </Alert>
+        ) : null}
+
+        <form method="get" className="mb-10 flex flex-col gap-4 md:flex-row md:items-end">
+          <label className="flex flex-1 flex-col gap-2">
+            <Text size="caption">Search services</Text>
+            <input
+              name="q"
+              defaultValue={params.q ?? ''}
+              className="rounded-md border border-border bg-surface px-3 py-2"
+            />
+          </label>
+          <button type="submit" className="rounded-md bg-primary-700 px-4 py-2 text-on-primary">
+            Apply
+          </button>
+        </form>
+
+        {filtered.length === 0 ? (
+          <EmptyState
+            heading="No services match those filters"
+            description="Clear the search or browse the full list to find the care you need."
+            action={<AppLink href="/services">View all services</AppLink>}
+          />
+        ) : (
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((service) => {
+              const icon = HOMEPAGE_SERVICES.find((item) => item.slug === service.slug)?.icon;
+              const Icon = icon;
+              return (
+                <ServiceCard
+                  key={service.slug}
+                  title={service.title}
+                  description={service.summary}
+                  href={`/services/${service.slug}`}
+                  linkAs={AppLink}
+                  {...(Icon === undefined ? {} : { icon: <Icon aria-hidden /> })}
+                />
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    </>
   );
 }

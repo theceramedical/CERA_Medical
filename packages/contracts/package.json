@@ -46,6 +46,10 @@
       "types": "./src/session.ts",
       "default": "./src/session.ts"
     },
+    "./preview-token": {
+      "types": "./src/preview-token.ts",
+      "default": "./src/preview-token.ts"
+    },
     "./fixtures": {
       "types": "./src/fixtures/index.ts",
       "default": "./src/fixtures/index.ts"

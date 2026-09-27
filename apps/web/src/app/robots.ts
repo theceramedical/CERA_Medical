@@ -34,10 +34,18 @@ export default function robots(): MetadataRoute.Robots {
          * the same terms.
          */
         '/search',
+        '/api',
 
         // The design preview, which is not served in production at all. Listed so that if the guard is
         // ever loosened, the route is still not crawled.
         '/dev',
+
+        // Draft-preview enable/disable. A crawler hitting these with a stale
+        // token just 401s, but the path should not be in an index anyway.
+        '/api/preview',
+
+        // Server-to-server cache invalidation. A crawler has no business here.
+        '/api/revalidate',
       ],
     },
 

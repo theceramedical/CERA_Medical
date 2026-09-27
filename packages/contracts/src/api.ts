@@ -86,6 +86,7 @@ export const SearchHitSchema = z.object({
   title: z.string(),
   excerpt: z.string().nullable(),
 });
+export type SearchHit = z.infer<typeof SearchHitSchema>;
 
 export const SearchResponseSchema = PageSchema(SearchHitSchema);
 

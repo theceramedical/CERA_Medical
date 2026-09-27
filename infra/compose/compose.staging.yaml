@@ -1,0 +1,14 @@
+# Staging overlay. No host port publishing for Postgres or Valkey.
+
+services:
+  caddy:
+    image: caddy:2.11.4-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - cera-public
+      - cera-private

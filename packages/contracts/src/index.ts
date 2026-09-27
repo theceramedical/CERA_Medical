@@ -152,6 +152,8 @@ export {
   PaginationQuerySchema,
 } from './pagination.ts';
 
+export { PREVIEW_TTL_SECONDS, signPreviewToken, verifyPreviewToken } from './preview-token.ts';
+
 export {
   ALL_SESSION_COOKIE_NAMES,
   OIDC_STATE_COOKIE_NAME,
@@ -199,6 +201,7 @@ export {
   RetryDeliveryResponseSchema,
   type SearchQuery,
   SearchQuerySchema,
+  type SearchHit,
   SearchHitSchema,
   SearchResponseSchema,
   ServiceParamsSchema,
@@ -208,3 +211,5 @@ export {
   UpdateMyProfileRequestSchema,
   WebhookAckResponseSchema,
 } from './api.ts';
+
+export type { CrmPort, CrmUpsertResult, EmailMessage, EmailPort, StoragePort } from './ports.ts';

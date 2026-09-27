@@ -1,0 +1,14 @@
+# Production overlay. Same topology as staging; secrets come from the host, never the image.
+
+services:
+  caddy:
+    image: caddy:2.11.4-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - cera-public
+      - cera-private

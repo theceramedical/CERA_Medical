@@ -1,8 +1,11 @@
 import { SkipLink } from '@cera/ui/skip-link';
+import { draftMode } from 'next/headers';
 
+import { LivePreview } from '../../components/live-preview.client.tsx';
 import { SiteFooter } from '../../components/site-footer.tsx';
 import { SiteHeader } from '../../components/site-header.tsx';
 
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 /**
@@ -14,7 +17,20 @@ import type { ReactNode } from 'react';
  * passing props to switch off the other groups' pieces, which is the arrangement that ends up with
  * the staff console rendering a "Make an Enquiry" button.
  */
-export default function PublicLayout({ children }: { readonly children: ReactNode }) {
+export async function generateMetadata(): Promise<Metadata> {
+  const draft = await draftMode();
+  if (!draft.isEnabled) return {};
+
+  // Preview links are never indexable. Draft mode is a cookie, not a path, so
+  // robots.txt cannot name it; this header is the control that is actually on
+  // the response a crawler would receive if it somehow presented the cookie.
+  return { robots: { index: false, follow: false } };
+}
+
+export default async function PublicLayout({ children }: { readonly children: ReactNode }) {
+  const draft = await draftMode();
+  const cmsUrl = process.env.CMS_URL ?? 'http://localhost:3001';
+
   return (
     /**
      * `min-h-dvh` with the footer pushed down by `flex-1` on `<main>`.
@@ -31,6 +47,8 @@ export default function PublicLayout({ children }: { readonly children: ReactNod
        * reached after the thing it exists to skip.
        */}
       <SkipLink targetId="main" />
+
+      {draft.isEnabled ? <LivePreview serverURL={cmsUrl} /> : null}
 
       <SiteHeader />
 

@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "@cera/config": "workspace:*",
+    "@cera/contracts": "workspace:*",
     "bullmq": "catalog:",
     "fastify": "catalog:",
     "pg": "catalog:",
+    "svix": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

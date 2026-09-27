@@ -13,14 +13,18 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run src",
-    "test:integration": "vitest run tests/integration"
+    "test:integration": "vitest run tests/integration",
+    "test:authz": "vitest run src/auth"
   },
   "dependencies": {
     "@cera/config": "workspace:*",
+    "@cera/contracts": "workspace:*",
     "@fastify/cors": "catalog:",
     "@fastify/helmet": "catalog:",
     "@fastify/rate-limit": "catalog:",
     "fastify": "catalog:",
+    "jose": "catalog:",
+    "openid-client": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },
