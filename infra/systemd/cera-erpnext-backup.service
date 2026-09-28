@@ -1,0 +1,9 @@
+[Unit]
+Description=CERA encrypted ERPNext database and files backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/cera
+ExecStart=/opt/cera/infra/erpnext/backup.sh

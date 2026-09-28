@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily CERA encrypted ERPNext backup
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 UTC
+RandomizedDelaySec=30m
+Persistent=true
+Unit=cera-erpnext-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -190,7 +190,7 @@ jobs:
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
-          tar -cf - compose.yaml infra/compose infra/caddy infra/postgres infra/scripts infra/systemd | \
+          tar -cf - compose.yaml infra/compose infra/caddy infra/postgres infra/erpnext infra/scripts infra/systemd | \
             ssh "$DEPLOY_USER@$DEPLOY_HOST" 'mkdir -p /opt/cera && tar -xf - -C /opt/cera'
           ssh "$DEPLOY_USER@$DEPLOY_HOST" \
             "cd /opt/cera && IMAGE_PREFIX='$IMAGE_PREFIX' IMAGE_TAG='$IMAGE_TAG' bash infra/scripts/deploy.sh production"

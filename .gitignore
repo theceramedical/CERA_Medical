@@ -53,6 +53,10 @@ logs/
 npm-debug.log*
 pnpm-debug.log*
 
+# Python execution caches from infrastructure verification scripts
+__pycache__/
+*.py[cod]
+
 # Editor and OS
 .vscode/*
 !.vscode/extensions.json
