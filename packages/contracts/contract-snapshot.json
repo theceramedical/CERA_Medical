@@ -675,11 +675,17 @@
         },
         "provider": {
           "type": "string",
-          "enum": ["zoho", "resend"]
+          "enum": ["zoho", "erpnext", "resend"]
         },
         "eventType": {
           "type": "string",
-          "enum": ["zoho.lead.upsert", "resend.customer.receipt", "resend.staff.alert", "resend.status.update"]
+          "enum": [
+            "zoho.lead.upsert",
+            "erpnext.lead.upsert",
+            "resend.customer.receipt",
+            "resend.staff.alert",
+            "resend.status.update"
+          ]
         },
         "idempotencyKey": {
           "type": "string",
@@ -1239,11 +1245,17 @@
         },
         "provider": {
           "type": "string",
-          "enum": ["zoho", "resend"]
+          "enum": ["zoho", "erpnext", "resend"]
         },
         "eventType": {
           "type": "string",
-          "enum": ["zoho.lead.upsert", "resend.customer.receipt", "resend.staff.alert", "resend.status.update"]
+          "enum": [
+            "zoho.lead.upsert",
+            "erpnext.lead.upsert",
+            "resend.customer.receipt",
+            "resend.staff.alert",
+            "resend.status.update"
+          ]
         },
         "idempotencyKey": {
           "type": "string",
@@ -1323,12 +1335,18 @@
     "IntegrationEventTypeSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "string",
-      "enum": ["zoho.lead.upsert", "resend.customer.receipt", "resend.staff.alert", "resend.status.update"]
+      "enum": [
+        "zoho.lead.upsert",
+        "erpnext.lead.upsert",
+        "resend.customer.receipt",
+        "resend.staff.alert",
+        "resend.status.update"
+      ]
     },
     "IntegrationProviderSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "string",
-      "enum": ["zoho", "resend"]
+      "enum": ["zoho", "erpnext", "resend"]
     },
     "InternalNoteSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -1471,7 +1489,7 @@
         },
         "provider": {
           "type": "string",
-          "enum": ["zoho", "resend"]
+          "enum": ["zoho", "erpnext", "resend"]
         },
         "deadLetteredOnly": {
           "type": "boolean"
@@ -1496,11 +1514,17 @@
               },
               "provider": {
                 "type": "string",
-                "enum": ["zoho", "resend"]
+                "enum": ["zoho", "erpnext", "resend"]
               },
               "eventType": {
                 "type": "string",
-                "enum": ["zoho.lead.upsert", "resend.customer.receipt", "resend.staff.alert", "resend.status.update"]
+                "enum": [
+                  "zoho.lead.upsert",
+                  "erpnext.lead.upsert",
+                  "resend.customer.receipt",
+                  "resend.staff.alert",
+                  "resend.status.update"
+                ]
               },
               "idempotencyKey": {
                 "type": "string",

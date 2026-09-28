@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { SEED_SERVICES } from './seed-data.ts';
+import { SEED_SERVICES } from './seed-data.js';
 
 describe('catalogue seed data', () => {
   it('contains the six reference slugs plus the withdrawn seventh', () => {

@@ -5,9 +5,17 @@
  * a Service; it may not invent a price or a procedure.
  */
 
-export function JsonLd({ data }: { readonly data: Record<string, unknown> }) {
+import { headers } from 'next/headers';
+
+export async function JsonLd({ data }: { readonly data: Record<string, unknown> }) {
+  const policy = (await headers()).get('content-security-policy');
+  const nonce = /'nonce-([^']+)'/.exec(policy ?? '')?.[1];
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
+    <script
+      type="application/ld+json"
+      nonce={nonce}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }}
+    />
   );
 }
 

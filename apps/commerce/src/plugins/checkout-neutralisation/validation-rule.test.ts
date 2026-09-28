@@ -1,7 +1,7 @@
 import { buildSchema, parse, specifiedRules, validate } from 'graphql';
 import { describe, expect, it } from 'vitest';
 
-import { denyShopCheckoutRule } from './validation-rule.ts';
+import { denyShopCheckoutRule } from './validation-rule.js';
 
 const schema = buildSchema(`
   type Order { id: ID! }
@@ -15,7 +15,9 @@ const schema = buildSchema(`
 
 describe('denyShopCheckoutRule', () => {
   it('rejects addItemToOrder, including when aliased', () => {
-    const aliased = parse(`mutation { sneak: addItemToOrder(productVariantId: "1", quantity: 1) { id } }`);
+    const aliased = parse(
+      `mutation { sneak: addItemToOrder(productVariantId: "1", quantity: 1) { id } }`,
+    );
     const errors = validate(schema, aliased, [...specifiedRules, denyShopCheckoutRule]);
     expect(errors.some((error) => error.message === 'This operation is not available.')).toBe(true);
   });

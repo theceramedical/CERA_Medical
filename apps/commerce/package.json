@@ -5,9 +5,9 @@
   "type": "module",
   "description": "Vendure 3.7 service catalogue with checkout neutralised (ADR-005)",
   "scripts": {
-    "dev": "node --watch --experimental-strip-types src/index.ts",
-    "dev:worker": "node --watch --experimental-strip-types src/index-worker.ts",
-    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/index.ts",
+    "dev:worker": "tsx watch src/index-worker.ts",
+    "build": "pnpm build:server && pnpm build:dashboard",
     "start": "node dist/index.js",
     "start:worker": "node dist/index-worker.js",
     "lint": "eslint src --max-warnings 0",
@@ -16,9 +16,12 @@
     "test": "vitest run",
     "test:unit": "vitest run src",
     "test:contract": "vitest run tests/contract",
-    "migrate": "node --experimental-strip-types src/migrate.ts",
-    "seed": "node --experimental-strip-types src/seed.ts",
-    "denied-fields": "node --experimental-strip-types src/scripts/derive-denied-fields.ts"
+    "migrate": "pnpm build:server && node dist/migrate.js",
+    "seed": "tsx src/seed.ts",
+    "denied-fields": "node --experimental-strip-types src/scripts/derive-denied-fields.ts",
+    "build:server": "tsc -p tsconfig.build.json && node scripts/compile-migrations.mjs",
+    "build:dashboard": "vite build",
+    "migration:generate": "tsx src/generate-migration.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "catalog:",
@@ -32,12 +35,16 @@
     "@vendure/job-queue-plugin": "catalog:",
     "bullmq": "catalog:",
     "graphql": "catalog:",
+    "ioredis": "catalog:",
     "sharp": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "gql.tada": "1.9.3",
+    "tsx": "4.23.15",
     "typescript": "catalog:",
+    "vite": "7.3.1",
     "vitest": "catalog:"
   }
 }

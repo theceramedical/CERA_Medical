@@ -1,0 +1,2 @@
+ALTER TYPE "public"."integration_event_type" ADD VALUE 'erpnext.lead.upsert' BEFORE 'resend.customer.receipt';--> statement-breakpoint
+ALTER TYPE "public"."integration_provider" ADD VALUE 'erpnext' BEFORE 'resend';

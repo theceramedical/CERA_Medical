@@ -70,11 +70,12 @@ export type ServiceStatus = z.infer<typeof ServiceStatusSchema>;
 // Integrations
 // ---------------------------------------------------------------------------
 
-export const IntegrationProviderSchema = z.enum(['zoho', 'resend']);
+export const IntegrationProviderSchema = z.enum(['zoho', 'erpnext', 'resend']);
 export type IntegrationProvider = z.infer<typeof IntegrationProviderSchema>;
 
 export const IntegrationEventTypeSchema = z.enum([
   'zoho.lead.upsert',
+  'erpnext.lead.upsert',
   'resend.customer.receipt',
   'resend.staff.alert',
   'resend.status.update',

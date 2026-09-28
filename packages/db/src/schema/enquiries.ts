@@ -1,5 +1,14 @@
 import { sql } from 'drizzle-orm';
-import { check, index, pgTable, text, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  check,
+  index,
+  integer,
+  pgTable,
+  text,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 import {
   createdAt,
@@ -33,6 +42,9 @@ export const enquiries = pgTable(
      * to staff. The API retries on conflict.
      */
     reference: varchar('reference', { length: 18 }).notNull(),
+    fingerprint: varchar('fingerprint', { length: 64 }),
+    idempotencyKey: varchar('idempotency_key', { length: 256 }),
+    version: integer('version').notNull().default(1),
     /** Null until a verified customer claims it. Set once, never reassigned. */
     customerSubjectId: subjectId('customer_subject_id'),
     name: varchar('name', { length: 120 }).notNull(),
@@ -74,6 +86,8 @@ export const enquiries = pgTable(
   },
   (table) => [
     uniqueIndex('enquiries_reference_key').on(table.reference),
+    uniqueIndex('enquiries_fingerprint_key').on(table.fingerprint),
+    uniqueIndex('enquiries_idempotency_key').on(table.idempotencyKey),
     /**
      * The staff queue's only ordering, and the only reason this index exists.
      * `(internal_status, created_at desc)` serves "open enquiries, newest first"

@@ -6,7 +6,7 @@
 | -------------- | ------------------------------------ | ------------------------------------------------------ |
 | `ci.yml`       | pull request, push to `main`         | Lint, typecheck, test, build                           |
 | `security.yml` | pull request, push to `main`, weekly | Secret scan, dependency audit, action-pinning check    |
-| `staging.yml`  | push to `develop`                    | Build images, scan, deploy to staging                  |
+| `staging.yml`  | push to `develop`                    | Optional; unused in the one-server rollout             |
 | `release.yml`  | `v*.*.*` tag                         | Full verification, security gate, deploy to production |
 
 ## Design decisions worth knowing
@@ -32,16 +32,13 @@ the usual way a required-checks list rots.
 a constraint violation, a migration that fails on existing data, or a transaction-scope error - which
 is most of what integration tests are for.
 
-**Staging reports vulnerabilities; production blocks on them.** Blocking staging on an unfixable
-base-image CVE stops all testing for something nobody can action today. Production gates on fixable
-critical and high findings only, via `ignore-unfixed`.
+**Production blocks on fixable critical and high image findings**, via `ignore-unfixed`.
 
-**Production promotes the staging artefact, re-tagged.** It does not rebuild. A rebuild produces a
-different artefact from the one that was verified, which defeats the purpose of having verified it.
+**Production builds compile the public URLs into the images.** The host records resolved digests in its release manifest. The optional staging workflow is not used for this rollout.
 
-**Production backs up before deploying.** The ordering is not negotiable: RPO is 24 hours and RTO is
-4 hours (PRD 15), so deploying without a fresh backup means a failed migration could cost a full day of
-enquiries.
+**Production makes an encrypted local database backup before deploying.** The user chose no off-site
+backup. A single-server failure can destroy both live data and local backups; the former PRD recovery
+targets cannot be claimed for this deployment.
 
 ## Reproducing a CI failure locally
 
@@ -74,26 +71,21 @@ job is treated as a check that never reports, and the branch quietly stops being
 
 ## Secrets
 
-Secrets are scoped to GitHub **environments**, not the repository, so a workflow cannot reach production
-credentials unless it targets the production environment - and that environment requires approval.
+Deployment SSH secrets are scoped to the GitHub **production environment**, not the repository, so
+the workflow cannot reach the host until the environment review gate passes. Provider secrets remain
+in `/opt/cera/.env` on the host, not in GitHub Actions.
 
-| Secret                                                       | Environment                                           |
-| ------------------------------------------------------------ | ----------------------------------------------------- |
-| `STAGING_HOST`, `STAGING_USER`, `STAGING_SSH_KEY`            | staging                                               |
-| `PRODUCTION_HOST`, `PRODUCTION_USER`, `PRODUCTION_SSH_KEY`   | production                                            |
-| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`                   | staging, production (separate values per environment) |
-| `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`                    | staging, production                                   |
-| `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN` | staging, production                                   |
-| `GLITCHTIP_DSN`                                              | staging, production                                   |
+| Secret                                                                               | Environment      |
+| ------------------------------------------------------------------------------------ | ---------------- |
+| `PRODUCTION_HOST`, `PRODUCTION_USER`, `PRODUCTION_SSH_KEY`, `PRODUCTION_KNOWN_HOSTS` | production       |
+| R2, Resend, ERPNext, OIDC, and database credentials                                  | host `.env` only |
 
-Never reuse a value across environments. A leaked staging key must not be valid in production; that is
-the entire point of separating them.
+Do not reuse local test credentials in production.
 
 ## Current state
 
-The workflows are authored, validated, and committed, but have never executed: CERA has not yet supplied
-the GitHub organisation (PRD 22). The deploy steps detect an absent host secret and emit a warning
-rather than failing, so the build and scan stages are still exercised on the first push.
+The workflows are authored and locally validated, but have never executed: CERA has not yet supplied
+the GitHub organisation (PRD 22). The deploy steps fail when a host secret is absent. See [`deploy-host.md`](deploy-host.md) for the host setup and recovery procedure.
 
 First run after the organisation exists:
 

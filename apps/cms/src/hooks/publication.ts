@@ -1,3 +1,5 @@
+import { APIError } from 'payload';
+
 import { canPublish, isCmsUser } from '../access/roles.ts';
 
 /**
@@ -14,9 +16,9 @@ import { canPublish, isCmsUser } from '../access/roles.ts';
  * access on them is the other half of the same rule).
  */
 
-export class PublicationForbiddenError extends Error {
+export class PublicationForbiddenError extends APIError {
   constructor(action: 'publish' | 'unpublish') {
-    super(`Only a content approver or administrator can ${action}.`);
+    super(`Only a content approver or administrator can ${action}.`, 403);
     this.name = 'PublicationForbiddenError';
   }
 }
@@ -55,7 +57,7 @@ export function applyPublicationRules(options: {
       data: {
         ...options.incoming,
         _status: 'published',
-        approverId: actor?.id ?? null,
+        approverId: actor === null ? null : String(actor.id),
         publishedAt: options.incoming.publishedAt ?? new Date().toISOString(),
       },
     };

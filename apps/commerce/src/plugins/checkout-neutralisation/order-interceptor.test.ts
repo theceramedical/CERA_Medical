@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { RejectCheckoutInterceptor } from './order-interceptor.ts';
+import { RejectCheckoutInterceptor } from './order-interceptor.js';
 
 describe('RejectCheckoutInterceptor', () => {
   it('blocks every line-item mutation', () => {

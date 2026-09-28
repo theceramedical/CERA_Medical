@@ -1,0 +1,9 @@
+[Unit]
+Description=CERA encrypted backup for %i
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/cera
+ExecStart=/opt/cera/infra/scripts/backup.sh %i

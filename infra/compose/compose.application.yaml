@@ -1,0 +1,183 @@
+# Shared application topology. Supply the host-only env file and immutable image references.
+services:
+  web:
+    image: ${WEB_IMAGE:?WEB_IMAGE required}
+    restart: unless-stopped
+    environment:
+      CERA_APP: web
+      PORT: 3000
+      NODE_ENV: production
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?required}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?required}
+      CMS_URL: ${CMS_URL:?required}
+      SESSION_SECRET: ${SESSION_SECRET:?required}
+      OIDC_ISSUER: ${OIDC_ISSUER:?required}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?required}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:?required}
+      OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:?required}
+      API_INTERNAL_URL: http://api:3003
+      CMS_API_URL: http://cms:3001/api
+    networks: [cera-public, cera-private]
+    depends_on:
+      api: { condition: service_healthy }
+      cms: { condition: service_started }
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+
+  api:
+    image: ${API_IMAGE:?API_IMAGE required}
+    restart: unless-stopped
+    env_file: ${CERA_ENV_FILE:?CERA_ENV_FILE required}
+    environment:
+      CERA_APP: api
+      NODE_ENV: production
+      CERA_ENV: ${CERA_ENV:?required}
+      API_PORT: 3003
+      DATABASE_URL: ${DATABASE_URL:?internal Postgres URL required}
+      VENDURE_SHOP_API_URL: http://commerce:3002/shop-api
+      CMS_API_URL: http://cms:3001/api
+      CORS_ALLOWED_ORIGINS: ${NEXT_PUBLIC_SITE_URL:?required}
+    networks: [cera-private, cera-public]
+    depends_on:
+      postgres: { condition: service_healthy }
+      commerce: { condition: service_started }
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3003/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+
+  worker:
+    image: ${WORKER_IMAGE:?WORKER_IMAGE required}
+    restart: unless-stopped
+    env_file: ${CERA_ENV_FILE:?CERA_ENV_FILE required}
+    environment:
+      CERA_APP: worker
+      NODE_ENV: production
+      CERA_ENV: ${CERA_ENV:?required}
+      WORKER_PORT: 3004
+      DATABASE_URL: ${DATABASE_URL:?internal Postgres URL required}
+      VALKEY_HOST: valkey
+      VALKEY_URL: redis://valkey:6379/0
+    networks: [cera-private, cera-public]
+    depends_on:
+      postgres: { condition: service_healthy }
+      valkey: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3004/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+
+  cms:
+    image: ${CMS_IMAGE:?CMS_IMAGE required}
+    restart: unless-stopped
+    env_file: ${CERA_ENV_FILE:?CERA_ENV_FILE required}
+    environment:
+      CERA_APP: cms
+      NODE_ENV: production
+      PORT: 3001
+      CMS_DATABASE_URL: ${CMS_DATABASE_URL:?internal CMS Postgres URL required}
+    networks: [cera-private, cera-public]
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3001/admin').then(r=>process.exit(r.status<400?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  commerce:
+    image: ${COMMERCE_IMAGE:?COMMERCE_IMAGE required}
+    restart: unless-stopped
+    env_file: ${CERA_ENV_FILE:?CERA_ENV_FILE required}
+    environment: &commerce_environment
+      CERA_APP: commerce
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${CERA_COMMERCE_DB:?required}
+      DB_USERNAME: ${CERA_COMMERCE_DB_USER:?required}
+      DB_PASSWORD: ${CERA_COMMERCE_DB_PASSWORD:?required}
+      VALKEY_HOST: valkey
+      VALKEY_PORT: 6379
+      COMMERCE_PORT: 3002
+    networks: [cera-private, cera-public]
+    depends_on:
+      postgres: { condition: service_healthy }
+      valkey: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3002/dashboard/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  commerce-worker:
+    image: ${COMMERCE_IMAGE:?COMMERCE_IMAGE required}
+    restart: unless-stopped
+    env_file: ${CERA_ENV_FILE:?CERA_ENV_FILE required}
+    environment:
+      <<: *commerce_environment
+      CERA_APP: commerce-worker
+    networks: [cera-private]
+    depends_on:
+      postgres: { condition: service_healthy }
+      valkey: { condition: service_healthy }
+
+  migrator:
+    image: ${MIGRATOR_IMAGE:?MIGRATOR_IMAGE required}
+    profiles: [migration]
+    restart: "no"
+    env_file: ${CERA_ENV_FILE:?CERA_ENV_FILE required}
+    environment:
+      CERA_APP: migrator
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?internal Postgres URL required}
+      CMS_DATABASE_URL: ${CMS_DATABASE_URL:?internal CMS Postgres URL required}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${CERA_COMMERCE_DB:?required}
+      DB_USERNAME: ${CERA_COMMERCE_DB_USER:?required}
+      DB_PASSWORD: ${CERA_COMMERCE_DB_PASSWORD:?required}
+      VALKEY_HOST: valkey
+    networks: [cera-private]
+    depends_on:
+      postgres: { condition: service_healthy }

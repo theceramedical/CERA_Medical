@@ -5,8 +5,8 @@ import {
   DENIED_SHOP_MUTATION_SET,
   missingDeniedFields,
   SHOP_DENY_FAMILIES,
-} from './denied-fields.ts';
-import { SHOP_MUTATION_SNAPSHOT } from './shop-mutations.snapshot.ts';
+} from './denied-fields.js';
+import { SHOP_MUTATION_SNAPSHOT } from './shop-mutations.snapshot.js';
 
 describe('denied Shop API mutations', () => {
   it('covers every order, payment, shipping, and registration field in the snapshot', () => {

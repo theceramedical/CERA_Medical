@@ -7,27 +7,27 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "default": "./dist/index.js"
     },
     "./logger": {
       "types": "./src/logger.ts",
-      "default": "./src/logger.ts"
+      "default": "./dist/logger.js"
     },
     "./redact": {
       "types": "./src/redact.ts",
-      "default": "./src/redact.ts"
+      "default": "./dist/redact.js"
     },
     "./request-id": {
       "types": "./src/request-id.ts",
-      "default": "./src/request-id.ts"
+      "default": "./dist/request-id.js"
     },
     "./errors": {
       "types": "./src/errors.ts",
-      "default": "./src/errors.ts"
+      "default": "./dist/errors.js"
     },
     "./glitchtip": {
       "types": "./src/glitchtip.ts",
-      "default": "./src/glitchtip.ts"
+      "default": "./dist/glitchtip.js"
     }
   },
   "files": [

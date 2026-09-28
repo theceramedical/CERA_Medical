@@ -92,7 +92,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       set -e;
-      echo \"s3.bucket.create -name $${S3_BUCKET}\" | weed shell -master=seaweedfs:9333 || true;
+      echo \"s3.bucket.create -name $${S3_BUCKET}\" | weed shell -master=seaweedfs:9333 -filer=seaweedfs:8888;
       echo \"[seaweedfs-init] bucket $${S3_BUCKET} ready\";
       "
     restart: "no"
@@ -120,3 +120,15 @@ services:
       timeout: 3s
       retries: 5
       start_period: 5s
+
+  authentik-server:
+    extends:
+      file: infra/compose/compose.authentik.yaml
+      service: authentik-server
+    ports:
+      - "127.0.0.1:${AUTHENTIK_PORT:-9000}:9000"
+
+  authentik-worker:
+    extends:
+      file: infra/compose/compose.authentik.yaml
+      service: authentik-worker

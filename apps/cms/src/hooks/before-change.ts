@@ -17,7 +17,7 @@ export const publicationBeforeChange: CollectionBeforeChangeHook = ({ data, req,
     authorId?: string | null;
   };
 
-  incoming.authorId ??= typeof req.user?.id === 'string' ? req.user.id : null;
+  incoming.authorId ??= req.user == null ? null : String(req.user.id);
 
   const existing =
     originalDoc === undefined || originalDoc === null

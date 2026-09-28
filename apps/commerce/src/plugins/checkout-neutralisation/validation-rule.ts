@@ -1,6 +1,6 @@
 import { GraphQLError, type ValidationContext, type ValidationRule } from 'graphql';
 
-import { DENIED_ADMIN_MUTATION_SET, DENIED_SHOP_MUTATION_SET } from './denied-fields.ts';
+import { DENIED_ADMIN_MUTATION_SET, DENIED_SHOP_MUTATION_SET } from './denied-fields.js';
 
 /**
  * Rejects a GraphQL operation that selects a denied root mutation field.

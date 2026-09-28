@@ -1,14 +1,22 @@
-# Production overlay. Same topology as staging; secrets come from the host, never the image.
-
+# Production edge overlay. Applications are in compose.application.yaml.
 services:
   caddy:
     image: caddy:2.11.4-alpine
     restart: unless-stopped
+    environment:
+      CERA_DOMAIN: ${CERA_DOMAIN:?CERA_DOMAIN required}
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-    networks:
-      - cera-public
-      - cera-private
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [cera-public]
+    depends_on:
+      web: { condition: service_healthy }
+      api: { condition: service_healthy }
+
+volumes:
+  caddy-data:
+  caddy-config:

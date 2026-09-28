@@ -1,74 +1,62 @@
-import { ALL_SESSION_COOKIE_NAMES, OIDC_STATE_COOKIE_NAME, SESSION_COOKIE_NAME } from '@cera/contracts/session';
-import { CompactEncrypt } from 'jose';
-import { NextResponse } from 'next/server';
+import {
+  ALL_SESSION_COOKIE_NAMES,
+  OIDC_STATE_COOKIE_NAME,
+  SESSION_COOKIE_NAME,
+} from '@cera/contracts/session';
+import { NextResponse, type NextRequest } from 'next/server';
+import { authorizationCodeGrant } from 'openid-client';
 
+import {
+  identityClaims,
+  oidcConfiguration,
+  openHandshake,
+  sealHandshake,
+} from '../../../lib/auth/oidc.ts';
 import { safeReturnTo } from '../../../lib/auth/return-to.ts';
 
-interface Handshake {
-  readonly state: string;
-  readonly nonce: string;
-  readonly verifier: string;
-  readonly next: string;
-}
-
-/**
- * Completes the OIDC handshake. A replayed `state` fails closed. When Authentik
- * is not configured, a local development session is issued so portal and staff
- * pages can be exercised without the IdP.
- */
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   const url = new URL(request.url);
-  const code = url.searchParams.get('code');
-  const state = url.searchParams.get('state');
-  const cookieHeader = request.headers.get('cookie') ?? '';
-  const handshake = readHandshake(cookieHeader);
-
-  if (handshake === null || state === null || state !== handshake.state || code === null) {
-    return NextResponse.redirect(new URL('/auth/error?reason=state', url.origin));
-  }
-
-  const secret = process.env.SESSION_SECRET ?? 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
-  const key = Buffer.from(secret, 'base64').subarray(0, 32);
-  const now = Math.floor(Date.now() / 1000);
-  const claims = {
-    sub: code === 'local' ? 'local-customer' : `sub-${code}`,
-    email: 'alex@example.com',
-    emailVerified: true,
-    roles: code === 'staff' ? ['enquiry_handler'] : ['customer'],
-    mfa: code === 'staff',
-    iat: now,
-    exp: now + 12 * 60 * 60,
-    absoluteExp: now + 7 * 24 * 60 * 60,
-  };
-  const token = await new CompactEncrypt(new TextEncoder().encode(JSON.stringify(claims)))
-    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
-    .encrypt(key);
-
-  const response = NextResponse.redirect(new URL(safeReturnTo(handshake.next), url.origin));
-  response.cookies.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: url.protocol === 'https:',
-    path: '/',
-  });
-  response.cookies.set(OIDC_STATE_COOKIE_NAME, '', { path: '/', maxAge: 0 });
-  for (const name of ALL_SESSION_COOKIE_NAMES) {
-    if (name !== SESSION_COOKIE_NAME) {
-      response.cookies.set(name, '', { path: '/', maxAge: 0 });
-    }
-  }
-  return response;
-}
-
-function readHandshake(cookieHeader: string): Handshake | null {
-  const match = cookieHeader
-    .split(';')
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(`${OIDC_STATE_COOKIE_NAME}=`));
-  if (match === undefined) return null;
+  let response: NextResponse;
   try {
-    return JSON.parse(decodeURIComponent(match.slice(`${OIDC_STATE_COOKIE_NAME}=`.length))) as Handshake;
-  } catch {
-    return null;
+    const token = request.cookies.get(OIDC_STATE_COOKIE_NAME)?.value;
+    if (!token) throw new Error('Missing handshake');
+    const handshake = await openHandshake(token);
+    const tokens = await authorizationCodeGrant(await oidcConfiguration(), url, {
+      pkceCodeVerifier: handshake.verifier,
+      expectedState: handshake.state,
+      expectedNonce: handshake.nonce,
+      idTokenExpected: true,
+    });
+    const identity = identityClaims(tokens.claims() ?? {});
+    if (!identity.roles.length) throw new Error('No platform role');
+    const staff = identity.roles.some((role) => role !== 'customer');
+    if (staff && !identity.mfa) throw new Error('Staff MFA required');
+    const now = Math.floor(Date.now() / 1000);
+    const exp = now + (staff ? 30 * 60 : 12 * 60 * 60);
+    const claims = {
+      ...identity,
+      iat: now,
+      exp,
+      absoluteExp: now + (staff ? 8 * 60 * 60 : 7 * 24 * 60 * 60),
+    };
+    response = NextResponse.redirect(new URL(safeReturnTo(handshake.next), url.origin));
+    response.cookies.set(SESSION_COOKIE_NAME, await sealHandshake(claims), {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+      path: '/',
+      maxAge: exp - now,
+    });
+    for (const name of ALL_SESSION_COOKIE_NAMES)
+      if (name !== SESSION_COOKIE_NAME)
+        response.cookies.set(name, '', { secure: true, path: '/', maxAge: 0 });
+  } catch (error) {
+    console.error(
+      'OIDC callback failed:',
+      error instanceof Error ? error.message : 'unknown error',
+    );
+    response = NextResponse.redirect(new URL('/auth/error?reason=identity', url.origin));
   }
+  response.cookies.set(OIDC_STATE_COOKIE_NAME, '', { secure: true, path: '/', maxAge: 0 });
+  return response;
 }

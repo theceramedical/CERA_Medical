@@ -15,6 +15,9 @@ export interface PortalEnquiry {
   readonly emailHash: string;
   readonly serviceTitle: string;
   readonly message: string;
+  readonly name?: string;
+  readonly phone?: string | null;
+  readonly serviceId?: string;
   readonly internalStatus: InternalStatus;
   readonly ownerId: string | null;
   readonly notes: readonly string[];
@@ -39,21 +42,34 @@ export interface PortalProfile {
   readonly email: string;
 }
 
+type Awaitable<T> = T | Promise<T>;
+
 export interface PortalStore {
-  listAll(): PortalEnquiry[];
-  getById(id: string): PortalEnquiry | null;
-  listForSubject(subjectId: string): PortalEnquiry[];
-  getForSubject(subjectId: string, reference: string): PortalEnquiry | null;
-  findUnclaimedByEmailHash(emailHash: string): PortalEnquiry[];
-  claim(enquiryId: string, subjectId: string): boolean;
-  putEnquiry(enquiry: PortalEnquiry): void;
-  putToken(token: ClaimToken): void;
-  findToken(hash: string): ClaimToken | null;
-  getProfile(subjectId: string): PortalProfile | null;
-  putProfile(profile: PortalProfile): void;
+  listAll(): Awaitable<PortalEnquiry[]>;
+  getById(id: string): Awaitable<PortalEnquiry | null>;
+  listForSubject(subjectId: string): Awaitable<PortalEnquiry[]>;
+  getForSubject(subjectId: string, reference: string): Awaitable<PortalEnquiry | null>;
+  findUnclaimedByEmailHash(emailHash: string): Awaitable<PortalEnquiry[]>;
+  claim(enquiryId: string, subjectId: string): Awaitable<boolean>;
+  putEnquiry(enquiry: PortalEnquiry, actor?: string): Awaitable<void>;
+  putToken(token: ClaimToken): Awaitable<void>;
+  findToken(hash: string): Awaitable<ClaimToken | null>;
+  getProfile(subjectId: string): Awaitable<PortalProfile | null>;
+  putProfile(profile: PortalProfile): Awaitable<void>;
+  issueClaim?(token: ClaimToken, raw: string): Promise<void>;
+  consumeToken?(token: string, subject: string, emailHash: string): Promise<boolean>;
+  listAudit?(id: string): Promise<unknown[]>;
+  listDeliveries?(): Promise<unknown[]>;
+  retryDelivery?(id: string, actor: string): Promise<boolean>;
 }
 
-export function memoryPortalStore(): PortalStore {
+type SyncPortalStore = {
+  [K in keyof PortalStore]: PortalStore[K] extends (...args: infer A) => infer R
+    ? (...args: A) => Awaited<R>
+    : PortalStore[K];
+};
+
+export function memoryPortalStore(): SyncPortalStore {
   const enquiries = new Map<string, PortalEnquiry>();
   const tokens = new Map<string, ClaimToken>();
   const profiles = new Map<string, PortalProfile>();
@@ -108,7 +124,11 @@ export function emailHashOf(email: string): string {
   return createHash('sha256').update(email.trim().toLowerCase()).digest('hex');
 }
 
-export function issueClaimToken(store: PortalStore, enquiry: PortalEnquiry, now = Date.now()): string {
+export function issueClaimToken(
+  store: ReturnType<typeof memoryPortalStore>,
+  enquiry: PortalEnquiry,
+  now = Date.now(),
+): string {
   const token = randomBytes(32).toString('base64url');
   store.putToken({
     hash: hashToken(token),
@@ -122,7 +142,7 @@ export function issueClaimToken(store: PortalStore, enquiry: PortalEnquiry, now 
 }
 
 export function consumeClaimToken(
-  store: PortalStore,
+  store: ReturnType<typeof memoryPortalStore>,
   token: string,
   subjectId: string,
   subjectEmailHash: string,
@@ -143,13 +163,13 @@ export function consumeClaimToken(
 export function projectPortalEnquiry(enquiry: PortalEnquiry): CustomerEnquiry {
   return toCustomerEnquiry(
     {
-      id: '01900000-0000-7000-8000-000000000001',
+      id: enquiry.id,
       reference: enquiry.reference,
       customerSubjectId: enquiry.customerSubjectId,
-      name: 'Customer',
+      name: enquiry.name ?? 'Customer',
       email: enquiry.email,
-      phone: null,
-      serviceId: 'cardiology',
+      phone: enquiry.phone ?? null,
+      serviceId: enquiry.serviceId ?? 'cardiology',
       message: enquiry.message,
       consentAt: enquiry.createdAt,
       source: 'web_general',

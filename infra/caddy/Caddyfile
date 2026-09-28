@@ -52,7 +52,7 @@ auth.{$CERA_DOMAIN:localhost} {
 	reverse_proxy authentik-server:9000
 }
 
-status.{$CERA_DOMAIN:localhost} {
+crm.{$CERA_DOMAIN:localhost} {
 	import secure
-	reverse_proxy glitchtip-web:8000
+	reverse_proxy erpnext-frontend:8080
 }

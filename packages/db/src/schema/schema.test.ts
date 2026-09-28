@@ -350,10 +350,8 @@ describe('the schema stays aligned with the contracts', () => {
   /**
    * Column-to-field parity, in the direction that matters.
    *
-   * A column with no contract field is the dangerous direction: it means data is
-   * being stored that no projection considers, so it cannot be deliberately
-   * included or excluded from a customer response - it is simply invisible until
-   * someone writes `select *`.
+   * Include the private persistence metadata used for idempotency and optimistic
+   * updates alongside the enquiry fields shared with the API.
    */
   it.each([
     [
@@ -362,6 +360,9 @@ describe('the schema stays aligned with the contracts', () => {
       [
         'id',
         'reference',
+        'fingerprint',
+        'idempotencyKey',
+        'version',
         'customerSubjectId',
         'name',
         'email',

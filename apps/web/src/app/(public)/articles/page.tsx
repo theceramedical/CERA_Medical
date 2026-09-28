@@ -46,6 +46,7 @@ export default async function ArticlesPage() {
           <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {items.map((post) => (
               <ArticleCard
+                headingLevel={2}
                 key={post.slug}
                 title={post.title}
                 excerpt={post.excerpt}

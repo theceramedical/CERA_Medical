@@ -13,11 +13,13 @@ export type AccessResult = boolean | PublishedConstraint;
 
 export interface AccessArgs {
   readonly user?: unknown;
+  readonly req?: { readonly user?: unknown };
   readonly data?: unknown;
 }
 
 function userOf(args: AccessArgs): CmsUser | null {
-  return isCmsUser(args.user) ? args.user : null;
+  const user = args.req === undefined ? args.user : args.req.user;
+  return isCmsUser(user) ? user : null;
 }
 
 export function readAccess(args: AccessArgs): AccessResult {

@@ -62,8 +62,20 @@ export function createEnquiryService(options: EnquiryServiceOptions) {
       }
 
       const ipHash = hashIp(request.ip, options.ipSalt);
-      const minute = await allowOrFailOpen(limiter, `ip:${ipHash}:m`, 8, 60_000, onRateLimitStoreFailure);
-      const hour = await allowOrFailOpen(limiter, `ip:${ipHash}:h`, 40, 3_600_000, onRateLimitStoreFailure);
+      const minute = await allowOrFailOpen(
+        limiter,
+        `ip:${ipHash}:m`,
+        8,
+        60_000,
+        onRateLimitStoreFailure,
+      );
+      const hour = await allowOrFailOpen(
+        limiter,
+        `ip:${ipHash}:h`,
+        40,
+        3_600_000,
+        onRateLimitStoreFailure,
+      );
       if (minute.limited || hour.limited) {
         throw new ApiError('rate_limited');
       }
@@ -122,8 +134,27 @@ export function createEnquiryService(options: EnquiryServiceOptions) {
       const initialStatus: InternalStatus = looksLikeSpam(input.message)
         ? 'rejected_spam'
         : 'received';
-      const record = newEnquiryRecord(input, fingerprint, request.idempotencyKey, now(), initialStatus);
-      await store.insert(writeForCreate(record));
+      const record = newEnquiryRecord(
+        input,
+        fingerprint,
+        request.idempotencyKey,
+        now(),
+        initialStatus,
+      );
+      try {
+        await store.insert(writeForCreate(record));
+      } catch (error) {
+        // Another concurrent request may have committed the same submission.
+        if ((error as { code?: string }).code !== '23505') throw error;
+        const existing =
+          (request.idempotencyKey === null
+            ? null
+            : await store.findByIdempotency(request.idempotencyKey)) ??
+          (await store.findByFingerprint(fingerprint));
+        if (existing !== null)
+          return { status: 200 as const, body: responseOf(existing.reference) };
+        throw new ApiError('conflict');
+      }
 
       return { status: 201 as const, body: responseOf(record.reference), enquiry: record };
     },

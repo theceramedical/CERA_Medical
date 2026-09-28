@@ -1,19 +1,9 @@
 import Fastify from 'fastify';
 import pg from 'pg';
 
+import { outboxDrainer } from './outbox/drainer.ts';
+import { emailProvider, crmProvider } from './ports/providers.ts';
 import { createShutdownHandler } from './shutdown.ts';
-
-/**
- * Phase 01 skeleton for the outbox drainer.
- *
- * The worker has no public routes. It exposes a health server purely so the
- * orchestrator and `health-check.sh` can see it, because a background process
- * with no HTTP surface is a process nobody notices has died.
- *
- * Queue consumers arrive in Phase 10. The shutdown handling below is written
- * now rather than later because it is the part that is genuinely hard to add
- * retroactively: once jobs are in flight, every exit path has to release them.
- */
 
 const PORT = Number(process.env.WORKER_PORT ?? process.env.PORT ?? 3004);
 const HOST = process.env.HOST ?? '0.0.0.0';
@@ -34,12 +24,24 @@ const pool = new pg.Pool({
   connectionTimeoutMillis: 5_000,
 });
 
-app.get('/health', async (_request, reply) =>
-  reply.code(200).send({
-    status: 'ok',
-    queue: { depth: 0, oldestPendingAgeSeconds: 0, deadLetterCount: 0 },
-  }),
+const email = emailProvider();
+const drainer = outboxDrainer(pool, email, crmProvider(), (error) =>
+  app.log.error(
+    { err: error instanceof Error ? error.message : 'unknown' },
+    'outbox delivery failed',
+  ),
 );
+app.get('/health', async (_request, reply) => {
+  try {
+    return reply.send({
+      status: 'ok',
+      queue: await drainer.health(),
+      drivers: { email: process.env.EMAIL_DRIVER, crm: process.env.CRM_DRIVER },
+    });
+  } catch {
+    return reply.code(503).send({ status: 'not_ready' });
+  }
+});
 
 app.get('/health/ready', async (_request, reply) => {
   try {
@@ -58,6 +60,14 @@ app.get('/health/ready', async (_request, reply) => {
 const shutdown = createShutdownHandler({
   stages: [
     { name: 'http', close: () => app.close() },
+    { name: 'outbox', close: () => drainer.close() },
+    {
+      name: 'email',
+      close: () => {
+        email.close?.();
+        return Promise.resolve();
+      },
+    },
     { name: 'pool', close: () => pool.end() },
   ],
   onEvent: (event) => {

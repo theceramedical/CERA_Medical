@@ -15,6 +15,8 @@ export interface StoredEnquiry {
   readonly email: string;
   readonly serviceId: string;
   readonly message: string;
+  readonly phone: string | null;
+  readonly source: EnquiryInput['source'];
   readonly fingerprint: string;
   readonly idempotencyKey: string | null;
   readonly createdAt: string;
@@ -42,7 +44,7 @@ export interface AuditEventRow {
 
 export interface OutboxRow {
   readonly enquiryId: string;
-  readonly eventType: 'zoho.lead.upsert' | 'resend.customer.receipt' | 'resend.staff.alert';
+  readonly eventType: 'erpnext.lead.upsert' | 'resend.customer.receipt' | 'resend.staff.alert';
 }
 
 export interface EnquiryWrite {
@@ -121,6 +123,8 @@ export function newEnquiryRecord(
     email: input.email,
     serviceId: input.serviceId,
     message: input.message,
+    phone: input.phone ?? null,
+    source: input.source,
     fingerprint,
     idempotencyKey,
     createdAt: timestamp,
@@ -149,7 +153,7 @@ export function writeForCreate(enquiry: StoredEnquiry): EnquiryWrite {
       createdAt: enquiry.createdAt,
     },
     outbox: [
-      { enquiryId: enquiry.id, eventType: 'zoho.lead.upsert' },
+      { enquiryId: enquiry.id, eventType: 'erpnext.lead.upsert' },
       { enquiryId: enquiry.id, eventType: 'resend.customer.receipt' },
       { enquiryId: enquiry.id, eventType: 'resend.staff.alert' },
     ],

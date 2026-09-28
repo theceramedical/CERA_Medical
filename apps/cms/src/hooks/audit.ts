@@ -21,8 +21,13 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
  */
 
 function actorId(user: unknown): string | null {
-  if (user !== null && typeof user === 'object' && 'id' in user && typeof user.id === 'string') {
-    return user.id;
+  if (
+    user !== null &&
+    typeof user === 'object' &&
+    'id' in user &&
+    (typeof user.id === 'string' || typeof user.id === 'number')
+  ) {
+    return String(user.id);
   }
   return null;
 }
@@ -58,7 +63,6 @@ export function auditAfterChange(actionPrefix: string): CollectionAfterChangeHoo
     await req.payload.create({
       collection: 'audit-events',
       data: {
-        id: randomUUID(),
         actorSubjectId: actorId(req.user),
         action,
         targetType: 'content',
@@ -82,7 +86,6 @@ export const auditAfterDelete: CollectionAfterDeleteHook = async ({ doc, req }) 
   await req.payload.create({
     collection: 'audit-events',
     data: {
-      id: randomUUID(),
       actorSubjectId: actorId(req.user),
       action: 'content.deleted',
       targetType: 'content',

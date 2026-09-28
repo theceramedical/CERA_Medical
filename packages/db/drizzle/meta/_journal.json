@@ -15,6 +15,20 @@
       "when": 1790076266913,
       "tag": "0001_append_only_audit_trail",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790533496358,
+      "tag": "0002_plain_obadiah_stane",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790586781324,
+      "tag": "0003_married_ricochet",
+      "breakpoints": true
     }
   ]
 }

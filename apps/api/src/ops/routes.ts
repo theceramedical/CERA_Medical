@@ -30,7 +30,7 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
     app.get('/v1/ops/enquiries', async (request, reply) => {
       try {
         await guarded(request);
-        const items = options.store.listAll().map((enquiry) => staffView(enquiry));
+        const items = (await options.store.listAll()).map((enquiry) => staffView(enquiry));
         return reply.send({ items });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
@@ -41,7 +41,7 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
     app.get('/v1/ops/enquiries/:id', async (request, reply) => {
       try {
         await guarded(request);
-        const enquiry = options.store.getById((request.params as { id: string }).id);
+        const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
         return reply.send({
           ...staffView(enquiry),
@@ -57,10 +57,13 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
       try {
         const session = await guarded(request);
         if (session === null) throw new ApiError('unauthenticated');
-        const enquiry = options.store.getById((request.params as { id: string }).id);
+        const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
         const body = request.body as { ownerId?: string | null };
-        options.store.putEnquiry({ ...enquiry, ownerId: body.ownerId ?? session.sub });
+        await options.store.putEnquiry(
+          { ...enquiry, ownerId: body.ownerId ?? session.sub },
+          session.sub,
+        );
         return reply.send({ assigned: true });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
@@ -70,17 +73,19 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
 
     app.post('/v1/ops/enquiries/:id/transition', async (request, reply) => {
       try {
-        await guarded(request);
-        const enquiry = options.store.getById((request.params as { id: string }).id);
+        const session = await guarded(request);
+        const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
         const body = request.body as { status?: InternalStatus };
         if (body.status === undefined) throw new ApiError('validation_failed');
         assertTransition(enquiry.internalStatus, body.status);
-        options.store.putEnquiry({
-          ...enquiry,
-          internalStatus: body.status,
-          updatedAt: new Date().toISOString(),
-        });
+        await options.store.putEnquiry(
+          {
+            ...enquiry,
+            internalStatus: body.status,
+          },
+          session?.sub,
+        );
         return reply.send({ status: body.status });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
@@ -91,7 +96,7 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
     app.get('/v1/ops/enquiries/:id/notes', async (request, reply) => {
       try {
         await guarded(request);
-        const enquiry = options.store.getById((request.params as { id: string }).id);
+        const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
         return reply.send({ items: enquiry.notes });
       } catch (error) {
@@ -102,14 +107,17 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
 
     app.post('/v1/ops/enquiries/:id/notes', async (request, reply) => {
       try {
-        await guarded(request);
-        const enquiry = options.store.getById((request.params as { id: string }).id);
+        const session = await guarded(request);
+        const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
         const body = request.body as { body?: string };
         if (typeof body.body !== 'string' || body.body.length === 0) {
           throw new ApiError('validation_failed');
         }
-        options.store.putEnquiry({ ...enquiry, notes: [...enquiry.notes, body.body] });
+        await options.store.putEnquiry(
+          { ...enquiry, notes: [...enquiry.notes, body.body] },
+          session?.sub,
+        );
         return reply.send({ recorded: true });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
@@ -120,10 +128,12 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
     app.get('/v1/ops/enquiries/:id/audit', async (request, reply) => {
       try {
         await guarded(request);
-        const enquiry = options.store.getById((request.params as { id: string }).id);
+        const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
         return reply.send({
-          items: [{ action: 'enquiry.created', at: enquiry.createdAt, actor: null }],
+          items: (await options.store.listAudit?.(enquiry.id)) ?? [
+            { action: 'enquiry.created', at: enquiry.createdAt, actor: null },
+          ],
         });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
@@ -134,7 +144,7 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
     app.get('/v1/ops/deliveries', async (request, reply) => {
       try {
         await guarded(request);
-        return reply.send({ items: [] });
+        return reply.send({ items: (await options.store.listDeliveries?.()) ?? [] });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
         sendCode(request, reply, 'internal_error');
@@ -143,7 +153,12 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
 
     app.post('/v1/ops/deliveries/:id/retry', async (request, reply) => {
       try {
-        await guarded(request);
+        const session = await guarded(request);
+        const queued = await options.store.retryDelivery?.(
+          (request.params as { id: string }).id,
+          session?.sub ?? '',
+        );
+        if (!queued) throw new ApiError('not_found');
         return reply.send({ queued: true });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
@@ -158,13 +173,13 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
 function staffView(enquiry: PortalEnquiry) {
   return toStaffEnquiry(
     {
-      id: '01900000-0000-7000-8000-000000000001',
+      id: enquiry.id,
       reference: enquiry.reference,
       customerSubjectId: enquiry.customerSubjectId,
-      name: 'Customer',
+      name: enquiry.name ?? 'Customer',
       email: enquiry.email,
-      phone: null,
-      serviceId: 'cardiology',
+      phone: enquiry.phone ?? null,
+      serviceId: enquiry.serviceId ?? 'cardiology',
       message: enquiry.message,
       consentAt: enquiry.createdAt,
       source: 'web_general',

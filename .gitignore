@@ -19,6 +19,10 @@ apps/cms/media/
 .env.*
 !.env.example
 !.env.*.example
+.release.env
+.release.env.*
+.release.previous.env
+.backup-remote
 secrets/
 *.pem
 *.key
@@ -41,6 +45,7 @@ test-results/
 blob-report/
 .playwright/
 *.lcov
+artifacts/
 
 # Logs
 logs/
@@ -61,6 +66,7 @@ Thumbs.db
 # Generated types
 apps/cms/src/payload-types.ts
 apps/commerce/src/generated-*.ts
+apps/commerce/.vendure/
 next-env.d.ts
 
 # Local scratch

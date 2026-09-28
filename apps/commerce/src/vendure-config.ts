@@ -8,22 +8,17 @@ import {
   PresetOnlyStrategy,
   type AssetServerOptions,
 } from '@vendure/asset-server-plugin';
-import {
-  DefaultLogger,
-  LanguageCode,
-  LogLevel,
-  type VendureConfig,
-} from '@vendure/core';
+import { DefaultLogger, LanguageCode, LogLevel, type VendureConfig } from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { HardenPlugin } from '@vendure/harden-plugin';
-import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
+import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq/index.js';
 
-import { productCustomFields } from './plugins/catalogue-fields.ts';
-import { RejectCheckoutInterceptor } from './plugins/checkout-neutralisation/order-interceptor.ts';
+import { productCustomFields } from './plugins/catalogue-fields.js';
+import { RejectCheckoutInterceptor } from './plugins/checkout-neutralisation/order-interceptor.js';
 import {
   denyAdminPaymentRule,
   denyShopCheckoutRule,
-} from './plugins/checkout-neutralisation/validation-rule.ts';
+} from './plugins/checkout-neutralisation/validation-rule.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -80,7 +75,7 @@ function assetServerOptions(s3: boolean): AssetServerOptions {
  * a boot-time ALTER. Pushing schema from the running process is how two
  * containers fight over the same tables.
  */
-export function getConfig(): VendureConfig {
+export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
   if (process.env.VITEST !== 'true') {
     loadEnv(commerceEnvSchema, process.env, 'commerce');
   }
@@ -90,7 +85,7 @@ export function getConfig(): VendureConfig {
 
   return {
     apiOptions: {
-      port: Number(process.env.PORT ?? process.env.COMMERCE_PORT ?? 3002),
+      port: options.seed ? 0 : Number(process.env.PORT ?? process.env.COMMERCE_PORT ?? 3002),
       adminApiPath: 'admin-api',
       shopApiPath: 'shop-api',
       shopApiValidationRules: [denyShopCheckoutRule],
@@ -124,7 +119,7 @@ export function getConfig(): VendureConfig {
       username: required('DB_USERNAME'),
       password: required('DB_PASSWORD'),
       synchronize: false,
-      migrations: [path.join(dirname, '../migrations/*.js')],
+      migrations: [path.join(dirname, 'migrations/*.js')],
     },
     paymentOptions: {
       // Layer 1. The scaffold dummy handler is not imported.
@@ -140,14 +135,19 @@ export function getConfig(): VendureConfig {
     logger: new DefaultLogger({ level: local ? LogLevel.Info : LogLevel.Warn }),
     plugins: [
       AssetServerPlugin.init(assetServerOptions(s3)),
-      BullMQJobQueuePlugin.init({
-        connection: {
-          host: required('VALKEY_HOST'),
-          port: Number(process.env.VALKEY_PORT ?? 6379),
-        },
-        queueOptions: { prefix: 'cera-vendure' },
-        workerOptions: { prefix: 'cera-vendure', concurrency: 3 },
-      }),
+      ...(options.seed
+        ? []
+        : [
+            BullMQJobQueuePlugin.init({
+              connection: {
+                host: required('VALKEY_HOST'),
+                port: Number(process.env.VALKEY_PORT ?? 6379),
+                maxRetriesPerRequest: null,
+              },
+              queueOptions: { prefix: 'cera-vendure' },
+              workerOptions: { prefix: 'cera-vendure', concurrency: 3 },
+            }),
+          ]),
       HardenPlugin.init({
         maxQueryComplexity: 500,
         apiMode: local ? 'dev' : 'prod',

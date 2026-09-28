@@ -1,6 +1,6 @@
 import { bootstrapWorker, runMigrations } from '@vendure/core';
 
-import { getConfig } from './vendure-config.ts';
+import { getConfig } from './vendure-config.js';
 
 /**
  * Catalogue worker. Separate process, same config, persistent queue.
@@ -10,4 +10,4 @@ import { getConfig } from './vendure-config.ts';
  */
 const config = getConfig();
 await runMigrations(config);
-await bootstrapWorker(config);
+await (await bootstrapWorker(config)).startJobQueue();

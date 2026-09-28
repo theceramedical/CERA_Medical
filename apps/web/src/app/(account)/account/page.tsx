@@ -1,5 +1,4 @@
 import { Alert } from '@cera/ui/alert';
-import { StatusBadge } from '@cera/ui/status-badge';
 import { Text } from '@cera/ui/typography';
 
 import { AppLink } from '../../../components/link.tsx';
@@ -23,8 +22,8 @@ export default async function AccountDashboardPage() {
         {session === null ? (
           <Alert tone="info" title="Sign in to see your enquiries">
             <Text size="body-sm">
-              <AppLink href="/auth/sign-in?next=/account">Sign in</AppLink> with the email you used on
-              the enquiry form, then claim any existing references.
+              <AppLink href="/auth/sign-in?next=/account">Sign in</AppLink> with the email you used
+              on the enquiry form, then claim any existing references.
             </Text>
           </Alert>
         ) : (
@@ -37,8 +36,10 @@ export default async function AccountDashboardPage() {
               {' · '}
               <AppLink href="/auth/signout">Sign out</AppLink>
             </Text>
-            <StatusBadge status="received" />
-            <Text tone="muted">Open enquiries appear here once they are claimed to this account.</Text>
+            <AppLink href="/account/enquiries">View your enquiries</AppLink>
+            <Text tone="muted">
+              Open enquiries appear here once they are claimed to this account.
+            </Text>
           </div>
         )}
       </div>

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Post-deploy smoke: public pages, health, and enquiry create.
+# Read-only public checks. Synthetic enquiry delivery belongs in staging QA.
 set -euo pipefail
-
-ORIGIN="${SMOKE_ORIGIN:-http://127.0.0.1:3000}"
-API="${SMOKE_API:-http://127.0.0.1:3003}"
-
-fail() { echo "FAIL $1"; exit 1; }
-
-curl -fsS "${ORIGIN}/" >/dev/null || fail "web home"
-curl -fsS "${API}/health" >/dev/null || fail "api liveness"
-curl -fsS "${ORIGIN}/enquiry" >/dev/null || fail "enquiry form"
-echo "PASS smoke against ${ORIGIN} and ${API}"
+origin="${SMOKE_ORIGIN:?SMOKE_ORIGIN required}"
+api="${SMOKE_API:?SMOKE_API required}"
+for path in / /services /enquiry; do
+  curl --fail --silent --show-error --max-time 15 "${origin%/}$path" >/dev/null
+  echo "OK $path"
+done
+curl --fail --silent --show-error --max-time 15 "${api%/}/health/ready" >/dev/null
+code="$(curl --silent --show-error --max-time 15 -o /dev/null -w '%{http_code}' "${origin%/}/auth/signin")"
+[[ "$code" == 302 || "$code" == 307 ]] || { echo "Sign-in failed: HTTP $code" >&2; exit 1; }
+echo "Smoke passed: $origin"

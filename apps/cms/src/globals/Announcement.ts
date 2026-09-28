@@ -7,7 +7,7 @@ export const Announcement: GlobalConfig = {
   admin: { group: 'Site' },
   access: {
     read: () => true,
-    update: ({ req }) => canAuthor(req.user as never),
+    update: ({ req }) => canAuthor(req.user),
   },
   fields: [
     { name: 'enabled', type: 'checkbox', defaultValue: false },

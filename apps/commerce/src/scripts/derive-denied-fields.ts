@@ -14,7 +14,7 @@ import {
   DENIED_SHOP_MUTATION_SET,
   missingDeniedFields,
   SHOP_DENY_FAMILIES,
-} from '../plugins/checkout-neutralisation/denied-fields.ts';
+} from '../plugins/checkout-neutralisation/denied-fields.js';
 
 const INTROSPECTION = `
   query {

@@ -1,23 +1,13 @@
 import 'server-only';
 
-import { createHash } from 'node:crypto';
-
 import {
   CreateEnquiryResponseSchema,
   EnquiryInputSchema,
-  generateEnquiryReference,
   type CreateEnquiryResponse,
   type EnquiryInput,
 } from '@cera/contracts';
 
-/**
- * Progressive-enhancement submit used by the Server Action.
- *
- * Tries `apps/api` first. When the API is unreachable (Playwright, a local
- * session with the BFF down) the same validation and fingerprint rules run
- * in-process so the form still produces a reference. Persistence against
- * `cera_app` remains the Fastify route; this path never waits on Zoho or Resend.
- */
+/** Validate locally, but acknowledge receipt only after the API commits it. */
 
 const ALLOWED = new Set([
   'general-health',
@@ -26,9 +16,6 @@ const ALLOWED = new Set([
   'womens-health',
   'wellness-preventive-care',
 ]);
-
-const byIdempotency = new Map<string, CreateEnquiryResponse>();
-const byFingerprint = new Map<string, CreateEnquiryResponse>();
 
 export interface EnquirySubmitInput {
   readonly body: unknown;
@@ -95,11 +82,17 @@ export async function submitEnquiry(input: EnquirySubmitInput): Promise<EnquiryS
         fieldErrors: payload.error?.fieldErrors ?? [],
       };
     } catch {
-      // Fall through to the in-process store.
+      // A failed or ambiguous request must not acknowledge receipt.
     }
   }
 
-  return local;
+  return {
+    ok: false,
+    status: 503,
+    message: 'We could not confirm receipt. Please try again; your details have been kept.',
+    retryable: true,
+    fieldErrors: [],
+  };
 }
 
 function evaluateLocal(input: EnquirySubmitInput): EnquirySubmitResult {
@@ -154,27 +147,5 @@ function evaluateLocal(input: EnquirySubmitInput): EnquirySubmitResult {
     };
   }
 
-  if (input.idempotencyKey !== null) {
-    const existing = byIdempotency.get(input.idempotencyKey);
-    if (existing !== undefined) {
-      return { ok: true, status: 200, body: existing, message: existing.message, retryable: false, fieldErrors: [] };
-    }
-  }
-
-  const fingerprint = createHash('sha256')
-    .update(`${body.email.toLowerCase()}\n${body.serviceId}\n${body.message.trim()}`)
-    .digest('hex');
-  const duplicate = byFingerprint.get(fingerprint);
-  if (duplicate !== undefined) {
-    return { ok: true, status: 200, body: duplicate, message: duplicate.message, retryable: false, fieldErrors: [] };
-  }
-
-  const created = CreateEnquiryResponseSchema.parse({
-    reference: generateEnquiryReference(),
-    submittedAt: new Date().toISOString(),
-    message: 'We have received your enquiry and will email you a confirmation shortly.',
-  });
-  if (input.idempotencyKey !== null) byIdempotency.set(input.idempotencyKey, created);
-  byFingerprint.set(fingerprint, created);
-  return { ok: true, status: 201, body: created, message: created.message, retryable: false, fieldErrors: [] };
+  return { ok: true, status: 200, message: '', retryable: false, fieldErrors: [] };
 }

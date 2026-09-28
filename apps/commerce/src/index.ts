@@ -1,6 +1,6 @@
 import { bootstrap, runMigrations } from '@vendure/core';
 
-import { getConfig } from './vendure-config.ts';
+import { getConfig } from './vendure-config.js';
 
 /**
  * Catalogue server. The worker is a separate process (`index-worker.ts`).

@@ -7,11 +7,13 @@ import { createSessionReader } from './auth/read-session.ts';
 import { memoryCatalogueCache } from './catalogue/cache.ts';
 import { catalogueRoutes } from './catalogue/routes.ts';
 import { createVendureClient } from './catalogue/vendure-client.ts';
+import { postgresEnquiryStore } from './enquiry/postgres-store.ts';
 import { enquiryRoutes } from './enquiry/routes.ts';
+import { createEnquiryService } from './enquiry/service.ts';
 import { healthRoutes } from './health.ts';
 import { opsRoutes } from './ops/routes.ts';
+import { postgresPortalStore } from './portal/postgres-store.ts';
 import { portalRoutes } from './portal/routes.ts';
-import { memoryPortalStore } from './portal/store.ts';
 import { searchRoutes } from './search/routes.ts';
 import { resendWebhookRoutes } from './webhooks/resend.ts';
 
@@ -30,6 +32,13 @@ import { resendWebhookRoutes } from './webhooks/resend.ts';
 const PORT = Number(process.env.API_PORT ?? process.env.PORT ?? 3003);
 const HOST = process.env.HOST ?? '0.0.0.0';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+function requiredProductionSecret(name: string, localFallback: string): string {
+  const value = process.env[name];
+  if (IS_PRODUCTION && (!value || value.startsWith('GENERATE-') || value.startsWith('replace-'))) {
+    throw new Error(`${name} must be configured in production`);
+  }
+  return value?.length ? value : localFallback;
+}
 
 // `transport` is spread in rather than set to undefined. With
 // exactOptionalPropertyTypes the two are not equivalent: an explicit undefined
@@ -99,21 +108,40 @@ await app.register(
 );
 
 await app.register(searchRoutes({ catalogue: catalogueClient }));
-await app.register(enquiryRoutes());
+await app.register(
+  enquiryRoutes(
+    createEnquiryService({
+      store: postgresEnquiryStore(pool),
+      allowedServiceIds: new Set([
+        'general-health',
+        'cardiology',
+        'orthopaedics',
+        'womens-health',
+        'wellness-preventive-care',
+      ]),
+      ipSalt: requiredProductionSecret('IP_HASH_SALT', 'local-only'),
+    }),
+  ),
+);
 
-const portalStore = memoryPortalStore();
-const readSession = createSessionReader(process.env.SESSION_SECRET ?? 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+const portalStore = postgresPortalStore(pool);
+const readSession = createSessionReader(
+  requiredProductionSecret('SESSION_SECRET', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='),
+);
 await app.register(portalRoutes({ store: portalStore, readSession }));
 await app.register(opsRoutes({ store: portalStore, readSession }));
-await app.register(resendWebhookRoutes(process.env.RESEND_WEBHOOK_SECRET ?? 'whsec_local'));
+await app.register(
+  resendWebhookRoutes(requiredProductionSecret('RESEND_WEBHOOK_SECRET', 'whsec_local')),
+);
 
 await app.register(
   healthRoutes({
     pingDatabase: async () => {
       await pool.query('SELECT 1');
     },
-    // Replaced with a real Valkey ping in Phase 10, when the outbox lands.
-    pingQueue: async () => Promise.resolve(),
+    pingQueue: async () => {
+      await pool.query("SELECT id FROM outbox WHERE status='pending' LIMIT 1");
+    },
   }),
 );
 

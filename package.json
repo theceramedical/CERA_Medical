@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "pnpm -r --parallel --stream dev",
-    "build": "pnpm -r build",
+    "build": "pnpm -r --workspace-concurrency=1 build",
     "start": "pnpm -r --parallel --stream start",
     "lint": "pnpm -r lint",
     "lint:fix": "pnpm -r lint:fix",
@@ -63,7 +63,7 @@
   "//lint-staged": "The ESLint flag makes config resolution per-file rather than per-CWD. Without it, lint-staged runs from the repo root and every staged file is linted against the root eslint.config.js, ignoring each package's own config - so `pnpm lint` inside a package and the pre-commit hook disagree, and a file can pass CI and be blocked by the hook. The flag is ESLint 10's default behaviour, available in 9.x under this name; it comes out when the ESLint 10 hold in ADR-002 is lifted.",
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs}": [
-      "eslint --flag v10_config_lookup_from_file --fix",
+      "eslint --flag v10_config_lookup_from_file --no-warn-ignored --fix",
       "prettier --write"
     ],
     "*.{json,md,css,yaml,yml}": [

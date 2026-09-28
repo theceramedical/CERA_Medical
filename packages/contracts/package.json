@@ -8,51 +8,51 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "default": "./dist/index.js"
     },
     "./enums": {
       "types": "./src/enums.ts",
-      "default": "./src/enums.ts"
+      "default": "./dist/enums.js"
     },
     "./primitives": {
       "types": "./src/primitives.ts",
-      "default": "./src/primitives.ts"
+      "default": "./dist/primitives.js"
     },
     "./entities": {
       "types": "./src/entities.ts",
-      "default": "./src/entities.ts"
+      "default": "./dist/entities.js"
     },
     "./status": {
       "types": "./src/status.ts",
-      "default": "./src/status.ts"
+      "default": "./dist/status.js"
     },
     "./errors": {
       "types": "./src/errors.ts",
-      "default": "./src/errors.ts"
+      "default": "./dist/errors.js"
     },
     "./pagination": {
       "types": "./src/pagination.ts",
-      "default": "./src/pagination.ts"
+      "default": "./dist/pagination.js"
     },
     "./projections": {
       "types": "./src/projections.ts",
-      "default": "./src/projections.ts"
+      "default": "./dist/projections.js"
     },
     "./api": {
       "types": "./src/api.ts",
-      "default": "./src/api.ts"
+      "default": "./dist/api.js"
     },
     "./session": {
       "types": "./src/session.ts",
-      "default": "./src/session.ts"
+      "default": "./dist/session.js"
     },
     "./preview-token": {
       "types": "./src/preview-token.ts",
-      "default": "./src/preview-token.ts"
+      "default": "./dist/preview-token.js"
     },
     "./fixtures": {
       "types": "./src/fixtures/index.ts",
-      "default": "./src/fixtures/index.ts"
+      "default": "./dist/fixtures/index.js"
     }
   },
   "files": [

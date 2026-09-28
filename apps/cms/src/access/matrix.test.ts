@@ -37,6 +37,15 @@ const ROLES: readonly Role[] = [
 ];
 
 describe('CMS-102 access matrix', () => {
+  it('reads numeric Payload users from the request while denying anonymous writes', () => {
+    const args = { req: { user: { id: 1, role: 'content_approver' } } };
+    expect(createAccess(args)).toBe(true);
+    expect(updateAccess(args)).toBe(true);
+    expect(readAccess(args)).toBe(true);
+    expect(publishFieldAccess(args)).toBe(true);
+    expect(createAccess({ req: { user: null } })).toBe(false);
+    expect(publishFieldAccess({ req: { user: { id: 2, role: 'content_editor' } } })).toBe(false);
+  });
   describe('anonymous', () => {
     it('reads published only, as a constraint, not a boolean', () => {
       // A boolean `true` here is the draft leak. See published.ts.

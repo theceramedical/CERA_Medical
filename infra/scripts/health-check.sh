@@ -165,8 +165,8 @@ run_all() {
   check_mailpit
   echo ""
   echo "Applications"
-  check_app "web"      "http://localhost:3000/api/health"
-  check_app "cms"      "http://localhost:3001/api/health"
+  check_app "web"      "${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}/"
+  check_app "cms"      "${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}/admin"
   check_app "commerce" "http://localhost:3002/health"
   check_app "api"      "http://localhost:3003/health"
   check_app "worker"   "http://localhost:3004/health"

@@ -79,7 +79,7 @@ export const workerEnvSchema = commonEnvSchema
     // Driver selection is the whole sandbox-first strategy: real credentials
     // arrive as an env change, never a code change.
     EMAIL_DRIVER: z.enum(['fake', 'smtp', 'resend']).default('fake'),
-    CRM_DRIVER: z.enum(['fake', 'zoho']).default('fake'),
+    CRM_DRIVER: z.enum(['fake', 'erpnext']).default('fake'),
     STORAGE_DRIVER: z.enum(['fake', 's3']).default('fake'),
 
     SMTP_URL: z.string().optional().describe('required when EMAIL_DRIVER=smtp'),
@@ -87,14 +87,9 @@ export const workerEnvSchema = commonEnvSchema
     EMAIL_FROM: nonEmpty.default('CERA Medical <noreply@cera.localhost>'),
     EMAIL_STAFF_ALERT_TO: nonEmpty.default('operations@cera.localhost'),
 
-    ZOHO_ACCOUNTS_URL: z.string().optional(),
-    ZOHO_CLIENT_ID: z.string().optional(),
-    ZOHO_CLIENT_SECRET: z.string().optional(),
-    ZOHO_REFRESH_TOKEN: z.string().optional(),
-    ZOHO_EXTERNAL_FIELD: z
-      .string()
-      .optional()
-      .describe('unset falls back to Email deduplication; see ADR-006'),
+    ERPNEXT_URL: z.string().url().optional(),
+    ERPNEXT_API_KEY: z.string().optional(),
+    ERPNEXT_API_SECRET: z.string().optional(),
 
     S3_ENDPOINT: z.string().optional(),
     S3_REGION: z.string().default('auto'),
@@ -124,9 +119,9 @@ export const workerEnvSchema = commonEnvSchema
     requireWhen(env.EMAIL_DRIVER === 'smtp', ['SMTP_URL'], 'smtp');
     requireWhen(env.EMAIL_DRIVER === 'resend', ['RESEND_API_KEY'], 'resend');
     requireWhen(
-      env.CRM_DRIVER === 'zoho',
-      ['ZOHO_ACCOUNTS_URL', 'ZOHO_CLIENT_ID', 'ZOHO_CLIENT_SECRET', 'ZOHO_REFRESH_TOKEN'],
-      'zoho',
+      env.CRM_DRIVER === 'erpnext',
+      ['ERPNEXT_URL', 'ERPNEXT_API_KEY', 'ERPNEXT_API_SECRET'],
+      'erpnext',
     );
     requireWhen(
       env.STORAGE_DRIVER === 's3',

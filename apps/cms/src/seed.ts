@@ -18,10 +18,10 @@ function lexical(paragraphs: readonly string[]) {
   return {
     root: {
       type: 'root',
-      format: '',
+      format: '' as const,
       indent: 0,
       version: 1,
-      direction: 'ltr',
+      direction: 'ltr' as const,
       children: paragraphs.map((text) => ({
         type: 'paragraph',
         format: '',
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
     { title: 'HEART HEALTH', slug: 'heart-health', colourToken: 'accent-fill' },
   ] as const;
 
-  const categoryIds: Record<string, string> = {};
+  const categoryIds: Record<string, number> = {};
   for (const category of categories) {
     const found = await payload.find({
       collection: 'categories',
@@ -92,8 +92,13 @@ async function main(): Promise<void> {
         collection: 'categories',
         data: { ...category },
       }));
-    categoryIds[category.slug] = String(doc.id);
+    categoryIds[category.slug] = doc.id;
   }
+  const categoryId = (slug: string): number => {
+    const id = categoryIds[slug];
+    if (id === undefined) throw new Error(`Missing seeded category: ${slug}`);
+    return id;
+  };
 
   const posts = [
     {
@@ -135,7 +140,7 @@ async function main(): Promise<void> {
       title: post.title,
       slug: post.slug,
       excerpt: post.excerpt,
-      category: categoryIds[post.category],
+      category: categoryId(post.category),
       body: lexical(post.paragraphs),
       seo: { title: `${post.title} | CERA Medical`, description: post.excerpt },
       fixture: true,
@@ -231,7 +236,7 @@ async function main(): Promise<void> {
         title: 'DRAFT Sleep and Recovery (must not be public)',
         slug: 'draft-sleep-and-recovery',
         excerpt: 'An unapproved article. Must never appear in a listing or a feed.',
-        category: categoryIds.wellness,
+        category: categoryId('wellness'),
         body: lexical(['Unapproved body text. This paragraph must never reach a public response.']),
         fixture: true,
         _status: 'draft' as const,
@@ -258,12 +263,21 @@ async function main(): Promise<void> {
       draft: true,
     });
     if (found.docs[0] === undefined) {
-      await payload.create({
-        collection: draft.collection,
-        data: draft.data,
-        overrideAccess: true,
-        draft: true,
-      });
+      if ('category' in draft.data) {
+        await payload.create({
+          collection: 'posts',
+          data: draft.data,
+          overrideAccess: true,
+          draft: true,
+        });
+      } else {
+        await payload.create({
+          collection: 'pages',
+          data: draft.data,
+          overrideAccess: true,
+          draft: true,
+        });
+      }
     }
   }
 

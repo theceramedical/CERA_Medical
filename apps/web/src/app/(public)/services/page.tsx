@@ -80,6 +80,7 @@ export default async function ServicesPage({
               const Icon = icon;
               return (
                 <ServiceCard
+                  headingLevel={2}
                   key={service.slug}
                   title={service.title}
                   description={service.summary}

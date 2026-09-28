@@ -1,0 +1,13 @@
+# Overlay for the official frappe_docker production Compose project on the same host.
+# Use with its compose.yaml, MariaDB, and Redis overrides. Caddy alone exposes it.
+services:
+  frontend:
+    networks:
+      default: {}
+      cera-public:
+        aliases: [erpnext-frontend]
+
+networks:
+  cera-public:
+    external: true
+    name: cera_cera-public

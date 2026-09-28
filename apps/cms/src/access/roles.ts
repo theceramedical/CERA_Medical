@@ -8,13 +8,14 @@ import type { Role } from '@cera/contracts';
  * the functions take this narrower type and stay testable without booting Payload.
  */
 export interface CmsUser {
-  readonly id: string;
+  readonly id: string | number;
   readonly role: Role;
 }
 
 export function isCmsUser(value: unknown): value is CmsUser {
   if (value === null || typeof value !== 'object') return false;
-  if (!('id' in value) || typeof value.id !== 'string') return false;
+  if (!('id' in value) || (typeof value.id !== 'string' && typeof value.id !== 'number'))
+    return false;
   if (!('role' in value) || typeof value.role !== 'string') return false;
   return true;
 }

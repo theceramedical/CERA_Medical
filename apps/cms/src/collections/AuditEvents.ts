@@ -23,7 +23,7 @@ export const AuditEvents: CollectionConfig = {
     // Payload hooks still run under overrideAccess, and that would block the
     // legitimate write.
     create: () => false,
-    read: ({ req }) => canReadDrafts(req.user as never) || canPublish(req.user as never),
+    read: ({ req }) => canReadDrafts(req.user) || canPublish(req.user),
     update: () => false,
     delete: ({ req }) => req.user?.role === 'administrator',
   },

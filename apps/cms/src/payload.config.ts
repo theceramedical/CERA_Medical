@@ -113,16 +113,13 @@ export default buildConfig({
         const collection = url.searchParams.get('collection');
         const slug = url.searchParams.get('slug');
         const allowed = ['pages', 'posts', 'policies', 'service-presentations'] as const;
-        if (
-          collection === null ||
-          slug === null ||
-          !allowed.includes(collection as (typeof allowed)[number])
-        ) {
+        const allowedCollection = allowed.find((candidate) => candidate === collection);
+        if (collection === null || slug === null || allowedCollection === undefined) {
           return Response.json({ error: 'bad_request' }, { status: 400 });
         }
 
         const result = await req.payload.find({
-          collection,
+          collection: allowedCollection,
           where: { slug: { equals: slug } },
           limit: 1,
           draft: true,

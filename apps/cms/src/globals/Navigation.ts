@@ -12,7 +12,7 @@ export const Navigation: GlobalConfig = {
   admin: { group: 'Site' },
   access: {
     read: () => true,
-    update: ({ req }) => canAuthor(req.user as never),
+    update: ({ req }) => canAuthor(req.user),
   },
   fields: [
     { name: 'header', type: 'array', fields: linkFields, maxRows: 8 },

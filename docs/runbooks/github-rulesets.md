@@ -24,7 +24,7 @@ Branching model (PRD 11.2): `main` is production, `develop` is integration, and 
 | Require signed commits                   | on                 |                                                                              |
 | Require linear history                   | on                 | Keeps `git bisect` and rollback comprehensible                               |
 | Block force pushes                       | on                 |                                                                              |
-| Require deployments to succeed           | staging            | Nothing reaches `main` that has not run on staging                           |
+| Require deployments to succeed           | off                | This rollout has no staging environment; production still needs two reviews  |
 
 ## Ruleset: `develop`
 
@@ -51,12 +51,6 @@ Branching model (PRD 11.2): `main` is production, `develop` is integration, and 
 | Restrict updates  | on                 | A moved tag means the release no longer identifies what was released       |
 
 ## Environments
-
-### `staging`
-
-- Deployment branches: `develop` only
-- Reviewers: none - staging should be fast
-- Secrets: `STAGING_HOST`, `STAGING_USER`, `STAGING_SSH_KEY`, and staging provider credentials
 
 ### `production`
 
