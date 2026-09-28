@@ -1,7 +1,10 @@
 # GitHub rulesets
 
-The exact configuration to apply once CERA supplies the organisation and repository (PRD 22). Recorded
-here so the settings are reviewable in version control rather than existing only as clicks in a web UI.
+This records the target controls for a future organisation and paid GitHub plan. As of 28 September
+2026, the private repository is owned by the `theceramedical` user, its default branch is `main`,
+and GitHub rejects required environment reviewers on the current plan. Production deployment is
+therefore a manual `release.yml` dispatch from `main`, restricted in the workflow to the repository
+owner. Do not treat the target rulesets below as active until they have been configured and tested.
 
 Branching model (PRD 11.2): `main` is production, `develop` is integration, and work happens on
 `feat/*`, `fix/*`, or `chore/*` branches merged into `develop`.
@@ -43,24 +46,25 @@ Branching model (PRD 11.2): `main` is production, `develop` is integration, and 
 
 ## Ruleset: tag protection
 
-| Setting           | Value              | Why                                                                        |
-| ----------------- | ------------------ | -------------------------------------------------------------------------- |
-| Target            | tags matching `v*` |                                                                            |
-| Restrict creation | maintainers only   | A tag triggers a production deploy, so tag creation is a deploy permission |
-| Restrict deletion | on                 | A deleted release tag destroys the rollback target                         |
-| Restrict updates  | on                 | A moved tag means the release no longer identifies what was released       |
+| Setting           | Value              | Why                                                                  |
+| ----------------- | ------------------ | -------------------------------------------------------------------- |
+| Target            | tags matching `v*` |                                                                      |
+| Restrict creation | maintainers only   | Protects release labels; tags do not trigger production deployment   |
+| Restrict deletion | on                 | A deleted release tag destroys the rollback target                   |
+| Restrict updates  | on                 | A moved tag means the release no longer identifies what was released |
 
 ## Environments
 
 ### `production`
 
-- Deployment branches: protected tags matching `v*` only
-- **Required reviewers: 2** - the human gate before production
-- Wait timer: 0 - the review is the gate; a timer only adds delay
-- Secrets: `PRODUCTION_HOST`, `PRODUCTION_USER`, `PRODUCTION_SSH_KEY`, and production provider credentials
+- Deployment branch: `main` only
+- Current plan: required reviewers unavailable; the repository owner manually starts the workflow
+- Future paid plan: require two environment reviewers before exposing deployment secrets
+- Secrets: `PRODUCTION_HOST`, `PRODUCTION_USER`, `PRODUCTION_SSH_KEY`, and `PRODUCTION_KNOWN_HOSTS`; provider credentials stay in the host-only `.env`
 
-The environment gate is what actually protects production. Workflow-level checks can be edited by
-anyone who can edit a workflow file; an environment reviewer requirement cannot.
+The owner-only workflow condition is weaker than a platform-enforced environment review: anyone
+who can change the workflow on `main` can remove that condition. Add required reviewers when the
+GitHub plan supports them.
 
 ## Repository settings
 
@@ -101,8 +105,9 @@ After applying, prove each control rather than assuming it:
 2. Open a pull request touching `packages/ui/src/styles/`. The design team must be auto-requested.
 3. Attempt `git push --force origin develop`. It must be rejected.
 4. Attempt a direct push to `main`. It must be rejected.
-5. Push a `v0.0.1-test` tag from a non-maintainer account. Creation must be rejected.
-6. Trigger a production deploy. It must pause for reviewer approval before any secret is exposed.
+5. Push a `v0.0.1-test` tag. It must not trigger a production deploy.
+6. Attempt a manual production dispatch from a non-owner account. All jobs must skip. On a paid plan,
+   also verify that an owner dispatch pauses for reviewer approval before secrets are exposed.
 7. Commit a fake key matching a known provider format. Push protection must block it.
 
 Record the results in the Phase 15 handover. An unverified control is an assumption.

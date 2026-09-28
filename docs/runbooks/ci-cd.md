@@ -7,7 +7,7 @@
 | `ci.yml`       | pull request, push to `main`         | Lint, typecheck, test, build                           |
 | `security.yml` | pull request, push to `main`, weekly | Secret scan, dependency audit, action-pinning check    |
 | `staging.yml`  | push to `develop`                    | Optional; unused in the one-server rollout             |
-| `release.yml`  | `v*.*.*` tag                         | Full verification, security gate, deploy to production |
+| `release.yml`  | Manual owner dispatch from `main`    | Full verification, security gate, deploy to production |
 
 ## Design decisions worth knowing
 

@@ -1,13 +1,12 @@
 name: Release to production
 
-# Triggered by a v* tag. Production deploys are gated on a protected environment,
-# so the job pauses for approval before any secret is available to it.
+# Manually started by the repository owner from main. The current GitHub plan
+# does not support required reviewers for this private repository's environment.
 #
 # Production uses its own build because public URLs are compiled into Next.js.
 
 on:
-  push:
-    tags: ["v*.*.*"]
+  workflow_dispatch:
 
 permissions: {}
 
@@ -23,6 +22,7 @@ env:
 jobs:
   verify:
     name: Full verification
+    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     permissions:
       contents: read

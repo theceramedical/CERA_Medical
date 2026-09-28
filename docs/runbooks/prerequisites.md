@@ -79,5 +79,5 @@ Ordered, because several steps depend on the one before:
    seven groups, the `groups` scope mapping, and the MFA validation stage.
 8. Populate the GitHub production environment secrets. Production secrets must remain unavailable
    until approval is recorded. Rehearse migration and encrypted restore against an isolated local copy.
-9. Run the first production deployment through `release.yml` against an approved `v*` tag.
+9. Have the repository owner manually start `release.yml` from `main` for the first production deployment.
 10. Rotate every secret after developer handover, as PRD 15 requires.
