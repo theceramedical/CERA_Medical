@@ -10,6 +10,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 3100;
 const BASE_URL = `http://127.0.0.1:${String(PORT)}`;
+const BACKEND_URL = 'http://127.0.0.1:3101';
 
 export default defineConfig({
   testDir: './e2e',
@@ -26,22 +27,36 @@ export default defineConfig({
    * explicit opt-in: the flag is set here and nowhere else, and because it is an opt-in rather than an
    * opt-out, forgetting it in a deployment means the route 404s. See `src/app/dev/guard.ts`.
    */
-  webServer: {
-    command: `pnpm build && pnpm exec next start --port ${String(PORT)}`,
-    url: BASE_URL,
-    env: { CERA_ENABLE_DEV_ROUTES: '1' },
-    /**
-     * Not reused, even locally.
-     *
-     * A server left running from a previous run is serving the previous build, and an accessibility
-     * suite that silently tests stale code is worse than a slow one - it reports a pass for a change
-     * that was never compiled.
-     */
-    reuseExistingServer: false,
-    timeout: 240_000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+  webServer: [
+    {
+      command: 'node e2e/support/backend.mjs',
+      url: `${BACKEND_URL}/health`,
+      reuseExistingServer: false,
+      timeout: 30_000,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
+    {
+      command: `pnpm build && pnpm exec next start --port ${String(PORT)}`,
+      url: BASE_URL,
+      env: {
+        CERA_ENABLE_DEV_ROUTES: '1',
+        API_INTERNAL_URL: BACKEND_URL,
+        CMS_API_URL: `${BACKEND_URL}/api`,
+      },
+      /**
+       * Not reused, even locally.
+       *
+       * A server left running from a previous run is serving the previous build, and an accessibility
+       * suite that silently tests stale code is worse than a slow one - it reports a pass for a change
+       * that was never compiled.
+       */
+      reuseExistingServer: false,
+      timeout: 240_000,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
+  ],
 
   use: {
     baseURL: BASE_URL,

@@ -20,8 +20,8 @@ import { fileURLToPath } from 'node:url';
  * checkout must never be able to redirect a command that was given an explicit
  * `DATABASE_URL`, which is how a test run ends up writing to the wrong database.
  */
-export function loadRootEnv() {
-  const envPath = findRootEnv();
+export function loadRootEnv(startDir = dirname(fileURLToPath(import.meta.url))) {
+  const envPath = findRootEnv(startDir);
 
   if (envPath === undefined) return undefined;
 
@@ -38,8 +38,8 @@ export function loadRootEnv() {
  * relative path that is correct for one is silently wrong for the other - it finds
  * no file and loads nothing, which looks exactly like having no `.env` at all.
  */
-function findRootEnv() {
-  let dir = dirname(fileURLToPath(import.meta.url));
+function findRootEnv(startDir) {
+  let dir = startDir;
   const { root } = parse(dir);
 
   while (true) {

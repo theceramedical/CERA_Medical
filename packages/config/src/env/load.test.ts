@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -41,12 +41,17 @@ afterEach(() => {
 });
 
 describe('loadRootEnv', () => {
-  it('finds the repository .env and reports the path it loaded', () => {
-    // Runs against the real repository, so this also asserts the upward walk reaches
-    // the workspace root from inside `packages/config`.
-    const loaded = loadRootEnv();
+  it('walks to the workspace root and reports the env file it loaded', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'cera-env-root-'));
+    created.push(dir);
+    writeFileSync(join(dir, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n');
+    writeFileSync(join(dir, '.env'), 'CERA_LOAD_TEST_ROOT=from_root\n');
+    const nested = join(dir, 'packages', 'config');
+    mkdirSync(nested, { recursive: true });
+    touchedKeys.push('CERA_LOAD_TEST_ROOT');
 
-    expect(loaded).toMatch(/\.env$/);
+    expect(loadRootEnv(nested)).toBe(join(dir, '.env'));
+    expect(process.env.CERA_LOAD_TEST_ROOT).toBe('from_root');
   });
 
   it('populates a variable that was not already set', () => {
