@@ -4,4 +4,4 @@
  *
  * @returns the path that was loaded, or `undefined` if no `.env` was found.
  */
-export declare function loadRootEnv(): string | undefined;
+export declare function loadRootEnv(startDir?: string): string | undefined;
