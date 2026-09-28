@@ -26,7 +26,8 @@ interface Hit {
 function rank(query: string): Hit[] {
   const term = query.toLowerCase();
   const services = HOMEPAGE_SERVICES.filter(
-    (item) => item.title.toLowerCase().includes(term) || item.description.toLowerCase().includes(term),
+    (item) =>
+      item.title.toLowerCase().includes(term) || item.description.toLowerCase().includes(term),
   ).map((item) => ({
     href: `/services/${item.slug}`,
     title: item.title,

@@ -9,7 +9,8 @@ export function createSessionReader(secret: string) {
 
   return async (request: FastifyRequest): Promise<SessionClaims | null> => {
     const header = request.headers.cookie;
-    const token = tokenFromCookieHeader(header) ?? request.headers.authorization?.replace(/^Bearer\s+/i, '');
+    const token =
+      tokenFromCookieHeader(header) ?? request.headers.authorization?.replace(/^Bearer\s+/i, '');
     if (token === undefined || token.length === 0) return null;
     try {
       return await unsealSession(token, key);

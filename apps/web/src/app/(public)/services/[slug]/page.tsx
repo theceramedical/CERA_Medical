@@ -89,7 +89,9 @@ export default async function ServiceDetailPage({
           <Text className="mt-2">{service.displayPrice}</Text>
         ) : null}
 
-        {presentation !== null ? <RichText body={presentation.body} /> : (
+        {presentation !== null ? (
+          <RichText body={presentation.body} />
+        ) : (
           <Text className="mt-6">{service.description}</Text>
         )}
 

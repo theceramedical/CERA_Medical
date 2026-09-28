@@ -101,6 +101,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build shared runtime packages
+        run: pnpm --filter '@cera/observability...' build
       - run: pnpm typecheck
 
   test:
@@ -151,6 +153,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build shared runtime packages
+        run: pnpm --filter '@cera/observability...' build
 
       # Applied before the tests, not by them. The constraint and trigger suite in
       # @cera/db asserts against the real schema, so an unmigrated database would
@@ -284,7 +288,21 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Build all packages with non-secret dashboard placeholders
+        run: pnpm build
+        env:
+          DB_HOST: postgres
+          DB_NAME: build_only
+          DB_USERNAME: build_only
+          DB_PASSWORD: build_only
+          VALKEY_HOST: valkey
+          SUPERADMIN_USERNAME: build_only
+          SUPERADMIN_PASSWORD: build_only
+          COOKIE_SECRET: build_only
+          CERA_ENV: production
+          STORAGE_DRIVER: local
+          PAYLOAD_SECRET: ci-build-placeholder-not-a-production-secret
+          CMS_DATABASE_URL: postgres://build_only:build_only@127.0.0.1:5432/build_only
 
   # ---------------------------------------------------------------------------
   # The suites that need a real browser. Both are required gates rather than advisory
@@ -325,6 +343,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build shared runtime packages
+        run: pnpm --filter '@cera/observability...' build
 
       - name: Install Chromium
         # `--with-deps` installs the system libraries the browser needs, which are not

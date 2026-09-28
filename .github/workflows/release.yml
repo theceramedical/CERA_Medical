@@ -63,6 +63,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build shared runtime packages
+        run: pnpm --filter '@cera/observability...' build
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

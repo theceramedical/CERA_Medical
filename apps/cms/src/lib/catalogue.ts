@@ -34,7 +34,9 @@ export class UnknownServiceError extends Error {
 
 export class CatalogueUnavailableError extends Error {
   constructor() {
-    super('The service catalogue is unavailable. A presentation cannot be saved without a live check.');
+    super(
+      'The service catalogue is unavailable. A presentation cannot be saved without a live check.',
+    );
     this.name = 'CatalogueUnavailableError';
   }
 }

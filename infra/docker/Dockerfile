@@ -3,6 +3,7 @@ WORKDIR /workspace
 RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
 COPY . .
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter '@cera/observability...' build
 
 ARG APP
 ARG BUILD_SITE_URL=http://localhost:3000
@@ -21,6 +22,9 @@ RUN if [ "$APP" = commerce ]; then \
       export DB_HOST=postgres DB_NAME=build_only DB_USERNAME=build_only DB_PASSWORD=build_only \
         VALKEY_HOST=valkey SUPERADMIN_USERNAME=build_only SUPERADMIN_PASSWORD=build_only \
         COOKIE_SECRET=build_only CERA_ENV=production STORAGE_DRIVER=local; \
+    elif [ "$APP" = cms ]; then \
+      export PAYLOAD_SECRET=ci-build-placeholder-not-a-production-secret \
+        CMS_DATABASE_URL=postgres://build_only:build_only@127.0.0.1:5432/build_only; \
     fi; \
     bash infra/docker/prepare.sh "$APP" /out
 

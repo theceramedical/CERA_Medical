@@ -9,7 +9,6 @@ import { rankSearch, type Searchable } from './rank.ts';
 import type { VendureCatalogueClient } from '../catalogue/vendure-client.ts';
 import type { FastifyPluginCallback } from 'fastify';
 
-
 export interface SearchDependencies {
   readonly catalogue: VendureCatalogueClient;
   readonly extra?: () => Promise<readonly Searchable[]>;

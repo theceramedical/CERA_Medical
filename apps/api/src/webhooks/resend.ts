@@ -21,7 +21,13 @@ export function advanceDelivery(current: DeliveryLattice, next: DeliveryLattice)
   return RANK[next] >= RANK[current] ? next : current;
 }
 
-export function verifySvix(secret: string, id: string, timestamp: string, rawBody: string, signature: string): boolean {
+export function verifySvix(
+  secret: string,
+  id: string,
+  timestamp: string,
+  rawBody: string,
+  signature: string,
+): boolean {
   const payload = `${id}.${timestamp}.${rawBody}`;
   const expected = createHmac('sha256', secret).update(payload).digest('base64');
   const given = signature.replace(/^v1,/, '');
@@ -34,7 +40,8 @@ export const resendWebhookRoutes = (secret: string): FastifyPluginCallback => {
   return (app, _opts, done) => {
     app.post('/v1/webhooks/resend', async (request, reply) => {
       try {
-        const raw = typeof request.body === 'string' ? request.body : JSON.stringify(request.body ?? {});
+        const raw =
+          typeof request.body === 'string' ? request.body : JSON.stringify(request.body ?? {});
         const id = String(request.headers['svix-id'] ?? '');
         const timestamp = String(request.headers['svix-timestamp'] ?? '');
         const signature = String(request.headers['svix-signature'] ?? '');

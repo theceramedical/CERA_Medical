@@ -30,8 +30,14 @@ export interface VendureCatalogueClient {
   getProduct(slug: string): Promise<VendureProduct | null>;
 }
 
-export function createVendureClient(shopApiUrl: string, fetchImpl: typeof fetch = fetch): VendureCatalogueClient {
-  const query = async <T>(payload: { query: string; variables?: Record<string, unknown> }): Promise<T> => {
+export function createVendureClient(
+  shopApiUrl: string,
+  fetchImpl: typeof fetch = fetch,
+): VendureCatalogueClient {
+  const query = async <T>(payload: {
+    query: string;
+    variables?: Record<string, unknown>;
+  }): Promise<T> => {
     let response: Response;
     try {
       response = await fetchImpl(shopApiUrl, {

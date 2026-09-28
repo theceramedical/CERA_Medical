@@ -19,7 +19,8 @@ export default async function SignInPage({
   readonly searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
-  const href = next === undefined ? '/auth/signin' : `/auth/signin?next=${encodeURIComponent(next)}`;
+  const href =
+    next === undefined ? '/auth/signin' : `/auth/signin?next=${encodeURIComponent(next)}`;
 
   return (
     <>

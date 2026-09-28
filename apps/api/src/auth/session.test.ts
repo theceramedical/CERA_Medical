@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { issueClaims, revokeSubject, sealSession, sessionKeyFromSecret, unsealSession } from './session.ts';
+import {
+  issueClaims,
+  revokeSubject,
+  sealSession,
+  sessionKeyFromSecret,
+  unsealSession,
+} from './session.ts';
 
 const KEY = sessionKeyFromSecret('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
 

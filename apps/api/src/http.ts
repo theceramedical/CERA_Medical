@@ -32,5 +32,7 @@ export function sendCode(
   reply: FastifyReply,
   code: Parameters<typeof buildErrorEnvelope>[0]['code'],
 ): void {
-  void reply.code(httpStatusFor(code)).send(buildErrorEnvelope({ code, requestId: requestIdOf(request) }));
+  void reply
+    .code(httpStatusFor(code))
+    .send(buildErrorEnvelope({ code, requestId: requestIdOf(request) }));
 }

@@ -6,7 +6,6 @@ import { searchRoutes } from './routes.ts';
 import type { VendureProduct } from '../catalogue/types.ts';
 import type { VendureCatalogueClient } from '../catalogue/vendure-client.ts';
 
-
 const cardiology: VendureProduct = {
   id: '1',
   slug: 'cardiology',

@@ -49,7 +49,9 @@ export function EnquiryForm({
 
   const values = state.status === 'error' ? state.values : undefined;
   const errorFor = (path: string) =>
-    state.status === 'error' ? state.fieldErrors.find((error) => error.path === path)?.message : undefined;
+    state.status === 'error'
+      ? state.fieldErrors.find((error) => error.path === path)?.message
+      : undefined;
 
   return (
     <form action={action} className="flex max-w-measure flex-col gap-6" noValidate>

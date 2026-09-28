@@ -19,14 +19,12 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 export const PREVIEW_TTL_SECONDS = 15 * 60;
 
 function mac(secret: string, exp: number, path: string): Buffer {
-  return createHmac('sha256', secret).update(`${String(exp)}\n${path}`).digest();
+  return createHmac('sha256', secret)
+    .update(`${String(exp)}\n${path}`)
+    .digest();
 }
 
-export function signPreviewToken(
-  secret: string,
-  path: string,
-  nowMs: number = Date.now(),
-): string {
+export function signPreviewToken(secret: string, path: string, nowMs: number = Date.now()): string {
   if (!path.startsWith('/') || path.startsWith('//')) {
     throw new Error('preview path must be a single-origin absolute path');
   }

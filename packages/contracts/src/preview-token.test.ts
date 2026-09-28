@@ -26,12 +26,12 @@ describe('preview tokens', () => {
     const now = Date.UTC(2026, 0, 1, 12, 0, 0);
     const token = signPreviewToken(SECRET, '/about', now);
 
-    expect(verifyPreviewToken(SECRET, token, '/about', now + (PREVIEW_TTL_SECONDS - 1) * 1000)).toBe(
-      true,
-    );
-    expect(verifyPreviewToken(SECRET, token, '/about', now + (PREVIEW_TTL_SECONDS + 1) * 1000)).toBe(
-      false,
-    );
+    expect(
+      verifyPreviewToken(SECRET, token, '/about', now + (PREVIEW_TTL_SECONDS - 1) * 1000),
+    ).toBe(true);
+    expect(
+      verifyPreviewToken(SECRET, token, '/about', now + (PREVIEW_TTL_SECONDS + 1) * 1000),
+    ).toBe(false);
   });
 
   it('rejects a rewritten expiry', () => {

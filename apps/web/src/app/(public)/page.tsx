@@ -3,7 +3,12 @@ import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { ProcessSection } from '../../components/home/process-section.tsx';
 import { ServicesSection } from '../../components/home/services-section.tsx';
-import { JsonLd, medicalBusinessJsonLd, organizationJsonLd, websiteJsonLd } from '../../components/json-ld.tsx';
+import {
+  JsonLd,
+  medicalBusinessJsonLd,
+  organizationJsonLd,
+  websiteJsonLd,
+} from '../../components/json-ld.tsx';
 import { siteUrl } from '../../lib/site-url.ts';
 
 import type { Metadata } from 'next';

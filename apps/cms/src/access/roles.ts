@@ -21,8 +21,9 @@ export function isCmsUser(value: unknown): value is CmsUser {
 }
 
 /** The two roles that may publish, unpublish, restore, and delete. */
-export function canPublish(user: CmsUser | null | undefined): boolean {
-  return user?.role === 'content_approver' || user?.role === 'administrator';
+export function canPublish(user: unknown): boolean {
+  if (!isCmsUser(user)) return false;
+  return user.role === 'content_approver' || user.role === 'administrator';
 }
 
 /**
@@ -32,8 +33,9 @@ export function canPublish(user: CmsUser | null | undefined): boolean {
  * about who is allowed to type. Forcing an approver to log in as an editor to
  * fix a typo is how the rule gets a workaround.
  */
-export function canAuthor(user: CmsUser | null | undefined): boolean {
-  return user?.role === 'content_editor' || canPublish(user);
+export function canAuthor(user: unknown): boolean {
+  if (!isCmsUser(user)) return false;
+  return user.role === 'content_editor' || canPublish(user);
 }
 
 /**
@@ -43,6 +45,6 @@ export function canAuthor(user: CmsUser | null | undefined): boolean {
  * published records only. An auditor reading drafts would be reading unpublished
  * clinical copy they have no operational reason to see.
  */
-export function canReadDrafts(user: CmsUser | null | undefined): boolean {
+export function canReadDrafts(user: unknown): boolean {
   return canAuthor(user);
 }

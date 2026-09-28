@@ -13,7 +13,10 @@ export default async function AccountProfilePage() {
   const session = await getSession();
   return (
     <>
-      <PageHeader title="Your profile" lede="Name and phone can be updated here. Email changes go through sign-in." />
+      <PageHeader
+        title="Your profile"
+        lede="Name and phone can be updated here. Email changes go through sign-in."
+      />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <form className="flex max-w-measure flex-col gap-6">
           <Field label="Display name">
@@ -22,7 +25,10 @@ export default async function AccountProfilePage() {
           <Field label="Phone">
             <Input name="phone" type="tel" autoComplete="tel" />
           </Field>
-          <Field label="Email" hint="Change this in the sign-in service. Email is what lets you claim an enquiry.">
+          <Field
+            label="Email"
+            hint="Change this in the sign-in service. Email is what lets you claim an enquiry."
+          >
             <Input name="email" type="email" defaultValue={session?.email ?? ''} disabled />
           </Field>
         </form>

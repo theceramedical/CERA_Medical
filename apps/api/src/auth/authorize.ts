@@ -12,8 +12,7 @@ export interface AuthorizeInput {
 }
 
 export type AuthorizeResult =
-  | { ok: true; session: SessionClaims | null }
-  | { ok: false; error: ApiError; reason: string };
+  { ok: true; session: SessionClaims | null } | { ok: false; error: ApiError; reason: string };
 
 /**
  * Deny by default. A path with no policy is unreachable even if a handler exists.

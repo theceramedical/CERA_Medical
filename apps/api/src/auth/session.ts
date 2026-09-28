@@ -1,7 +1,6 @@
 import { RoleSchema, type Role } from '@cera/contracts';
 import { CompactEncrypt, compactDecrypt } from 'jose';
 
-
 /**
  * JWE-sealed session (ADR-004). The payload never sits in a readable cookie.
  */
@@ -61,10 +60,17 @@ export async function sealSession(claims: SessionClaims, key: Uint8Array): Promi
     .encrypt(key);
 }
 
-export async function unsealSession(token: string, key: Uint8Array, now = Math.floor(Date.now() / 1000)) {
+export async function unsealSession(
+  token: string,
+  key: Uint8Array,
+  now = Math.floor(Date.now() / 1000),
+) {
   const { plaintext } = await compactDecrypt(token, key);
   const parsed = JSON.parse(new TextDecoder().decode(plaintext)) as SessionClaims;
-  if (!Array.isArray(parsed.roles) || parsed.roles.some((role) => !RoleSchema.safeParse(role).success)) {
+  if (
+    !Array.isArray(parsed.roles) ||
+    parsed.roles.some((role) => !RoleSchema.safeParse(role).success)
+  ) {
     return null;
   }
   if (denyList.has(parsed.sub)) return null;
@@ -80,7 +86,10 @@ export function clearRevocations(): void {
   denyList.clear();
 }
 
-export function slideIdle(claims: SessionClaims, now = Math.floor(Date.now() / 1000)): SessionClaims {
+export function slideIdle(
+  claims: SessionClaims,
+  now = Math.floor(Date.now() / 1000),
+): SessionClaims {
   const staff = isStaffSession(claims.roles);
   const idle = staff ? STAFF_IDLE_SECONDS : CUSTOMER_IDLE_SECONDS;
   return { ...claims, exp: Math.min(now + idle, claims.absoluteExp) };

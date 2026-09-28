@@ -30,7 +30,11 @@ const diagnostics: VendureProduct = {
   id: '2',
   slug: 'diagnostic-tests',
   name: 'Diagnostic Tests',
-  customFields: { ...cardiology.customFields, enquiryEnabled: false, shortSummary: 'Accurate results.' },
+  customFields: {
+    ...cardiology.customFields,
+    enquiryEnabled: false,
+    shortSummary: 'Accurate results.',
+  },
 };
 
 const withdrawn: VendureProduct = {
@@ -52,7 +56,9 @@ async function build(products: readonly VendureProduct[]): Promise<FastifyInstan
   const client: VendureCatalogueClient = {
     listProducts: () => Promise.resolve(products.filter((product) => product.enabled !== false)),
     getProduct: (slug) =>
-      Promise.resolve(products.find((product) => product.slug === slug && product.enabled !== false) ?? null),
+      Promise.resolve(
+        products.find((product) => product.slug === slug && product.enabled !== false) ?? null,
+      ),
   };
 
   const instance = Fastify({ logger: false });

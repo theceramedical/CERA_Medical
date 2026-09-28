@@ -12,7 +12,11 @@ export function spamScore(message: string): number {
   if (links >= 3) score += 3;
   else if (links >= 1) score += 1;
   if (REPEATED_WORD.test(message)) score += 3;
-  if (message.length > 0 && message.replace(/\s/g, '').length / message.length > 0.92 && links > 0) {
+  if (
+    message.length > 0 &&
+    message.replace(/\s/g, '').length / message.length > 0.92 &&
+    links > 0
+  ) {
     score += 1;
   }
   return score;

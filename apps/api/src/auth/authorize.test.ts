@@ -73,7 +73,10 @@ describe('authorization matrix', () => {
   it('covers every declared route', () => {
     expect(ROUTE_POLICIES.length).toBeGreaterThan(10);
     for (const route of ROUTE_POLICIES) {
-      const path = route.path.replace(':slug', 'cardiology').replace(':reference', 'CERA-260101-AAAAA').replace(':id', 'id-1');
+      const path = route.path
+        .replace(':slug', 'cardiology')
+        .replace(':reference', 'CERA-260101-AAAAA')
+        .replace(':id', 'id-1');
       expect(authorize({ method: route.method, path, session: null }).ok || true).toBe(true);
     }
   });

@@ -3,9 +3,27 @@ import { describe, expect, it } from 'vitest';
 import { rankSearch, type Searchable } from './rank.ts';
 
 const items: readonly Searchable[] = [
-  { kind: 'service', type: 'service', slug: 'cardiology', title: 'Cardiology', excerpt: 'Heart care' },
-  { kind: 'service', type: 'service', slug: 'orthopaedics', title: 'Orthopaedics', excerpt: 'Moving' },
-  { kind: 'content', type: 'post', slug: 'heart-habits', title: 'Heart habits', excerpt: 'Cardiology tips' },
+  {
+    kind: 'service',
+    type: 'service',
+    slug: 'cardiology',
+    title: 'Cardiology',
+    excerpt: 'Heart care',
+  },
+  {
+    kind: 'service',
+    type: 'service',
+    slug: 'orthopaedics',
+    title: 'Orthopaedics',
+    excerpt: 'Moving',
+  },
+  {
+    kind: 'content',
+    type: 'post',
+    slug: 'heart-habits',
+    title: 'Heart habits',
+    excerpt: 'Cardiology tips',
+  },
 ];
 
 describe('rankSearch', () => {

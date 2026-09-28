@@ -74,7 +74,7 @@ export const SEED_SERVICES: readonly SeedService[] = [
     internalNotes: 'FIXTURE internal note — must never appear in Shop API or public projection.',
   },
   {
-    slug: "womens-health",
+    slug: 'womens-health',
     name: "Women's Health",
     summary: 'Specialist care for every stage of life.',
     description:

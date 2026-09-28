@@ -83,7 +83,9 @@ export async function getDocument(
   return getPublishedDocument(type, slug);
 }
 
-export async function listPublishedDocuments(type: ContentType): Promise<readonly ContentDocument[]> {
+export async function listPublishedDocuments(
+  type: ContentType,
+): Promise<readonly ContentDocument[]> {
   const collection = COLLECTION[type];
   const url = new URL(`${cmsApiUrl().replace(/\/$/, '')}/${collection}`);
   url.searchParams.set('limit', '50');

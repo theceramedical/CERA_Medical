@@ -40,7 +40,9 @@ export function createHandshakeSecrets(): { state: string; nonce: string } {
 }
 
 export function sessionSatisfiedMfa(identity: OidcIdentity): boolean {
-  return identity.amr.includes('mfa') || identity.amr.includes('otp') || identity.amr.includes('hwk');
+  return (
+    identity.amr.includes('mfa') || identity.amr.includes('otp') || identity.amr.includes('hwk')
+  );
 }
 
 export function fakeOidcPort(identities: Record<string, OidcIdentity>): OidcPort {

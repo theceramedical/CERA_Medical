@@ -1,5 +1,9 @@
 import { asString } from '../lib/as-string.ts';
-import { assertServiceExists, CatalogueUnavailableError, vendureHasSlug } from '../lib/catalogue.ts';
+import {
+  assertServiceExists,
+  CatalogueUnavailableError,
+  vendureHasSlug,
+} from '../lib/catalogue.ts';
 import { constrainedEditor } from '../lib/editor.ts';
 import { PREVIEW_BREAKPOINTS, previewUrl } from '../lib/preview.ts';
 

@@ -92,6 +92,9 @@ async function main(): Promise<void> {
         collection: 'categories',
         data: { ...category },
       }));
+    if (typeof doc.id !== 'number') {
+      throw new Error(`Expected a numeric category ID for ${category.slug}`);
+    }
     categoryIds[category.slug] = doc.id;
   }
   const categoryId = (slug: string): number => {

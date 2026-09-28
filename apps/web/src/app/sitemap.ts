@@ -12,11 +12,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = siteUrl();
   const now = new Date();
 
-  const staticRoutes = ['/', '/services', '/articles', '/about', '/contact', '/privacy', '/terms', '/faqs', '/enquiry', '/sitemap'];
+  const staticRoutes = [
+    '/',
+    '/services',
+    '/articles',
+    '/about',
+    '/contact',
+    '/privacy',
+    '/terms',
+    '/faqs',
+    '/enquiry',
+    '/sitemap',
+  ];
 
   const posts = await listPublishedDocuments('post').catch(() => []);
   const articleRoutes =
-    posts.length > 0 ? posts.map((post) => `/articles/${post.slug}`) : HOMEPAGE_ARTICLES.map((article) => `/articles/${article.slug}`);
+    posts.length > 0
+      ? posts.map((post) => `/articles/${post.slug}`)
+      : HOMEPAGE_ARTICLES.map((article) => `/articles/${article.slug}`);
 
   const serviceRoutes = HOMEPAGE_SERVICES.map((service) => `/services/${service.slug}`);
 
