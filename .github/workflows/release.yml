@@ -24,6 +24,7 @@ jobs:
     name: Full verification
     if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    environment: production
     permissions:
       contents: read
     services:
@@ -90,6 +91,7 @@ jobs:
     name: Build production image ${{ matrix.app }}
     needs: verify
     runs-on: ubuntu-24.04
+    environment: production
     permissions:
       contents: read
       packages: write
