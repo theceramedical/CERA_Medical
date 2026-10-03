@@ -246,7 +246,7 @@ describe('constraints that encode the rules', () => {
   });
 
   it('requires an external id on a succeeded delivery', () => {
-    // Without it there is no way to find the Zoho lead again, which makes
+    // Without it there is no way to find the erpnext lead again, which makes
     // reconciliation impossible and a duplicate on the next sync likely.
     expect(initialSql).toContain('integration_deliveries_success_has_external_id_check');
   });
@@ -367,9 +367,16 @@ describe('the schema stays aligned with the contracts', () => {
         'name',
         'email',
         'phone',
+        'institution',
+        'country',
         'serviceId',
         'message',
         'consentAt',
+        'consentVersion',
+        'sequencingDataConsent',
+        'samplesCompoundsConsent',
+        'healthDataConsent',
+        'updatesOptIn',
         'source',
         'internalStatus',
         'ownerId',

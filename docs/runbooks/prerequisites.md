@@ -21,15 +21,15 @@ and the phase by which the real item is required.
 
 ## CERA prerequisites
 
-| PRD prerequisite                                                                                                                         | PRD deadline            | Status        | Stand-in used                                                                                                                    | Required by  |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| GitHub organisation and private repository; two owner accounts with MFA                                                                  | Before repository setup | Not available | Local git repository; workflows authored and committed but not pushed                                                            | Phase 15     |
-| Named Product Owner and Content and Clinical Approver with GitHub and email access                                                       | Before Day 1            | Not available | One fixture user per role, wired to the real role matrix                                                                         | Phase 15 UAT |
-| Domain and Cloudflare access; approved subdomains for web, admin, auth, status, monitoring                                               | Before Day 1            | Not available | `*.cera.localhost` with local TLS                                                                                                | Phase 13     |
-| One production Linux server; SSH key owners                                                                                              | Before Day 1            | Not available | Local Docker Compose with the identical container topology                                                                       | Phase 13     |
-| R2 and Resend accounts owned by CERA; ERPNext on the production host                                                                     | Before Day 2            | Not available | MinIO for R2, Mailpit for Resend, in-memory fake for CRM                                                                         | Phase 10     |
-| Approved logo, brand assets, service list, service copy, display pricing, contact details, privacy and terms drafts, launch blog content | Before Day 3            | Not available | Copy transcribed from the approved reference image, every record marked `__fixture` and labelled "pending CERA content approval" | Phase 15     |
-| Written approval of data fields, consent text, retention, customer-safe statuses, ERPNext field mapping, and email wording               | Before Day 4            | Not available | Proposed defaults in `.planning/data-contracts.md`, flagged for approval                                                         | Phase 15 UAT |
+| PRD prerequisite                                                            | PRD deadline            | Status          | Stand-in used                                                                                                                     | Required by               |
+| --------------------------------------------------------------------------- | ----------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| GitHub repository visibility, owner MFA, and deploy permissions             | Before repository setup | Partially ready | `theceramedical/CERA_Medical` exists; owner must confirm private visibility and review write/deploy access                        | Before production push    |
+| Named Product Owner and Content and Clinical Approver                       | Before Day 1            | Pending         | User will provide business content and final approval                                                                             | Before public launch      |
+| Domain and Cloudflare access; approved production subdomains                | Before Day 1            | Partially ready | `ceramedical.org` uses Cloudflare nameservers and has a Resend DKIM record; app A records were absent at last DNS check           | Before DNS cutover        |
+| One production Linux server; verified SSH key owners                        | Before Day 1            | Provisioned     | Hetzner `178.105.73.48`; SSH host key verified; Ubuntu 26.04, 4 vCPU, 8 GiB RAM, 75 GiB disk; CERA is not deployed                | Before production release |
+| R2 media account, Resend credentials, ERPNext                               | Before Day 2            | Partially ready | ERPNext is running on VPS; user reports Cloudflare/Resend setup; R2 token and Resend API/webhook credentials remain pending       | Before live integration   |
+| Approved brand assets, service copy, contact, privacy/terms, images         | Before Day 3            | Partially ready | Client content document supplied; contact is `theceramedica@gmail.com`; approved logo/photos and business sign-off remain pending | Before public launch      |
+| Approval of data fields, consent, retention, CRM mapping, and email wording | Before Day 4            | Pending         | Consent implemented from client draft; legal terms, retention and operational wording need approval                               | Before production release |
 
 ## Why this does not block delivery
 
@@ -49,10 +49,10 @@ a test of the fake alone.
 ## Blocker assessment
 
 - **Phases 01 to 12:** no blocker. All are deliverable and verifiable on the local stack.
-- **Phase 13:** deliverable as validated configuration plus a full rehearsal on local Compose,
-  including a timed backup restore. Only the production host is absent.
-- **Phase 15:** deliverable as rehearsed release and rollback, complete runbooks, and self-run UAT
-  scripts. Signatures and the production host require CERA.
+- **Phase 13:** the production VPS is provisioned and its SSH identity verified. DNS, secrets,
+  production configuration, encrypted local backups, and a restore rehearsal remain.
+- **Phase 15:** release/rollback runbooks and self-run UAT scripts are present. Business/legal
+  approval, repository access, provider credentials, and production verification remain.
 
 Outstanding items are tracked in the open-items register produced by Phase 15, each naming the
 specific input required to close it.
@@ -61,18 +61,20 @@ specific input required to close it.
 
 Ordered, because several steps depend on the one before:
 
-1. CERA creates the GitHub organisation with two MFA owners, then the private `cera-platform`
-   repository. Apply the rulesets recorded in `docs/runbooks/github-rulesets.md`.
-2. Cloudflare: add the domain and create the production subdomains.
-3. Provision one production Linux server, register SSH key owners, and enable deletion protection.
+1. The repository owner confirms `theceramedical/CERA_Medical` is private and checks branch
+   protection and write/deploy access before an initial push.
+2. Cloudflare: confirm `ceramedical.org` ownership and create production subdomains; point them to
+   the VPS only after its production stack is ready.
+3. Confirm VPS account recovery, SSH key owners, and deletion protection before release.
    Generate an age key pair and retain the private recovery key outside the server. Local encrypted
    database backups do not survive loss of the server.
-4. R2: create one production media bucket with an `Object Read & Write` token scoped to that bucket,
+4. If media uploads are enabled at launch, create one production R2 bucket with an `Object Read & Write` token scoped to that bucket,
    plus a custom delivery domain. Enable bucket versioning. Do not use the `r2.dev` development URL
    in production. The media bucket is not a copy of the server databases.
-5. Resend: verify a sending subdomain, publish DKIM and SPF records, and create sending-access keys
-   per environment plus a webhook signing secret.
-6. ERPNext: deploy the official Frappe Docker stack on the same host, create the CERA Lead custom
+5. Resend: user reports domain setup; verify the sending subdomain, DKIM and SPF records, then
+   create a sending key and webhook secret. Keep `theceramedica@gmail.com` as the public contact
+   until the domain sender is ready and approved.
+6. ERPNext: the Frappe Docker stack is already running on the host. Verify the CERA Lead custom
    fields and a dedicated API user with Lead read/create/write permission, then configure
    `ERPNEXT_URL`, `ERPNEXT_API_KEY`, and `ERPNEXT_API_SECRET` on the CERA host.
 7. Authentik: create the production OAuth2 provider and application with strict redirect URIs, the

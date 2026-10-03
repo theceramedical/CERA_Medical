@@ -1,19 +1,20 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { ZohoLeadPayload } from '@cera/contracts';
+import type { CrmLeadPayload } from '@cera/contracts';
 
 import { erpNextCrm } from './erpnext.ts';
 
-const payload: ZohoLeadPayload = {
-  First_Name: 'Alex',
-  Last_Name: 'Patient',
-  Email: 'alex@example.com',
-  Company: 'Individual enquiry',
-  Lead_Source: 'Website',
-  Description: 'I need an appointment.',
-  External_Lead_ID: 'CERA-260928-AAAAA',
-  CERA_Service: 'Cardiology',
-  CERA_Status: 'Received',
+const payload: CrmLeadPayload = {
+  firstName: 'Alex',
+  lastName: 'Patient',
+  email: 'alex@example.com',
+  company: 'CERA Research Institute',
+  source: 'Website',
+  description: 'I need an appointment.',
+  externalReference: 'CERA-260928-AAAAA',
+  service: 'Cardiology',
+  customerStatus: 'Received',
+  country: 'United Kingdom',
 };
 
 afterEach(() => vi.unstubAllGlobals());
@@ -35,17 +36,21 @@ describe('ERPNext CRM adapter', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     const lookup = new URL(fetchMock.mock.calls[0]![0] as string);
     expect(JSON.parse(lookup.searchParams.get('filters') ?? '')).toEqual([
-      ['custom_cera_reference', '=', payload.External_Lead_ID],
+      ['custom_cera_reference', '=', payload.externalReference],
     ]);
     const create = fetchMock.mock.calls[1]![1] as RequestInit;
     expect(create.method).toBe('POST');
     expect(JSON.parse(create.body as string)).toMatchObject({
+      lead_name: 'Alex Patient',
       first_name: 'Alex',
       last_name: 'Patient',
-      email_id: payload.Email,
-      custom_cera_reference: payload.External_Lead_ID,
-      custom_cera_service: 'Cardiology',
-      custom_cera_message: payload.Description,
+      email_id: payload.email,
+      company_name: payload.company,
+      custom_cera_reference: payload.externalReference,
+      custom_cera_service: payload.service,
+      custom_cera_message: payload.description,
+      custom_cera_country: payload.country,
+      custom_cera_source: payload.source,
     });
     expect(create.headers).toMatchObject({ authorization: 'token key:secret' });
     expect(create.body).not.toContain('ownerId');

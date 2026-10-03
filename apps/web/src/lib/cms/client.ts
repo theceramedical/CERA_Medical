@@ -35,6 +35,7 @@ export async function getPublishedDocument(
   const collection = COLLECTION[type];
   const url = new URL(`${cmsApiUrl().replace(/\/$/, '')}/${collection}`);
   url.searchParams.set('where[slug][equals]', slug);
+  url.searchParams.set('where[fixture][not_equals]', 'true');
   url.searchParams.set('limit', '1');
   url.searchParams.set('depth', '1');
 
@@ -91,6 +92,7 @@ export async function listPublishedDocuments(
   url.searchParams.set('limit', '50');
   url.searchParams.set('depth', '1');
   url.searchParams.set('sort', '-publishedAt');
+  url.searchParams.set('where[fixture][not_equals]', 'true');
 
   const response = await fetch(url, { next: { tags: [`cms:${collection}`] } });
   if (!response.ok) return [];

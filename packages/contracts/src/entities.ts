@@ -114,10 +114,12 @@ export const EnquiryInputSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: EmailSchema,
   phone: PhoneSchema.nullable().optional(),
+  institution: z.string().trim().max(160).nullable().optional(),
+  country: z.string().trim().max(80).nullable().optional(),
   serviceId: z.string().min(1).max(64),
   /**
    * 10 characters minimum rejects "hi" without rejecting a terse but genuine
-   * enquiry. 2000 maximum bounds both the database row and the Zoho payload.
+   * enquiry. 2000 maximum bounds both the database row and the CRM payload.
    */
   message: z.string().trim().min(10).max(2000),
   /**
@@ -126,9 +128,32 @@ export const EnquiryInputSchema = z.object({
    * unconsented submission fail validation itself (PRD 10).
    */
   consent: z.literal(true),
+  sequencingDataConsent: z.boolean().optional(),
+  samplesCompoundsConsent: z.boolean().optional(),
+  healthDataConsent: z.boolean().optional(),
+  updatesOptIn: z.boolean().optional(),
   source: EnquirySourceSchema,
 });
 export type EnquiryInput = z.infer<typeof EnquiryInputSchema>;
+
+export const ENQUIRY_CONSENT_VERSION = 'cera-brief-2026-10-03-v1';
+
+export type ServiceSpecificConsentField =
+  'sequencingDataConsent' | 'samplesCompoundsConsent' | 'healthDataConsent';
+
+export function requiredServiceSpecificConsent(
+  serviceId: string,
+): ServiceSpecificConsentField | null {
+  if (serviceId === 'metagenomic-data-analysis') return 'sequencingDataConsent';
+  if (serviceId === 'preclinical-studies' || serviceId === 'molecular-research')
+    return 'samplesCompoundsConsent';
+  if (
+    serviceId === 'biomedical-omics-data-analysis' ||
+    serviceId === 'evidence-synthesis-technical-reports'
+  )
+    return 'healthDataConsent';
+  return null;
+}
 
 export const EnquirySchema = z.object({
   id: Uuidv7Schema,
@@ -139,14 +164,21 @@ export const EnquirySchema = z.object({
   name: z.string().min(2).max(120),
   email: EmailSchema,
   phone: PhoneSchema.nullable(),
+  institution: z.string().max(160).nullable().optional(),
+  country: z.string().max(80).nullable().optional(),
   serviceId: z.string().min(1).max(64),
   /**
    * Never logged, never sent to GlitchTip, never placed in an alert subject or
-   * body. It reaches Zoho's `Description` field and a staff UI, and nowhere else.
+   * body. It reaches ERPNext's CERA message field and the staff UI, and nowhere else.
    */
   message: z.string().min(10).max(2000),
   /** Server clock at validated submission. Never inferred, never defaulted. */
   consentAt: UtcTimestampSchema,
+  consentVersion: z.string().min(1).max(64).optional(),
+  sequencingDataConsent: z.boolean().optional(),
+  samplesCompoundsConsent: z.boolean().optional(),
+  healthDataConsent: z.boolean().optional(),
+  updatesOptIn: z.boolean().optional(),
   source: EnquirySourceSchema,
   /** Staff-only. Absent from every customer projection. */
   internalStatus: InternalStatusSchema,
@@ -197,7 +229,7 @@ export const EnquiryStatusEventSchema = z.object({
   customerStatus: CustomerStatusSchema,
   /** Null for system transitions such as an automatic no-response closure. */
   actorSubjectId: SubjectIdSchema.nullable(),
-  /** Staff-only free text. Never projected to a customer and never sent to Zoho. */
+  /** Staff-only free text. Never projected to a customer or sent to the CRM. */
   reason: z.string().max(500).nullable(),
   createdAt: UtcTimestampSchema,
 });
@@ -227,7 +259,7 @@ export const IntegrationDeliverySchema = z.object({
   provider: IntegrationProviderSchema,
   eventType: IntegrationEventTypeSchema,
   idempotencyKey: z.string().min(8).max(256),
-  /** The provider's identifier once known, for example a Zoho lead id. */
+  /** The provider's identifier once known, for example an ERPNext lead name. */
   externalId: z.string().max(200).nullable(),
   attempt: z.number().int().min(0).max(100),
   status: DeliveryStatusSchema,

@@ -1,6 +1,5 @@
 /**
- * Seeds the reference-image content, every record marked `fixture` and labelled
- * pending CERA content approval.
+ * Seeds local editor accounts and fixture documents for development. Fixture content is excluded from public reads.
  *
  * Run against an empty `cera_cms` after migrate. Re-running updates by slug
  * rather than duplicating, so a local reset is `seed` again rather than a
@@ -211,7 +210,7 @@ async function main(): Promise<void> {
 
   const presentation = await payload.find({
     collection: 'service-presentations',
-    where: { slug: { equals: 'cardiology' } },
+    where: { slug: { equals: 'preclinical-studies' } },
     limit: 1,
   });
   if (presentation.docs[0] === undefined) {
@@ -220,11 +219,14 @@ async function main(): Promise<void> {
       overrideAccess: true,
       draft: false,
       data: {
-        title: 'Cardiology at CERA Medical',
-        slug: 'cardiology',
-        serviceId: 'cardiology',
-        excerpt: 'What to expect from a cardiology consultation.',
-        body: lexical([PENDING, 'A first cardiology appointment usually lasts forty minutes.']),
+        title: 'Preclinical Studies',
+        slug: 'preclinical-studies',
+        serviceId: 'preclinical-studies',
+        excerpt: 'Safety and efficacy testing in animal models, cells and computer simulations.',
+        body: lexical([
+          'CERA Medical provides in vivo, in vitro and in silico preclinical research services. Scope, protocol, controls, timeline and deliverables are agreed in writing before work begins.',
+          'Animal studies begin only after approval of the study protocol by the institutional animal ethics committee.',
+        ]),
         fixture: true,
         _status: 'published',
       },
@@ -290,7 +292,7 @@ async function main(): Promise<void> {
       header: [
         { label: 'Home', href: '/' },
         { label: 'Services', href: '/services' },
-        { label: 'Articles', href: '/articles' },
+        { label: 'Research Updates', href: '/articles' },
         { label: 'About', href: '/about' },
         { label: 'Contact', href: '/contact' },
       ],
@@ -301,12 +303,14 @@ async function main(): Promise<void> {
   await payload.updateGlobal({
     slug: 'site-settings',
     data: {
-      tagline: 'Better Information. Healthier Lives.',
-      email: 'hello@example.com',
-      phone: '+44 20 0000 0000',
-      address: 'Placeholder address, pending confirmation',
-      newsletterHeading: 'Subscribe to Our Newsletter',
-      newsletterBody: 'Get the latest health insights and updates.',
+      tagline: 'Biomedical Research and Development',
+      email: 'theceramedica@gmail.com',
+      phone: '',
+      address:
+        '2nd Floor, BIC, C2 Building, Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST), Mang, Haripur, Pakistan',
+      social: [],
+      newsletterHeading: '',
+      newsletterBody: '',
     },
     overrideAccess: true,
   });

@@ -53,6 +53,7 @@ export interface CheckboxProps extends Omit<
 > {
   /** Beside the box, not above it. Always present - a checkbox with no visible label is unusable. */
   readonly label: ReactNode;
+  readonly id?: string;
   readonly hint?: ReactNode;
   readonly error?: ReactNode;
   readonly className?: string;
@@ -65,8 +66,17 @@ export interface CheckboxProps extends Omit<
  * the label is a required prop rather than optional: consent that is not clearly described is not
  * consent.
  */
-export function Checkbox({ label, hint, error, className, required, ...rest }: CheckboxProps) {
-  const id = useId();
+export function Checkbox({
+  label,
+  hint,
+  error,
+  className,
+  required,
+  id: suppliedId,
+  ...rest
+}: CheckboxProps) {
+  const generatedId = useId();
+  const id = suppliedId ?? generatedId;
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
   const hasError = error !== undefined && error !== null && error !== false;

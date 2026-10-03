@@ -7,11 +7,13 @@ import { createEnquiryService } from './service.ts';
 import type { FastifyPluginCallback } from 'fastify';
 
 const DEFAULT_SERVICES = new Set([
-  'general-health',
-  'cardiology',
-  'orthopaedics',
-  'womens-health',
-  'wellness-preventive-care',
+  'preclinical-studies',
+  'molecular-research',
+  'metagenomic-data-analysis',
+  'biomedical-omics-data-analysis',
+  'evidence-synthesis-technical-reports',
+  'research-collaboration',
+  'other-enquiry',
 ]);
 
 export const enquiryRoutes = (

@@ -36,17 +36,20 @@ export function erpNextCrm(config: ErpNextConfig): CrmPort {
   return {
     async upsertLead(payload) {
       const lead = {
-        first_name: payload.First_Name ?? payload.Last_Name,
-        last_name: payload.First_Name ? payload.Last_Name : undefined,
-        email_id: payload.Email,
-        phone: payload.Phone,
-        request_type: 'Request for Information',
-        custom_cera_reference: payload.External_Lead_ID,
-        custom_cera_service: payload.CERA_Service,
-        custom_cera_status: payload.CERA_Status,
-        custom_cera_message: payload.Description,
+        lead_name: [payload.firstName, payload.lastName].filter(Boolean).join(' '),
+        first_name: payload.firstName ?? payload.lastName,
+        ...(payload.firstName ? { last_name: payload.lastName } : {}),
+        email_id: payload.email,
+        ...(payload.phone ? { phone: payload.phone } : {}),
+        ...(payload.company ? { company_name: payload.company } : {}),
+        custom_cera_reference: payload.externalReference,
+        custom_cera_service: payload.service,
+        custom_cera_status: payload.customerStatus,
+        custom_cera_message: payload.description,
+        custom_cera_source: payload.source,
+        ...(payload.country ? { custom_cera_country: payload.country } : {}),
       };
-      const existing = await findLead(payload.External_Lead_ID);
+      const existing = await findLead(payload.externalReference);
       const endpoint = existing
         ? `${base}/api/resource/Lead/${encodeURIComponent(existing)}`
         : `${base}/api/resource/Lead`;
@@ -59,7 +62,7 @@ export function erpNextCrm(config: ErpNextConfig): CrmPort {
       if (!response.ok) {
         // A concurrent insert may have won the unique-reference race.
         if (!existing) {
-          const winner = await findLead(payload.External_Lead_ID);
+          const winner = await findLead(payload.externalReference);
           if (winner) return { externalId: winner, responseCode: 200 };
         }
         throw new Error(`crm_http_${response.status}`);

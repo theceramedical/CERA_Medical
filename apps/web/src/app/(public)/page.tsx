@@ -1,4 +1,3 @@
-import { ArticlesSection } from '../../components/home/articles-section.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { ProcessSection } from '../../components/home/process-section.tsx';
@@ -36,9 +35,9 @@ export const metadata: Metadata = {
    * The homepage is the one page where the template produces the wrong result: "Home | CERA Medical"
    * buries the brand behind a word that means nothing in a search result or a bookmark list.
    */
-  title: { absolute: 'CERA Medical - Trusted Medical Services, Made Easier to Access' },
+  title: { absolute: 'CERA Medical - Biomedical Research and Development' },
   description:
-    'Clear information. Simple enquiries. Better care for a healthier tomorrow. Explore our range of trusted medical services and make an enquiry online.',
+    'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis for research teams and health organisations.',
 };
 
 export default function HomePage() {
@@ -52,7 +51,6 @@ export default function HomePage() {
       <HeroSection />
       <ServicesSection />
       <ProcessSection />
-      <ArticlesSection />
       <CtaBandSection />
     </>
   );

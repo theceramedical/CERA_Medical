@@ -1,17 +1,16 @@
-import { SocialLink } from '@cera/ui/social';
 import { Heading, Text } from '@cera/ui/typography';
 import { Wordmark } from '@cera/ui/wordmark';
 import NextLink from 'next/link';
 
-import { MAIN_NAV, SOCIAL_LINKS, SUPPORT_NAV } from './navigation.ts';
-import { NewsletterForm } from './newsletter-form.client.tsx';
+import { AppLink } from './link.tsx';
+import { MAIN_NAV, SUPPORT_NAV } from './navigation.ts';
 
 import type { NavItem } from './navigation.ts';
 
 /**
  * The footer (design-language.md section 5.9): four columns and a lighter bottom bar.
  *
- * Entirely server-rendered apart from the newsletter form, which needs state for its result message.
+ * Server-rendered contact details and navigation.
  */
 export function SiteFooter() {
   return (
@@ -20,7 +19,7 @@ export function SiteFooter() {
         <div>
           <Wordmark />
           <Text size="body-sm" tone="muted" className="mt-4">
-            Better Information. Healthier Lives.
+            Biomedical Research and Development.
           </Text>
         </div>
 
@@ -28,24 +27,13 @@ export function SiteFooter() {
         <FooterNav heading="Support" items={SUPPORT_NAV} />
 
         <div>
-          {/* Not wrapped in a `<nav>`, unlike the two link columns: these are four external links to
-              social accounts, not navigation within this site, and a landmark named "Stay Connected"
-              would offer to take a user somewhere they cannot get back from. */}
-          <FooterHeading>Stay Connected</FooterHeading>
-
-          <ul className="mt-4 flex list-none flex-wrap gap-1 p-0">
-            {SOCIAL_LINKS.map(({ platform, href }) => (
-              <li key={platform}>
-                {/* The accessible name is "CERA Medical on LinkedIn", not "LinkedIn": a link list
-                    reading out four bare platform names says nothing about whose accounts they are. */}
-                <SocialLink platform={platform} href={href} />
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-8">
-            <NewsletterForm />
-          </div>
+          <FooterHeading>Contact CERA Medical</FooterHeading>
+          <Text size="body-sm" tone="muted" className="mt-4">
+            Project enquiries and information requests:
+          </Text>
+          <AppLink href="mailto:theceramedica@gmail.com" className="mt-2 inline-flex">
+            theceramedica@gmail.com
+          </AppLink>
         </div>
       </div>
 
@@ -67,7 +55,7 @@ export function SiteFooter() {
             © 2026 CERA Medical. All rights reserved.
           </Text>
           <Text size="caption" tone="muted">
-            A Healthier Tomorrow, Together.
+            Biomedical research and development in Haripur, Pakistan.
           </Text>
         </div>
       </div>
@@ -79,8 +67,8 @@ export function SiteFooter() {
  * One labelled link column.
  *
  * `<nav>` per column with its own `aria-label`, per section 5.9. One `<nav>` around all three would
- * be a single landmark containing thirteen undifferentiated links, which is precisely the footer a
- * screen reader user skips. Three named landmarks are three things worth jumping to.
+ * be a single landmark containing multiple unrelated groups of links, which is precisely the footer a
+ * screen reader user skips. The named landmarks make the page sections easy to navigate.
  *
  * The heading and the label carry the same words on purpose: `aria-labelledby` pointing at the
  * heading would also work and is one indirection more for no benefit, since the string is right here.

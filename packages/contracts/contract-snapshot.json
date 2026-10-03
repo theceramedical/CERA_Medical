@@ -431,6 +431,28 @@
             }
           ]
         },
+        "institution": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "serviceId": {
           "type": "string",
           "minLength": 1,
@@ -444,6 +466,18 @@
         "consent": {
           "type": "boolean",
           "const": true
+        },
+        "sequencingDataConsent": {
+          "type": "boolean"
+        },
+        "samplesCompoundsConsent": {
+          "type": "boolean"
+        },
+        "healthDataConsent": {
+          "type": "boolean"
+        },
+        "updatesOptIn": {
+          "type": "boolean"
         },
         "source": {
           "type": "string",
@@ -482,6 +516,63 @@
         }
       },
       "required": ["body"],
+      "additionalProperties": false
+    },
+    "CrmLeadPayloadSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "lastName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "firstName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 254,
+          "format": "email",
+          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "externalReference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "service": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "customerStatus": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      "required": ["lastName", "email", "source", "description", "externalReference", "service", "customerStatus"],
       "additionalProperties": false
     },
     "CursorSchema": {
@@ -879,6 +970,28 @@
             }
           ]
         },
+        "institution": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "serviceId": {
           "type": "string",
           "minLength": 1,
@@ -892,6 +1005,18 @@
         "consent": {
           "type": "boolean",
           "const": true
+        },
+        "sequencingDataConsent": {
+          "type": "boolean"
+        },
+        "samplesCompoundsConsent": {
+          "type": "boolean"
+        },
+        "healthDataConsent": {
+          "type": "boolean"
+        },
+        "updatesOptIn": {
+          "type": "boolean"
         },
         "source": {
           "type": "string",
@@ -955,6 +1080,28 @@
             }
           ]
         },
+        "institution": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "serviceId": {
           "type": "string",
           "minLength": 1,
@@ -969,6 +1116,23 @@
           "type": "string",
           "format": "date-time",
           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+        },
+        "consentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "sequencingDataConsent": {
+          "type": "boolean"
+        },
+        "samplesCompoundsConsent": {
+          "type": "boolean"
+        },
+        "healthDataConsent": {
+          "type": "boolean"
+        },
+        "updatesOptIn": {
+          "type": "boolean"
         },
         "source": {
           "type": "string",
@@ -1865,6 +2029,28 @@
                   }
                 ]
               },
+              "institution": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "country": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "serviceId": {
                 "type": "string",
                 "minLength": 1,
@@ -1879,6 +2065,23 @@
                 "type": "string",
                 "format": "date-time",
                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "consentVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "sequencingDataConsent": {
+                "type": "boolean"
+              },
+              "samplesCompoundsConsent": {
+                "type": "boolean"
+              },
+              "healthDataConsent": {
+                "type": "boolean"
+              },
+              "updatesOptIn": {
+                "type": "boolean"
               },
               "source": {
                 "type": "string",
@@ -2904,6 +3107,28 @@
             }
           ]
         },
+        "institution": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "serviceId": {
           "type": "string",
           "minLength": 1,
@@ -2918,6 +3143,23 @@
           "type": "string",
           "format": "date-time",
           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+        },
+        "consentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "sequencingDataConsent": {
+          "type": "boolean"
+        },
+        "samplesCompoundsConsent": {
+          "type": "boolean"
+        },
+        "healthDataConsent": {
+          "type": "boolean"
+        },
+        "updatesOptIn": {
+          "type": "boolean"
         },
         "source": {
           "type": "string",
@@ -3130,67 +3372,6 @@
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {},
-      "additionalProperties": false
-    },
-    "ZohoLeadPayloadSchema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object",
-      "properties": {
-        "Last_Name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "First_Name": {
-          "type": "string",
-          "maxLength": 120
-        },
-        "Email": {
-          "type": "string",
-          "maxLength": 254,
-          "format": "email",
-          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-        },
-        "Phone": {
-          "type": "string",
-          "maxLength": 24
-        },
-        "Company": {
-          "type": "string",
-          "minLength": 1
-        },
-        "Lead_Source": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 100
-        },
-        "Description": {
-          "type": "string",
-          "maxLength": 2000
-        },
-        "External_Lead_ID": {
-          "type": "string",
-          "minLength": 1
-        },
-        "CERA_Service": {
-          "type": "string",
-          "maxLength": 160
-        },
-        "CERA_Status": {
-          "type": "string",
-          "maxLength": 40
-        }
-      },
-      "required": [
-        "Last_Name",
-        "Email",
-        "Company",
-        "Lead_Source",
-        "Description",
-        "External_Lead_ID",
-        "CERA_Service",
-        "CERA_Status"
-      ],
       "additionalProperties": false
     }
   }

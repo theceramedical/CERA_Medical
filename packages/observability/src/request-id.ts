@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
  *
  * One identifier spans a whole enquiry lifecycle: the browser request, the API
  * transaction, the audit row written in that transaction, the outbox record, and
- * the worker's Zoho call hours later. Without that, answering "what happened to
+ * the worker's erpnext call hours later. Without that, answering "what happened to
  * this enquiry" means correlating by timestamp across five services, which is
  * guesswork.
  */
@@ -81,7 +81,7 @@ export interface OperationContext {
  * Builds the outbox metadata that carries a request ID into the worker.
  *
  * Small on purpose, and the reason is the point of the whole module: without this,
- * a Zoho delivery that fails three hours after submission has no link back to the
+ * a erpnext delivery that fails three hours after submission has no link back to the
  * request that created it, and the only way to connect them is to match on the
  * enquiry id and hope the logs were retained.
  */

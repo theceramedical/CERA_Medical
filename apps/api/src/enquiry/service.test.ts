@@ -80,6 +80,43 @@ describe('createEnquiryService', () => {
     ).rejects.toMatchObject({ code: 'consent_required' });
   });
 
+  it('requires and durably models service-specific consent evidence', async () => {
+    const store = memoryEnquiryStore();
+    const service = createEnquiryService({
+      store,
+      allowedServiceIds: new Set(['metagenomic-data-analysis']),
+      ipSalt: 'salt',
+    });
+    const body = { ...valid, serviceId: 'metagenomic-data-analysis' };
+    await expect(
+      service.submit({
+        body,
+        ip: '127.0.0.1',
+        idempotencyKey: 'missing-sequencing-consent',
+        honeypot: null,
+        startedAt: null,
+      }),
+    ).rejects.toMatchObject({
+      code: 'consent_required',
+      fieldErrors: [{ path: 'sequencingDataConsent' }],
+    });
+
+    const result = await service.submit({
+      body: { ...body, sequencingDataConsent: true, updatesOptIn: true },
+      ip: '127.0.0.1',
+      idempotencyKey: 'accepted-sequencing-consent',
+      honeypot: null,
+      startedAt: null,
+    });
+    expect(result.enquiry).toMatchObject({
+      consentVersion: expect.any(String),
+      sequencingDataConsent: true,
+      samplesCompoundsConsent: false,
+      healthDataConsent: false,
+      updatesOptIn: true,
+    });
+  });
+
   it('rejects an enquiry-disabled service', async () => {
     await expect(
       service().submit({

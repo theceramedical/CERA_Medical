@@ -2,7 +2,7 @@
  * The site's navigation, declared once.
  *
  * The header, the mobile disclosure, the footer's Quick Links column, and the human-readable sitemap
- * all render from these arrays. Three of those four are a list of the same five destinations, and
+ * all render from these arrays. These arrays define the public navigation destinations, and
  * keeping them as three literals is how a renamed route ends up correct in the header and a 404 in
  * the footer - which nobody notices, because nobody clicks a footer link on a page they authored.
  *
@@ -19,7 +19,7 @@ export interface NavItem {
 export const MAIN_NAV: readonly NavItem[] = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
-  { href: '/articles', label: 'Articles' },
+  { href: '/articles', label: 'Research Updates' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -29,7 +29,9 @@ export const SUPPORT_NAV: readonly NavItem[] = [
   { href: '/enquiry', label: 'Make an Enquiry' },
   { href: '/auth/sign-in', label: 'Sign In' },
   { href: '/faqs', label: 'FAQs' },
-  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/methodology', label: 'Methodology' },
+  { href: '/data-retention', label: 'Data Retention Policy' },
+  { href: '/privacy', label: 'Privacy Terms' },
   { href: '/terms', label: 'Terms of Service' },
 ];
 

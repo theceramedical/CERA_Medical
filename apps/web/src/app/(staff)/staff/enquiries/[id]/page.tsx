@@ -44,7 +44,28 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
         <Text>
           {e.name} — {e.email}
         </Text>
+        {e.institution ? <Text>Institution: {e.institution}</Text> : null}
+        {e.country ? <Text>Country: {e.country}</Text> : null}
+        {e.phone ? <Text>Phone: {e.phone}</Text> : null}
         <Text>{e.message}</Text>
+        <h2>Consent evidence</h2>
+        <ul>
+          <li>
+            Service request: accepted at {e.consentAt} ({e.consentVersion ?? 'legacy-unknown'})
+          </li>
+          <li>
+            Sequencing data and sample metadata:{' '}
+            {e.sequencingDataConsent ? 'accepted' : 'not applicable'}
+          </li>
+          <li>
+            Samples and test compounds: {e.samplesCompoundsConsent ? 'accepted' : 'not applicable'}
+          </li>
+          <li>
+            Health, clinical and programme data:{' '}
+            {e.healthDataConsent ? 'accepted' : 'not applicable'}
+          </li>
+          <li>Service updates: {e.updatesOptIn ? 'opted in' : 'not opted in'}</li>
+        </ul>
         <Text>Status: {e.internalStatus}</Text>
         <form action={action}>
           <Button name="action" value="assign" type="submit">

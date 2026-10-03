@@ -8,14 +8,13 @@ import type { Metadata } from 'next';
 /**
  * About CERA Medical.
  *
- * Real layout and real metadata; the words are placeholders pending CERA's own copy (PRD 22) and are
- * written to be replaceable without changing the structure. Phase 05 moves them into the CMS.
+ * Company, service and contact copy transcribed from the CERA client brief.
  */
 
 export const metadata: Metadata = {
   title: 'About CERA Medical',
   description:
-    'CERA Medical exists to make trusted medical information and services easier to reach.',
+    'CERA Medical is a biomedical research and development company based in Haripur, Pakistan.',
 };
 
 export default function AboutPage() {
@@ -23,7 +22,7 @@ export default function AboutPage() {
     <>
       <PageHeader
         title="About CERA Medical"
-        lede="We exist to make trusted medical information and services easier to reach."
+        lede="A biomedical research and development company providing laboratory, computational and evidence services."
       />
 
       {/*
@@ -38,32 +37,57 @@ export default function AboutPage() {
             What we do
           </Heading>
           <Text className="mt-4">
-            CERA Medical publishes clear information about medical services and provides a simple
-            way to enquire about them. We are not a clinical provider: we do not diagnose, treat, or
-            hold medical records. What we do is remove the friction between a person with a question
-            and the service that can answer it.
+            CERA Medical is an SECP-registered biomedical research and development company. We test
+            candidate treatments in animal models, cells and computer simulations; run molecular
+            laboratory work; analyse microbiome, omics and clinical data; and prepare evidence
+            reviews and technical reports for health research and decision-making.
           </Text>
 
           <Heading level={2} size="h3" className="mt-12">
-            How an enquiry works
+            How every project runs
           </Heading>
           <Text className="mt-4">
-            You tell us which service you are interested in and how to reach you. We confirm by
-            email with a reference number, and you can follow progress in your account at any point.
-            We never ask for symptoms, conditions, or anything else clinical, and there is nowhere
-            in this platform for that information to be stored.
+            Every project follows five stages: scoping, protocol, execution, analysis and reporting,
+            then follow-up. The scope, timeline and cost are agreed in writing before work begins.
+            Study controls, replicates and quality checks are defined in the protocol. Animal
+            studies begin only after the protocol has received institutional animal ethics approval.
           </Text>
           <Text className="mt-4">
-            The full detail of what we collect and why is in our{' '}
-            <AppLink href="/privacy">privacy notice</AppLink>.
+            Our facilities include an Animal House, Cell Culture Lab, Genomics Lab with Sanger
+            sequencing, Histopathology Lab and Microscopy Lab. Project-specific methods and outputs
+            are discussed during scoping.
           </Text>
 
           <Heading level={2} size="h3" className="mt-12">
             Getting in touch
           </Heading>
           <Text className="mt-4">
-            For anything about a specific enquiry, quote its reference number. For everything else,
-            the details on our <AppLink href="/contact">contact page</AppLink> reach the same team.
+            For project enquiries, write to us at{' '}
+            <AppLink href="mailto:theceramedica@gmail.com">theceramedica@gmail.com</AppLink> or use
+            our <AppLink href="/contact">contact page</AppLink>. Please do not include direct
+            identifiers for research participants in your initial message.
+          </Text>
+          <Heading level={2} size="h3" className="mt-12">
+            Facilities
+          </Heading>
+          <Text className="mt-4">
+            CERA Medical’s laboratory facilities include an Animal House, Cell Culture Lab, Genomics
+            Lab with Sanger sequencing, Histopathology Lab and Microscopy Lab. Computational work
+            supports molecular dynamics simulation, sequencing data analysis and other compute-heavy
+            research. Exact GPU memory and workstation specifications need confirmation before being
+            published.
+          </Text>
+          <Heading level={2} size="h3" className="mt-12">
+            Why work with CERA Medical
+          </Heading>
+          <Text className="mt-4">
+            The client’s service brief describes a PhD-level research and bioinformatics team,
+            established and documented analysis workflows, publication-ready outputs, transparent
+            project communication, client ownership of data and included revision rounds. Scope,
+            deliverables, timeline and cost are agreed in writing for each project.
+          </Text>
+          <Text className="mt-4">
+            Read the project stages on our <AppLink href="/methodology">methodology page</AppLink>.
           </Text>
         </div>
       </div>

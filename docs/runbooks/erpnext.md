@@ -28,6 +28,8 @@ fieldnames:
 | `custom_cera_service`   | Data       | Service title                           |
 | `custom_cera_status`    | Data       | Customer-safe status                    |
 | `custom_cera_message`   | Small Text | Customer's enquiry message              |
+| `custom_cera_country`   | Data       | Optional country supplied with enquiry  |
+| `custom_cera_source`    | Data       | Website page where the enquiry started  |
 
 Create a dedicated ERPNext integration user and give it only Lead read, create, and write access.
 Generate an API key and secret for that user. In `/opt/cera/.env`, set `CRM_DRIVER=erpnext`,
@@ -39,8 +41,9 @@ message but never CERA internal notes or the staff owner ID.
 Run `/opt/cera/infra/erpnext/provision.sh` after the Frappe site is created. It idempotently creates
 the fields, the restricted `CERA Integration` role, and the system user, then stores the generated
 credentials in `/opt/cera/.erpnext-credentials` with mode 600. Re-running it preserves the existing
-credentials. Use `/opt/cera/infra/erpnext/verify_api.py` from an isolated backend test to verify
-Lead create/read access, and remove the synthetic Lead after the check.
+credentials. Run `bash /opt/cera/infra/erpnext/verify_api.sh` to verify that the integration user can
+create and read a Lead with the CERA custom fields. The script removes its synthetic Lead and all
+temporary credential files, including when the verification fails after the Lead is created.
 
 Before launch, submit a synthetic enquiry and confirm one ERPNext Lead appears with the same
 reference, service, status, and message. Retry the job and confirm it updates the same Lead.

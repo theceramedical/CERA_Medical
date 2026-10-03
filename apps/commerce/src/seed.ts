@@ -16,7 +16,7 @@ import {
   RequestContextService,
 } from '@vendure/core';
 
-import { SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
+import { RETIRED_SERVICE_SLUGS, SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
 import { getConfig } from './vendure-config.js';
 
 async function main(): Promise<void> {
@@ -144,6 +144,17 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
           translations: [{ languageCode: LanguageCode.en, name: service.name }],
         },
       ]);
+    }
+  }
+
+  for (const slug of RETIRED_SERVICE_SLUGS) {
+    const retired = await products.findOneBySlug(ctx, slug);
+    if (retired !== undefined) {
+      await products.update(ctx, {
+        id: retired.id,
+        enabled: false,
+        customFields: { enquiryEnabled: false },
+      });
     }
   }
 

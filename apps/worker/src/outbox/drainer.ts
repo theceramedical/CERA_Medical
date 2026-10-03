@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { toZohoLeadPayload } from '@cera/contracts';
+import { toCrmLeadPayload } from '@cera/contracts';
 
 import type { CrmPort, EmailPort, Enquiry } from '@cera/contracts';
 
@@ -113,9 +113,16 @@ export function outboxDrainer(
           name: string;
           email: string;
           phone: string | null;
+          institution: string | null;
+          country: string | null;
           service_id: string;
           message: string;
           consent_at: Date;
+          consent_version: string;
+          sequencing_data_consent: boolean;
+          samples_compounds_consent: boolean;
+          health_data_consent: boolean;
+          updates_opt_in: boolean;
           source: Enquiry['source'];
           internal_status: Enquiry['internalStatus'];
           owner_id: string | null;
@@ -133,9 +140,16 @@ export function outboxDrainer(
             name: r.name,
             email: r.email,
             phone: r.phone,
+            institution: r.institution,
+            country: r.country,
             serviceId: r.service_id,
             message: r.message,
             consentAt: r.consent_at.toISOString(),
+            consentVersion: r.consent_version,
+            sequencingDataConsent: r.sequencing_data_consent,
+            samplesCompoundsConsent: r.samples_compounds_consent,
+            healthDataConsent: r.health_data_consent,
+            updatesOptIn: r.updates_opt_in,
             source: r.source,
             internalStatus: r.internal_status,
             ownerId: r.owner_id,
@@ -144,7 +158,7 @@ export function outboxDrainer(
           };
           externalId = (
             await crm.upsertLead(
-              toZohoLeadPayload(e, { title: r.service_id.replaceAll('-', ' ') }),
+              toCrmLeadPayload(e, { title: r.service_id.replaceAll('-', ' ') }),
               key,
             )
           ).externalId;

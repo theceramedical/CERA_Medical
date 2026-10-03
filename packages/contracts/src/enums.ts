@@ -14,7 +14,7 @@ import { z } from 'zod';
 
 /**
  * Operational status. Staff-only: never returned to a customer, never sent to
- * Zoho. Kept as a distinct type from `CustomerStatus` so a staff-only value
+ * the CRM. Kept as a distinct type from `CustomerStatus` so a staff-only value
  * cannot leak by assignment (PRD ENQ-403).
  */
 export const InternalStatusSchema = z.enum([
@@ -70,10 +70,12 @@ export type ServiceStatus = z.infer<typeof ServiceStatusSchema>;
 // Integrations
 // ---------------------------------------------------------------------------
 
+/** `zoho` remains readable for historical delivery rows; current work uses ERPNext. */
 export const IntegrationProviderSchema = z.enum(['zoho', 'erpnext', 'resend']);
 export type IntegrationProvider = z.infer<typeof IntegrationProviderSchema>;
 
 export const IntegrationEventTypeSchema = z.enum([
+  /** Historical event value retained for stored rows; the worker does not emit it. */
   'zoho.lead.upsert',
   'erpnext.lead.upsert',
   'resend.customer.receipt',

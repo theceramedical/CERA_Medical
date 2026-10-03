@@ -29,7 +29,7 @@ import {
  * The outbox, the delivery ledger, and the claim tokens.
  *
  * The outbox is what makes PRD 8.1 true: an enquiry write and the intent to call
- * Zoho and Resend commit in one transaction, so there is no window in which an
+ * erpnext and Resend commit in one transaction, so there is no window in which an
  * enquiry exists and its downstream work has been lost, and no window in which a
  * CRM lead exists for an enquiry that was rolled back.
  */
@@ -124,7 +124,7 @@ export const integrationDeliveries = pgTable(
      * happened without asking the provider.
      */
     idempotencyKey: varchar('idempotency_key', { length: 256 }).notNull(),
-    /** The provider's identifier once known, for example a Zoho lead id. */
+    /** The provider's identifier once known, for example a erpnext lead id. */
     externalId: varchar('external_id', { length: 200 }),
     attempt: smallint('attempt').notNull().default(0),
     status: deliveryStatusEnum('status').notNull().default('pending'),
@@ -157,7 +157,7 @@ export const integrationDeliveries = pgTable(
     /**
      * A succeeded delivery must say which record it created.
      *
-     * Without `external_id` there is no way to find the Zoho lead later, which
+     * Without `external_id` there is no way to find the erpnext lead later, which
      * makes reconciliation impossible and a duplicate on the next full sync
      * likely. `resend` is exempt only in that its id is the message id, which it
      * always returns.

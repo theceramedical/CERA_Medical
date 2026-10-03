@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import {
   check,
+  boolean,
   index,
   integer,
   pgTable,
@@ -51,13 +52,15 @@ export const enquiries = pgTable(
     /**
      * Stored as submitted, not normalised.
      *
-     * The address the customer typed is the one shown to staff and sent to Zoho.
+     * The address the customer typed is the one shown to staff and sent to erpnext.
      * Claim matching uses a hash of the normalised form, computed at compare
      * time, so normalisation is a matching concern and never rewrites what the
      * customer actually entered.
      */
     email: varchar('email', { length: 320 }).notNull(),
     phone: varchar('phone', { length: 32 }),
+    institution: varchar('institution', { length: 160 }),
+    country: varchar('country', { length: 80 }),
     /** Vendure's opaque id. Cross-database, so no foreign key is possible. */
     serviceId: varchar('service_id', { length: 64 }).notNull(),
     /**
@@ -78,6 +81,11 @@ export const enquiries = pgTable(
      * create an enquiry with no recorded consent. Here it cannot be inserted.
      */
     consentAt: utcTimestamp('consent_at').notNull(),
+    consentVersion: varchar('consent_version', { length: 64 }).notNull().default('legacy-unknown'),
+    sequencingDataConsent: boolean('sequencing_data_consent').notNull().default(false),
+    samplesCompoundsConsent: boolean('samples_compounds_consent').notNull().default(false),
+    healthDataConsent: boolean('health_data_consent').notNull().default(false),
+    updatesOptIn: boolean('updates_opt_in').notNull().default(false),
     source: enquirySourceEnum('source').notNull(),
     internalStatus: internalStatusEnum('internal_status').notNull().default('received'),
     ownerId: subjectId('owner_id'),
@@ -156,7 +164,7 @@ export const enquiryStatusEvents = pgTable(
     customerStatus: customerStatusEnum('customer_status').notNull(),
     /** Null for system transitions, such as an automatic no-response closure. */
     actorSubjectId: subjectId('actor_subject_id'),
-    /** Staff-only free text. Never projected to a customer, never sent to Zoho. */
+    /** Staff-only free text. Never projected to a customer, never sent to erpnext. */
     reason: text('reason'),
     createdAt: createdAt(),
   },

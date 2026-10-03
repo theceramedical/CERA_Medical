@@ -46,10 +46,10 @@ interface DeliverySeed {
 
 const DELIVERY_SEEDS: readonly DeliverySeed[] = [
   {
-    key: 'zoho-received-unclaimed',
+    key: 'erpnext-received-unclaimed',
     enquiryKey: 'received-unclaimed',
-    provider: 'zoho',
-    eventType: 'zoho.lead.upsert',
+    provider: 'erpnext',
+    eventType: 'erpnext.lead.upsert',
     status: 'succeeded',
     attempt: 1,
     responseCode: 201,
@@ -95,10 +95,10 @@ const DELIVERY_SEEDS: readonly DeliverySeed[] = [
      * state a rate-limited delivery sits in between backoffs - and the state a
      * reconciliation job must not mistake for a failure worth re-queuing.
      */
-    key: 'zoho-retrying',
+    key: 'erpnext-retrying',
     enquiryKey: 'triaging',
-    provider: 'zoho',
-    eventType: 'zoho.lead.upsert',
+    provider: 'erpnext',
+    eventType: 'erpnext.lead.upsert',
     status: 'pending',
     attempt: 2,
     responseCode: 429,
@@ -110,10 +110,10 @@ const DELIVERY_SEEDS: readonly DeliverySeed[] = [
      * In flight. Claimed by a worker and not yet resolved. Exists so a test can
      * assert that a second worker does not pick it up.
      */
-    key: 'zoho-in-flight',
+    key: 'erpnext-in-flight',
     enquiryKey: 'referred',
-    provider: 'zoho',
-    eventType: 'zoho.lead.upsert',
+    provider: 'erpnext',
+    eventType: 'erpnext.lead.upsert',
     status: 'in_flight',
     attempt: 1,
     responseCode: null,
@@ -141,15 +141,15 @@ const DELIVERY_SEEDS: readonly DeliverySeed[] = [
      * The dead letter. The reason `in-progress-dead-letter` exists at all.
      *
      * Five attempts exhausted against an auth failure, which is the realistic case:
-     * a rotated Zoho credential fails every retry identically, so backoff never
+     * a rotated erpnext credential fails every retry identically, so backoff never
      * helps and the row must end up somewhere a human looks. `errorClass` is a
-     * classification, never the provider's body - Zoho echoes the request, and the
+     * classification, never the provider's body - erpnext echoes the request, and the
      * request contains the enquiry message.
      */
-    key: 'zoho-dead-letter',
+    key: 'erpnext-dead-letter',
     enquiryKey: 'in-progress-dead-letter',
-    provider: 'zoho',
-    eventType: 'zoho.lead.upsert',
+    provider: 'erpnext',
+    eventType: 'erpnext.lead.upsert',
     status: 'dead_letter',
     attempt: 5,
     responseCode: 401,
@@ -205,7 +205,7 @@ export const deadLetterDeliveryFixture: Fixture<IntegrationDelivery> =
  *
  * The locked row is the one that earns its place: a worker that dies holding a lock
  * leaves exactly this row, and whether the reaper releases it decides between an
- * enquiry whose Zoho lead is late and one that never arrives at all.
+ * enquiry whose erpnext lead is late and one that never arrives at all.
  */
 const OUTBOX_SEEDS: readonly {
   key: string;
@@ -219,9 +219,9 @@ const OUTBOX_SEEDS: readonly {
   lastError?: string;
 }[] = [
   {
-    key: 'pending-zoho',
+    key: 'pending-erpnext',
     enquiryKey: 'received-claimed',
-    eventType: 'zoho.lead.upsert',
+    eventType: 'erpnext.lead.upsert',
     status: 'pending',
     attempts: 0,
     availableAfterHours: 0,
@@ -229,7 +229,7 @@ const OUTBOX_SEEDS: readonly {
   {
     key: 'pending-backed-off',
     enquiryKey: 'triaging',
-    eventType: 'zoho.lead.upsert',
+    eventType: 'erpnext.lead.upsert',
     status: 'pending',
     attempts: 2,
     // Backed off into the future relative to its enquiry, so a sweep that ignores
@@ -240,7 +240,7 @@ const OUTBOX_SEEDS: readonly {
   {
     key: 'stale-lock',
     enquiryKey: 'referred',
-    eventType: 'zoho.lead.upsert',
+    eventType: 'erpnext.lead.upsert',
     status: 'in_flight',
     attempts: 1,
     availableAfterHours: 1,
@@ -257,7 +257,7 @@ const OUTBOX_SEEDS: readonly {
   {
     key: 'dead-letter',
     enquiryKey: 'in-progress-dead-letter',
-    eventType: 'zoho.lead.upsert',
+    eventType: 'erpnext.lead.upsert',
     status: 'dead_letter',
     attempts: 5,
     availableAfterHours: 4,

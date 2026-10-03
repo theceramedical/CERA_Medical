@@ -1,4 +1,4 @@
-import { HOMEPAGE_ARTICLES, HOMEPAGE_SERVICES } from '../content/homepage.ts';
+import { HOMEPAGE_SERVICES } from '../content/homepage.ts';
 import { listPublishedDocuments } from '../lib/cms/client.ts';
 import { siteUrl } from '../lib/site-url.ts';
 
@@ -18,6 +18,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/articles',
     '/about',
     '/contact',
+    '/methodology',
+    '/data-retention',
     '/privacy',
     '/terms',
     '/faqs',
@@ -26,10 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const posts = await listPublishedDocuments('post').catch(() => []);
-  const articleRoutes =
-    posts.length > 0
-      ? posts.map((post) => `/articles/${post.slug}`)
-      : HOMEPAGE_ARTICLES.map((article) => `/articles/${article.slug}`);
+  const articleRoutes = posts.map((post) => `/articles/${post.slug}`);
 
   const serviceRoutes = HOMEPAGE_SERVICES.map((service) => `/services/${service.slug}`);
 

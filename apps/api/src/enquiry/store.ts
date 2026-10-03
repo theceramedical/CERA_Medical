@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import {
   generateEnquiryReference,
   INITIAL_INTERNAL_STATUS,
+  ENQUIRY_CONSENT_VERSION,
   toCustomerStatus,
   type EnquiryInput,
   type InternalStatus,
@@ -13,6 +14,8 @@ export interface StoredEnquiry {
   readonly reference: string;
   readonly name: string;
   readonly email: string;
+  readonly institution: string | null;
+  readonly country: string | null;
   readonly serviceId: string;
   readonly message: string;
   readonly phone: string | null;
@@ -21,6 +24,11 @@ export interface StoredEnquiry {
   readonly idempotencyKey: string | null;
   readonly createdAt: string;
   readonly consentAt: string;
+  readonly consentVersion: string;
+  readonly sequencingDataConsent: boolean;
+  readonly samplesCompoundsConsent: boolean;
+  readonly healthDataConsent: boolean;
+  readonly updatesOptIn: boolean;
   readonly internalStatus: InternalStatus;
   readonly ownerId: string | null;
   readonly notes: readonly string[];
@@ -121,6 +129,8 @@ export function newEnquiryRecord(
     reference: generateEnquiryReference(now),
     name: input.name,
     email: input.email,
+    institution: input.institution ?? null,
+    country: input.country ?? null,
     serviceId: input.serviceId,
     message: input.message,
     phone: input.phone ?? null,
@@ -129,6 +139,11 @@ export function newEnquiryRecord(
     idempotencyKey,
     createdAt: timestamp,
     consentAt: timestamp,
+    consentVersion: ENQUIRY_CONSENT_VERSION,
+    sequencingDataConsent: input.sequencingDataConsent === true,
+    samplesCompoundsConsent: input.samplesCompoundsConsent === true,
+    healthDataConsent: input.healthDataConsent === true,
+    updatesOptIn: input.updatesOptIn === true,
     internalStatus: status,
     ownerId: null,
     notes: [],

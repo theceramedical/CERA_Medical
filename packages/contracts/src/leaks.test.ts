@@ -17,7 +17,7 @@ import {
   toCustomerEnquiry,
   toPublicService,
   toStaffEnquiry,
-  toZohoLeadPayload,
+  toCrmLeadPayload,
 } from './projections.ts';
 import { ALL_CUSTOMER_STATUSES, ALL_INTERNAL_STATUSES, toCustomerStatus } from './status.ts';
 
@@ -61,7 +61,11 @@ const INTERNAL_ONLY_STATUSES = ALL_INTERNAL_STATUSES.filter(
 
 const ANNOTATED = 'in-progress-annotated';
 
-const annotatedEnquiry = enquiryByKey(ANNOTATED);
+const annotatedEnquiry = {
+  ...enquiryByKey(ANNOTATED),
+  institution: 'CERA Research Institute',
+  country: 'United Kingdom',
+};
 const annotatedNotes = notesForEnquiry(ANNOTATED);
 const annotatedEvents = statusEventsForEnquiry(ANNOTATED);
 const annotatedService = serviceByKey('cardiology');
@@ -74,6 +78,8 @@ describe('the enquiry under test', () => {
     expect(annotatedEnquiry.customerSubjectId).not.toBeNull();
     expect(annotatedEnquiry.ownerId).not.toBeNull();
     expect(annotatedEnquiry.phone).not.toBeNull();
+    expect(annotatedEnquiry.institution).not.toBeNull();
+    expect(annotatedEnquiry.country).not.toBeNull();
     expect(annotatedEnquiry.internalStatus).toBe('in_progress');
     expect(annotatedNotes).toHaveLength(3);
     expect(annotatedEvents.length).toBeGreaterThan(1);
@@ -170,18 +176,18 @@ describe('customer projection', () => {
   });
 });
 
-describe('Zoho lead payload', () => {
-  const payload = toZohoLeadPayload(annotatedEnquiry, annotatedService);
+describe('CRM lead payload', () => {
+  const payload = toCrmLeadPayload(annotatedEnquiry, annotatedService);
   const serialised = JSON.stringify(payload);
 
   it('never contains an internal-only status', () => {
-    // Zoho is a sales tool used by people who are not necessarily CERA staff. It
+    // CRM users are not necessarily CERA staff. The integration
     // receives the customer's own data and the customer-facing status, and nothing
     // about how CERA is handling the enquiry internally.
     for (const status of INTERNAL_ONLY_STATUSES) {
       expect(serialised).not.toContain(status);
     }
-    expect(payload.CERA_Status).toBe(toCustomerStatus(annotatedEnquiry.internalStatus));
+    expect(payload.customerStatus).toBe(toCustomerStatus(annotatedEnquiry.internalStatus));
   });
 
   it('never contains the owner, a note, or a transition reason', () => {
@@ -197,35 +203,36 @@ describe('Zoho lead payload', () => {
     // also be a stable internal identifier sitting in a third-party system.
     expect(serialised).not.toContain(annotatedEnquiry.id);
     expect(serialised).not.toContain(annotatedEnquiry.customerSubjectId!);
-    expect(payload.External_Lead_ID).toBe(annotatedEnquiry.reference);
+    expect(payload.externalReference).toBe(annotatedEnquiry.reference);
   });
 
   it('sends the message, because that is the point of the integration', () => {
     // The one piece of free text that leaves the platform, and it is the customer's
     // own words going to the team who will answer them. Asserted positively so the
     // boundary is stated in both directions rather than only as a prohibition.
-    expect(payload.Description).toBe(annotatedEnquiry.message);
+    expect(payload.description).toBe(annotatedEnquiry.message);
   });
 
   it('exposes no field outside the agreed set', () => {
     expect(Object.keys(payload).sort()).toEqual([
-      'CERA_Service',
-      'CERA_Status',
-      'Company',
-      'Description',
-      'Email',
-      'External_Lead_ID',
-      'First_Name',
-      'Last_Name',
-      'Lead_Source',
-      'Phone',
+      'company',
+      'country',
+      'customerStatus',
+      'description',
+      'email',
+      'externalReference',
+      'firstName',
+      'lastName',
+      'phone',
+      'service',
+      'source',
     ]);
   });
 
   it('leaks no internal vocabulary for any enquiry', () => {
     for (const key of ENQUIRY_FIXTURE_KEYS) {
       const enquiry = enquiryByKey(key);
-      const output = JSON.stringify(toZohoLeadPayload(enquiry, annotatedService));
+      const output = JSON.stringify(toCrmLeadPayload(enquiry, annotatedService));
 
       for (const status of INTERNAL_ONLY_STATUSES) {
         expect(output).not.toContain(status);
@@ -235,19 +242,19 @@ describe('Zoho lead payload', () => {
     }
   });
 
-  it('never tells Zoho an enquiry was marked spam', () => {
+  it('never tells CRM that an enquiry was marked spam', () => {
     // The single most consequential collapse in the mapping. A CRM record saying
     // `rejected_spam` about a real person is both a judgement they never saw and one
     // that outlives the enquiry it was about.
     const spam = enquiryByKey('rejected-spam');
-    const payloadForSpam = toZohoLeadPayload(spam, annotatedService);
+    const payloadForSpam = toCrmLeadPayload(spam, annotatedService);
 
     // The full enum token, not the bare word `spam`. The customer's own address is
     // legitimately in this payload and that fixture's address happens to contain the
     // word, so a substring search here reports a leak that is not one - and a test
     // that cries wolf is a test that gets deleted.
     expect(JSON.stringify(payloadForSpam)).not.toContain('rejected_spam');
-    expect(payloadForSpam.CERA_Status).toBe('closed');
+    expect(payloadForSpam.customerStatus).toBe('closed');
   });
 });
 
@@ -326,11 +333,11 @@ describe('error envelopes', () => {
     // the caller. If it reached the envelope it would be worse than no field at all,
     // because its whole purpose invites putting sensitive specifics in it.
     const envelope = new ApiError('internal_error', {
-      internalDetail: `zoho rejected lead for ${annotatedEnquiry.email}`,
+      internalDetail: `erpnext rejected lead for ${annotatedEnquiry.email}`,
     }).toEnvelope('req-3');
 
     expect(JSON.stringify(envelope)).not.toContain(annotatedEnquiry.email);
-    expect(JSON.stringify(envelope)).not.toContain('zoho rejected');
+    expect(JSON.stringify(envelope)).not.toContain('erpnext rejected');
   });
 
   it('never carries an enquiry message through a validation error', () => {
@@ -354,7 +361,7 @@ describe('identity and credential material', () => {
     // appeared in any response, the token could be replayed from a log.
     const outputs = [
       JSON.stringify(toCustomerEnquiry(annotatedEnquiry, 'Cardiology', annotatedEvents)),
-      JSON.stringify(toZohoLeadPayload(annotatedEnquiry, annotatedService)),
+      JSON.stringify(toCrmLeadPayload(annotatedEnquiry, annotatedService)),
       JSON.stringify(toPublicService(annotatedService)),
     ].join('\n');
 

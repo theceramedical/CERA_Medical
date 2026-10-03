@@ -393,7 +393,7 @@ describe('withContext and timed', () => {
         );
 
         try {
-          return await timed(logger, 'zoho.upsert', () =>
+          return await timed(logger, 'erpnext.upsert', () =>
             Promise.reject(new Error(SECRET_MESSAGE)),
           );
         } finally {
@@ -402,7 +402,7 @@ describe('withContext and timed', () => {
       })(),
     ).rejects.toThrow();
 
-    expect(output).toContain('zoho.upsert');
+    expect(output).toContain('erpnext.upsert');
     expect(output).toContain('durationMs');
     expect(output).toContain('failure');
     // The error message reaches neither `err` nor the derived `msg`.
@@ -461,10 +461,13 @@ describe('an error logged with no explicit message', () => {
     // A developer who writes the message themselves is making a visible, reviewable
     // choice. The hook only pre-empts the implicit derivation.
     const output = captureLogOutput((logger) => {
-      logger.error({ err: new Error(SECRET_MESSAGE), event: 'zoho.upsert' }, 'zoho upsert failed');
+      logger.error(
+        { err: new Error(SECRET_MESSAGE), event: 'erpnext.upsert' },
+        'erpnext upsert failed',
+      );
     });
 
-    expect(output).toContain('zoho upsert failed');
+    expect(output).toContain('erpnext upsert failed');
     expect(output).not.toContain(SECRET_MESSAGE);
   });
 });

@@ -3,6 +3,7 @@ import 'server-only';
 import {
   CreateEnquiryResponseSchema,
   EnquiryInputSchema,
+  requiredServiceSpecificConsent,
   type CreateEnquiryResponse,
   type EnquiryInput,
 } from '@cera/contracts';
@@ -10,11 +11,13 @@ import {
 /** Validate locally, but acknowledge receipt only after the API commits it. */
 
 const ALLOWED = new Set([
-  'general-health',
-  'cardiology',
-  'orthopaedics',
-  'womens-health',
-  'wellness-preventive-care',
+  'preclinical-studies',
+  'molecular-research',
+  'metagenomic-data-analysis',
+  'biomedical-omics-data-analysis',
+  'evidence-synthesis-technical-reports',
+  'research-collaboration',
+  'other-enquiry',
 ]);
 
 export interface EnquirySubmitInput {
@@ -144,6 +147,22 @@ function evaluateLocal(input: EnquirySubmitInput): EnquirySubmitResult {
       message: 'That service is not accepting enquiries.',
       retryable: false,
       fieldErrors: [{ path: 'serviceId', message: 'That service is not accepting enquiries.' }],
+    };
+  }
+
+  const serviceConsent = requiredServiceSpecificConsent(body.serviceId);
+  if (serviceConsent !== null && body[serviceConsent] !== true) {
+    return {
+      ok: false,
+      status: 422,
+      message: 'Please accept the service-specific data and materials consent.',
+      retryable: false,
+      fieldErrors: [
+        {
+          path: serviceConsent,
+          message: 'Please accept this consent to submit your enquiry.',
+        },
+      ],
     };
   }
 

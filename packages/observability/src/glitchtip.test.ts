@@ -245,7 +245,7 @@ describe('isReportable', () => {
   });
 
   it('reports an upstream failure', () => {
-    expect(isReportable(new UpstreamError('zoho', 'timeout', 'no response in 10s'))).toBe(true);
+    expect(isReportable(new UpstreamError('erpnext', 'timeout', 'no response in 10s'))).toBe(true);
   });
 
   it('reports an unexpected error', () => {
@@ -420,7 +420,7 @@ describe('domain errors map onto the envelope', () => {
     ['ConflictError', new ConflictError('stale'), 409],
     ['InvalidTransitionError', new InvalidTransitionError('a', 'b', []), 409],
     ['RateLimitedError', new RateLimitedError(30, 'limit'), 429],
-    ['UpstreamError', new UpstreamError('zoho', 'timeout', 'detail'), 502],
+    ['UpstreamError', new UpstreamError('erpnext', 'timeout', 'detail'), 502],
   ])('%s becomes HTTP %i', (_label, error, status) => {
     expect(error.httpStatus).toBe(status);
   });
@@ -440,7 +440,7 @@ describe('domain errors map onto the envelope', () => {
 
   it('names itself, so a log line says which error class was thrown', () => {
     expect(new NotFoundError('enquiry').name).toBe('NotFoundError');
-    expect(new UpstreamError('zoho', 'timeout', 'd').name).toBe('UpstreamError');
+    expect(new UpstreamError('erpnext', 'timeout', 'd').name).toBe('UpstreamError');
   });
 
   it('maps an unauthenticated request to 401 with a default detail', () => {
@@ -457,12 +457,12 @@ describe('domain errors map onto the envelope', () => {
   it('makes a permanent upstream failure non-retryable, so it dead-letters at once', () => {
     // A retryable classification would spend the whole retry budget on a
     // credential problem, hiding an expired token behind a backoff curve.
-    const error = new UpstreamPermanentError('zoho', 'auth_failed', 'refresh token revoked');
+    const error = new UpstreamPermanentError('erpnext', 'auth_failed', 'refresh token revoked');
 
-    expect(error.provider).toBe('zoho');
+    expect(error.provider).toBe('erpnext');
     expect(error.errorClass).toBe('auth_failed');
     expect(error.toEnvelope('req-1').error.retryable).toBe(true);
-    expect(new UpstreamError('zoho', 'timeout', 'd').toEnvelope('req-1').error.retryable).toBe(
+    expect(new UpstreamError('erpnext', 'timeout', 'd').toEnvelope('req-1').error.retryable).toBe(
       true,
     );
   });
