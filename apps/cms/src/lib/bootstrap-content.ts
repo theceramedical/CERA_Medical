@@ -300,9 +300,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     seo: {
       title: 'CERA Medical | Biomedical Research and Development',
       description:
-        intro
-          .find((item) => item.text.startsWith('Introduction:'))
-          ?.text.replace('Introduction: ', '') ?? '',
+        'Biomedical research and development across preclinical studies, laboratory research, microbiome and omics analysis, and evidence synthesis.',
     },
   });
   await upsert(payload, 'pages', 'services', {

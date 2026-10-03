@@ -64,6 +64,16 @@ describe('bootstrapClientContent', () => {
         (record) => record.data.fixture === false && record.data._status === 'published',
       ),
     ).toBe(true);
+    expect(
+      records.every(
+        (record) =>
+          typeof record.data.seo !== 'object' ||
+          record.data.seo === null ||
+          !('description' in record.data.seo) ||
+          typeof record.data.seo.description !== 'string' ||
+          record.data.seo.description.length <= 180,
+      ),
+    ).toBe(true);
     expect(JSON.stringify(records)).not.toContain('medicalcera@gmail.com');
     expect(JSON.stringify(records)).not.toContain('[Analytics data]');
     expect(JSON.stringify(records)).not.toContain('[30 days]');
