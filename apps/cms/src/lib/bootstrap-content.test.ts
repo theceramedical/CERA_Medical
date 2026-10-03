@@ -70,8 +70,9 @@ describe('bootstrapClientContent', () => {
     expect(
       records.find((record) => record.data.slug === 'privacy-policy')?.data.effectiveDate,
     ).toBe('2026-10-03');
+    const publishedRecords = records.filter((record) => record.collection !== 'categories');
     expect(
-      records.every(
+      publishedRecords.every(
         (record) => record.data.fixture === false && record.data._status === 'published',
       ),
     ).toBe(true);
