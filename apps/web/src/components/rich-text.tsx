@@ -21,6 +21,7 @@ interface LexicalNode {
   readonly children?: readonly LexicalNode[];
   readonly text?: string;
   readonly format?: number;
+  readonly fields?: { readonly url?: string; readonly newTab?: boolean };
 }
 
 interface LexicalRoot {
@@ -85,12 +86,27 @@ function renderNode(node: LexicalNode, key: string): ReactNode {
           {renderChildren(node.children, key)}
         </blockquote>
       );
-    case 'link':
+    case 'link': {
+      const href = node.fields?.url;
+      if (
+        href === undefined ||
+        !/^(?:\/|https?:|mailto:|tel:)/i.test(href) ||
+        href.startsWith('//')
+      ) {
+        return <span key={key}>{renderChildren(node.children, key)}</span>;
+      }
       return (
-        <span key={key} className="text-primary underline">
+        <a
+          key={key}
+          href={href}
+          className="text-primary underline"
+          rel={node.fields?.newTab ? 'noreferrer' : undefined}
+          target={node.fields?.newTab ? '_blank' : undefined}
+        >
           {renderChildren(node.children, key)}
-        </span>
+        </a>
       );
+    }
     default:
       return (
         <Text key={key} tone="muted" className="mt-4">

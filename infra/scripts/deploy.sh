@@ -52,6 +52,24 @@ if ! wait_healthy; then
   echo 'Release health gate failed' >&2
   exit 1
 fi
+if ! compose exec -T cms node -e '
+  const secret=process.env.PAYLOAD_PREVIEW_SECRET;
+  if (!secret) { console.error("PAYLOAD_PREVIEW_SECRET is required for initial CMS content"); process.exit(1); }
+  fetch("http://127.0.0.1:3001/api/bootstrap-client-content", {
+    method:"POST", headers:{"x-preview-secret":secret}, signal:AbortSignal.timeout(30000)
+  }).then(async r=>{if(!r.ok) throw Error(`CMS content bootstrap returned ${r.status}`);})
+    .catch(e=>{console.error(e.message);process.exitCode=1;});
+'; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Initial CMS content bootstrap failed' >&2
+  exit 1
+fi
+if ! compose exec -T authentik-server ak shell -c 'exec(__import__("sys").stdin.read())' \
+  < "$ROOT_DIR/infra/scripts/configure-authentik-cera.py"; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Authentik CERA role setup failed' >&2
+  exit 1
+fi
 if ! compose exec -T worker node -e '
   if (process.env.CRM_DRIVER !== "erpnext") process.exit(0);
   const {ERPNEXT_URL,ERPNEXT_API_KEY,ERPNEXT_API_SECRET}=process.env;

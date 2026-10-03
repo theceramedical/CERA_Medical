@@ -1,0 +1,1362 @@
+[
+  {
+    "style": "Normal",
+    "text": "CERA Medical website content"
+  },
+  {
+    "style": "Normal",
+    "text": "Service copy, methodology and pipelines, consent text, privacy terms and data retention policy"
+  },
+  {
+    "style": "Heading 1",
+    "text": "Part 1. Service copy"
+  },
+  {
+    "style": "Heading 2",
+    "text": "Section introduction"
+  },
+  {
+    "style": "Normal",
+    "text": "Label: Our Services"
+  },
+  {
+    "style": "Normal",
+    "text": "Heading: Complete Service Portfolio"
+  },
+  {
+    "style": "Normal",
+    "text": "Introduction: CERA Medical is an SECP-registered biomedical research and development company. We test candidate treatments in animal models, in cells and by computer simulation, run the molecular laboratory work that supports those studies, analyse microbiome, omics and clinical data through to publication-ready results, and prepare the evidence reviews and technical reports on which health decisions rest."
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.1 Preclinical Studies"
+  },
+  {
+    "style": "Normal",
+    "text": "Tag: In Vivo, In Vitro, In Silico"
+  },
+  {
+    "style": "Normal",
+    "text": "Grid summary: Safety and efficacy testing in animal models, in cells and by simulation"
+  },
+  {
+    "style": "Normal",
+    "text": "Description: We establish whether a candidate treatment is safe and effective before it reaches human trials. Studies are run in three complementary settings: in vivo, in animal models of disease; in vitro, in cell-based systems; and in silico, by computer simulation of how a compound binds its target. A project may use one setting or move through all three, so that a compound predicted to bind its target is tested in cells and then in an animal model of the disease."
+  },
+  {
+    "style": "Heading 3",
+    "text": "In vivo studies"
+  },
+  {
+    "style": "Normal",
+    "text": "Studies in animal models of disease, carried out in our Animal House."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Safety Assessment. Systematic evaluation of potential adverse effects and risk profiling"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Efficacy Testing. Measurement of treatment effectiveness under controlled laboratory conditions"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Toxicology Studies. Identification of toxic thresholds and dose-response relationships"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Behavioural Testing. Assays of memory, anxiety-like behaviour and locomotor activity"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Study Standards. Studies are designed, conducted and documented in line with the principles of Good Laboratory Practice, under a protocol approved by the institutional animal ethics committee"
+  },
+  {
+    "style": "Normal",
+    "text": "Available research animals: Mice, rats, rabbits and guinea pigs"
+  },
+  {
+    "style": "Heading 3",
+    "text": "In vitro studies"
+  },
+  {
+    "style": "Normal",
+    "text": "Cell-based models of disease, run in our Cell Culture Lab."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "In-Vitro Models. Cell-based laboratory systems that replicate disease environments"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Cellular Assays. Quantitative testing of cell viability, proliferation and function"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Pathway Analysis. Mapping of signalling cascades and molecular disease mechanisms"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Therapeutic Testing. Screening of natural products and other candidate treatments against disease models"
+  },
+  {
+    "style": "Normal",
+    "text": "Available cell lines: glioblastoma and other cell lines held in the Cell Culture Lab"
+  },
+  {
+    "style": "Heading 3",
+    "text": "In silico studies"
+  },
+  {
+    "style": "Normal",
+    "text": "Computational prediction of how a compound interacts with its protein targets, run on our GPU infrastructure."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Target Selection. Protein targets chosen from the disease pathway and prepared from published structures"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Molecular Docking. Prediction of the binding site, binding pose and affinity of a compound, validated against known reference ligands"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Molecular Dynamics. Simulation of the compound and its target over time to test whether the predicted complex is stable"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Binding Energy Analysis. Estimation of binding free energy and of the residues that contribute most to binding"
+  },
+  {
+    "style": "Heading 3",
+    "text": "Why it matters"
+  },
+  {
+    "style": "Normal",
+    "text": "Preclinical testing reduces risk before human clinical trials, identifies suitable dosing strategies, generates data that can support regulatory submissions and shortens drug development timelines."
+  },
+  {
+    "style": "Heading 3",
+    "text": "Current research"
+  },
+  {
+    "style": "Normal",
+    "text": "Our preclinical work is concentrated in neuroscience and oncology. Current studies centre on neuroprotection, the evaluation of antidepressant activity and social conditioning, according to the product under test. The following projects are running in our laboratories."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Methamphetamine-induced neurotoxicity. A mouse model of methamphetamine exposure in which a natural compound is tested for protective and restorative effects on recognition memory, neuroinflammation and neuronal cell death."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Social isolation stress. The effect of early-life social isolation on the brain and on behaviour, including vulnerability to drug dependence in later life."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Morphine dependence. Mouse models of morphine dependence and withdrawal, used to test candidate treatments and the signalling pathways through which they act."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Nicotine. Rodent models of nicotine exposure, in which candidate products are evaluated for their neuroprotective and behavioural effects."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Synthetic compounds in neuroscience. Newly synthesised compounds, and compounds modified from a base compound, screened for activity in neurological and behavioural models."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Gut-induced depression. Models in which disturbance of the gut microbiota produces depression-like behaviour, used to study the gut-brain axis and to test interventions."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Natural products in glioblastoma. Natural products tested against glioblastoma cell lines for their effect on cell viability and proliferation."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "In silico target studies. Docking and molecular dynamics studies that test whether a compound under investigation binds the inflammatory and cell-death proteins implicated by our animal studies."
+  },
+  {
+    "style": "Normal",
+    "text": "Button: Avail This Service or Join Research"
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.2 Molecular Research"
+  },
+  {
+    "style": "Normal",
+    "text": "Tag: Wet Lab"
+  },
+  {
+    "style": "Normal",
+    "text": "Grid summary: Molecular, biochemical and histological analysis of your samples"
+  },
+  {
+    "style": "Normal",
+    "text": "Description: The wet-lab services behind a research project, available as part of a study or on samples you send us: sequencing, gene and protein expression, biochemical assays and histopathology, carried out in our Genomics, Histopathology and Microscopy Labs."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Sequencing and Genetic Analysis. Sanger sequencing and PCR-based characterisation of genomic variants associated with disease"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Gene Expression. Quantification of mRNA levels by RT-PCR"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Protein Analysis. Protein expression and quantification by Western blot and ELISA"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Biochemical Assays. Detection and quantification of biomarkers in tissue, serum and cell samples, including markers of oxidative stress and inflammation"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Histopathology and Microscopy. Tissue processing, H&E and Nissl staining, immunohistochemistry and quantitative image analysis"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Compound Analysis and Quality Control. Characterisation, purity, potency and stability testing of compounds"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Method Development. Design of validated, reproducible analytical protocols"
+  },
+  {
+    "style": "Normal",
+    "text": "Button: Avail This Service or Join Research"
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.3 Metagenomic Data Analysis"
+  },
+  {
+    "style": "Normal",
+    "text": "Tag: Bioinformatics"
+  },
+  {
+    "style": "Normal",
+    "text": "Grid summary: End-to-end microbiome analysis, from raw reads to publication"
+  },
+  {
+    "style": "Normal",
+    "text": "Description: Metagenomics is our speciality. We take a microbiome project from the raw sequencing files to publication-ready figures and a written description of the results, and we stay with it through revisions until the work is complete."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Whole Metagenome Shotgun. Full characterisation of the microbial community from raw reads"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Genome-Resolved Metagenomics. Recovery, quality assessment and classification of metagenome-assembled genomes"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "16S / ITS Amplicon Analysis. Taxonomic profiling of bacteria, fungi and eukaryotes"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Functional Annotation. Pathway and gene ontology mapping of microbial communities"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Comparative Metagenomics. Alpha and beta diversity and differential abundance across sample groups"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Custom Pipelines. Workflows tailored to your research question"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Data Deposition. Preparation and submission of raw reads and metadata to NCBI SRA"
+  },
+  {
+    "style": "Heading 3",
+    "text": "From your data to your manuscript"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Data retrieval. We download the data directly from your sequencing provider's server or cloud link, or from public repositories such as NCBI SRA and ENA by accession number. You do not need to transfer files yourself."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Analysis. Quality control, profiling, statistics and visualisation with the pipeline agreed for your study."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Delivery. Publication-ready figures, result tables, a methods text and a written description of the results, within 3 weeks."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Revisions. Figures, analyses and text are revised with you over multiple rounds."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Support until completion. We remain available for questions from co-authors and journal reviewers until the work is completed."
+  },
+  {
+    "style": "Heading 3",
+    "text": "Data we work with"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Shotgun metagenomic reads from Illumina and DNBSEQ platforms"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "16S rRNA and ITS amplicon reads"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Human gut, oral and salivary samples, and environmental samples"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Cross-sectional studies and longitudinal cohorts with repeated sampling"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "New data from a sequencing provider and published datasets for re-analysis or meta-analysis"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Accepted formats: FASTQ, FASTA or SRA accession numbers, with sample metadata in a spreadsheet"
+  },
+  {
+    "style": "Heading 3",
+    "text": "Completed projects"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Infant gut microbiome development. A longitudinal shotgun metagenomic study of infants in a population-based birth cohort in Pakistan, sampled from birth to twelve months and analysed by both genome-resolved and read-based routes, with a data descriptor manuscript and deposition of the raw reads in NCBI SRA."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Mother and infant gut microbiome. Species-level profiling of a longitudinal mother-infant cohort, published in a peer-reviewed nutrition journal."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Oral microbiome of pre-school children. A 16S rRNA amplicon study of the salivary microbiome of Pakistani pre-school children, including a comparison of stunted and normal-weight children."
+  },
+  {
+    "style": "Normal",
+    "text": "Who is this for: Professors and research groups with sequencing data awaiting analysis; academic and clinical researchers; pharmaceutical and biotech companies; public health and epidemiology teams; microbiome and environmental laboratories."
+  },
+  {
+    "style": "Normal",
+    "text": "Delivery line: Results delivered within 3 weeks"
+  },
+  {
+    "style": "Normal",
+    "text": "Button: Request Analysis"
+  },
+  {
+    "style": "Normal",
+    "text": "Data line under the card: Your data remain yours, are kept confidential and are deleted in line with our Data Retention Policy."
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.4 Biomedical and Omics Data Analysis"
+  },
+  {
+    "style": "Normal",
+    "text": "Tag: Data Science"
+  },
+  {
+    "style": "Normal",
+    "text": "Grid summary: Analysis of large biological and clinical datasets"
+  },
+  {
+    "style": "Normal",
+    "text": "Description: Large biological datasets hold their answers only once they are cleaned, analysed and explained. We take genomic, clinical and laboratory data from the raw files to statistics, models and figures that can go directly into a manuscript or a report."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Genomic Variant Analysis. Annotation and prioritisation of variants from whole-genome and exome sequencing against clinical and population databases"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Clinical and Laboratory Data. Biostatistical analysis of patient, cohort and laboratory datasets"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Machine Learning Models. Predictive models and biomarker panels with documented validation"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Image and Video Analysis. Automated quantification of histology images and of behavioral recordings"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Other Omics Data. Transcriptomic and other omics datasets, on request"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Public Dataset Re-Analysis. Retrieval and re-analysis of published datasets for new questions and meta-analyses"
+  },
+  {
+    "style": "Normal",
+    "text": "Who is this for: Research groups and professors with data awaiting analysis; hospitals and clinical laboratories; biotech and pharmaceutical companies; public health institutions."
+  },
+  {
+    "style": "Normal",
+    "text": "Button: Request Analysis"
+  },
+  {
+    "style": "Normal",
+    "text": "Data line under the card: Your data remain yours, are kept confidential and are deleted in line with our Data Retention Policy."
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.5 Evidence Synthesis and Technical Reports"
+  },
+  {
+    "style": "Normal",
+    "text": "Tag: Evidence and Reporting"
+  },
+  {
+    "style": "Normal",
+    "text": "Grid summary: Reviews, assessments and reports that turn evidence into decisions"
+  },
+  {
+    "style": "Normal",
+    "text": "Description: Health programmes and institutions need evidence gathered, weighed and written up in a form that decision-makers can use. We prepare systematic reviews, assessments and technical reports from the published literature, official statistics and the client's own programme data, to the standards expected by international organisations and donors."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Systematic Reviews and Meta-Analyses. Protocol, literature search, screening, appraisal and synthesis reported to the PRISMA standard"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Situation Analyses and Health-Sector Assessments. The state of a health problem, service or facility, described from literature and data"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Technical and Donor Reports. Programme results analysed and written up in the client's format"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Policy Briefs. Short, evidence-based summaries for decision-makers"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Data Analysis for Reports. Analysis of survey and programme data, with charts, maps and annexed tables"
+  },
+  {
+    "style": "Normal",
+    "text": "Who is this for: UN agencies and international NGOs; ministries and health departments; hospitals; research consortia and donor-funded programmes."
+  },
+  {
+    "style": "Normal",
+    "text": "Button: Request a Proposal"
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.6 Facilities"
+  },
+  {
+    "style": "Normal",
+    "text": "Our labs: Animal House; Cell Culture Lab; Genomics Lab with Sanger sequencing; Histopathology Lab; Microscopy Lab."
+  },
+  {
+    "style": "Normal",
+    "text": "Our computational infrastructure: NVIDIA Tesla V100 GPU (32 to 64 GB HBM2 VRAM, 5,120 CUDA cores) and Intel Xeon Gold 10-core processor, used for molecular dynamics simulation, sequencing data analysis and other compute-intensive work."
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.7 Why CERA Medical"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Expert Team. PhD-level researchers and bioinformaticians with active biomedical research backgrounds"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Validated Pipelines. Established tools in reproducible, fully documented analysis workflows"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Strict Confidentiality. All data handled securely; a non-disclosure agreement is available on request"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Publication-Ready Output. Figures, methods text and reports suitable for direct use in a manuscript"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Transparent Process. Regular updates and full data ownership retained by the client"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Satisfaction Guarantee. Revision rounds included, so that outputs meet your research requirements"
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.8 Service request form"
+  },
+  {
+    "style": "Normal",
+    "text": "Field labels and helper text for the form that the service buttons open. The consent boxes in Part 3 sit directly above the submit button; show box 3.2, 3.3 or 3.4 according to the service selected."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Full name. Required."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Email address. Required. Helper text: We use this address to reply to your request."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Institution or organisation. Optional."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Country. Optional."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Service required. Required. Options: Preclinical Studies; Molecular Research; Metagenomic Data Analysis; Biomedical and Omics Data Analysis; Evidence Synthesis and Technical Reports; Research collaboration; Other enquiry."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Project description. Required. Helper text: Describe your samples, compounds or data, your timeline and what you need from us. Please do not include patient names or other identifying details."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "File upload. [If enabled.] Optional. Helper text: Upload only files that contain no information identifying individual persons. Large datasets are retrieved later from your server or through a secure link, and physical samples are sent only after we confirm the shipping arrangements."
+  },
+  {
+    "style": "Normal",
+    "text": "Submit button: Send Request"
+  },
+  {
+    "style": "Normal",
+    "text": "Confirmation message: Thank you. Your request has been received and we will reply within three working days."
+  },
+  {
+    "style": "Normal",
+    "text": "Error message: Your request could not be sent. Please check the highlighted fields and try again, or write to us at medicalcera@gmail.com."
+  },
+  {
+    "style": "Heading 2",
+    "text": "1.9 Contact block"
+  },
+  {
+    "style": "Normal",
+    "text": "Heading: Get Started"
+  },
+  {
+    "style": "Normal",
+    "text": "Subheading: Ready to advance your research?"
+  },
+  {
+    "style": "Normal",
+    "text": "Email: medicalcera@gmail.com"
+  },
+  {
+    "style": "Normal",
+    "text": "Lab location: B2-105, B2 Building, Department of Biological and Health Sciences, PAF-IAST"
+  },
+  {
+    "style": "Normal",
+    "text": "Office location: 2nd Floor, BIC, C2 Building, Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST), Mang, Haripur, Pakistan"
+  },
+  {
+    "style": "Normal",
+    "text": "Button: Contact Us"
+  },
+  {
+    "style": "Heading 1",
+    "text": "Part 2. Methodology and pipelines"
+  },
+  {
+    "style": "Normal",
+    "text": "Text for a \"How we work\" or \"Methodology\" page, and for the detail section of each service page. Each methodology is written as the numbered steps of a pipeline, under a one-line flow that can be drawn as a graphic."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2.1 How every project runs"
+  },
+  {
+    "style": "Normal",
+    "text": "Every project, whether it is a laboratory study or a data analysis, follows the same five stages."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Scoping. We discuss the research question, the material or data available and the output you need, and agree the scope, timeline and cost in writing."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Protocol. We prepare the study protocol or analysis plan before any work starts. For animal studies the protocol is approved by the institutional animal ethics committee first."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Execution. The work is carried out by the assigned scientist with the controls, replicates and quality checks defined in the protocol."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Analysis and reporting. Results are analysed with documented methods and delivered as a report with figures, tables and a methods text that can be used in a manuscript."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Follow-up. A consultation call is available on delivery, and revision rounds are included."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2.2 Preclinical studies"
+  },
+  {
+    "style": "Heading 3",
+    "text": "A. In vivo workflow"
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Study design → Model induction → Treatment → Behavioural testing → Tissue collection → Tissue analysis → Statistics and report"
+  },
+  {
+    "style": "Normal",
+    "text": "Step 1. Study design. Groups, sample size, doses, route and duration of treatment, endpoints and statistical analysis are fixed in a written protocol and approved by the animal ethics committee."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 2. Model induction. The disease state is established in the animals, for example by repeated drug exposure, by a stress procedure such as social isolation, or by disturbance of the gut microbiota."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 3. Treatment. The test compound is given at several dose levels alongside vehicle and disease controls. Protective designs give the compound before each exposure; restorative designs start it after the disease state is established, so that prevention and recovery can be distinguished."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 4. Behavioural testing. Standard assays such as the Open Field Test, the Light-Dark Box and Novel Object Recognition measure locomotor activity, anxiety-like behaviour and recognition memory. Sessions are video-recorded and scored by an automated tracking system, which removes observer bias."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 5. Tissue collection. Brain regions and other tissues are collected and divided for histological and molecular analysis."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 6. Tissue analysis. Histology (H&E, Nissl), immunohistochemistry, ELISA and biochemical assays quantify neuronal damage, inflammation, cell death and oxidative stress."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 7. Statistics and report. Group comparisons with the tests specified in the protocol; report with figures, raw data tables and methods text."
+  },
+  {
+    "style": "Heading 3",
+    "text": "B. In vitro workflow"
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Model set-up → Treatment → Cellular assays → Mechanism → Analysis and report"
+  },
+  {
+    "style": "Normal",
+    "text": "Step 1. Model set-up. The cell line relevant to the disease is cultured under standard conditions and checked before use."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 2. Treatment. Cells are exposed to the test material across a range of concentrations and time points, with untreated, vehicle and reference controls."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 3. Cellular assays. Cell viability, proliferation and function are measured quantitatively"
+  },
+  {
+    "style": "Normal",
+    "text": "Step 4. Mechanism. Signalling pathways affected by the treatment are examined at gene and protein level."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 5. Analysis and report. Dose-response analysis with replicate experiments; report with figures and methods text."
+  },
+  {
+    "style": "Heading 3",
+    "text": "C. In silico pipeline"
+  },
+  {
+    "style": "Normal",
+    "text": "The same pipeline is applied to any compound and any set of protein targets."
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Target selection → Ligand preparation → Molecular docking → Pose inspection → Molecular dynamics → Trajectory analysis → Binding free energy → Report"
+  },
+  {
+    "style": "Normal",
+    "text": "Step 1. Target selection. Protein targets are chosen from the disease pathway and the literature; three-dimensional structures are retrieved and repaired where residues or side chains are missing. Tools: RCSB Protein Data Bank, PDBFixer. Output: Prepared target structures."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 2. Ligand preparation. The compound structure is retrieved or drawn, converted to three dimensions and energy-minimised. Tools: PubChem, Open Babel. Output: Prepared ligand files."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 3. Molecular docking. The compound is docked into the defined binding site of each target. The set-up is validated by redocking the co-crystallised ligand and by docking known reference inhibitors as positive controls. Tools: AutoDock Vina. Output: Binding poses and affinities."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 4. Pose inspection. Each pose is checked for steric clashes, hydrogen bonds and contacts with the residues known to matter for binding. Tools: Structure visualisation. Output: Interaction maps."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 5. Molecular dynamics. Each complex is solvated, neutralised at physiological salt concentration, minimised and equilibrated, then simulated for 100 ns in replicate on GPU. Tools: GROMACS, AmberTools. Output: Trajectories."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 6. Trajectory analysis. Stability and flexibility of the complex (RMSD, RMSF, radius of gyration, solvent-accessible surface), hydrogen bond occupancy, clustering, principal component analysis and free energy landscape. Tools: GROMACS, MDAnalysis. Output: Stability plots and tables."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 7. Binding free energy. Binding free energy with decomposition into the contribution of each residue. Tools: gmx_MMPBSA. Output: Energy tables."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 8. Report. Publication-ready figures, tables and a methods text; replicates are reported individually. Tools: Python. Output: Report and figure files."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2.3 Molecular research"
+  },
+  {
+    "style": "Normal",
+    "text": "Samples are logged on receipt and stored under the conditions the assay requires. Genomic variants are characterised by PCR and Sanger sequencing in our Genomics Lab. Gene expression is measured by RT-PCR with reference genes and no-template controls, and protein expression by Western blot and ELISA with standards and replicate wells. Biochemical assays quantify biomarkers in tissue, serum and cell samples. Tissue for histopathology is processed, sectioned and stained with H&E or Nissl stain, or labelled by immunohistochemistry, then imaged in our Microscopy Lab and quantified. Where no suitable method exists, we develop and validate one and deliver the protocol with its performance data. Instruments, kits and assay platforms are made available as per project requirements."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2.4 Metagenomic data analysis"
+  },
+  {
+    "style": "Normal",
+    "text": "We provide validated reference pipelines that can be customised by adding or removing analytical tools to match the requirements of your project. Three workflows cover most studies: read-based profiling of shotgun metagenomes, genome-resolved analysis that recovers metagenome-assembled genomes, and amplicon analysis of 16S or ITS marker genes."
+  },
+  {
+    "style": "Heading 3",
+    "text": "A. Shotgun metagenomes: read-based profiling"
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Data retrieval → Quality control → Taxonomic classification → Functional annotation → Diversity analysis → AMR and virulence screening → Statistical analysis → Report and delivery"
+  },
+  {
+    "style": "Normal",
+    "text": "Step 1. Data retrieval. Raw FASTQ or FASTA files are downloaded from the sequencing provider's server, a secure link or a public repository by accession number, and checked against the sample metadata. Tools: Secure transfer, SRA Toolkit. Output: Confirmed sample sheet."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 2. Quality control. Adapter trimming, quality filtering and removal of host reads. Tools: FastQC, fastp, KneadData. Output: QC report, clean reads."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 3. Taxonomic classification. Species-level identification and relative abundance estimation at every taxonomic rank. Tools: Kraken2, Bracken, MetaPhlAn 4. Output: Taxonomy tables, abundance plots."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 4. Functional annotation. Gene family and pathway profiling; GO term and metabolic mapping. Tools: HUMAnN 3, eggNOG, KEGG. Output: Pathway and gene family tables."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 5. Diversity analysis. Alpha and beta diversity; PCoA and other ordinations. Tools: QIIME 2, vegan (R). Output: Diversity plots, PCoA."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 6. AMR and virulence screening. Detection of resistance genes and virulence factors in assembled contigs. Tools: CARD/RGI, VFDB, ABRicate. Output: Resistance and virulence gene tables."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 7. Statistical analysis. Differential abundance, biomarker discovery and multivariate modelling. Tools: LEfSe, DESeq2, MaAsLin2. Output: Differential abundance results."
+  },
+  {
+    "style": "Normal",
+    "text": "Step 8. Report and delivery. Publication-ready figures, a PDF report with a written description of the results, and all result files, within 3 weeks. Tools: R Markdown, ggplot2, Python. Output: PDF report, figures (PNG/SVG), data files."
+  },
+  {
+    "style": "Heading 3",
+    "text": "B. Shotgun metagenomes: genome-resolved analysis (MAG recovery)"
+  },
+  {
+    "style": "Normal",
+    "text": "Where the study needs genomes and not only taxonomic profiles, clean reads are assembled and binned into metagenome-assembled genomes (MAGs), which allows strain-level comparison, detection of candidate novel species and gene-level annotation."
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Assembly → Assembly QC → Coverage and binning → Bin quality → Dereplication → Taxonomy → Annotation → Abundance and association"
+  },
+  {
+    "style": "Heading 3",
+    "text": "C. 16S and ITS amplicon sequencing"
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Read QC → Denoising → Taxonomy → Data integration → Diversity analysis → Differential abundance → Functional prediction"
+  },
+  {
+    "style": "Normal",
+    "text": "Functional prediction. Optional prediction of functional potential from marker genes"
+  },
+  {
+    "style": "Heading 3",
+    "text": "Analytical standards"
+  },
+  {
+    "style": "Normal",
+    "text": "The same rules apply to every analysis we deliver."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Every number in the report is produced by the pipeline and can be traced to an output file."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "The methods text states each tool with its version and the parameters used."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "The number of samples retained at each stage is reported, with the reason for any sample that was excluded."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Sequencing run, lane and other batch structure are carried into the statistical models."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Covariates that differ between study groups, such as age, are examined and adjusted for."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Scripts and intermediate files are delivered with the report, so that the analysis can be reproduced."
+  },
+  {
+    "style": "Heading 3",
+    "text": "What you receive"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Quality control. QC report and clean reads"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Taxonomic profiling. Taxonomy tables and abundance plots"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Functional analysis. Pathway and gene family tables"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Diversity analysis. Alpha and beta diversity plots and PCoA"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Statistical analysis. Differential abundance results"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Final report. PDF report with a written description of the results, and all data files"
+  },
+  {
+    "style": "Normal",
+    "text": "All result files, figures (PNG and SVG) and a full PDF report are included. Revisions continue until the analysis is complete, and a consultation call is available on delivery."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2.5 Biomedical and omics data analysis"
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Scoping → Data intake and audit → Cleaning and quality control → Processing and annotation → Statistical analysis and modelling → Validation → Report and revisions"
+  },
+  {
+    "style": "Heading 2",
+    "text": "2.6 Evidence synthesis and technical reports"
+  },
+  {
+    "style": "Normal",
+    "text": "Pipeline at a glance: Question and protocol → Literature search → Screening → Data extraction and appraisal → Synthesis and analysis → Report writing → Review and delivery"
+  },
+  {
+    "style": "Heading 1",
+    "text": "Part 3. Consent text"
+  },
+  {
+    "style": "Normal",
+    "text": "Every checkbox must be unticked by default. Required boxes block submission until ticked. The form should store the date, time and version of the wording that was accepted, so that consent can be evidenced later. The words Privacy Terms and Data Retention Policy link to the pages in Parts 4 and 5."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.1 Service request (required checkbox, all services)"
+  },
+  {
+    "style": "Normal",
+    "text": "I have read the Privacy Terms and I agree that CERA Medical may use the information I provide in this form to respond to my request and to deliver the service I have asked for."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.2 Sequencing data and sample metadata (required for Metagenomic Data Analysis)"
+  },
+  {
+    "style": "Normal",
+    "text": "I confirm that:"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "I am authorised to share these data with CERA Medical for analysis and, where I ask CERA Medical to download them from a server or repository, to give it access for that purpose;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "where the data derive from human participants, the study holds the necessary ethical approval and participant consent, and that consent permits analysis by an external service provider;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "the files and metadata are de-identified and contain no names, contact details, national identity numbers, medical record numbers or other direct identifiers;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "I understand that sequencing reads from human samples may contain human genetic material, which CERA Medical removes during quality control and does not analyse for any other purpose;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "CERA Medical may store and process the data for this analysis and will delete them as set out in the Data Retention Policy."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.3 Samples and test compounds (required for Preclinical Studies and Molecular Research)"
+  },
+  {
+    "style": "Normal",
+    "text": "I confirm that:"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "I own these materials or am authorised to send them to CERA Medical for the agreed study;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "where samples derive from human donors, the necessary ethical approval and donor consent are in place, and the samples are coded and carry no names or other direct identifiers;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "I have disclosed every known hazard of the materials, including infectious, toxic and radioactive hazards, and will supply a safety data sheet for each test compound;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "CERA Medical may use the materials only for the agreed study and will return or destroy any remainder as set out in the Data Retention Policy;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "I understand that animal studies begin only after the protocol has been approved by the animal ethics committee."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.4 Health, clinical and programme data (required for Biomedical and Omics Data Analysis and for Evidence Synthesis and Technical Reports)"
+  },
+  {
+    "style": "Normal",
+    "text": "I confirm that:"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "my organisation owns these data or is authorised to share them with CERA Medical for analysis;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "the data were collected with the consent and approvals required for their use in analysis and reporting;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "the dataset has been de-identified and contains no names, national identity numbers, medical record numbers, telephone numbers, addresses or household coordinates, or, where identifiers are needed for the analysis, a data sharing agreement will be signed before any data are transferred;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "CERA Medical may use the data only for the agreed analysis and report, will follow my organisation's data protection requirements, and will return or delete the data as set out in the Data Retention Policy or in the data sharing agreement."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.5 Contact form (notice under the form, no checkbox)"
+  },
+  {
+    "style": "Normal",
+    "text": "The details you enter here are used only to answer your enquiry. For more information, see our Privacy Terms."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.6 Updates and newsletters (optional checkbox, separate from the others)"
+  },
+  {
+    "style": "Normal",
+    "text": "I would like to receive occasional updates from CERA Medical about its services and products. I can unsubscribe at any time."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.7 Cookie banner"
+  },
+  {
+    "style": "Normal",
+    "text": "Needed only if the site uses analytics or other non-essential cookies. Analytics scripts must not load until the visitor accepts."
+  },
+  {
+    "style": "Normal",
+    "text": "This website uses cookies that are necessary for it to work and, with your permission, analytics cookies that help us understand how the site is used. You can change your choice at any time in Cookie Settings."
+  },
+  {
+    "style": "Normal",
+    "text": "Buttons: Accept analytics; Reject; Cookie Settings"
+  },
+  {
+    "style": "Heading 2",
+    "text": "3.8 Withdrawing consent (form footer and privacy page)"
+  },
+  {
+    "style": "Normal",
+    "text": "You may withdraw your consent at any time by writing to medicalcera@gmail.com. Withdrawal does not affect work already completed. Once we receive it, we stop work on your files and materials and delete, return or destroy them, except for records that the law requires us to keep."
+  },
+  {
+    "style": "Heading 1",
+    "text": "Part 4. Privacy terms"
+  },
+  {
+    "style": "Normal",
+    "text": "Full text for a page titled Privacy Terms, linked from the footer and from every form."
+  },
+  {
+    "style": "Normal",
+    "text": "Page title: Privacy Terms"
+  },
+  {
+    "style": "Normal",
+    "text": "Effective date: [date of publication]"
+  },
+  {
+    "style": "Heading 2",
+    "text": "1. Who we are"
+  },
+  {
+    "style": "Normal",
+    "text": "CERA Medical [SMC PVT LTD] is a biomedical research and development company registered with the Securities and Exchange Commission of Pakistan. Our office is on the 2nd Floor, BIC, C2 Building, Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST), Mang, Haripur, Pakistan. We develop natural healthcare products and provide research services: preclinical studies, molecular research, metagenomic data analysis, biomedical and omics data analysis, and evidence synthesis and technical reporting. In these terms, \"CERA Medical\", \"we\" and \"us\" refer to this company, which is responsible for the personal information described below."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2. What these terms cover"
+  },
+  {
+    "style": "Normal",
+    "text": "These terms explain what information we collect through www.ceramed.org and in the course of providing our services, how we use and protect it, how long we keep it, and the choices available to you. They apply to visitors to the website, to people who contact us, and to clients who request a service."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3. Information we collect"
+  },
+  {
+    "style": "Normal",
+    "text": "Information you give us. When you contact us or request a service, we collect your name, email address, telephone number, institution, country and the content of your message."
+  },
+  {
+    "style": "Normal",
+    "text": "Service files and materials. To carry out a service, we receive the files and materials you send us or ask us to retrieve. These may include sequencing data, sample metadata, health, survey and programme datasets, draft reports and manuscripts, figures and tables, test compounds and biological samples together with their accompanying records."
+  },
+  {
+    "style": "Normal",
+    "text": "Billing information. We keep the name and address used for invoicing and a record of payments received. [Card details are processed by our payment provider and are not stored by CERA Medical.]"
+  },
+  {
+    "style": "Normal",
+    "text": "Orders. [When you buy a product from us, we collect your delivery address and keep a record of the order.]"
+  },
+  {
+    "style": "Normal",
+    "text": "Information collected automatically. Our servers record your IP address, browser and device type, the pages you visit and the date and time of each visit. Cookies are described in section 11."
+  },
+  {
+    "style": "Heading 2",
+    "text": "4. How we use information"
+  },
+  {
+    "style": "Normal",
+    "text": "We use the information described above for the following purposes:"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "to respond to enquiries and prepare quotations;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "to carry out the service requested and deliver its results;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "to issue invoices, receive payment and keep the accounting records that the law requires;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "to maintain the security and performance of the website;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "to send messages about a service in progress and, where you have agreed, news about our services and products;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "to comply with legal obligations and respond to lawful requests from competent authorities."
+  },
+  {
+    "style": "Normal",
+    "text": "We process information on the basis of your consent, the need to perform a service you have requested, our legitimate interest in operating and securing our services, and the legal obligations that apply to us."
+  },
+  {
+    "style": "Heading 2",
+    "text": "5. Research data, health data and samples"
+  },
+  {
+    "style": "Normal",
+    "text": "Files, datasets, samples and compounds submitted for a service remain the property of the client, and the client retains full ownership of the data and results generated from them. We use them only on the client's instructions and only for the service requested. We do not use client data or materials for our own research, publications, product development or marketing, and we do not disclose them to other clients. Where a project is carried out as a research collaboration, ownership, publication and authorship are set out in a separate written agreement."
+  },
+  {
+    "style": "Normal",
+    "text": "Our services are designed for de-identified data and coded samples. We ask clients not to send information that directly identifies study participants, survey respondents, patients or donors, and the client remains responsible for the ethical approval and consent that govern the underlying study or programme. We do not attempt to identify any individual from sequencing data, health data, samples or metadata. Where sequencing reads from human samples contain human genetic material, we remove those reads during quality control and do not analyse them for any other purpose. If we receive files or samples that carry direct identifiers without prior agreement, we inform the client and return or delete them."
+  },
+  {
+    "style": "Normal",
+    "text": "Where a client organisation requires it, we sign a data sharing or data protection agreement before any data are transferred and follow that organisation's data protection requirements, including its rules on data about children. Results are reported in aggregate, and small groups are suppressed so that no individual can be identified from a report."
+  },
+  {
+    "style": "Normal",
+    "text": "Every member of staff and every contracted specialist who has access to client files or materials is bound by a duty of confidentiality. A non-disclosure agreement is available on request before any file or sample is transferred."
+  },
+  {
+    "style": "Heading 2",
+    "text": "6. Who we share information with"
+  },
+  {
+    "style": "Normal",
+    "text": "We do not sell personal information. We share it only in the following circumstances:"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "with staff and contracted specialists who need it to deliver the service, under obligations of confidentiality;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "with providers that support our operations, namely website hosting, email, secure file storage and transfer, and payment processing, under terms that limit their use of the information to the service they provide to us;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "with a person you name, for example a co-author or collaborator, when you instruct us to do so;"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "where disclosure is required by law, by a court order or by a competent authority."
+  },
+  {
+    "style": "Heading 2",
+    "text": "7. Where information is stored"
+  },
+  {
+    "style": "Normal",
+    "text": "Information is stored on [systems located in Pakistan. Some of the providers listed in section 6 may hold information on servers outside Pakistan. Where that is the case, we take reasonable steps to ensure that the information receives a comparable level of protection."
+  },
+  {
+    "style": "Heading 2",
+    "text": "8. Security"
+  },
+  {
+    "style": "Normal",
+    "text": "Access to client information and materials is restricted to the personnel assigned to the service. [Files are transferred over encrypted connections, stored on password-protected systems and backed up regularly.] No method of transmission or storage is completely secure. If a security incident occurs that is likely to affect you, we will inform you without undue delay and explain the steps we are taking."
+  },
+  {
+    "style": "Heading 2",
+    "text": "9. How long we keep information"
+  },
+  {
+    "style": "Normal",
+    "text": "We keep information only for as long as it is needed for the purposes set out in these terms. The periods that apply to each category, and the way information and materials are deleted or destroyed at the end of each period, are set out in our Data Retention Policy."
+  },
+  {
+    "style": "Heading 2",
+    "text": "10. Your choices and rights"
+  },
+  {
+    "style": "Normal",
+    "text": "You may ask us at any time to confirm what information we hold about you, to provide a copy of it, to correct it, or to delete it. You may also withdraw a consent you have given and ask us to stop sending updates. To make a request, write to medicalcera@gmail.com. We respond within 30 days. We may need to verify your identity before acting on a request, and we may retain information that the law requires us to keep."
+  },
+  {
+    "style": "Heading 2",
+    "text": "11. Cookies"
+  },
+  {
+    "style": "Normal",
+    "text": "The website uses cookies that are necessary for it to work.You can accept or reject non-essential cookies in the banner shown on your first visit and change your choice at any time in Cookie Settings. You can also block or delete cookies in your browser, although parts of the site may then not work as intended."
+  },
+  {
+    "style": "Heading 2",
+    "text": "12. Children"
+  },
+  {
+    "style": "Normal",
+    "text": "The website and our services are intended for researchers, professionals, organisations and adult consumers. We do not knowingly collect personal information from anyone under 18 years of age through the website. Research and programme datasets that concern children are handled only in de-identified form, as described in section 5."
+  },
+  {
+    "style": "Heading 2",
+    "text": "13. Links to other websites"
+  },
+  {
+    "style": "Normal",
+    "text": "The website may link to journals, databases and other external sites. We are not responsible for the content or privacy practices of those sites and recommend reading their own terms."
+  },
+  {
+    "style": "Heading 2",
+    "text": "14. Changes to these terms"
+  },
+  {
+    "style": "Normal",
+    "text": "We may revise these terms when our services or the applicable law change. The effective date at the top of the page shows when the current version was published. Where a change materially affects information we already hold about clients, we will notify them by email."
+  },
+  {
+    "style": "Heading 2",
+    "text": "15. Contact"
+  },
+  {
+    "style": "Normal",
+    "text": "Questions about these terms and requests concerning your information may be sent to CERA Medical, 2nd Floor, BIC, C2 Building, PAF-IAST, Mang, Haripur, Pakistan, by email to medicalcera@gmail.com."
+  },
+  {
+    "style": "Heading 1",
+    "text": "Part 5. Data retention policy"
+  },
+  {
+    "style": "Normal",
+    "text": "Full text for a page titled Data Retention Policy, linked from the footer, the privacy terms and the consent boxes. The short summary at the end can be used on the service pages or in an FAQ."
+  },
+  {
+    "style": "Normal",
+    "text": "Page title: Data Retention Policy"
+  },
+  {
+    "style": "Normal",
+    "text": "Effective date: [date of publication]"
+  },
+  {
+    "style": "Heading 2",
+    "text": "1. Purpose and scope"
+  },
+  {
+    "style": "Normal",
+    "text": "This policy sets out how long CERA Medical keeps the information and materials it receives through its website and services, and what happens to them at the end of each period. It applies to information held in any format, including files on our servers, cloud storage, email accounts, portable drives and backups, and to physical samples, test compounds and laboratory records."
+  },
+  {
+    "style": "Heading 2",
+    "text": "2. Principles"
+  },
+  {
+    "style": "Normal",
+    "text": "We keep information and materials only for as long as they serve the purpose for which they were received or for as long as the law requires. Client data and samples are held for the shortest practical period after delivery, so that we can answer questions and make revisions, and are then deleted, returned or destroyed. Where a data sharing agreement with a client sets a different period, that agreement prevails. Clients are advised to keep their own copies of all files and reserve samples, since CERA Medical does not act as an archive."
+  },
+  {
+    "style": "Heading 2",
+    "text": "3. Retention schedule"
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Enquiries that do not lead to a service. Retention: [12 months] from the last correspondence. At the end: Deleted from the mailbox and form records."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Client contact details and service correspondence. Retention: For the duration of the client relationship and [2 years] after the last completed service. At the end: Deleted, except where they form part of an accounting record."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Raw sequencing data and sample metadata. Retention: [90 days] after delivery of the final report, or longer at the client's written request while a manuscript is in preparation or under review. At the end: Securely deleted from all working storage."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Analysis outputs, reports, figures, scripts and simulation files. Retention: [12 months] after delivery, to support revisions and reviewer queries. At the end: Securely deleted."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Health, clinical, survey and programme datasets. Retention: [30 days] after the client accepts the final report, or the period set in the data sharing agreement. At the end: Returned to the client or securely deleted, with written confirmation."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Draft reports, manuscripts and related documents. Retention: [6 months] after delivery of the final version. At the end: Securely deleted."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Client samples and test compounds. Retention: [30 days] after delivery of the final report. At the end: Returned at the client's request and cost, or destroyed under our biosafety and chemical waste procedures."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Tissue blocks, slides and other material generated in a study. Retention: [12 months] after delivery of the final report. At the end: Returned at the client's request, or destroyed."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Laboratory study records: protocols, raw data, notebooks, behavioural recordings and instrument files. Retention: [ 3 months ] after delivery of the final report, so that results can be verified. At the end: Securely deleted or destroyed, or transferred to the client on request."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Invoices, payment records and other accounting documents. Retention: 6 years after the end of the tax year to which they relate, as required by tax law. At the end: Deleted or destroyed."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "[Product orders and delivery details] Retention: [1 years, as part of the accounting record]. At the end: [Deleted or destroyed]."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Mailing list for updates. Retention: Until the subscriber unsubscribes. At the end: Removed from the list; a record of the unsubscribe request is kept so that no further messages are sent."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Records of consent given through forms. Retention: For as long as the related information is held and [3 years] afterwards. At the end: Deleted."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Website server logs. Retention: [90 days]. At the end: Overwritten automatically."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "[Analytics data] Retention: [14 months, or the period set in the analytics tool]. At the end: [Deleted automatically]."
+  },
+  {
+    "style": "List Paragraph",
+    "text": "Backups. Retention: [30 days] after deletion from live systems. At the end: Overwritten in the normal backup cycle."
+  },
+  {
+    "style": "Heading 2",
+    "text": "4. Deletion on request"
+  },
+  {
+    "style": "Normal",
+    "text": "A client may ask us to delete submitted files, or to return or destroy submitted materials, before the end of the scheduled period by writing to medicalcera@gmail.com. We act on the request within [14 days] and confirm in writing that this has been done. Accounting records are not affected by such a request, because the law requires us to keep them."
+  },
+  {
+    "style": "Heading 2",
+    "text": "5. Longer retention"
+  },
+  {
+    "style": "Normal",
+    "text": "Information and materials are kept beyond the scheduled period only in three situations: where the client has asked us in writing to keep project files or samples for longer, for example while a manuscript is under review; where the law, a regulator or an ethics committee requires it; and where they are needed to resolve a dispute or a complaint. In each case they are deleted or destroyed once the reason for keeping them has ended."
+  },
+  {
+    "style": "Heading 2",
+    "text": "6. How information and materials are destroyed"
+  },
+  {
+    "style": "Normal",
+    "text": "Electronic files are deleted from working storage, cloud folders, email attachments and any portable drive used for transfer, and are removed from backups in the normal backup cycle. Storage media are wiped before reuse or disposal. Paper records are shredded. Biological samples and test compounds are destroyed under the laboratory's biosafety and chemical waste procedures. [The date of deletion or destruction is recorded in the project file.]"
+  },
+  {
+    "style": "Heading 2",
+    "text": "7. Responsibility and review"
+  },
+  {
+    "style": "Normal",
+    "text": "CEO is responsible for applying this policy and for checking each quarter that files and materials due for deletion have been removed. The policy is reviewed once a year and whenever our services or the applicable law change."
+  },
+  {
+    "style": "Heading 2",
+    "text": "Short summary for service pages or FAQ"
+  },
+  {
+    "style": "Normal",
+    "text": "How long do you keep my files and samples? Raw sequencing data are deleted [90 days] after we deliver your report and analysis outputs after [12 months]. Health and programme datasets are returned or deleted [30 days] after the final report is accepted. Samples and test compounds are returned or destroyed [30 days] after delivery. You can ask us to delete your files or return your materials earlier at any time. Full details are in our Data Retention Policy."
+  }
+]

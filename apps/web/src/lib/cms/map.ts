@@ -14,6 +14,7 @@ interface PayloadDocument {
   readonly title?: string | null;
   readonly excerpt?: string | null;
   readonly body?: unknown;
+  readonly layout?: unknown;
   readonly seo?: {
     readonly title?: string | null;
     readonly description?: string | null;
@@ -55,6 +56,7 @@ export function mapCmsDocument(type: ContentType, doc: PayloadDocument): Content
     title: doc.title ?? '',
     excerpt: doc.excerpt ?? null,
     body: doc.body ?? null,
+    layout: doc.layout,
     seo: {
       title: doc.seo?.title ?? null,
       description: doc.seo?.description ?? null,

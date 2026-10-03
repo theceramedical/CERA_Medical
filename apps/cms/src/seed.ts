@@ -9,6 +9,7 @@
 
 import { getPayload } from 'payload';
 
+import { bootstrapClientContent } from './lib/bootstrap-content.ts';
 import config from './payload.config.ts';
 
 const PENDING = 'Pending CERA content approval.';
@@ -304,7 +305,7 @@ async function main(): Promise<void> {
     slug: 'site-settings',
     data: {
       tagline: 'Biomedical Research and Development',
-      email: 'theceramedica@gmail.com',
+      email: 'contact@ceramedical.org',
       phone: '',
       address:
         '2nd Floor, BIC, C2 Building, Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST), Mang, Haripur, Pakistan',
@@ -314,6 +315,8 @@ async function main(): Promise<void> {
     },
     overrideAccess: true,
   });
+
+  await bootstrapClientContent(payload);
 
   payload.logger.info('CMS seed complete. Approver login: approver@cera.localhost');
   await payload.destroy();

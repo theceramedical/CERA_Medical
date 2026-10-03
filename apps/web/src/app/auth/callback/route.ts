@@ -18,25 +18,49 @@ import { siteUrl } from '../../../lib/site-url.ts';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const url = new URL(request.url);
+  let errorReason = 'identity';
   let response: NextResponse;
   try {
     const token = request.cookies.get(OIDC_STATE_COOKIE_NAME)?.value;
-    if (!token) throw new Error('Missing handshake');
-    const handshake = await openHandshake(token);
-    const tokens = await authorizationCodeGrant(
-      await oidcConfiguration(),
-      configuredCallbackUrl(url),
-      {
+    if (!token || !url.searchParams.get('code') || !url.searchParams.get('state')) {
+      errorReason = 'expired';
+      throw new Error('Missing handshake');
+    }
+    let handshake;
+    try {
+      handshake = await openHandshake(token);
+    } catch (error) {
+      errorReason = 'expired';
+      throw error;
+    }
+    let tokens;
+    try {
+      tokens = await authorizationCodeGrant(await oidcConfiguration(), configuredCallbackUrl(url), {
         pkceCodeVerifier: handshake.verifier,
         expectedState: handshake.state,
         expectedNonce: handshake.nonce,
         idTokenExpected: true,
-      },
-    );
-    const identity = identityClaims(tokens.claims() ?? {});
-    if (!identity.roles.length) throw new Error('No platform role');
+      });
+    } catch (error) {
+      errorReason = 'provider';
+      throw error;
+    }
+    let identity;
+    try {
+      identity = identityClaims(tokens.claims() ?? {});
+    } catch (error) {
+      errorReason = 'identity';
+      throw error;
+    }
+    if (!identity.roles.length) {
+      errorReason = 'access';
+      throw new Error('No platform role');
+    }
     const staff = identity.roles.some((role) => role !== 'customer');
-    if (staff && !identity.mfa) throw new Error('Staff MFA required');
+    if (staff && !identity.mfa) {
+      errorReason = 'mfa';
+      throw new Error('Staff MFA required');
+    }
     const now = Math.floor(Date.now() / 1000);
     const exp = now + (staff ? 30 * 60 : 12 * 60 * 60);
     const claims = {
@@ -61,7 +85,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       'OIDC callback failed:',
       error instanceof Error ? error.message : 'unknown error',
     );
-    response = NextResponse.redirect(new URL('/auth/error?reason=identity', siteUrl()));
+    response = NextResponse.redirect(new URL(`/auth/error?reason=${errorReason}`, siteUrl()));
   }
   response.cookies.set(OIDC_STATE_COOKIE_NAME, '', { secure: true, path: '/', maxAge: 0 });
   return response;

@@ -2,6 +2,7 @@ import 'server-only';
 
 import { type ContentDocument, type ContentType } from '@cera/contracts';
 import { unstable_cache } from 'next/cache';
+import { draftMode } from 'next/headers';
 
 import { mapCmsDocument } from './map.ts';
 
@@ -41,12 +42,16 @@ export async function getPublishedDocument(
 
   const cached = unstable_cache(
     async () => {
-      const response = await fetch(url, { headers: { accept: 'application/json' } });
-      if (!response.ok) return null;
-      const body = (await response.json()) as PayloadList<Record<string, unknown>>;
-      const doc = body.docs[0];
-      if (doc === undefined) return null;
-      return mapCmsDocument(type, doc as never);
+      try {
+        const response = await fetch(url, { headers: { accept: 'application/json' } });
+        if (!response.ok) return null;
+        const body = (await response.json()) as PayloadList<Record<string, unknown>>;
+        const doc = body.docs[0];
+        if (doc === undefined) return null;
+        return mapCmsDocument(type, doc as never);
+      } catch {
+        return null;
+      }
     },
     ['cms', type, slug, 'published'],
     { tags: [`cms:${collection}`, `cms:${collection}:${slug}`] },
@@ -66,13 +71,17 @@ export async function getDraftDocument(
   url.searchParams.set('collection', COLLECTION[type]);
   url.searchParams.set('slug', slug);
 
-  const response = await fetch(url, {
-    headers: { accept: 'application/json', 'x-preview-secret': secret },
-    cache: 'no-store',
-  });
-  if (!response.ok) return null;
-  const doc = (await response.json()) as Record<string, unknown>;
-  return mapCmsDocument(type, doc as never);
+  try {
+    const response = await fetch(url, {
+      headers: { accept: 'application/json', 'x-preview-secret': secret },
+      cache: 'no-store',
+    });
+    if (!response.ok) return null;
+    const doc = (await response.json()) as Record<string, unknown>;
+    return mapCmsDocument(type, doc as never);
+  } catch {
+    return null;
+  }
 }
 
 export async function getDocument(
@@ -82,6 +91,14 @@ export async function getDocument(
 ): Promise<ContentDocument | null> {
   if (draft) return getDraftDocument(type, slug);
   return getPublishedDocument(type, slug);
+}
+
+export async function getCurrentDocument(
+  type: ContentType,
+  slug: string,
+): Promise<ContentDocument | null> {
+  const draft = await draftMode();
+  return getDocument(type, slug, draft.isEnabled);
 }
 
 export async function listPublishedDocuments(
@@ -94,9 +111,14 @@ export async function listPublishedDocuments(
   url.searchParams.set('sort', '-publishedAt');
   url.searchParams.set('where[fixture][not_equals]', 'true');
 
-  const response = await fetch(url, { next: { tags: [`cms:${collection}`] } });
-  if (!response.ok) return [];
-  const body = (await response.json()) as PayloadList<Record<string, unknown>>;
+  let body: PayloadList<Record<string, unknown>>;
+  try {
+    const response = await fetch(url, { next: { tags: [`cms:${collection}`] } });
+    if (!response.ok) return [];
+    body = (await response.json()) as PayloadList<Record<string, unknown>>;
+  } catch {
+    return [];
+  }
   return body.docs
     .map((doc) => {
       try {
@@ -106,4 +128,17 @@ export async function listPublishedDocuments(
       }
     })
     .filter((doc): doc is ContentDocument => doc !== null && doc.status === 'published');
+}
+
+export async function getPublicGlobal<T extends Record<string, unknown>>(
+  slug: string,
+): Promise<T | null> {
+  const url = new URL(`${cmsApiUrl().replace(/\/$/, '')}/globals/${slug}`);
+  try {
+    const response = await fetch(url, { next: { tags: [`cms:global:${slug}`] } });
+    if (!response.ok) return null;
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  }
 }

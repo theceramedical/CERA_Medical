@@ -1,6 +1,8 @@
 import { Heading, Text } from '@cera/ui/typography';
 
+import { CmsContentPage } from '../../../components/cms-content-page.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -75,7 +77,9 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function MethodologyPage() {
+export default async function MethodologyPage() {
+  const document = await getCurrentDocument('page', 'methodology');
+  if (document !== null) return <CmsContentPage document={document} />;
   return (
     <>
       <PageHeader

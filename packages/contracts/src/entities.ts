@@ -89,6 +89,8 @@ export const ContentDocumentSchema = z.object({
   excerpt: z.string().max(400).nullable(),
   /** Lexical AST. Structure is owned and validated by Payload, not re-modelled here. */
   body: z.unknown(),
+  /** Payload page layout blocks, rendered by the web app's constrained block renderer. */
+  layout: z.unknown().optional(),
   seo: SeoSchema,
   mediaIds: z.array(z.string()).max(50),
   status: PublicationStatusSchema,

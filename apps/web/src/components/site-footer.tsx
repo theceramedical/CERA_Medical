@@ -2,6 +2,8 @@ import { Heading, Text } from '@cera/ui/typography';
 import { Wordmark } from '@cera/ui/wordmark';
 import NextLink from 'next/link';
 
+import { getPublicGlobal } from '../lib/cms/client.ts';
+
 import { AppLink } from './link.tsx';
 import { MAIN_NAV, SUPPORT_NAV } from './navigation.ts';
 
@@ -12,18 +14,24 @@ import type { NavItem } from './navigation.ts';
  *
  * Server-rendered contact details and navigation.
  */
-export function SiteFooter() {
+export async function SiteFooter() {
+  const [settings, navigation] = await Promise.all([
+    getPublicGlobal<{ email?: string; tagline?: string }>('site-settings'),
+    getPublicGlobal<{ footer?: readonly NavItem[] }>('navigation'),
+  ]);
+  const email = settings?.email ?? 'contact@ceramedical.org';
+  const quickLinks = navigation?.footer?.length ? navigation.footer : MAIN_NAV;
   return (
     <footer className="bg-surface-footer">
       <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-6 pt-12 pb-12 sm:grid-cols-2 md:px-10 lg:grid-cols-4">
         <div>
           <Wordmark />
           <Text size="body-sm" tone="muted" className="mt-4">
-            Biomedical Research and Development.
+            {settings?.tagline ?? 'Biomedical Research and Development.'}
           </Text>
         </div>
 
-        <FooterNav heading="Quick Links" items={MAIN_NAV} />
+        <FooterNav heading="Quick Links" items={quickLinks} />
         <FooterNav heading="Support" items={SUPPORT_NAV} />
 
         <div>
@@ -31,8 +39,8 @@ export function SiteFooter() {
           <Text size="body-sm" tone="muted" className="mt-4">
             Project enquiries and information requests:
           </Text>
-          <AppLink href="mailto:theceramedica@gmail.com" className="mt-2 inline-flex">
-            theceramedica@gmail.com
+          <AppLink href={`mailto:${email}`} className="mt-2 inline-flex">
+            {email}
           </AppLink>
         </div>
       </div>

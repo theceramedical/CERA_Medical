@@ -3,6 +3,8 @@ import { Wordmark } from '@cera/ui/wordmark';
 import { Search } from 'lucide-react';
 import NextLink from 'next/link';
 
+import { getPublicGlobal } from '../lib/cms/client.ts';
+
 import { AppButtonLink } from './link.tsx';
 import { MAIN_NAV } from './navigation.ts';
 import { HeaderScrollShadow } from './site-header.client.tsx';
@@ -19,7 +21,11 @@ import { MobileNav } from './site-nav.client.tsx';
  * (which needs `usePathname`), and the mobile disclosure. Everything else - the markup, the wordmark,
  * the two buttons, the landmark structure - renders on the server and ships no JavaScript.
  */
-export function SiteHeader() {
+export async function SiteHeader() {
+  const navigation = await getPublicGlobal<{ header?: readonly { label: string; href: string }[] }>(
+    'navigation',
+  );
+  const navItems = navigation?.header?.length ? navigation.header : MAIN_NAV;
   return (
     <HeaderScrollShadow>
       <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">
@@ -46,7 +52,7 @@ export function SiteHeader() {
          * is a list you cannot navigate by.
          */}
         <nav aria-label="Main" className="hidden flex-1 justify-center lg:flex">
-          <DesktopNavLinks items={MAIN_NAV} />
+          <DesktopNavLinks items={navItems} />
         </nav>
 
         <div className="flex flex-1 items-center justify-end gap-2 lg:flex-none">
@@ -73,7 +79,7 @@ export function SiteHeader() {
             </AppButtonLink>
           </div>
 
-          <MobileNav items={MAIN_NAV} />
+          <MobileNav items={navItems} />
         </div>
       </div>
     </HeaderScrollShadow>

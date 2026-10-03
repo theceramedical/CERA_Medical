@@ -1,7 +1,10 @@
 import { Alert } from '@cera/ui/alert';
 import { Text } from '@cera/ui/typography';
 
+import { PageHeader } from '../../../components/page-header.tsx';
 import { PolicyDocument } from '../../../components/policy-document.tsx';
+import { RichText } from '../../../components/rich-text.tsx';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
 
 import type { PolicySection } from '../../../components/policy-document.tsx';
 import type { Metadata } from 'next';
@@ -73,7 +76,7 @@ const SECTIONS: readonly PolicySection[] = [
   {
     heading: 'Choices and requests',
     paragraphs: [
-      'The client draft proposes that people may request access to, correction of or deletion of their information, withdraw consent, or stop updates by writing to theceramedica@gmail.com. Its proposed response time is 30 days, subject to identity checks and records that must be retained by law. Applicable rights and response periods require legal confirmation.',
+      'The client draft proposes that people may request access to, correction of or deletion of their information, withdraw consent, or stop updates by writing to contact@ceramedical.org. Its proposed response time is 30 days, subject to identity checks and records that must be retained by law. Applicable rights and response periods require legal confirmation.',
     ],
   },
   {
@@ -103,12 +106,25 @@ const SECTIONS: readonly PolicySection[] = [
   {
     heading: 'Contact',
     paragraphs: [
-      'Questions and information requests may be sent to CERA Medical, 2nd Floor, BIC, C2 Building, PAF-IAST, Mang, Haripur, Pakistan, at theceramedica@gmail.com.',
+      'Questions and information requests may be sent to CERA Medical, 2nd Floor, BIC, C2 Building, PAF-IAST, Mang, Haripur, Pakistan, at contact@ceramedical.org.',
     ],
   },
 ];
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const document =
+    (await getCurrentDocument('policy', 'privacy-policy')) ??
+    (await getCurrentDocument('policy', 'privacy'));
+  if (document !== null) {
+    return (
+      <>
+        <PageHeader title={document.title} lede={document.excerpt ?? ''} />
+        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+          <RichText body={document.body} />
+        </div>
+      </>
+    );
+  }
   return (
     <PolicyDocument
       title="Privacy Terms"
