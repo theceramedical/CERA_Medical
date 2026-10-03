@@ -1,6 +1,6 @@
 import clientCopy from '../content/client-website-content.json' with { type: 'json' };
 
-import type { DataFromCollectionSlug, Payload } from 'payload';
+import type { Payload, RequiredDataFromCollectionSlug } from 'payload';
 
 interface SourceParagraph {
   readonly style: string;
@@ -156,7 +156,7 @@ async function upsert(
   if (existing === undefined) {
     await payload.create({
       collection,
-      data: record as DataFromCollectionSlug<typeof collection>,
+      data: record as RequiredDataFromCollectionSlug<typeof collection>,
       overrideAccess: true,
       draft: false,
     });
