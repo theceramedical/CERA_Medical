@@ -41,9 +41,10 @@ message but never CERA internal notes or the staff owner ID.
 Run `/opt/cera/infra/erpnext/provision.sh` after the Frappe site is created. It idempotently creates
 the fields, the restricted `CERA Integration` role, and the system user, then stores the generated
 credentials in `/opt/cera/.erpnext-credentials` with mode 600. Re-running it preserves the existing
-credentials. Run `bash /opt/cera/infra/erpnext/verify_api.sh` to verify that the integration user can
-create and read a Lead with the CERA custom fields. The script removes its synthetic Lead and all
-temporary credential files, including when the verification fails after the Lead is created.
+credentials. The integration user and CERA Lead fields are provisioned on the live VPS. On 2026-10-03,
+`bash /opt/cera/infra/erpnext/verify_api.sh` successfully created and read a synthetic Lead with
+the CERA custom fields, then removed it and its temporary credential files. Re-run after release
+to verify the deployed worker end to end.
 
 Before launch, submit a synthetic enquiry and confirm one ERPNext Lead appears with the same
 reference, service, status, and message. Retry the job and confirm it updates the same Lead.
