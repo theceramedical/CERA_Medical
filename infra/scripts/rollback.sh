@@ -12,8 +12,8 @@ compose up -d --no-deps web api worker cms commerce commerce-worker caddy authen
 wait_healthy
 
 health_check="$ROOT_DIR/infra/scripts/health-check.sh"
-if [[ -x "$health_check" ]]; then
-  "$health_check" "$ENVIRONMENT"
+if [[ -f "$health_check" ]]; then
+  bash "$health_check" "$ENVIRONMENT"
 else
   echo 'Production health-check script is unavailable' >&2
   exit 1
