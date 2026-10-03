@@ -10,7 +10,14 @@ describe('bootstrapClientContent', () => {
   it('loads the approved copy into editable, published CMS documents', async () => {
     vi.stubEnv('CMS_BOOTSTRAP_ADMIN_EMAIL', 'owner@example.org');
     vi.stubEnv('CMS_BOOTSTRAP_ADMIN_PASSWORD', 'a'.repeat(40));
-    const create = vi.fn().mockResolvedValue({});
+    let categorySeq = 0;
+    const create = vi.fn().mockImplementation(({ collection }: { collection: string }) => {
+      if (collection === 'categories') {
+        categorySeq += 1;
+        return Promise.resolve({ id: categorySeq });
+      }
+      return Promise.resolve({});
+    });
     const update = vi.fn().mockResolvedValue({});
     const find = vi
       .fn()
@@ -28,7 +35,7 @@ describe('bootstrapClientContent', () => {
 
     await bootstrapClientContent(payload);
 
-    expect(create).toHaveBeenCalledTimes(13);
+    expect(create).toHaveBeenCalledTimes(19);
     expect(create).toHaveBeenCalledWith({
       collection: 'users',
       data: { email: 'owner@example.org', password: 'a'.repeat(40), role: 'administrator' },
@@ -52,7 +59,11 @@ describe('bootstrapClientContent', () => {
     const home = records.find((record) => record.data.slug === 'home')?.data;
     expect(home?.layout).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ blockType: 'hero', headlinePrimary: 'Research that moves' }),
+        expect.objectContaining({
+          blockType: 'hero',
+          headlinePrimary: 'Research Services,',
+          headlineAccent: 'From Study to Report.',
+        }),
         expect.objectContaining({ blockType: 'ctaBand', href: '/enquiry' }),
       ]),
     );
