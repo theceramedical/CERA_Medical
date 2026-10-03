@@ -97,6 +97,9 @@ export function proxy(request: NextRequest): NextResponse {
  * an unauthenticated visitor sees.
  */
 function redirectOrContinue(request: NextRequest, requestHeaders: Headers): NextResponse {
+  const canonical = canonicalRedirect(request);
+  if (canonical !== null) return canonical;
+
   const pathname = normalisePath(request.nextUrl.pathname);
 
   const cmsRedirect = resolveRedirect(pathname, readConfiguredRedirects());
@@ -113,10 +116,34 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
     const target = new URL(SIGN_IN_PATH, request.nextUrl.origin);
     target.searchParams.set(RETURN_TO_PARAM, `${pathname}${request.nextUrl.search}`);
 
-    return NextResponse.redirect(target);
+    const response = NextResponse.redirect(target);
+    // Never let a pre-login redirect survive a successful sign-in in a browser or router cache.
+    response.headers.set('cache-control', 'private, no-store');
+    return response;
   }
 
   return NextResponse.next({ request: { headers: requestHeaders } });
+}
+
+/**
+ * `__Host-` session cookies are host-only. Caddy enforces www at the edge; the application also
+ * enforces it to prevent a direct-origin or future proxy route from splitting a user's session.
+ */
+function canonicalRedirect(request: NextRequest): NextResponse | null {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (raw === undefined || raw.length === 0) return null;
+  let canonical: URL;
+  try {
+    canonical = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (request.nextUrl.origin === canonical.origin) return null;
+  const target = new URL(request.nextUrl.pathname, canonical);
+  target.search = request.nextUrl.search;
+  const response = NextResponse.redirect(target, 308);
+  response.headers.set('cache-control', 'public, max-age=3600');
+  return response;
 }
 
 /**

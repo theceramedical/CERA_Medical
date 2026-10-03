@@ -5,6 +5,8 @@ import NextLink from 'next/link';
 import type { ButtonLinkProps as UiButtonLinkProps } from '@cera/ui/button';
 import type { LinkProps as UiLinkProps } from '@cera/ui/link';
 
+import type { ComponentProps } from 'react';
+
 /**
  * `@cera/ui`'s `Link`, bound to `next/link`.
  *
@@ -27,10 +29,34 @@ import type { LinkProps as UiLinkProps } from '@cera/ui/link';
  */
 const NON_ROUTER_HREF = /^(?:[a-z][\w+.-]*:|\/\/)/i;
 
+/**
+ * Prefetching a protected route before a session exists can leave Next's router with a cached
+ * sign-in redirect. Account and staff links are infrequent, so load them only when clicked.
+ */
+function NoPrefetchNextLink(props: ComponentProps<typeof NextLink>) {
+  return <NextLink {...props} prefetch={false} />;
+}
+
+function requiresSession(href: string): boolean {
+  return (
+    href === '/account' ||
+    href.startsWith('/account/') ||
+    href === '/staff' ||
+    href.startsWith('/staff/')
+  );
+}
+
 export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
   const routable = !external && !NON_ROUTER_HREF.test(href);
 
-  return <UiLink as={routable ? NextLink : 'a'} external={external} href={href} {...rest} />;
+  return (
+    <UiLink
+      as={routable ? (requiresSession(href) ? NoPrefetchNextLink : NextLink) : 'a'}
+      external={external}
+      href={href}
+      {...rest}
+    />
+  );
 }
 
 /**
