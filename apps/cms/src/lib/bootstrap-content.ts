@@ -501,7 +501,13 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     },
   });
 
-  await bootstrapInsightPosts(payload);
+  try {
+    await bootstrapInsightPosts(payload);
+  } catch (error) {
+    // Insight posts are additive. A partial failure must not block the rest of
+    // bootstrap or roll back a production release — homepage cards are static.
+    console.error('bootstrapInsightPosts failed:', error);
+  }
 }
 
 async function categoryId(payload: Payload, slug: string, title: string): Promise<number> {

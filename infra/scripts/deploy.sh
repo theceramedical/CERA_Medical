@@ -61,14 +61,23 @@ if ! wait_healthy; then
   echo 'Release health gate failed' >&2
   exit 1
 fi
-if ! compose exec -T cms node -e '
-  const secret=process.env.PAYLOAD_PREVIEW_SECRET;
-  if (!secret) { console.error("PAYLOAD_PREVIEW_SECRET is required for initial CMS content"); process.exit(1); }
-  fetch("http://127.0.0.1:3001/api/bootstrap-client-content", {
-    method:"POST", headers:{"x-preview-secret":secret}, signal:AbortSignal.timeout(30000)
-  }).then(async r=>{if(!r.ok) throw Error(`CMS content bootstrap returned ${r.status}`);})
-    .catch(e=>{console.error(e.message);process.exitCode=1;});
-'; then
+bootstrap_ok=false
+for attempt in 1 2 3 4 5; do
+  if compose exec -T cms node -e '
+    const secret=process.env.PAYLOAD_PREVIEW_SECRET;
+    if (!secret) { console.error("PAYLOAD_PREVIEW_SECRET is required for initial CMS content"); process.exit(1); }
+    fetch("http://127.0.0.1:3001/api/bootstrap-client-content", {
+      method:"POST", headers:{"x-preview-secret":secret}, signal:AbortSignal.timeout(30000)
+    }).then(async r=>{if(!r.ok) throw Error(`CMS content bootstrap returned ${r.status}`);})
+      .catch(e=>{console.error(e.message);process.exitCode=1;});
+  '; then
+    bootstrap_ok=true
+    break
+  fi
+  echo "CMS bootstrap attempt $attempt failed; retrying in 15s" >&2
+  sleep 15
+done
+if [[ "$bootstrap_ok" != true ]]; then
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Initial CMS content bootstrap failed' >&2
   exit 1
