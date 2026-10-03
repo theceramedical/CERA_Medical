@@ -9,7 +9,7 @@ import { AppLink } from '../../../../components/link.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
 import { RichText } from '../../../../components/rich-text.tsx';
 import { getPublicService } from '../../../../lib/catalogue/client.ts';
-import { getDocument } from '../../../../lib/cms/client.ts';
+import { getDocument, getPublishedDocument } from '../../../../lib/cms/client.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
 import { siteUrl } from '../../../../lib/site-url.ts';
 
@@ -21,7 +21,10 @@ export async function generateMetadata({
   readonly params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = await getPublicService(slug);
+  const [service, presentation] = await Promise.all([
+    getPublicService(slug),
+    getPublishedDocument('servicePresentation', slug),
+  ]);
   if (service === 'gone') {
     return pageMetadata({
       title: 'Service no longer offered',
@@ -39,8 +42,8 @@ export async function generateMetadata({
     });
   }
   return pageMetadata({
-    title: service.title,
-    description: service.summary,
+    title: presentation?.seo.title ?? presentation?.title ?? service.title,
+    description: presentation?.seo.description ?? presentation?.excerpt ?? service.summary,
     path: `/services/${slug}`,
   });
 }
@@ -75,12 +78,15 @@ export default async function ServiceDetailPage({
       <JsonLd
         data={serviceJsonLd({
           origin: siteUrl().origin,
-          name: service.title,
-          description: service.summary,
+          name: presentation?.title ?? service.title,
+          description: presentation?.excerpt ?? service.summary,
           url: absoluteUrl(`/services/${slug}`),
         })}
       />
-      <PageHeader title={service.title} lede={service.summary} />
+      <PageHeader
+        title={presentation?.title ?? service.title}
+        lede={presentation?.excerpt ?? service.summary}
+      />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         {service.availabilityText !== null ? (
           <Text tone="muted">{service.availabilityText}</Text>

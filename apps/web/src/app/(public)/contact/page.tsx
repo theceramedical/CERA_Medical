@@ -2,8 +2,10 @@ import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
 import { Mail, MapPin } from 'lucide-react';
 
+import { CmsContentPage } from '../../../components/cms-content-page.tsx';
 import { AppButtonLink, AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
 
 import type { LucideIcon } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -55,7 +57,9 @@ const CONTACT_ENTRIES: readonly ContactEntry[] = [
   },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const document = await getCurrentDocument('page', 'contact');
+  if (document !== null) return <CmsContentPage document={document} />;
   return (
     <>
       <PageHeader

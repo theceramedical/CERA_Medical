@@ -1,7 +1,10 @@
 import { Alert } from '@cera/ui/alert';
 import { Text } from '@cera/ui/typography';
 
+import { PageHeader } from '../../../components/page-header.tsx';
 import { PolicyDocument } from '../../../components/policy-document.tsx';
+import { RichText } from '../../../components/rich-text.tsx';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
 
 import type { PolicySection } from '../../../components/policy-document.tsx';
 import type { Metadata } from 'next';
@@ -69,7 +72,18 @@ const SECTIONS: readonly PolicySection[] = [
   },
 ];
 
-export default function DataRetentionPage() {
+export default async function DataRetentionPage() {
+  const document = await getCurrentDocument('policy', 'data-retention-policy');
+  if (document !== null) {
+    return (
+      <>
+        <PageHeader title={document.title} lede={document.excerpt ?? ''} />
+        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+          <RichText body={document.body} />
+        </div>
+      </>
+    );
+  }
   return (
     <PolicyDocument
       title="Data Retention Policy"

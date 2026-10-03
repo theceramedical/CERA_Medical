@@ -1,3 +1,4 @@
+import { CmsContentPage } from '../../components/cms-content-page.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { ProcessSection } from '../../components/home/process-section.tsx';
@@ -8,6 +9,8 @@ import {
   organizationJsonLd,
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
+import { getCurrentDocument } from '../../lib/cms/client.ts';
+import { pageMetadata } from '../../lib/seo.ts';
 import { siteUrl } from '../../lib/site-url.ts';
 
 import type { Metadata } from 'next';
@@ -28,30 +31,47 @@ import type { Metadata } from 'next';
  * bootstrap.
  */
 
-export const metadata: Metadata = {
-  /**
-   * An absolute title, overriding the layout's `%s | CERA Medical` template.
-   *
-   * The homepage is the one page where the template produces the wrong result: "Home | CERA Medical"
-   * buries the brand behind a word that means nothing in a search result or a bookmark list.
-   */
-  title: { absolute: 'CERA Medical - Biomedical Research and Development' },
-  description:
-    'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis for research teams and health organisations.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const document = await getCurrentDocument('page', 'home');
+  if (document !== null)
+    return pageMetadata({
+      title: document.seo.title ?? document.title,
+      description: document.seo.description ?? document.excerpt ?? '',
+      path: '/',
+      noIndex: document.seo.noIndex,
+    });
+  return {
+    /**
+     * An absolute title, overriding the layout's `%s | CERA Medical` template.
+     *
+     * The homepage is the one page where the template produces the wrong result: "Home | CERA Medical"
+     * buries the brand behind a word that means nothing in a search result or a bookmark list.
+     */
+    title: { absolute: 'CERA Medical - Biomedical Research and Development' },
+    description:
+      'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis for research teams and health organisations.',
+  };
+}
 
-export default function HomePage() {
+export default async function HomePage() {
   const origin = siteUrl().origin;
+  const document = await getCurrentDocument('page', 'home');
 
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
-      <HeroSection />
-      <ServicesSection />
-      <ProcessSection />
-      <CtaBandSection />
+      {document !== null ? (
+        <CmsContentPage document={document} />
+      ) : (
+        <>
+          <HeroSection />
+          <ServicesSection />
+          <ProcessSection />
+          <CtaBandSection />
+        </>
+      )}
     </>
   );
 }

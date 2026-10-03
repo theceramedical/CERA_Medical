@@ -280,8 +280,8 @@ function EnquiryConfirmation({ reference }: { readonly reference: string }) {
       </Text>
       <Text tone="muted">
         CERA Medical aims to reply within three working days. Contact{' '}
-        <a className="text-primary underline" href="mailto:theceramedica@gmail.com">
-          theceramedica@gmail.com
+        <a className="text-primary underline" href="mailto:contact@ceramedical.org">
+          contact@ceramedical.org
         </a>{' '}
         if you need to follow up. You can also create an account with this email to follow progress
         and claim the enquiry.

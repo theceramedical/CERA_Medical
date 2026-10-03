@@ -41,6 +41,7 @@ mfa.device_classes=['totp'];mfa.save()
 mfa.configuration_stages.set([AuthenticatorTOTPStage.objects.get(name='default-authenticator-totp-setup')])
 email_mapping,_=ScopeMapping.objects.get_or_create(name='CERA local verified email',defaults={'scope_name':'email','expression':"return {'email': request.user.email, 'email_verified': bool(request.user.attributes.get('email_verified'))}"})
 mfa_mapping,_=ScopeMapping.objects.get_or_create(name='CERA local MFA assurance',defaults={'scope_name':'cera_mfa','expression':"return {'cera_mfa': True}"})
+groups_mapping,_=ScopeMapping.objects.get_or_create(name='CERA local role groups',defaults={'scope_name':'profile','expression':"return {'groups': [group.name for group in request.user.ak_groups.all() if group.name.startswith('cera-')]}"})
 provider,_=OAuth2Provider.objects.get_or_create(name='CERA local OIDC',defaults={'authentication_flow':flow,'authorization_flow':Flow.objects.get(slug='default-provider-authorization-implicit-consent'),'invalidation_flow':Flow.objects.get(slug='default-provider-invalidation-flow'),'client_id':config['OIDC_CLIENT_ID'],'client_secret':config['OIDC_CLIENT_SECRET'],'_redirect_uris':[{'matching_mode':'strict','url':config['OIDC_REDIRECT_URI']}],'signing_key':CertificateKeyPair.objects.get(name='authentik Self-signed Certificate'),'include_claims_in_id_token':True,'grant_types':['authorization_code']})
 provider.authentication_flow=flow
 provider.client_id=config['OIDC_CLIENT_ID']
@@ -49,7 +50,7 @@ provider._redirect_uris=[{'matching_mode':'strict','url':config['OIDC_REDIRECT_U
 provider.signing_key=CertificateKeyPair.objects.get(name='authentik Self-signed Certificate')
 provider.grant_types=['authorization_code']
 provider.save()
-provider.property_mappings.set([ScopeMapping.objects.get(scope_name='openid'),ScopeMapping.objects.get(scope_name='profile'),email_mapping,mfa_mapping])
+provider.property_mappings.set([ScopeMapping.objects.get(scope_name='openid'),ScopeMapping.objects.get(scope_name='profile'),email_mapping,mfa_mapping,groups_mapping])
 Application.objects.update_or_create(slug='cera-local',defaults={'name':'CERA local','provider':provider})
 for username,email,name,group,password in [
  ('cera-local-customer','cera-customer@cera.localhost','CERA Local Customer','cera-customers',config['CERA_LOCAL_CUSTOMER_PASSWORD']),

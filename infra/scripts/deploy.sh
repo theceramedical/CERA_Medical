@@ -46,10 +46,37 @@ if ! compose --profile migration run --rm migrator; then
   echo 'Migration failed. Previous images were not restarted. Restore requires explicit incident procedure.' >&2
   exit 1
 fi
+if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEASE_FILE" \
+  -f compose.yaml -f infra/compose/compose.application.yaml \
+  -f "infra/compose/compose.$ENVIRONMENT.yaml" -f infra/compose/compose.authentik.yaml \
+  run --rm --no-deps -e CERA_ALLOW_PRODUCTION_CATALOGUE_SEED=approved \
+  --entrypoint node commerce /app/dist/seed.js; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Catalogue seed failed' >&2
+  exit 1
+fi
 compose up -d web api worker cms commerce commerce-worker caddy
 if ! wait_healthy; then
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Release health gate failed' >&2
+  exit 1
+fi
+if ! compose exec -T cms node -e '
+  const secret=process.env.PAYLOAD_PREVIEW_SECRET;
+  if (!secret) { console.error("PAYLOAD_PREVIEW_SECRET is required for initial CMS content"); process.exit(1); }
+  fetch("http://127.0.0.1:3001/api/bootstrap-client-content", {
+    method:"POST", headers:{"x-preview-secret":secret}, signal:AbortSignal.timeout(30000)
+  }).then(async r=>{if(!r.ok) throw Error(`CMS content bootstrap returned ${r.status}`);})
+    .catch(e=>{console.error(e.message);process.exitCode=1;});
+'; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Initial CMS content bootstrap failed' >&2
+  exit 1
+fi
+if ! compose exec -T authentik-server ak shell -c 'exec(__import__("sys").stdin.read())' \
+  < "$ROOT_DIR/infra/scripts/configure-authentik-cera.py"; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Authentik CERA role setup failed' >&2
   exit 1
 fi
 if ! compose exec -T worker node -e '

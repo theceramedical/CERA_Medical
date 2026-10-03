@@ -5,8 +5,10 @@ import { Text } from '@cera/ui/typography';
 
 import { AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { RichText } from '../../../components/rich-text.tsx';
 import { HOMEPAGE_SERVICES } from '../../../content/homepage.ts';
 import { listPublicServices } from '../../../lib/catalogue/client.ts';
+import { listPublishedDocuments, getCurrentDocument } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -26,7 +28,12 @@ export default async function ServicesPage({
   readonly searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   const params = await searchParams;
-  const { items, degraded } = await listPublicServices();
+  const [{ items, degraded }, presentations, servicePage] = await Promise.all([
+    listPublicServices(),
+    listPublishedDocuments('servicePresentation'),
+    getCurrentDocument('page', 'services'),
+  ]);
+  const presentationBySlug = new Map(presentations.map((item) => [item.slug, item]));
 
   const query = params.q?.trim().toLowerCase() ?? '';
   const category = params.category;
@@ -34,16 +41,21 @@ export default async function ServicesPage({
   const filtered = items.filter((service) => {
     if (category !== undefined && service.category?.slug !== category) return false;
     if (query.length === 0) return true;
+    const copy = presentationBySlug.get(service.slug);
     return (
-      service.title.toLowerCase().includes(query) || service.summary.toLowerCase().includes(query)
+      service.title.toLowerCase().includes(query) ||
+      (copy?.excerpt ?? service.summary).toLowerCase().includes(query)
     );
   });
 
   return (
     <>
       <PageHeader
-        title="Complete Service Portfolio"
-        lede="CERA Medical is a biomedical research and development company. We test candidate treatments in animal models, cells and computer simulations; run molecular laboratory work; analyse microbiome, omics and clinical data; and prepare evidence reviews and technical reports."
+        title={servicePage?.title ?? 'Complete Service Portfolio'}
+        lede={
+          servicePage?.excerpt ??
+          'CERA Medical provides biomedical research and development services.'
+        }
       />
 
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
@@ -83,7 +95,7 @@ export default async function ServicesPage({
                   headingLevel={2}
                   key={service.slug}
                   title={service.title}
-                  description={service.summary}
+                  description={presentationBySlug.get(service.slug)?.excerpt ?? service.summary}
                   href={`/services/${service.slug}`}
                   linkAs={AppLink}
                   {...(Icon === undefined ? {} : { icon: <Icon aria-hidden /> })}
@@ -93,6 +105,18 @@ export default async function ServicesPage({
           </ul>
         )}
       </div>
+      {servicePage?.body ? (
+        <section className="border-t border-border bg-surface-tint px-6 py-12 md:px-10 lg:py-16">
+          <div className="mx-auto max-w-site">
+            <Text size="eyebrow" tone="muted">
+              Facilities and approach
+            </Text>
+            <div className="mt-3">
+              <RichText body={servicePage.body} />
+            </div>
+          </div>
+        </section>
+      ) : null}
     </>
   );
 }

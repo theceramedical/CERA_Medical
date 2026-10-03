@@ -18,6 +18,7 @@ import { Users } from './collections/Users.ts';
 import { Announcement } from './globals/Announcement.ts';
 import { Navigation } from './globals/Navigation.ts';
 import { SiteSettings } from './globals/SiteSettings.ts';
+import { bootstrapClientContent } from './lib/bootstrap-content.ts';
 import { constrainedEditor } from './lib/editor.ts';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -92,6 +93,18 @@ export default buildConfig({
   ],
   globals: [Navigation, SiteSettings, Announcement],
   endpoints: [
+    {
+      path: '/bootstrap-client-content',
+      method: 'post',
+      handler: async (req) => {
+        const given = req.headers.get('x-preview-secret');
+        if (given === null || given !== process.env.PAYLOAD_PREVIEW_SECRET) {
+          return Response.json({ error: 'unauthenticated' }, { status: 401 });
+        }
+        await bootstrapClientContent(req.payload);
+        return Response.json({ ok: true });
+      },
+    },
     {
       /**
        * Draft fetch for `apps/web` while Next draftMode is on.

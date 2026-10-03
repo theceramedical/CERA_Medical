@@ -1,7 +1,9 @@
 import { Heading, Text } from '@cera/ui/typography';
 
+import { CmsContentPage } from '../../../components/cms-content-page.tsx';
 import { AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
 
 import type { Metadata } from 'next';
 
@@ -17,7 +19,9 @@ export const metadata: Metadata = {
     'CERA Medical is a biomedical research and development company based in Haripur, Pakistan.',
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const document = await getCurrentDocument('page', 'about');
+  if (document !== null) return <CmsContentPage document={document} />;
   return (
     <>
       <PageHeader
@@ -63,7 +67,7 @@ export default function AboutPage() {
           </Heading>
           <Text className="mt-4">
             For project enquiries, write to us at{' '}
-            <AppLink href="mailto:theceramedica@gmail.com">theceramedica@gmail.com</AppLink> or use
+            <AppLink href="mailto:contact@ceramedical.org">contact@ceramedical.org</AppLink> or use
             our <AppLink href="/contact">contact page</AppLink>. Please do not include direct
             identifiers for research participants in your initial message.
           </Text>

@@ -16,7 +16,7 @@ describe('auth routes use the configured public origin', () => {
 
     const response = await callback(new NextRequest(`${INTERNAL_ORIGIN}/auth/callback`));
 
-    expect(response.headers.get('location')).toBe(`${PUBLIC_SITE}/auth/error?reason=identity`);
+    expect(response.headers.get('location')).toBe(`${PUBLIC_SITE}/auth/error?reason=expired`);
   });
 
   it('sends sign-in failures to the public site', async () => {
