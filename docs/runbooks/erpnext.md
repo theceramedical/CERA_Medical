@@ -54,11 +54,10 @@ Check the CERA delivery ledger for `succeeded` and ensure no ERPNext job remains
 ## Local-only backups
 
 CERA's `backup.sh` saves encrypted dumps of its five PostgreSQL databases on the one server. It
-does **not** include ERPNext's MariaDB database or Frappe site files. Install
-`infra/systemd/cera-erpnext-backup.service` and `.timer` on the host. Once the ERPNext site exists,
-run `/opt/cera/infra/erpnext/backup.sh` manually and inspect the resulting
-`/opt/cera/backups/erpnext/erpnext-*.tar.age` file before enabling the daily timer. After that
-inspection succeeds, enable `cera-erpnext-backup.timer`. The script uses
+does **not** include ERPNext's MariaDB database or Frappe site files. On 2026-10-03, the Hetzner
+host already had `cera-erpnext-backup.timer` enabled and active, with seven encrypted archives; the
+latest was `/opt/cera/backups/erpnext/erpnext-20261003T031834Z.tar.age`. The systemd service and
+timer files are `infra/systemd/cera-erpnext-backup.service` and `.timer`. The script uses
 Frappe's `bench --site cera-production backup --with-files --compress`, verifies that database,
 configuration, public-files, and private-files artifacts were produced, and encrypts them with the
 same age public key as CERA's PostgreSQL backups. Store that public key and the retention setting in
@@ -67,6 +66,6 @@ its temporary plaintext artifacts from the ERPNext container after encryption.
 
 Before launch, decrypt one archive with the external age identity in an **isolated** restore
 environment, inspect its four artifacts, and rehearse `bench --site <rehearsal-site> restore` with
-the database and file archives. Never restore into the live production site as a rehearsal. With no
+the database and file archives. This restore rehearsal remains pending. Never restore into the live production site as a rehearsal. With no
 off-site backup, loss of the server can destroy both CERA and ERPNext data and their local backups.
 R2 media versioning does not protect either database.
