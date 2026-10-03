@@ -13,7 +13,43 @@ import { getCurrentDocument } from '../../lib/cms/client.ts';
 import { pageMetadata } from '../../lib/seo.ts';
 import { siteUrl } from '../../lib/site-url.ts';
 
+import type { CtaContent } from '../../components/home/cta-band-section.tsx';
+import type { HeroContent } from '../../components/home/hero-section.tsx';
 import type { Metadata } from 'next';
+
+interface LayoutBlock {
+  readonly blockType?: string;
+  readonly [key: string]: unknown;
+}
+
+function stringField(block: LayoutBlock | undefined, field: string): string | undefined {
+  const value = block?.[field];
+  return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
+}
+
+function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
+  const blocks = Array.isArray(document?.layout) ? (document.layout as LayoutBlock[]) : [];
+  const hero = blocks.find((block) => block.blockType === 'hero');
+  const cta = blocks.find((block) => block.blockType === 'ctaBand');
+  return {
+    hero: {
+      eyebrow: stringField(hero, 'eyebrow'),
+      headlinePrimary: stringField(hero, 'headlinePrimary'),
+      headlineAccent: stringField(hero, 'headlineAccent'),
+      body: stringField(hero, 'body'),
+      primaryHref: stringField(hero, 'primaryHref'),
+      primaryLabel: stringField(hero, 'primaryLabel'),
+      secondaryHref: stringField(hero, 'secondaryHref'),
+      secondaryLabel: stringField(hero, 'secondaryLabel'),
+    } satisfies HeroContent,
+    cta: {
+      heading: stringField(cta, 'headline'),
+      body: stringField(cta, 'body'),
+      href: stringField(cta, 'href'),
+      label: stringField(cta, 'label'),
+    } satisfies CtaContent,
+  };
+}
 
 /**
  * The homepage, reproducing the reference image section for section.
@@ -52,19 +88,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function HomePage() {
+export default async function HomePage() {
   const origin = siteUrl().origin;
+  const content = pageContent(await getCurrentDocument('page', 'home'));
 
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
-      <HeroSection />
+      <HeroSection content={content.hero} />
       <ServicesSection />
       <CapabilitiesSection />
       <ProcessSection />
-      <CtaBandSection />
+      <CtaBandSection content={content.cta} />
     </>
   );
 }

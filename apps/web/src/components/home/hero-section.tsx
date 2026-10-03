@@ -7,17 +7,29 @@ import Image from 'next/image';
 import { HERO, HERO_TRUST_ITEMS } from '../../content/homepage.ts';
 import { AppButtonLink } from '../link.tsx';
 
+export interface HeroContent {
+  readonly eyebrow?: string | undefined;
+  readonly headlinePrimary?: string | undefined;
+  readonly headlineAccent?: string | undefined;
+  readonly body?: string | undefined;
+  readonly primaryHref?: string | undefined;
+  readonly primaryLabel?: string | undefined;
+  readonly secondaryHref?: string | undefined;
+  readonly secondaryLabel?: string | undefined;
+}
+
 /**
  * The hero (design-language.md section 5.6): copy on the left at 7/12, imagery on the right at 5/12,
  * stacked below `lg`.
  */
-export function HeroSection() {
+export function HeroSection({ content = {} }: { readonly content?: HeroContent }) {
+  const hero = { ...HERO, ...content };
   return (
     <section className="bg-surface-tint">
       <div className="mx-auto grid max-w-site grid-cols-1 items-center gap-12 px-6 py-16 md:px-10 lg:grid-cols-12 lg:py-20">
         <div className="lg:col-span-7">
           <Text as="p" size="eyebrow" tone="muted">
-            {HERO.eyebrow}
+            {hero.eyebrow}
           </Text>
 
           {/*
@@ -32,7 +44,7 @@ export function HeroSection() {
            * break still reads a sentence that makes sense.
            */}
           <Heading level={1} size="display-1" className="mt-4">
-            {HERO.headlinePrimary}
+            {hero.headlinePrimary}
             <br />
             {/*
              * `text-accent-hover`, not `text-accent`, despite nothing here hovering.
@@ -42,19 +54,19 @@ export function HeroSection() {
              * see `TEXT_PAIRINGS` in `@cera/ui/pairings`. Using the token that reads better in this
              * position would be an unverified colour pair on the largest text on the site.
              */}
-            <span className="text-accent-hover">{HERO.headlineAccent}</span>
+            <span className="text-accent-hover">{hero.headlineAccent}</span>
           </Heading>
 
           <Text size="body-lg" tone="muted" measure className="mt-6">
-            {HERO.body}
+            {hero.body}
           </Text>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <AppButtonLink href="/services" variant="primary" size="lg">
-              Explore Services
+            <AppButtonLink href={hero.primaryHref ?? '/services'} variant="primary" size="lg">
+              {hero.primaryLabel ?? 'Explore Services'}
             </AppButtonLink>
-            <AppButtonLink href="/enquiry" variant="outline" size="lg">
-              Make an Enquiry
+            <AppButtonLink href={hero.secondaryHref ?? '/enquiry'} variant="outline" size="lg">
+              {hero.secondaryLabel ?? 'Make an Enquiry'}
             </AppButtonLink>
           </div>
 

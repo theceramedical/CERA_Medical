@@ -4,6 +4,13 @@ import { Heading, Text } from '@cera/ui/typography';
 import { CTA_BAND } from '../../content/homepage.ts';
 import { AppButtonLink } from '../link.tsx';
 
+export interface CtaContent {
+  readonly heading?: string | undefined;
+  readonly body?: string | undefined;
+  readonly href?: string | undefined;
+  readonly label?: string | undefined;
+}
+
 /**
  * The full-bleed gradient band (design-language.md section 5.8).
  *
@@ -15,7 +22,8 @@ import { AppButtonLink } from '../link.tsx';
  * foreground colour, so its contrast is unmeasurable and varies across the glyph; both the heading and
  * the sub-line are flat white on the gradient instead.
  */
-export function CtaBandSection() {
+export function CtaBandSection({ content = {} }: { readonly content?: CtaContent }) {
+  const cta = { ...CTA_BAND, ...content };
   return (
     <section
       aria-labelledby="cta-heading"
@@ -24,7 +32,7 @@ export function CtaBandSection() {
       <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-10 md:px-10 lg:flex-row lg:items-center lg:justify-between lg:py-12">
         <div>
           <Heading level={2} size="h2" tone="on-dark" id="cta-heading">
-            {CTA_BAND.heading}
+            {cta.heading}
           </Heading>
 
           {/*
@@ -36,13 +44,18 @@ export function CtaBandSection() {
            * weight instead, both of which cost nothing in contrast.
            */}
           <Text size="body" tone="on-dark" measure className="mt-2">
-            {CTA_BAND.body}
+            {cta.body}
           </Text>
         </div>
 
         <div className="flex items-center gap-8">
-          <AppButtonLink href="/enquiry" variant="on-dark" size="lg" className="shrink-0">
-            Make an Enquiry
+          <AppButtonLink
+            href={cta.href ?? '/enquiry'}
+            variant="on-dark"
+            size="lg"
+            className="shrink-0"
+          >
+            {cta.label ?? 'Make an Enquiry'}
           </AppButtonLink>
 
           {/*
