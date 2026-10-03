@@ -169,6 +169,7 @@ jobs:
       url: ${{ vars.PRODUCTION_SITE_URL }}
     permissions:
       contents: read
+      packages: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -179,6 +180,7 @@ jobs:
           DEPLOY_USER: ${{ secrets.PRODUCTION_USER }}
           DEPLOY_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.PRODUCTION_KNOWN_HOSTS }}
+          DEPLOY_GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: production-sha-${{ github.sha }}
         run: |
           set -euo pipefail
@@ -190,6 +192,12 @@ jobs:
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+          cleanup_registry_auth() {
+            ssh "$DEPLOY_USER@$DEPLOY_HOST" 'docker logout ghcr.io >/dev/null 2>&1 || true'
+          }
+          trap cleanup_registry_auth EXIT
+          printf '%s' "$DEPLOY_GHCR_TOKEN" | ssh "$DEPLOY_USER@$DEPLOY_HOST" \
+            "docker login ghcr.io --username '$GITHUB_ACTOR' --password-stdin"
           tar -cf - compose.yaml infra/compose infra/caddy infra/postgres infra/erpnext infra/scripts infra/systemd | \
             ssh "$DEPLOY_USER@$DEPLOY_HOST" 'mkdir -p /opt/cera && tar -xf - -C /opt/cera'
           ssh "$DEPLOY_USER@$DEPLOY_HOST" \
