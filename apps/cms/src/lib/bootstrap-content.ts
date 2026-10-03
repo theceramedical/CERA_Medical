@@ -1,6 +1,6 @@
 import clientCopy from '../content/client-website-content.json' with { type: 'json' };
 
-import type { Payload } from 'payload';
+import type { DataFromCollectionSlug, Payload } from 'payload';
 
 interface SourceParagraph {
   readonly style: string;
@@ -154,7 +154,12 @@ async function upsert(
   if (existing !== undefined && existing.fixture !== true) return;
   const record = { ...data, fixture: false, _status: 'published' as const };
   if (existing === undefined) {
-    await payload.create({ collection, data: record as never, overrideAccess: true, draft: false });
+    await payload.create({
+      collection,
+      data: record as DataFromCollectionSlug<typeof collection>,
+      overrideAccess: true,
+      draft: false,
+    });
   } else {
     await payload.update({
       collection,
