@@ -2,7 +2,7 @@
 # Vendure Shop API is server-to-server from apps/api (ADR-005).
 
 {
-	email off
+	email {$CADDY_ACME_EMAIL}
 	servers {
 		trusted_proxies static private_ranges
 	}
