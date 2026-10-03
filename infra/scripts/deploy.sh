@@ -41,14 +41,14 @@ done
 mv "$tmp" "$RELEASE_FILE"
 compose config -q
 compose up -d postgres valkey authentik-server authentik-worker
-"$ROOT_DIR/infra/scripts/backup.sh" "$ENVIRONMENT"
+bash "$ROOT_DIR/infra/scripts/backup.sh" "$ENVIRONMENT"
 if ! compose --profile migration run --rm migrator; then
   echo 'Migration failed. Previous images were not restarted. Restore requires explicit incident procedure.' >&2
   exit 1
 fi
 compose up -d web api worker cms commerce commerce-worker caddy
 if ! wait_healthy; then
-  "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Release health gate failed' >&2
   exit 1
 fi
@@ -62,12 +62,12 @@ if ! compose exec -T worker node -e '
     .then(r=>{if(!r.ok) throw Error(`ERPNext Lead check returned ${r.status}`);})
     .catch(e=>{console.error(e.message);process.exitCode=1;});
 '; then
-  "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'ERPNext CRM preflight failed' >&2
   exit 1
 fi
-if ! "$ROOT_DIR/infra/scripts/health-check.sh" "$ENVIRONMENT"; then
-  "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+if ! bash "$ROOT_DIR/infra/scripts/health-check.sh" "$ENVIRONMENT"; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Production health and public smoke gate failed' >&2
   exit 1
 fi

@@ -6,4 +6,4 @@ After=docker.service
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/cera
-ExecStart=/opt/cera/infra/scripts/backup.sh %i
+ExecStart=/usr/bin/bash /opt/cera/infra/scripts/backup.sh %i
