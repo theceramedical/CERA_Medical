@@ -1,4 +1,4 @@
-import { CmsContentPage } from '../../components/cms-content-page.tsx';
+import { CapabilitiesSection } from '../../components/home/capabilities-section.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { ProcessSection } from '../../components/home/process-section.tsx';
@@ -45,7 +45,6 @@ export async function generateMetadata(): Promise<Metadata> {
      * An absolute title, overriding the layout's `%s | CERA Medical` template.
      *
      * The homepage is the one page where the template produces the wrong result: "Home | CERA Medical"
-     * buries the brand behind a word that means nothing in a search result or a bookmark list.
      */
     title: { absolute: 'CERA Medical - Biomedical Research and Development' },
     description:
@@ -53,25 +52,19 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function HomePage() {
+export default function HomePage() {
   const origin = siteUrl().origin;
-  const document = await getCurrentDocument('page', 'home');
 
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
-      {document !== null ? (
-        <CmsContentPage document={document} />
-      ) : (
-        <>
-          <HeroSection />
-          <ServicesSection />
-          <ProcessSection />
-          <CtaBandSection />
-        </>
-      )}
+      <HeroSection />
+      <ServicesSection />
+      <CapabilitiesSection />
+      <ProcessSection />
+      <CtaBandSection />
     </>
   );
 }
