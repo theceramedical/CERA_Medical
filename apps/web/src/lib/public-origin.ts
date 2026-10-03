@@ -22,9 +22,9 @@ function firstHeaderValue(value: string | null): string | undefined {
 export function resolvePublicOrigin(request: NextRequest): string {
   const proto = firstHeaderValue(request.headers.get('x-forwarded-proto'));
   const host =
-    firstHeaderValue(request.headers.get('x-forwarded-host')) ?? request.headers.get('host');
+    firstHeaderValue(request.headers.get('x-forwarded-host')) ?? request.headers.get('host') ?? '';
 
-  if (proto !== undefined && host !== undefined && host.length > 0) {
+  if (proto !== undefined && host.length > 0) {
     try {
       return new URL(`${proto}://${host}`).origin;
     } catch {

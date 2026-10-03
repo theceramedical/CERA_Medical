@@ -23,7 +23,7 @@ export function AudienceSection() {
               key={audience.title}
               className="flex flex-col gap-4 rounded-lg bg-surface-subtle p-7 ring-1 ring-border"
             >
-              <IconDisc tone="primary">
+              <IconDisc tone="accent">
                 <Icon icon={audience.icon} size="lg" />
               </IconDisc>
               <Heading level={3} size="h4">
