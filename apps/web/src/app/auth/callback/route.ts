@@ -8,6 +8,7 @@ import { authorizationCodeGrant } from 'openid-client';
 
 import {
   identityClaims,
+  configuredCallbackUrl,
   oidcConfiguration,
   openHandshake,
   sealHandshake,
@@ -22,12 +23,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const token = request.cookies.get(OIDC_STATE_COOKIE_NAME)?.value;
     if (!token) throw new Error('Missing handshake');
     const handshake = await openHandshake(token);
-    const tokens = await authorizationCodeGrant(await oidcConfiguration(), url, {
-      pkceCodeVerifier: handshake.verifier,
-      expectedState: handshake.state,
-      expectedNonce: handshake.nonce,
-      idTokenExpected: true,
-    });
+    const tokens = await authorizationCodeGrant(
+      await oidcConfiguration(),
+      configuredCallbackUrl(url),
+      {
+        pkceCodeVerifier: handshake.verifier,
+        expectedState: handshake.state,
+        expectedNonce: handshake.nonce,
+        idTokenExpected: true,
+      },
+    );
     const identity = identityClaims(tokens.claims() ?? {});
     if (!identity.roles.length) throw new Error('No platform role');
     const staff = identity.roles.some((role) => role !== 'customer');
