@@ -1,7 +1,7 @@
 import { SESSION_COOKIE_NAME } from '@cera/contracts/session';
 import { REQUEST_ID_HEADER } from '@cera/observability/request-id';
 import { NextRequest } from 'next/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { config, proxy } from './proxy.ts';
 
@@ -164,6 +164,48 @@ describe('session presence', () => {
     // `/accounts-payable` is not under `/account`. Prefix matching without the boundary check is
     // how an unrelated future route starts redirecting to sign-in.
     expect(proxy(requestFor('/accounts-payable')).status).toBe(200);
+  });
+});
+
+describe('canonical host', () => {
+  it('does not redirect when forwarded origin matches NEXT_PUBLIC_SITE_URL', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ceramedical.org');
+    const request = new NextRequest(new URL('http://web:3000/'), {
+      headers: {
+        host: 'web:3000',
+        'x-forwarded-proto': 'https',
+        'x-forwarded-host': 'www.ceramedical.org',
+      },
+    });
+
+    expect(proxy(request).status).toBe(200);
+    vi.unstubAllEnvs();
+  });
+
+  it('redirects apex to the configured www origin', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ceramedical.org');
+    const request = new NextRequest(new URL('http://web:3000/about'), {
+      headers: {
+        host: 'web:3000',
+        'x-forwarded-proto': 'https',
+        'x-forwarded-host': 'ceramedical.org',
+      },
+    });
+
+    const response = proxy(request);
+    expect(response.status).toBe(308);
+    expect(response.headers.get('location')).toBe('https://www.ceramedical.org/about');
+    vi.unstubAllEnvs();
+  });
+
+  it('skips canonical redirect for in-container health checks', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ceramedical.org');
+    const request = new NextRequest(new URL('http://127.0.0.1:3000/'), {
+      headers: { host: '127.0.0.1:3000' },
+    });
+
+    expect(proxy(request).status).toBe(200);
+    vi.unstubAllEnvs();
   });
 });
 

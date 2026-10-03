@@ -20,6 +20,36 @@ function range(from: string, to: string): readonly SourceParagraph[] {
   return source.slice(sectionIndex(from), sectionIndex(to));
 }
 
+function lexicalFromStrings(paragraphs: readonly string[]) {
+  return {
+    root: {
+      type: 'root',
+      format: '' as const,
+      indent: 0,
+      version: 1,
+      direction: 'ltr' as const,
+      children: paragraphs.map((text) => ({
+        type: 'paragraph',
+        format: '' as const,
+        indent: 0,
+        version: 1,
+        direction: 'ltr' as const,
+        children: [
+          {
+            type: 'text',
+            detail: 0,
+            format: 0,
+            mode: 'normal',
+            style: '',
+            text,
+            version: 1,
+          },
+        ],
+      })),
+    },
+  };
+}
+
 function lexical(paragraphs: readonly SourceParagraph[]) {
   const children = paragraphs
     .filter(
@@ -148,9 +178,9 @@ function publicText(paragraphs: readonly SourceParagraph[]): readonly SourcePara
 
 async function upsert(
   payload: Payload,
-  collection: 'pages' | 'policies' | 'service-presentations',
+  collection: 'pages' | 'policies' | 'service-presentations' | 'posts',
   slug: string,
-  data: RequiredDataFromCollectionSlug<'pages' | 'policies' | 'service-presentations'>,
+  data: RequiredDataFromCollectionSlug<'pages' | 'policies' | 'service-presentations' | 'posts'>,
 ): Promise<void> {
   const found = await payload.find({
     collection,
@@ -370,9 +400,9 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       {
         blockType: 'hero',
         eyebrow: 'Biomedical Research and Development',
-        headlinePrimary: 'Research that moves',
-        headlineAccent: 'health forward',
-        body: introduction,
+        headlinePrimary: 'Research Services,',
+        headlineAccent: 'From Study to Report.',
+        body: 'CERA Medical partners with universities, biotech teams and health organisations on preclinical studies, molecular laboratory work, metagenomic and omics analysis, and evidence synthesis — with documented methods from scoping through delivery.',
         primaryHref: '/services',
         primaryLabel: 'Explore Services',
         secondaryHref: '/enquiry',
@@ -381,7 +411,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       {
         blockType: 'ctaBand',
         headline: 'Ready to advance your research?',
-        body: 'Talk with our team about your study, samples or data.',
+        body: 'Share your research question, materials or datasets. We respond within three working days with next steps — no clinical records on this form.',
         href: '/enquiry',
         label: 'Contact CERA Medical',
       },
@@ -470,4 +500,87 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       description: 'Retention and deletion policy.',
     },
   });
+
+  await bootstrapInsightPosts(payload);
+}
+
+async function categoryId(payload: Payload, slug: string, title: string): Promise<number | string> {
+  const found = await payload.find({
+    collection: 'categories',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  const existing = found.docs[0];
+  if (existing !== undefined) return existing.id;
+  const created = await payload.create({
+    collection: 'categories',
+    data: { title, slug, colourToken: 'accent-fill' },
+    overrideAccess: true,
+  });
+  return created.id;
+}
+
+/** Research articles aligned with the public homepage insight cards. */
+async function bootstrapInsightPosts(payload: Payload): Promise<void> {
+  const author = await payload.find({ collection: 'users', limit: 1, overrideAccess: true });
+  const authorId = author.docs[0] !== undefined ? String(author.docs[0].id) : 'bootstrap-admin';
+
+  const researchMethods = await categoryId(payload, 'research-methods', 'RESEARCH METHODS');
+  const dataAnalysis = await categoryId(payload, 'data-analysis', 'DATA ANALYSIS');
+  const laboratory = await categoryId(payload, 'laboratory', 'LABORATORY');
+
+  const posts = [
+    {
+      slug: 'planning-metagenomic-submissions',
+      title: 'Planning a metagenomic submission',
+      category: researchMethods,
+      excerpt:
+        'What to agree before transfer: read depth, controls, metadata fields, and how de-identified files should be packaged.',
+      body: lexicalFromStrings([
+        'Agree read depth, controls, and metadata before any large transfer.',
+        'Package de-identified FASTQ or BAM files with a sample sheet that uses study codes, not participant names.',
+        'CERA Medical confirms scope, timeline and deliverables in writing before analysis begins.',
+      ]),
+    },
+    {
+      slug: 'omics-quality-control-basics',
+      title: 'Omics quality control that reviewers expect',
+      category: dataAnalysis,
+      excerpt:
+        'Documented filtering, batch awareness, and traceable figures — the minimum bar for reproducible biomedical analysis.',
+      body: lexicalFromStrings([
+        'Record every filtering step, software version, and parameter set used in the pipeline.',
+        'Inspect batch effects explicitly and document how they were handled.',
+        'Deliver figures with underlying tables so reviewers can trace each panel.',
+      ]),
+    },
+    {
+      slug: 'preclinical-study-handoff',
+      title: 'Handing off a preclinical study cleanly',
+      category: laboratory,
+      excerpt:
+        'Ethics approvals, compound safety data, and a written protocol before samples move — how CERA scopes animal and in-vitro work.',
+      body: lexicalFromStrings([
+        'Animal protocols require institutional ethics approval before work starts.',
+        'Provide safety data sheets for every test compound and disclose known hazards.',
+        'A written protocol defines endpoints, controls, and reporting before samples are shipped.',
+      ]),
+    },
+  ] as const;
+
+  for (const post of posts) {
+    await upsert(payload, 'posts', post.slug, {
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt,
+      category: post.category,
+      authorId,
+      body: post.body,
+      seo: {
+        title: `${post.title} | CERA Medical`,
+        description: post.excerpt,
+      },
+    });
+  }
 }

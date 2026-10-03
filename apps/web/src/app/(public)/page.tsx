@@ -1,7 +1,10 @@
 import { CmsLayout, type LayoutBlock } from '../../components/cms-content-page.tsx';
+import { ArticlesSection } from '../../components/home/articles-section.tsx';
+import { AudienceSection } from '../../components/home/audience-section.tsx';
 import { CapabilitiesSection } from '../../components/home/capabilities-section.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
+import { MetricsBand } from '../../components/home/metrics-band.tsx';
 import { ProcessSection } from '../../components/home/process-section.tsx';
 import { ServicesSection } from '../../components/home/services-section.tsx';
 import {
@@ -10,6 +13,7 @@ import {
   organizationJsonLd,
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
+import { HOMEPAGE_ARTICLES } from '../../content/homepage.ts';
 import { getCurrentDocument } from '../../lib/cms/client.ts';
 import { pageMetadata } from '../../lib/seo.ts';
 import { siteUrl } from '../../lib/site-url.ts';
@@ -111,9 +115,12 @@ export default async function HomePage() {
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
       <HeroSection content={content.hero} />
+      <MetricsBand />
       <ServicesSection />
+      <AudienceSection />
       <CapabilitiesSection />
       <ProcessSection />
+      {HOMEPAGE_ARTICLES.length > 0 ? <ArticlesSection /> : null}
       {editorialBlocks.length > 0 ? <CmsLayout blocks={editorialBlocks} /> : null}
       <CtaBandSection content={content.cta} />
     </>

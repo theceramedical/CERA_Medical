@@ -4,7 +4,7 @@ Public website, service catalogue, and controlled enquiry platform for CERA Medi
 
 The platform presents services, publishes content, and captures enquiries. It deliberately does **not**
 take payments, and it does not store clinical records. Enquiries are handled by staff and mirrored to
-Zoho CRM.
+ERPNext CRM (the PRD names Zoho; production integrates via the outbox worker).
 
 Delivery is planned and tracked in [`.planning/`](.planning/README.md). Read
 [`.planning/README.md`](.planning/README.md) first.
@@ -65,7 +65,7 @@ missing binaries.
 | Mailpit      | http://localhost:8025 | Resend stand-in; view every sent email     |
 
 Local stand-ins sit behind the same interfaces as the live providers, so moving to R2, Resend, and
-Zoho is an environment change rather than a code change. See
+ERPNext (or another CRM driver) is an environment change rather than a code change. See
 [`docs/runbooks/prerequisites.md`](docs/runbooks/prerequisites.md).
 
 ## Commands
@@ -108,7 +108,7 @@ docs/runbooks/  Operational procedures
 
 `api` and `worker` are additions to the PRD's original topology. The reasoning is in
 [ADR-003](.planning/adr/ADR-003-api-worker-split.md): the API is the single place authorisation is
-enforced, and the worker makes external calls durable so a Zoho outage cannot lose an enquiry.
+enforced, and the worker makes external calls durable so a CRM or email provider outage cannot lose an enquiry.
 
 ## Conventions worth knowing before your first change
 

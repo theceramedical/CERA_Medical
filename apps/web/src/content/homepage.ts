@@ -10,6 +10,9 @@ import {
   FlaskConical,
   Users,
   Workflow,
+  Building2,
+  GraduationCap,
+  Hospital,
 } from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
@@ -110,9 +113,93 @@ export interface ArticleSummary {
   readonly category: string;
   readonly title: string;
   readonly excerpt: string;
+  /** Decorative cover served from `public/images`. */
+  readonly coverSrc: string;
 }
 
-export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [];
+/** Research insights — slugs match CMS bootstrap posts where deployed. */
+export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [
+  {
+    slug: 'planning-metagenomic-submissions',
+    category: 'Research methods',
+    title: 'Planning a metagenomic submission',
+    excerpt:
+      'What to agree before transfer: read depth, controls, metadata fields, and how de-identified files should be packaged.',
+    coverSrc: '/images/article-cover-data.svg',
+  },
+  {
+    slug: 'omics-quality-control-basics',
+    category: 'Data analysis',
+    title: 'Omics quality control that reviewers expect',
+    excerpt:
+      'Documented filtering, batch awareness, and traceable figures — the minimum bar for reproducible biomedical analysis.',
+    coverSrc: '/images/article-cover-research.svg',
+  },
+  {
+    slug: 'preclinical-study-handoff',
+    category: 'Laboratory',
+    title: 'Handing off a preclinical study cleanly',
+    excerpt:
+      'Ethics approvals, compound safety data, and a written protocol before samples move — how CERA scopes animal and in-vitro work.',
+    coverSrc: '/images/article-cover-lab.svg',
+  },
+];
+
+export interface AudienceSegment {
+  readonly title: string;
+  readonly description: string;
+  readonly highlights: readonly string[];
+  readonly icon: LucideIcon;
+}
+
+export const HOMEPAGE_AUDIENCES: readonly AudienceSegment[] = [
+  {
+    title: 'Universities & institutes',
+    description:
+      'Support for grant-funded studies that need specialist laboratory or bioinformatics capacity.',
+    highlights: [
+      'Written scope before work begins',
+      'Methods suitable for publication',
+      'Secure transfer for large datasets',
+    ],
+    icon: GraduationCap,
+  },
+  {
+    title: 'Biotech & industry R&D',
+    description:
+      'Accelerate preclinical and omics programmes without building every capability in-house.',
+    highlights: [
+      'Confidential handling by default',
+      'Coordinated lab and compute workflows',
+      'Technical reports for decision-making',
+    ],
+    icon: Building2,
+  },
+  {
+    title: 'Health & public-sector research',
+    description:
+      'Evidence synthesis and analysis with clear governance for sensitive or regulated data.',
+    highlights: [
+      'De-identified enquiry and project data',
+      'Retention aligned to policy',
+      'Staff-only operational notes',
+    ],
+    icon: Hospital,
+  },
+];
+
+export interface MetricHighlight {
+  readonly value: string;
+  readonly label: string;
+}
+
+/** Grounded in the published catalogue, process, and FAQ — not revenue or client counts. */
+export const HOMEPAGE_METRICS: readonly MetricHighlight[] = [
+  { value: '5', label: 'Research service lines' },
+  { value: '5', label: 'Agreed project stages' },
+  { value: '3 days', label: 'Target enquiry response' },
+  { value: '1 team', label: 'Lab, data & reporting' },
+];
 
 export interface TrustItem {
   readonly label: string;
@@ -137,15 +224,15 @@ export const HERO = {
   eyebrow: 'Biomedical Research and Development',
   headlinePrimary: 'Research Services,',
   headlineAccent: 'From Study to Report.',
-  body: 'Preclinical studies, molecular laboratory work, data analysis and evidence synthesis for research teams and health organisations.',
+  body: 'CERA Medical partners with universities, biotech teams and health organisations on preclinical studies, molecular laboratory work, metagenomic and omics analysis, and evidence synthesis — with documented methods from scoping through delivery.',
   badge: {
-    title: 'Research with clear methods',
-    body: 'Documented workflows and outputs agreed for your project.',
+    title: 'Scope before samples move',
+    body: 'Every project starts with a written plan, agreed timelines, and outputs you can trace.',
     icon: ClipboardCheck,
   },
 } as const;
 
 export const CTA_BAND = {
   heading: 'Ready to advance your research?',
-  body: 'Tell us about your project and the service you need.',
+  body: 'Share your research question, materials or datasets. We respond within three working days with next steps — no clinical records on this form.',
 } as const;

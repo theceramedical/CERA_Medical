@@ -1,4 +1,5 @@
 import { Icon } from '@cera/ui/icon';
+import { IconDisc } from '@cera/ui/icon-disc';
 import { SectionHeader } from '@cera/ui/section-header';
 import { Heading, Text } from '@cera/ui/typography';
 import { Cpu, FlaskConical, ShieldCheck } from 'lucide-react';
@@ -37,9 +38,11 @@ export function CapabilitiesSection() {
           {CAPABILITIES.map((capability) => (
             <li
               key={capability.title}
-              className="rounded-lg border border-border bg-surface p-7 shadow-card"
+              className="rounded-lg border border-border bg-surface p-7 shadow-card transition-shadow hover:shadow-md"
             >
-              <Icon icon={capability.icon} size="lg" className="text-accent" />
+              <IconDisc tone="accent">
+                <Icon icon={capability.icon} size="lg" />
+              </IconDisc>
               <Heading level={3} size="h4" className="mt-5">
                 {capability.title}
               </Heading>

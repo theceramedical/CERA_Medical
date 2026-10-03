@@ -128,7 +128,7 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
               src={hero.imageUrl ?? '/images/hero-portrait.svg'}
               alt={
                 hero.imageAlt ??
-                'Placeholder illustration; CERA Medical research-laboratory imagery is pending.'
+                'Stylised illustration of preclinical, omics, and analysis workflows offered by CERA Medical.'
               }
               width={640}
               height={800}

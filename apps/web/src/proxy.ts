@@ -3,6 +3,7 @@ import { REQUEST_ID_HEADER, resolveRequestId } from '@cera/observability/request
 import { NextResponse } from 'next/server';
 
 import { resolveRedirect } from './lib/cms/redirects.ts';
+import { isInternalProbe, resolvePublicOrigin } from './lib/public-origin.ts';
 import { buildCsp, STATIC_SECURITY_HEADERS } from './lib/security-headers.ts';
 
 import type { NextRequest } from 'next/server';
@@ -132,13 +133,14 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
 function canonicalRedirect(request: NextRequest): NextResponse | null {
   const raw = process.env.NEXT_PUBLIC_SITE_URL;
   if (raw === undefined || raw.length === 0) return null;
+  if (isInternalProbe(request)) return null;
   let canonical: URL;
   try {
     canonical = new URL(raw);
   } catch {
     return null;
   }
-  if (request.nextUrl.origin === canonical.origin) return null;
+  if (resolvePublicOrigin(request) === canonical.origin) return null;
   const target = new URL(request.nextUrl.pathname, canonical);
   target.search = request.nextUrl.search;
   const response = NextResponse.redirect(target, 308);

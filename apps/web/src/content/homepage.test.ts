@@ -14,8 +14,12 @@ describe('client-provided homepage content', () => {
     expect(new Set(HOMEPAGE_SERVICES.map(({ slug }) => slug)).size).toBe(5);
   });
 
-  it('does not publish invented articles before CERA supplies approved copy', () => {
-    expect(HOMEPAGE_ARTICLES).toEqual([]);
+  it('lists research insight cards with unique article slugs', () => {
+    expect(HOMEPAGE_ARTICLES.length).toBeGreaterThanOrEqual(3);
+    expect(new Set(HOMEPAGE_ARTICLES.map(({ slug }) => slug)).size).toBe(HOMEPAGE_ARTICLES.length);
+    for (const article of HOMEPAGE_ARTICLES) {
+      expect(article.coverSrc.startsWith('/images/')).toBe(true);
+    }
   });
 
   it('uses a distinct icon for every service card', () => {

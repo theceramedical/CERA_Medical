@@ -17,8 +17,8 @@ export function ArticlesSection() {
       <div className="mx-auto max-w-site px-6 py-14 md:px-10 lg:py-20">
         <SectionHeader
           level={2}
-          heading={<span id="articles-heading">Health Insights &amp; Articles</span>}
-          subheading="Helpful information to support your health and wellbeing."
+          heading={<span id="articles-heading">Research insights</span>}
+          subheading="Practical guidance on scoping laboratory work, omics analysis, and evidence reporting."
           action={
             <AppButtonLink
               href="/articles"
@@ -51,7 +51,7 @@ export function ArticlesSection() {
                  * image loads and the row does not reflow as three covers arrive at different times.
                  */
                 <Image
-                  src="/images/article-cover.svg"
+                  src={article.coverSrc}
                   alt=""
                   width={640}
                   height={360}
