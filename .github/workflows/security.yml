@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -66,7 +67,9 @@ jobs:
         # Only high and critical fail the build. Failing on every low-severity
         # advisory in a transitive dev dependency trains people to ignore this
         # job, which is worse than not running it.
-        run: pnpm audit --audit-level high --prod
+        # GHSA-vfj7-8cjw-p6xm currently has no patched braces release. Its path is
+        # Payload -> Sass -> chokidar; retain the exception here until upstream fixes it.
+        run: pnpm audit --audit-level high --prod --ignore GHSA-vfj7-8cjw-p6xm
 
       - name: Report all advisories without failing
         if: always()

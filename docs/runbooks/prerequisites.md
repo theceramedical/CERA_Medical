@@ -21,15 +21,16 @@ and the phase by which the real item is required.
 
 ## CERA prerequisites
 
-| PRD prerequisite                                                            | PRD deadline            | Status          | Stand-in used                                                                                                                     | Required by               |
-| --------------------------------------------------------------------------- | ----------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| GitHub repository visibility, owner MFA, and deploy permissions             | Before repository setup | Partially ready | `theceramedical/CERA_Medical` exists; owner must confirm private visibility and review write/deploy access                        | Before production push    |
-| Named Product Owner and Content and Clinical Approver                       | Before Day 1            | Pending         | User will provide business content and final approval                                                                             | Before public launch      |
-| Domain and Cloudflare access; approved production subdomains                | Before Day 1            | Partially ready | `ceramedical.org` uses Cloudflare nameservers and has a Resend DKIM record; app A records were absent at last DNS check           | Before DNS cutover        |
-| One production Linux server; verified SSH key owners                        | Before Day 1            | Provisioned     | Hetzner `178.105.73.48`; SSH host key verified; Ubuntu 26.04, 4 vCPU, 8 GiB RAM, 75 GiB disk; CERA is not deployed                | Before production release |
-| R2 media account, Resend credentials, ERPNext                               | Before Day 2            | Partially ready | ERPNext is running on VPS; user reports Cloudflare/Resend setup; R2 token and Resend API/webhook credentials remain pending       | Before live integration   |
-| Approved brand assets, service copy, contact, privacy/terms, images         | Before Day 3            | Partially ready | Client content document supplied; contact is `theceramedica@gmail.com`; approved logo/photos and business sign-off remain pending | Before public launch      |
-| Approval of data fields, consent, retention, CRM mapping, and email wording | Before Day 4            | Pending         | Consent implemented from client draft; legal terms, retention and operational wording need approval                               | Before production release |
+| PRD prerequisite                                                            | PRD deadline            | Status          | Stand-in used                                                                                                                                                                                  | Required by               |
+| --------------------------------------------------------------------------- | ----------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| GitHub repository visibility, owner MFA, and deploy permissions             | Before repository setup | Partially ready | `theceramedical/CERA_Medical` is private and `saadkhan2003` has write access; production deployment secrets exist, but `PRODUCTION_MEDIA_URL` is missing                                       | Before production push    |
+| Named Product Owner and Content and Clinical Approver                       | Before Day 1            | Pending         | User will provide business content and final approval                                                                                                                                          | Before public launch      |
+| Domain and Cloudflare access; approved production subdomains                | Before Day 1            | Partially ready | `ceramedical.org` uses Cloudflare nameservers and has a Resend DKIM TXT record; on 2026-10-03 the apex had no A answer and `www`, `api`, `admin`, `catalogue`, `auth`, and `crm` were NXDOMAIN | Before DNS cutover        |
+| One production Linux server; verified SSH key owners                        | Before Day 1            | Provisioned     | Hetzner `178.105.73.48`; SSH host key verified; Ubuntu 26.04, 4 vCPU, 8 GiB RAM, 75 GiB disk; CERA is not deployed                                                                             | Before production release |
+| R2 media account, Resend credentials, ERPNext                               | Before Day 2            | Partially ready | ERPNext is running on VPS; user reports Cloudflare/Resend setup; R2 token and Resend API/webhook credentials remain pending                                                                    | Before live integration   |
+| Error monitoring, alert destination, and retention policy                   | Before production       | Pending         | `GLITCHTIP_DSN` is optional in app code, but no monitoring service/account or alert route is configured                                                                                        | Before production release |
+| Approved brand assets, service copy, contact, privacy/terms, images         | Before Day 3            | Partially ready | Client content document supplied; contact is `theceramedica@gmail.com`; approved logo/photos and business sign-off remain pending                                                              | Before public launch      |
+| Approval of data fields, consent, retention, CRM mapping, and email wording | Before Day 4            | Pending         | Consent implemented from client draft; legal terms, retention and operational wording need approval                                                                                            | Before production release |
 
 ## Why this does not block delivery
 
@@ -61,8 +62,7 @@ specific input required to close it.
 
 Ordered, because several steps depend on the one before:
 
-1. The repository owner confirms `theceramedical/CERA_Medical` is private and checks branch
-   protection and write/deploy access before an initial push.
+1. The repository is confirmed private and `saadkhan2003` has write access. The owner still needs to review branch protection and keep production deployment under owner control; `PRODUCTION_MEDIA_URL` is missing from the production environment.
 2. Cloudflare: confirm `ceramedical.org` ownership and create production subdomains; point them to
    the VPS only after its production stack is ready.
 3. Confirm VPS account recovery, SSH key owners, and deletion protection before release.
@@ -81,5 +81,5 @@ Ordered, because several steps depend on the one before:
    seven groups, the `groups` scope mapping, and the MFA validation stage.
 8. Populate the GitHub production environment secrets. Production secrets must remain unavailable
    until approval is recorded. Rehearse migration and encrypted restore against an isolated local copy.
-9. Have the repository owner manually start `release.yml` from `main` for the first production deployment.
+9. Resolve the monitoring provider/account, set its DSN and alert route, then have the repository owner manually start `release.yml` from `main` for the first production deployment.
 10. Rotate every secret after developer handover, as PRD 15 requires.

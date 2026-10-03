@@ -66,4 +66,9 @@ if ! compose exec -T worker node -e '
   echo 'ERPNext CRM preflight failed' >&2
   exit 1
 fi
+if ! "$ROOT_DIR/infra/scripts/health-check.sh" "$ENVIRONMENT"; then
+  "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Production health and public smoke gate failed' >&2
+  exit 1
+fi
 printf 'Deployed %s at %s\n' "$image_tag" "$(date -u +%FT%TZ)"
