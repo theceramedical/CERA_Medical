@@ -95,8 +95,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write
-      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -131,12 +129,6 @@ jobs:
           cache-to: type=gha,mode=max,scope=production-${{ matrix.app }}
           provenance: true
           sbom: true
-      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
-        with:
-          subject-name: ${{ steps.namespace.outputs.prefix }}/${{ matrix.app }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
-
   security-gate:
     name: Security gate ${{ matrix.app }}
     needs: build
