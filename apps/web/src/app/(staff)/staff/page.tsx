@@ -1,4 +1,6 @@
+import { EmptyState } from '@cera/ui/empty-state';
 import { Text } from '@cera/ui/typography';
+import { ArrowRight, ClipboardList, Send } from 'lucide-react';
 
 import type { StaffEnquiry } from '@cera/contracts';
 
@@ -14,18 +16,52 @@ export default async function StaffQueuePage() {
   return (
     <>
       <PageHeader title="Enquiry queue" lede="Enquiries received by the team." />
-      <div className="mx-auto max-w-site px-6 py-12">
-        <AppLink href="/staff/deliveries">Integration deliveries</AppLink>
+      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        <div className="flex flex-col justify-between gap-4 border-b border-border pb-8 sm:flex-row sm:items-end">
+          <Text tone="muted">Review, assign and progress incoming research requests.</Text>
+          <AppLink href="/staff/deliveries" className="inline-flex items-center gap-2 font-medium">
+            <Send aria-hidden className="size-4" /> Integration deliveries
+          </AppLink>
+        </div>
         {items.length === 0 ? (
-          <Text>No enquiries to show.</Text>
+          <EmptyState
+            heading="The enquiry queue is clear"
+            headingLevel={2}
+            description="New requests will appear here as soon as they are received."
+            action={<AppLink href="/staff/deliveries">Review delivery activity</AppLink>}
+          />
         ) : (
-          <ul>
+          <ul className="mt-8 grid list-none gap-4 p-0">
             {items.map((e) => (
-              <li key={e.id} className="mb-6">
-                <AppLink href={`/staff/enquiries/${e.id}`}>
-                  {e.reference} — {e.name}
+              <li key={e.id}>
+                <AppLink
+                  href={`/staff/enquiries/${e.id}`}
+                  className="group block rounded-lg border border-border bg-surface p-6 no-underline transition-shadow hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                >
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex gap-4">
+                      <ClipboardList aria-hidden className="mt-1 size-5 shrink-0 text-accent" />
+                      <div>
+                        <Text size="caption" tone="muted">
+                          {e.reference}
+                        </Text>
+                        <Text className="mt-1 font-semibold text-copy">{e.name}</Text>
+                        <Text size="body-sm" tone="muted" className="mt-1">
+                          Open request and staff workflow details.
+                        </Text>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Text size="body-sm" tone="muted">
+                        {e.internalStatus}
+                      </Text>
+                      <ArrowRight
+                        aria-hidden
+                        className="size-5 text-primary transition-transform group-hover:translate-x-1"
+                      />
+                    </div>
+                  </div>
                 </AppLink>
-                <Text>{e.internalStatus}</Text>
               </li>
             ))}
           </ul>

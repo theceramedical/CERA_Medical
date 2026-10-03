@@ -15,12 +15,8 @@ export function createHandshakeSecrets() {
 }
 
 /** OIDC requires the token request redirect_uri to exactly match the registered callback. */
-export function configuredCallbackUrl(requestUrl: URL): URL {
-  const callback = new URL(
-    process.env.OIDC_REDIRECT_URI ?? new URL('/auth/callback', siteUrl()).toString(),
-  );
-  callback.search = requestUrl.search;
-  return callback;
+export function configuredCallbackUrl(_requestUrl: URL): URL {
+  return new URL(process.env.OIDC_REDIRECT_URI ?? new URL('/auth/callback', siteUrl()).toString());
 }
 
 export function sessionKey(): Uint8Array {

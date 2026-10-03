@@ -27,7 +27,7 @@ describe('OIDC boundary', () => {
         configuredCallbackUrl(
           new URL('http://0.0.0.0:3000/auth/callback?code=code&state=state'),
         ).toString(),
-      ).toBe('https://www.ceramedical.org/auth/callback?code=code&state=state');
+      ).toBe('https://www.ceramedical.org/auth/callback');
     } finally {
       if (originalRedirectUri === undefined) delete process.env.OIDC_REDIRECT_URI;
       else process.env.OIDC_REDIRECT_URI = originalRedirectUri;

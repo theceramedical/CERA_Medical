@@ -1,3 +1,4 @@
+import { Alert } from '@cera/ui/alert';
 import { Button } from '@cera/ui/button';
 import { Text } from '@cera/ui/typography';
 import { redirect } from 'next/navigation';
@@ -30,22 +31,30 @@ export default async function AccountClaimPage({
   return (
     <>
       <PageHeader title="Claim an enquiry" lede="Link an enquiry to your verified email." />
-      <div className="mx-auto max-w-site px-6 py-12">
-        <Text>
-          {sent
-            ? 'Claim links have been sent for any matching unclaimed enquiries. Check your email.'
-            : 'The single-use email link only works for the signed-in account with the same verified email.'}
-        </Text>
-        {token ? (
-          <form action={consumeClaim}>
-            <input type="hidden" name="token" value={token} />
-            <Button type="submit">Claim this enquiry</Button>
-          </form>
-        ) : (
-          <form action={requestClaim}>
-            <Button type="submit">Request claim emails</Button>
-          </form>
-        )}
+      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        <div className="max-w-measure rounded-lg border border-border bg-surface p-6 shadow-card sm:p-8">
+          {sent ? (
+            <Alert tone="success" title="Claim links sent">
+              We sent a link for each matching unclaimed enquiry to your verified email address.
+              Check your inbox and spam folder.
+            </Alert>
+          ) : (
+            <Text tone="muted">
+              The secure, single-use email link works only for the signed-in account with the same
+              verified email address.
+            </Text>
+          )}
+          {token ? (
+            <form action={consumeClaim} className="mt-6">
+              <input type="hidden" name="token" value={token} />
+              <Button type="submit">Claim this enquiry</Button>
+            </form>
+          ) : (
+            <form action={requestClaim} className="mt-6">
+              <Button type="submit">Request claim emails</Button>
+            </form>
+          )}
+        </div>
       </div>
     </>
   );
