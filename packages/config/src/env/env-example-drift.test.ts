@@ -58,6 +58,7 @@ function schemaKeys(schema: unknown): string[] {
 const EXAMPLE_ONLY = new Set([
   // Consumed by Docker Compose and the Postgres init script, never by app code.
   // Used by the production Caddy edge and deployment health checks, not app code.
+  'CADDY_ACME_EMAIL',
   'CERA_DOMAIN',
   'POSTGRES_HOST',
   'POSTGRES_PORT',
