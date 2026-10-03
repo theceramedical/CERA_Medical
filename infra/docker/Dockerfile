@@ -31,6 +31,11 @@ RUN if [ "$APP" = commerce ]; then \
 FROM node:24.21.0-bookworm-slim
 WORKDIR /app
 RUN groupadd --system --gid 10001 cera && useradd --system --uid 10001 --gid cera cera
+# Runtime containers execute Node directly; npm/npx are build-time tooling only.
+# Removing npm's bundled dependency tree also keeps unused vulnerable packages
+# out of the shipped runtime image.
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx
 COPY --from=build --chown=cera:cera /out/ /app/
 COPY --chown=cera:cera infra/docker/run.sh /usr/local/bin/cera-run
 ENV NODE_ENV=production
