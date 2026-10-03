@@ -16,6 +16,8 @@ export interface HeroContent {
   readonly primaryLabel?: string | undefined;
   readonly secondaryHref?: string | undefined;
   readonly secondaryLabel?: string | undefined;
+  readonly imageUrl?: string | undefined;
+  readonly imageAlt?: string | undefined;
 }
 
 /**
@@ -123,8 +125,11 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
              * lazy-loads it and the measurement is of an empty box.
              */}
             <Image
-              src="/images/hero-portrait.svg"
-              alt="Placeholder illustration; CERA Medical research-laboratory imagery is pending."
+              src={hero.imageUrl ?? '/images/hero-portrait.svg'}
+              alt={
+                hero.imageAlt ??
+                'Placeholder illustration; CERA Medical research-laboratory imagery is pending.'
+              }
               width={640}
               height={800}
               priority

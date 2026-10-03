@@ -23,6 +23,16 @@ function stringField(block: LayoutBlock | undefined, field: string): string | un
   return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
 }
 
+function mediaField(block: LayoutBlock | undefined): { imageUrl?: string; imageAlt?: string } {
+  const portrait = block?.portrait;
+  if (portrait === null || typeof portrait !== 'object') return {};
+  const media = portrait as { readonly url?: unknown; readonly alt?: unknown };
+  return {
+    ...(typeof media.url === 'string' && media.url.length > 0 ? { imageUrl: media.url } : {}),
+    ...(typeof media.alt === 'string' && media.alt.length > 0 ? { imageAlt: media.alt } : {}),
+  };
+}
+
 function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
   const blocks = Array.isArray(document?.layout) ? (document.layout as LayoutBlock[]) : [];
   const hero = blocks.find((block) => block.blockType === 'hero');
@@ -37,6 +47,7 @@ function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
       primaryLabel: stringField(hero, 'primaryLabel'),
       secondaryHref: stringField(hero, 'secondaryHref'),
       secondaryLabel: stringField(hero, 'secondaryLabel'),
+      ...mediaField(hero),
     } satisfies HeroContent,
     cta: {
       heading: stringField(cta, 'headline'),
