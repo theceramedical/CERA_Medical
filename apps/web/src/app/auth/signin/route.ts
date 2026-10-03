@@ -9,6 +9,7 @@ import {
   sealHandshake,
 } from '../../../lib/auth/oidc.ts';
 import { safeReturnTo } from '../../../lib/auth/return-to.ts';
+import { siteUrl } from '../../../lib/site-url.ts';
 
 export async function GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
@@ -34,6 +35,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     );
     return response;
   } catch {
-    return NextResponse.redirect(new URL('/auth/error?reason=unavailable', url.origin));
+    return NextResponse.redirect(new URL('/auth/error?reason=unavailable', siteUrl()));
   }
 }
