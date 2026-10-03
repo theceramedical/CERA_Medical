@@ -67,6 +67,10 @@ jobs:
         run: pnpm --filter '@cera/observability...' build
       - run: pnpm lint
       - run: pnpm typecheck
+      # The @cera/db integration suite asserts constraints and triggers against
+      # a real schema. Match ci.yml by migrating the isolated CI database first.
+      - name: Apply database migrations
+        run: pnpm migrate
       - run: pnpm test
       - name: Check production build URLs
         env:
