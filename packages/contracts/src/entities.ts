@@ -130,6 +130,7 @@ export const EnquiryInputSchema = z.object({
    * unconsented submission fail validation itself (PRD 10).
    */
   consent: z.literal(true),
+  consentVersion: z.string().min(1).max(64).optional(),
   sequencingDataConsent: z.boolean().optional(),
   samplesCompoundsConsent: z.boolean().optional(),
   healthDataConsent: z.boolean().optional(),

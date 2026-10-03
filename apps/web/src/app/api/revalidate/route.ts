@@ -29,6 +29,11 @@ export async function POST(request: Request): Promise<Response> {
   const collection = 'collection' in body ? body.collection : undefined;
   const slug = 'slug' in body ? body.slug : undefined;
 
+  if (collection === 'global:site-settings') {
+    revalidateTag('cms:global:site-settings', 'max');
+    return Response.json({ revalidated: true });
+  }
+
   if (
     typeof collection !== 'string' ||
     !COLLECTIONS.includes(collection as (typeof COLLECTIONS)[number])

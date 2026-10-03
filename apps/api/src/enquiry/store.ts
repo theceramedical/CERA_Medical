@@ -139,7 +139,7 @@ export function newEnquiryRecord(
     idempotencyKey,
     createdAt: timestamp,
     consentAt: timestamp,
-    consentVersion: ENQUIRY_CONSENT_VERSION,
+    consentVersion: input.consentVersion ?? ENQUIRY_CONSENT_VERSION,
     sequencingDataConsent: input.sequencingDataConsent === true,
     samplesCompoundsConsent: input.samplesCompoundsConsent === true,
     healthDataConsent: input.healthDataConsent === true,

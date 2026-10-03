@@ -102,14 +102,19 @@ describe('createEnquiryService', () => {
     });
 
     const result = await service.submit({
-      body: { ...body, sequencingDataConsent: true, updatesOptIn: true },
+      body: {
+        ...body,
+        consentVersion: 'cera-brief-2026-10-04-v2',
+        sequencingDataConsent: true,
+        updatesOptIn: true,
+      },
       ip: '127.0.0.1',
       idempotencyKey: 'accepted-sequencing-consent',
       honeypot: null,
       startedAt: null,
     });
     expect(result.enquiry).toMatchObject({
-      consentVersion: expect.any(String),
+      consentVersion: 'cera-brief-2026-10-04-v2',
       sequencingDataConsent: true,
       samplesCompoundsConsent: false,
       healthDataConsent: false,

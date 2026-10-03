@@ -33,6 +33,7 @@ export function normaliseEnquiry(input: EnquiryInput): EnquiryInput {
     serviceId: stripUnsafe(input.serviceId),
     message: stripUnsafe(input.message),
     consent: true,
+    ...(input.consentVersion === undefined ? {} : { consentVersion: input.consentVersion }),
     ...(input.sequencingDataConsent === undefined
       ? {}
       : { sequencingDataConsent: input.sequencingDataConsent }),

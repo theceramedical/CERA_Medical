@@ -1,6 +1,10 @@
 import { asString } from '../lib/as-string.ts';
 
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload';
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  GlobalAfterChangeHook,
+} from 'payload';
 
 /**
  * Tells `apps/web` to drop the cache tags for a published document.
@@ -36,6 +40,13 @@ export function revalidateAfterChange(collection: string): CollectionAfterChange
   return async ({ doc }) => {
     const slug = asString((doc as { slug?: unknown }).slug);
     if (slug.length > 0) await notifyWeb(collection, slug);
+    return doc as never;
+  };
+}
+
+export function revalidateGlobalAfterChange(slug: string): GlobalAfterChangeHook {
+  return async ({ doc }) => {
+    await notifyWeb(`global:${slug}`, '');
     return doc as never;
   };
 }

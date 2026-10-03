@@ -1,5 +1,6 @@
 import { EnquiryForm } from '../../../components/enquiry-form.client.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { getPublicGlobal } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -20,6 +21,9 @@ export default async function EnquiryPage({
 }) {
   const params = await searchParams;
   const serviceId = params.service;
+  const settings = await getPublicGlobal<{ enquiryForm?: Record<string, unknown> }>(
+    'site-settings',
+  );
 
   return (
     <>
@@ -30,6 +34,7 @@ export default async function EnquiryPage({
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <EnquiryForm
           startedAt={new Date().toISOString()}
+          {...(settings?.enquiryForm === undefined ? {} : { copy: settings.enquiryForm })}
           {...(serviceId === undefined ? {} : { defaultServiceId: serviceId })}
           source={params.source === 'web_contact_page' ? 'web_contact_page' : 'web_general'}
         />

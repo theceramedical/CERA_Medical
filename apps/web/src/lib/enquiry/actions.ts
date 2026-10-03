@@ -1,5 +1,7 @@
 'use server';
 
+import { getPublicGlobal } from '../cms/client.ts';
+
 import { submitEnquiry } from './submit.ts';
 
 export interface EnquiryFieldValues {
@@ -11,6 +13,7 @@ export interface EnquiryFieldValues {
   readonly serviceId: string;
   readonly message: string;
   readonly consent: boolean;
+  readonly consentVersion: string;
   readonly sequencingDataConsent: boolean;
   readonly samplesCompoundsConsent: boolean;
   readonly healthDataConsent: boolean;
@@ -46,11 +49,27 @@ export async function submitEnquiryAction(
     serviceId: formString(formData, 'serviceId'),
     message: formString(formData, 'message'),
     consent: formData.get('consent') === 'on',
+    consentVersion: formString(formData, 'consentVersion'),
     sequencingDataConsent: formData.get('sequencingDataConsent') === 'on',
     samplesCompoundsConsent: formData.get('samplesCompoundsConsent') === 'on',
     healthDataConsent: formData.get('healthDataConsent') === 'on',
     updatesOptIn: formData.get('updatesOptIn') === 'on',
   };
+
+  const settings = await getPublicGlobal<{ enquiryForm?: { consentVersion?: string } }>(
+    'site-settings',
+  );
+  const currentConsentVersion = settings?.enquiryForm?.consentVersion;
+  if (currentConsentVersion && values.consentVersion !== currentConsentVersion) {
+    return {
+      status: 'error',
+      message:
+        'The consent wording has changed. Please refresh the page and review it before submitting.',
+      retryable: true,
+      fieldErrors: [],
+      values,
+    };
+  }
 
   const result = await submitEnquiry({
     body: {
@@ -59,6 +78,7 @@ export async function submitEnquiryAction(
       institution: values.institution.length > 0 ? values.institution : null,
       country: values.country.length > 0 ? values.country : null,
       consent: values.consent,
+      consentVersion: values.consentVersion || undefined,
       sequencingDataConsent: values.sequencingDataConsent,
       samplesCompoundsConsent: values.samplesCompoundsConsent,
       healthDataConsent: values.healthDataConsent,

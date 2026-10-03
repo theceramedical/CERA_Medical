@@ -1,6 +1,7 @@
 import { Text } from '@cera/ui/typography';
 
 import { PageHeader } from '../../../components/page-header.tsx';
+import { getPublicGlobal } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -51,7 +52,11 @@ const FAQS = [
   },
 ] as const;
 
-export default function FaqsPage() {
+export default async function FaqsPage() {
+  const settings = await getPublicGlobal<{
+    faqs?: readonly { question: string; answer: string }[];
+  }>('site-settings');
+  const items = settings?.faqs?.length ? settings.faqs : FAQS;
   return (
     <>
       <PageHeader
@@ -60,7 +65,7 @@ export default function FaqsPage() {
       />
       <div className="mx-auto max-w-measure px-6 py-12 md:px-10 lg:py-16">
         <div className="space-y-4">
-          {FAQS.map((item) => (
+          {items.map((item) => (
             <details key={item.question} className="rounded-md border border-border bg-surface p-4">
               <summary className="cursor-pointer font-semibold">{item.question}</summary>
               <Text className="mt-3">{item.answer}</Text>

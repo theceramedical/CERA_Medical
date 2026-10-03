@@ -228,6 +228,7 @@
           ]
         },
         "body": {},
+        "layout": {},
         "seo": {
           "type": "object",
           "properties": {
@@ -466,6 +467,11 @@
         "consent": {
           "type": "boolean",
           "const": true
+        },
+        "consentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
         },
         "sequencingDataConsent": {
           "type": "boolean"
@@ -1005,6 +1011,11 @@
         "consent": {
           "type": "boolean",
           "const": true
+        },
+        "consentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
         },
         "sequencingDataConsent": {
           "type": "boolean"

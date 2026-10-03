@@ -32,6 +32,7 @@ function serviceConsent(
   serviceId: string,
   error: string | undefined,
   values: EnquiryFieldValues | undefined,
+  copy: EnquiryFormCopy | undefined,
 ) {
   const name =
     serviceId === 'metagenomic-data-analysis'
@@ -44,8 +45,14 @@ function serviceConsent(
           : null;
   if (name === null) return null;
 
-  const statements =
-    name === 'sequencingDataConsent'
+  const configured = copy?.[name];
+  const statements = Array.isArray(configured)
+    ? configured
+        .map((item: unknown) =>
+          item !== null && typeof item === 'object' && 'statement' in item ? item.statement : null,
+        )
+        .filter((item): item is string => typeof item === 'string')
+    : name === 'sequencingDataConsent'
       ? [
           'I am authorised to share these data with CERA Medical for analysis and, where I ask CERA Medical to download them from a server or repository, to give it access for that purpose.',
           'Where the data derive from human participants, the study holds the necessary ethical approval and participant consent, and that consent permits analysis by an external service provider.',
@@ -94,6 +101,18 @@ export interface EnquiryFormProps {
   readonly defaultServiceId?: string;
   readonly source?: 'web_service_page' | 'web_contact_page' | 'web_general';
   readonly serviceLocked?: boolean;
+  readonly copy?: EnquiryFormCopy;
+}
+
+export interface EnquiryFormCopy {
+  readonly consentVersion?: string;
+  readonly generalConsent?: string;
+  readonly sequencingDataConsent?: readonly { statement: string }[];
+  readonly samplesCompoundsConsent?: readonly { statement: string }[];
+  readonly healthDataConsent?: readonly { statement: string }[];
+  readonly updatesOptIn?: string;
+  readonly contactNotice?: string;
+  readonly successMessage?: string;
 }
 
 export function EnquiryForm({
@@ -101,6 +120,7 @@ export function EnquiryForm({
   defaultServiceId,
   source = 'web_general',
   serviceLocked = false,
+  copy,
 }: EnquiryFormProps) {
   const [state, action, pending] = useActionState(submitEnquiryAction, INITIAL);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
@@ -117,7 +137,12 @@ export function EnquiryForm({
   }, [state]);
 
   if (state.status === 'success') {
-    return <EnquiryConfirmation reference={state.reference} />;
+    return (
+      <EnquiryConfirmation
+        reference={state.reference}
+        {...(copy?.successMessage === undefined ? {} : { message: copy.successMessage })}
+      />
+    );
   }
 
   const values = state.status === 'error' ? state.values : undefined;
@@ -160,6 +185,11 @@ export function EnquiryForm({
       <input type="hidden" name="startedAt" value={startedAt} />
       <input type="hidden" name="source" value={source} />
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+      <input
+        type="hidden"
+        name="consentVersion"
+        value={copy?.consentVersion ?? 'cera-brief-2026-10-03-v1'}
+      />
 
       <Field label="Name" required error={errorFor('name')} id="enquiry-name">
         <Input name="name" autoComplete="name" defaultValue={values?.name ?? ''} />
@@ -225,13 +255,7 @@ export function EnquiryForm({
         required
         error={errorFor('consent')}
         defaultChecked={values?.consent ?? false}
-        label={
-          <>
-            I have read the <AppLink href="/privacy">Privacy Terms</AppLink> and I agree that CERA
-            Medical may use the information I provide in this form to respond to my request and to
-            deliver the service I have asked for.
-          </>
-        }
+        label={consentWithPrivacyLink(copy?.generalConsent)}
       />
       {serviceConsent(
         consentServiceId,
@@ -239,16 +263,21 @@ export function EnquiryForm({
           errorFor('samplesCompoundsConsent') ??
           errorFor('healthDataConsent'),
         values,
+        copy,
       )}
       <Checkbox
         name="updatesOptIn"
         id="enquiry-updatesOptIn"
         defaultChecked={values?.updatesOptIn ?? false}
-        label="I would like to receive occasional updates from CERA Medical about its services and products. I can unsubscribe at any time."
+        label={
+          copy?.updatesOptIn ??
+          'I would like to receive occasional updates from CERA Medical about its services and products. I can unsubscribe at any time.'
+        }
       />
       <Text size="caption" tone="muted">
-        The details you enter here are used only to answer your enquiry. See the{' '}
-        <AppLink href="/data-retention">Data Retention Policy</AppLink> for how long they are kept.
+        {copy?.contactNotice ?? 'The details you enter here are used only to answer your enquiry.'}{' '}
+        See the <AppLink href="/data-retention">Data Retention Policy</AppLink> for how long they
+        are kept.
       </Text>
 
       <div aria-hidden="true" className="hidden">
@@ -265,12 +294,37 @@ export function EnquiryForm({
   );
 }
 
-function EnquiryConfirmation({ reference }: { readonly reference: string }) {
+function consentWithPrivacyLink(text: string | undefined) {
+  const fallback =
+    'I have read the Privacy Terms and I agree that CERA Medical may use the information I provide in this form to respond to my request and to deliver the service I have asked for.';
+  const value = text ?? fallback;
+  const parts = value.split('Privacy Terms');
+  if (parts.length < 2) return value;
+  return (
+    <>
+      {parts[0]}
+      <AppLink href="/privacy">Privacy Terms</AppLink>
+      {parts.slice(1).join('Privacy Terms')}
+    </>
+  );
+}
+
+function EnquiryConfirmation({
+  reference,
+  message,
+}: {
+  readonly reference: string;
+  readonly message?: string;
+}) {
   return (
     <div role="status" className="flex max-w-measure flex-col gap-4">
       <Heading level={2} size="h3">
         Enquiry received
       </Heading>
+      <Text>
+        {message ??
+          'Thank you. Your request has been received and we will reply within three working days.'}
+      </Text>
       <Text>
         Your reference is{' '}
         <strong className="font-semibold tracking-wide" data-testid="enquiry-reference">

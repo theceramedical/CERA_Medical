@@ -214,6 +214,96 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       overrideAccess: true,
     });
   }
+  const currentSettings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true });
+  const dynamicSettings = currentSettings as unknown as Record<string, unknown>;
+  const formSettings = (dynamicSettings.enquiryForm ?? {}) as Record<string, unknown>;
+  const faqDefaults = [
+    {
+      question: 'Which services does CERA Medical provide?',
+      answer:
+        'The portfolio includes preclinical studies, molecular research, metagenomic data analysis, biomedical and omics data analysis, and evidence synthesis and technical reports.',
+    },
+    {
+      question: 'How does a project begin?',
+      answer:
+        'CERA Medical first discusses the research question, available materials or data, required outputs, scope, timeline and cost. The agreed scope is recorded in writing before work begins.',
+    },
+    {
+      question: 'How quickly will you reply?',
+      answer: 'The team aims to reply to a service request within three working days.',
+    },
+    {
+      question: 'What should I include in my request?',
+      answer:
+        'Describe the research question, samples, compounds or data, timeline and outputs you need. Do not include participant names or other direct identifiers in the website form.',
+    },
+    {
+      question: 'How do I transfer large datasets or samples?',
+      answer:
+        'Large datasets are transferred later using an agreed secure link or retrieved from a provider or public repository. Arrange physical sample shipping with CERA Medical before sending materials.',
+    },
+    {
+      question: 'When can animal studies start?',
+      answer:
+        'Animal-study protocols must be approved by the institutional animal ethics committee before the study begins.',
+    },
+    {
+      question: 'How long does metagenomic analysis take?',
+      answer:
+        'The client brief gives a three-week delivery target for metagenomic analysis. The actual timeline should be confirmed during project scoping.',
+    },
+  ];
+  const statements = {
+    sequencingConsent: [
+      'I am authorised to share these data with CERA Medical for analysis and, where I ask CERA Medical to download them from a server or repository, to give it access for that purpose.',
+      'Where the data derive from human participants, the study holds the necessary ethical approval and participant consent, and that consent permits analysis by an external service provider.',
+      'The files and metadata are de-identified and contain no names, contact details, national identity numbers, medical record numbers or other direct identifiers.',
+      'I understand that sequencing reads from human samples may contain human genetic material, which CERA Medical removes during quality control and does not analyse for any other purpose.',
+      'CERA Medical may store and process the data for this analysis and will delete them as set out in the Data Retention Policy.',
+    ].map((statement) => ({ statement })),
+    samplesConsent: [
+      'I own these materials or am authorised to send them to CERA Medical for the agreed study.',
+      'Where samples derive from human donors, the necessary ethical approval and donor consent are in place, and the samples are coded and carry no names or other direct identifiers.',
+      'I have disclosed every known hazard of the materials, including infectious, toxic and radioactive hazards, and will supply a safety data sheet for each test compound.',
+      'CERA Medical may use the materials only for the agreed study and will return or destroy any remainder as set out in the Data Retention Policy.',
+      'I understand that animal studies begin only after the protocol has been approved by the animal ethics committee.',
+    ].map((statement) => ({ statement })),
+    healthDataConsent: [
+      'My organisation owns these data or is authorised to share them with CERA Medical for analysis.',
+      'The data were collected with the consent and approvals required for their use in analysis and reporting.',
+      'The dataset has been de-identified and contains no names, national identity numbers, medical record numbers, telephone numbers, addresses or household coordinates, or, where identifiers are needed for the analysis, a data sharing agreement will be signed before any data are transferred.',
+      "CERA Medical may use the data only for the agreed analysis and report, will follow my organisation's data protection requirements, and will return or delete the data as set out in the Data Retention Policy or in the data sharing agreement.",
+    ].map((statement) => ({ statement })),
+  };
+  const settingsPatch: Record<string, unknown> = {};
+  if (!Array.isArray(dynamicSettings.faqs) || dynamicSettings.faqs.length === 0)
+    settingsPatch.faqs = faqDefaults;
+  if (!formSettings.consentVersion)
+    settingsPatch.enquiryForm = {
+      ...formSettings,
+      consentVersion: 'cera-brief-2026-10-03-v1',
+      ...Object.fromEntries(
+        Object.entries(statements)
+          .filter(([key]) => !Array.isArray(formSettings[key]))
+          .map(([key, value]) => [key, value]),
+      ),
+    };
+  else {
+    const missing = Object.fromEntries(
+      Object.entries(statements)
+        .filter(([key]) => !Array.isArray(formSettings[key]))
+        .map(([key, value]) => [key, value]),
+    );
+    if (Object.keys(missing).length > 0)
+      settingsPatch.enquiryForm = { ...formSettings, ...missing };
+  }
+  if (Object.keys(settingsPatch).length > 0) {
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: settingsPatch,
+      overrideAccess: true,
+    });
+  }
   const services = [
     [
       '1.1 Preclinical Studies',
