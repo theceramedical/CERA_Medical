@@ -78,9 +78,7 @@ for attempt in 1 2 3 4 5; do
   sleep 15
 done
 if [[ "$bootstrap_ok" != true ]]; then
-  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
-  echo 'Initial CMS content bootstrap failed' >&2
-  exit 1
+  echo 'WARNING: CMS bootstrap failed after 5 attempts. The release stays live; run bootstrap manually when CMS is ready.' >&2
 fi
 if ! compose exec -T authentik-server ak shell -c 'exec(__import__("sys").stdin.read())' \
   < "$ROOT_DIR/infra/scripts/configure-authentik-cera.py"; then
