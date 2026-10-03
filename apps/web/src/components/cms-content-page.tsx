@@ -7,7 +7,7 @@ import { AppLink } from './link.tsx';
 import { PageHeader } from './page-header.tsx';
 import { RichText } from './rich-text.tsx';
 
-interface LayoutBlock {
+export interface LayoutBlock {
   readonly blockType?: string;
   readonly id?: string | number;
   readonly [key: string]: unknown;
@@ -24,7 +24,7 @@ function recordArray(block: LayoutBlock, key: string): readonly LayoutBlock[] {
     : [];
 }
 
-function CmsLayout({ blocks }: { readonly blocks: readonly LayoutBlock[] }) {
+export function CmsLayout({ blocks }: { readonly blocks: readonly LayoutBlock[] }) {
   return blocks.map((block, index) => {
     const key =
       block.id === undefined ? `${block.blockType ?? 'block'}-${index}` : String(block.id);

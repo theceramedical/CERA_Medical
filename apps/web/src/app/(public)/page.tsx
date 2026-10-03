@@ -1,3 +1,4 @@
+import { CmsLayout, type LayoutBlock } from '../../components/cms-content-page.tsx';
 import { CapabilitiesSection } from '../../components/home/capabilities-section.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
@@ -16,11 +17,6 @@ import { siteUrl } from '../../lib/site-url.ts';
 import type { CtaContent } from '../../components/home/cta-band-section.tsx';
 import type { HeroContent } from '../../components/home/hero-section.tsx';
 import type { Metadata } from 'next';
-
-interface LayoutBlock {
-  readonly blockType?: string;
-  readonly [key: string]: unknown;
-}
 
 function stringField(block: LayoutBlock | undefined, field: string): string | undefined {
   const value = block?.[field];
@@ -90,7 +86,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const origin = siteUrl().origin;
-  const content = pageContent(await getCurrentDocument('page', 'home'));
+  const document = await getCurrentDocument('page', 'home');
+  const content = pageContent(document);
+  const editorialBlocks = Array.isArray(document?.layout)
+    ? (document.layout as LayoutBlock[]).filter(
+        (block) => block.blockType !== 'hero' && block.blockType !== 'ctaBand',
+      )
+    : [];
 
   return (
     <>
@@ -101,6 +103,7 @@ export default async function HomePage() {
       <ServicesSection />
       <CapabilitiesSection />
       <ProcessSection />
+      {editorialBlocks.length > 0 ? <CmsLayout blocks={editorialBlocks} /> : null}
       <CtaBandSection content={content.cta} />
     </>
   );
