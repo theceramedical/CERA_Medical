@@ -84,8 +84,11 @@ Do not reuse local test credentials in production.
 
 ## Current state
 
-The workflows are authored and locally validated, but have never executed: CERA has not yet supplied
-the GitHub organisation (PRD 22). The deploy steps fail when a host secret is absent. See [`deploy-host.md`](deploy-host.md) for the host setup and recovery procedure.
+The repository is private under `theceramedical/CERA_Medical`; the first production-readiness PR is
+merged and its main-branch CI and security checks passed on 2026-10-03. The production release has
+not run: `/opt/cera/.env` is absent, and live Resend/R2 credentials plus production OIDC setup are
+still required. The production GitHub environment has SSH credentials and the site, API, CMS, and
+media URL variables. See [`deploy-host.md`](deploy-host.md) for the host setup and recovery procedure.
 
 First run after the organisation exists:
 
