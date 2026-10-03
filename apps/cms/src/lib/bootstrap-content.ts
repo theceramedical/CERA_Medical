@@ -168,6 +168,26 @@ async function upsert(
 
 /** Inserts the client-approved initial copy once, while preserving subsequent CMS edits. */
 export async function bootstrapClientContent(payload: Payload): Promise<void> {
+  const users = await payload.find({
+    collection: 'users',
+    limit: 1,
+    overrideAccess: true,
+  });
+  if (users.docs.length === 0) {
+    const email = process.env.CMS_BOOTSTRAP_ADMIN_EMAIL?.trim();
+    const password = process.env.CMS_BOOTSTRAP_ADMIN_PASSWORD;
+    if (!email || !password || password.length < 32) {
+      throw new Error(
+        'A first CMS administrator is required: configure CMS_BOOTSTRAP_ADMIN_EMAIL and a unique CMS_BOOTSTRAP_ADMIN_PASSWORD of at least 32 characters.',
+      );
+    }
+    await payload.create({
+      collection: 'users',
+      data: { email, password, role: 'administrator' },
+      overrideAccess: true,
+    });
+  }
+
   const siteSettings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true });
   if (
     !siteSettings.email ||
