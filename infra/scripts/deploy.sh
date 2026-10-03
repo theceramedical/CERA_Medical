@@ -46,6 +46,15 @@ if ! compose --profile migration run --rm migrator; then
   echo 'Migration failed. Previous images were not restarted. Restore requires explicit incident procedure.' >&2
   exit 1
 fi
+if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEASE_FILE" \
+  -f compose.yaml -f infra/compose/compose.application.yaml \
+  -f "infra/compose/compose.$ENVIRONMENT.yaml" -f infra/compose/compose.authentik.yaml \
+  run --rm --no-deps -e CERA_ALLOW_PRODUCTION_CATALOGUE_SEED=approved \
+  --entrypoint node commerce /app/dist/seed.js; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Catalogue seed failed' >&2
+  exit 1
+fi
 compose up -d web api worker cms commerce commerce-worker caddy
 if ! wait_healthy; then
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true

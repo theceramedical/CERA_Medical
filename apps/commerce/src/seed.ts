@@ -1,5 +1,5 @@
 /**
- * Idempotent catalogue seed. Safe to re-run. Refuses production.
+ * Idempotent catalogue bootstrap. Production use requires a deploy approval flag.
  *
  * Superadmin credentials come from the environment with no fallback. A default
  * password here is how a development login reaches a deployed dashboard.
@@ -17,12 +17,11 @@ import {
 } from '@vendure/core';
 
 import { RETIRED_SERVICE_SLUGS, SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
+import { assertCatalogueSeedAllowed } from './seed-environment.js';
 import { getConfig } from './vendure-config.js';
 
 async function main(): Promise<void> {
-  if (process.env.CERA_ENV === 'production' || process.env.NODE_ENV === 'production') {
-    throw new Error('Refusing to seed the catalogue in production.');
-  }
+  assertCatalogueSeedAllowed(process.env);
 
   const app = await bootstrap(getConfig({ seed: true }));
   await app.get(JobQueueService).start();
@@ -109,21 +108,6 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
       });
 
       productId = created.id;
-    } else {
-      await products.update(ctx, {
-        id: existing.id,
-        enabled: service.enabled,
-        translations: [
-          {
-            languageCode: LanguageCode.en,
-            name: service.name,
-            slug: service.slug,
-            description: service.description,
-            customFields: localizedFields,
-          },
-        ],
-        customFields,
-      });
     }
     if (productId !== undefined)
       assignedProducts.set(service.collectionSlug, [

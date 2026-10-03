@@ -49,6 +49,13 @@ describe('bootstrapClientContent', () => {
     expect(
       records.filter((record) => record.collection === 'pages').map((record) => record.data.slug),
     ).toEqual(['home', 'services', 'about', 'methodology', 'contact']);
+    const home = records.find((record) => record.data.slug === 'home')?.data;
+    expect(home?.layout).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ blockType: 'hero', headlinePrimary: 'Research that moves' }),
+        expect.objectContaining({ blockType: 'ctaBand', href: '/enquiry' }),
+      ]),
+    );
     expect(
       records.find((record) => record.data.slug === 'privacy-policy')?.data.effectiveDate,
     ).toBe('2026-10-03');

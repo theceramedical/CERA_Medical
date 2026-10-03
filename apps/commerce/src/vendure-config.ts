@@ -134,7 +134,7 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
     defaultLanguageCode: LanguageCode.en,
     logger: new DefaultLogger({ level: local ? LogLevel.Info : LogLevel.Warn }),
     plugins: [
-      AssetServerPlugin.init(assetServerOptions(s3)),
+      ...(options.seed ? [] : [AssetServerPlugin.init(assetServerOptions(s3))]),
       ...(options.seed
         ? []
         : [
@@ -152,10 +152,14 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
         maxQueryComplexity: 500,
         apiMode: local ? 'dev' : 'prod',
       }),
-      DashboardPlugin.init({
-        route: 'dashboard',
-        appDir: path.join(dirname, '../dist/dashboard'),
-      }),
+      ...(options.seed
+        ? []
+        : [
+            DashboardPlugin.init({
+              route: 'dashboard',
+              appDir: path.join(dirname, '../dist/dashboard'),
+            }),
+          ]),
     ],
   };
 }

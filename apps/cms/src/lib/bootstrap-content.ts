@@ -268,14 +268,35 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   }
 
   const intro = publicText(range('Section introduction', '1.1 Preclinical Studies'));
+  const introduction =
+    intro
+      .find((item) => item.text.startsWith('Introduction:'))
+      ?.text.replace('Introduction: ', '') ?? '';
   await upsert(payload, 'pages', 'home', {
     title: 'CERA Medical',
     slug: 'home',
-    excerpt:
-      intro
-        .find((item) => item.text.startsWith('Introduction:'))
-        ?.text.replace('Introduction: ', '') ?? '',
-    body: lexical([]),
+    excerpt: introduction,
+    layout: [
+      {
+        blockType: 'hero',
+        eyebrow: 'Biomedical Research and Development',
+        headlinePrimary: 'Research that moves',
+        headlineAccent: 'health forward',
+        body: introduction,
+        primaryHref: '/services',
+        primaryLabel: 'Explore Services',
+        secondaryHref: '/enquiry',
+        secondaryLabel: 'Make an Enquiry',
+      },
+      {
+        blockType: 'ctaBand',
+        headline: 'Ready to advance your research?',
+        body: 'Talk with our team about your study, samples or data.',
+        href: '/enquiry',
+        label: 'Contact CERA Medical',
+      },
+    ],
+    body: lexical(intro),
     seo: {
       title: 'CERA Medical | Biomedical Research and Development',
       description:
