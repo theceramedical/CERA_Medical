@@ -504,7 +504,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   await bootstrapInsightPosts(payload);
 }
 
-async function categoryId(payload: Payload, slug: string, title: string): Promise<number | string> {
+async function categoryId(payload: Payload, slug: string, title: string): Promise<number> {
   const found = await payload.find({
     collection: 'categories',
     where: { slug: { equals: slug } },
@@ -512,13 +512,13 @@ async function categoryId(payload: Payload, slug: string, title: string): Promis
     overrideAccess: true,
   });
   const existing = found.docs[0];
-  if (existing !== undefined) return existing.id;
+  if (existing !== undefined) return Number(existing.id);
   const created = await payload.create({
     collection: 'categories',
     data: { title, slug, colourToken: 'accent-fill' },
     overrideAccess: true,
   });
-  return created.id;
+  return Number(created.id);
 }
 
 /** Research articles aligned with the public homepage insight cards. */
