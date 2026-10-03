@@ -13,6 +13,7 @@ import {
   sealHandshake,
 } from '../../../lib/auth/oidc.ts';
 import { safeReturnTo } from '../../../lib/auth/return-to.ts';
+import { siteUrl } from '../../../lib/site-url.ts';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const url = new URL(request.url);
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       exp,
       absoluteExp: now + (staff ? 8 * 60 * 60 : 7 * 24 * 60 * 60),
     };
-    response = NextResponse.redirect(new URL(safeReturnTo(handshake.next), url.origin));
+    response = NextResponse.redirect(new URL(safeReturnTo(handshake.next), siteUrl()));
     response.cookies.set(SESSION_COOKIE_NAME, await sealHandshake(claims), {
       httpOnly: true,
       sameSite: 'lax',
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       'OIDC callback failed:',
       error instanceof Error ? error.message : 'unknown error',
     );
-    response = NextResponse.redirect(new URL('/auth/error?reason=identity', url.origin));
+    response = NextResponse.redirect(new URL('/auth/error?reason=identity', siteUrl()));
   }
   response.cookies.set(OIDC_STATE_COOKIE_NAME, '', { secure: true, path: '/', maxAge: 0 });
   return response;
