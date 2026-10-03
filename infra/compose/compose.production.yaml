@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       CERA_DOMAIN: ${CERA_DOMAIN:?CERA_DOMAIN required}
+      CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL:?CADDY_ACME_EMAIL required}
     ports:
       - "80:80"
       - "443:443"

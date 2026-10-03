@@ -31,6 +31,9 @@ RUN if [ "$APP" = commerce ]; then \
 FROM node:24.21.0-bookworm-slim
 WORKDIR /app
 RUN groupadd --system --gid 10001 cera && useradd --system --uid 10001 --gid cera cera
+# Vendure's local asset strategy writes beneath /app at runtime. Prepare that
+# directory before dropping privileges; production can switch to R2 later.
+RUN mkdir -p /app/static/assets && chown -R cera:cera /app/static
 # Runtime containers execute Node directly; npm/npx are build-time tooling only.
 # Removing npm's bundled dependency tree also keeps unused vulnerable packages
 # out of the shipped runtime image.
