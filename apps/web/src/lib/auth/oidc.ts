@@ -4,12 +4,23 @@ import { RoleSchema, type Role } from '@cera/contracts';
 import { CompactEncrypt, compactDecrypt } from 'jose';
 import * as oidc from 'openid-client';
 
+import { siteUrl } from '../site-url.ts';
+
 export function createPkce(): { verifier: string; challenge: string } {
   const verifier = randomBytes(32).toString('base64url');
   return { verifier, challenge: createHash('sha256').update(verifier).digest('base64url') };
 }
 export function createHandshakeSecrets() {
   return { state: randomBytes(16).toString('hex'), nonce: randomBytes(16).toString('hex') };
+}
+
+/** OIDC requires the token request redirect_uri to exactly match the registered callback. */
+export function configuredCallbackUrl(requestUrl: URL): URL {
+  const callback = new URL(
+    process.env.OIDC_REDIRECT_URI ?? new URL('/auth/callback', siteUrl()).toString(),
+  );
+  callback.search = requestUrl.search;
+  return callback;
 }
 
 export function sessionKey(): Uint8Array {

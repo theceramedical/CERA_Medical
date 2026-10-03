@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   createHandshakeSecrets,
   createPkce,
+  configuredCallbackUrl,
   identityClaims,
   openHandshake,
   sealHandshake,
@@ -18,6 +19,21 @@ afterEach(() => {
 });
 
 describe('OIDC boundary', () => {
+  it('uses the registered public callback URI for token exchange', () => {
+    const originalRedirectUri = process.env.OIDC_REDIRECT_URI;
+    process.env.OIDC_REDIRECT_URI = 'https://www.ceramedical.org/auth/callback';
+    try {
+      expect(
+        configuredCallbackUrl(
+          new URL('http://0.0.0.0:3000/auth/callback?code=code&state=state'),
+        ).toString(),
+      ).toBe('https://www.ceramedical.org/auth/callback?code=code&state=state');
+    } finally {
+      if (originalRedirectUri === undefined) delete process.env.OIDC_REDIRECT_URI;
+      else process.env.OIDC_REDIRECT_URI = originalRedirectUri;
+    }
+  });
+
   it('seals state and rejects tampering and expiry', async () => {
     const state = {
       ...createHandshakeSecrets(),
