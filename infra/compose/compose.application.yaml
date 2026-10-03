@@ -10,6 +10,7 @@ services:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?required}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?required}
       CMS_URL: ${CMS_URL:?required}
+      PAYLOAD_PREVIEW_SECRET: ${PAYLOAD_PREVIEW_SECRET:?required}
       SESSION_SECRET: ${SESSION_SECRET:?required}
       OIDC_ISSUER: ${OIDC_ISSUER:?required}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?required}
