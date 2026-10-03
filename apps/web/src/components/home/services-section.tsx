@@ -10,9 +10,7 @@ import { AppButtonLink } from '../link.tsx';
 /**
  * The service card row (design-language.md section 5.2 and 4.2).
  *
- * Grid 1 / 2 / 3 / 6 across the breakpoints. The six-across row only holds at `xl`: at 1280px each
- * card is about 180px wide, which is already tight for a title, two lines of description, and a
- * full-width button, and below that it would be unreadable rather than merely cramped.
+ * Five services use a three-column grid at desktop widths so the catalogue copy remains readable.
  */
 export function ServicesSection() {
   return (
@@ -20,8 +18,8 @@ export function ServicesSection() {
       <div className="mx-auto max-w-site px-6 py-14 md:px-10 lg:py-20">
         <SectionHeader
           level={2}
-          heading={<span id="services-heading">Our Medical Services</span>}
-          subheading="Explore our range of trusted medical services designed to support your health and wellbeing."
+          heading={<span id="services-heading">Research Services</span>}
+          subheading="From preclinical work and laboratory analysis to microbiome research and evidence reports."
           action={
             <AppButtonLink
               href="/services"
@@ -41,7 +39,7 @@ export function ServicesSection() {
          * WP-03.8. The type system cannot enforce it, so the requirement is documented on
          * `ServiceCardProps` and caught by the axe run.
          */}
-        <ul className="mt-12 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <ul className="mt-12 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {HOMEPAGE_SERVICES.map((service) => (
             <ServiceCard
               key={service.slug}

@@ -35,5 +35,6 @@ export const Policies: CollectionConfig = publishable({
 function policyPath(slug: string): string {
   if (slug === 'privacy-policy' || slug === 'privacy') return 'privacy';
   if (slug === 'terms-of-service' || slug === 'terms') return 'terms';
+  if (slug === 'data-retention-policy') return 'data-retention';
   return slug;
 }

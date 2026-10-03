@@ -100,7 +100,7 @@ export function HeroSection() {
              * a service delivered by people - so section 5.6 requires a real `alt`.
              *
              * **The `alt` describes the placeholder, not the photograph that will replace it.** The
-             * asset is pending (PRD 22), and writing "a clinician talking with a patient" now would
+             * asset is pending (PRD 22), and writing "a CERA Medical researcher at work" now would
              * be a description of something not on the page: a screen reader user would be told about
              * an image that does not exist, which is worse than being told it is a placeholder. The
              * real `alt` arrives with the real photograph.
@@ -112,7 +112,7 @@ export function HeroSection() {
              */}
             <Image
               src="/images/hero-portrait.svg"
-              alt="Placeholder for a photograph of a clinician with a patient"
+              alt="Placeholder illustration; CERA Medical research-laboratory imagery is pending."
               width={640}
               height={800}
               priority

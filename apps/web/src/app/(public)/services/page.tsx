@@ -13,9 +13,9 @@ import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Our Medical Services',
+    title: 'Research Services',
     description:
-      'Explore our range of trusted medical services designed to support your health and wellbeing.',
+      'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis from CERA Medical.',
     path: '/services',
   });
 }
@@ -42,8 +42,8 @@ export default async function ServicesPage({
   return (
     <>
       <PageHeader
-        title="Our Medical Services"
-        lede="Explore our range of trusted medical services designed to support your health and wellbeing."
+        title="Complete Service Portfolio"
+        lede="CERA Medical is a biomedical research and development company. We test candidate treatments in animal models, cells and computer simulations; run molecular laboratory work; analyse microbiome, omics and clinical data; and prepare evidence reviews and technical reports."
       />
 
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
@@ -70,7 +70,7 @@ export default async function ServicesPage({
         {filtered.length === 0 ? (
           <EmptyState
             heading="No services match those filters"
-            description="Clear the search or browse the full list to find the care you need."
+            description="Clear the search or browse the full list of research services."
             action={<AppLink href="/services">View all services</AppLink>}
           />
         ) : (

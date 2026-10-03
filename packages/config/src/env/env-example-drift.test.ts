@@ -57,6 +57,8 @@ function schemaKeys(schema: unknown): string[] {
  */
 const EXAMPLE_ONLY = new Set([
   // Consumed by Docker Compose and the Postgres init script, never by app code.
+  // Used by the production Caddy edge and deployment health checks, not app code.
+  'CERA_DOMAIN',
   'POSTGRES_HOST',
   'POSTGRES_PORT',
   'POSTGRES_SUPERUSER',
@@ -179,7 +181,7 @@ describe('.env.example matches the environment schemas', () => {
     const secretPatterns: { name: string; pattern: RegExp }[] = [
       { name: 'Resend API key', pattern: /\bre_[A-Za-z0-9]{16,}/ },
       { name: 'Svix signing secret', pattern: /\bwhsec_[A-Za-z0-9+/=]{20,}/ },
-      { name: 'Zoho OAuth token', pattern: /\b1000\.[A-Fa-f0-9]{32,}/ },
+      { name: 'erpnext OAuth token', pattern: /\b1000\.[A-Fa-f0-9]{32,}/ },
       { name: 'AWS access key id', pattern: /\bAKIA[0-9A-Z]{16}\b/ },
       { name: 'private key block', pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
       { name: 'GitHub token', pattern: /\bgh[pousr]_[A-Za-z0-9]{36,}/ },

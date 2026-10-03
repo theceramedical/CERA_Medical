@@ -48,7 +48,8 @@ export const metadata: Metadata = {
     default: 'CERA Medical',
     template: '%s | CERA Medical',
   },
-  description: 'Trusted medical services, made easier to access.',
+  description:
+    'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis for research teams and health organisations.',
 
   /**
    * A self-referencing canonical on every page.

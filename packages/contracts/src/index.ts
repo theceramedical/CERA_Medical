@@ -87,8 +87,11 @@ export {
   type EnquiryInput,
   EnquiryInputSchema,
   EnquirySchema,
+  ENQUIRY_CONSENT_VERSION,
   type EnquiryStatusEvent,
   EnquiryStatusEventSchema,
+  requiredServiceSpecificConsent,
+  type ServiceSpecificConsentField,
   type IntegrationDelivery,
   IntegrationDeliverySchema,
   type InternalNote,
@@ -116,10 +119,9 @@ export {
   toCustomerEnquiry,
   toPublicService,
   toStaffEnquiry,
-  toZohoLeadPayload,
-  ZOHO_COMPANY_PLACEHOLDER,
-  type ZohoLeadPayload,
-  ZohoLeadPayloadSchema,
+  toCrmLeadPayload,
+  type CrmLeadPayload,
+  CrmLeadPayloadSchema,
 } from './projections.ts';
 
 export {

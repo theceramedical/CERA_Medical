@@ -1,28 +1,29 @@
 import { describe, expect, it } from 'vitest';
 
-import { SEED_SERVICES } from './seed-data.js';
+import { RETIRED_SERVICE_SLUGS, SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
 
-describe('catalogue seed data', () => {
-  it('contains the six reference slugs plus the withdrawn seventh', () => {
+describe('CERA catalogue seed data', () => {
+  it('contains the five client-provided research services', () => {
     expect(SEED_SERVICES.map((service) => service.slug)).toEqual([
-      'general-health',
-      'cardiology',
-      'orthopaedics',
-      'womens-health',
-      'diagnostic-tests',
-      'wellness-preventive-care',
-      'travel-vaccinations',
+      'preclinical-studies',
+      'molecular-research',
+      'metagenomic-data-analysis',
+      'biomedical-omics-data-analysis',
+      'evidence-synthesis-technical-reports',
     ]);
+    expect(SEED_SERVICES.every((service) => service.enabled && service.enquiryEnabled)).toBe(true);
   });
 
-  it('marks diagnostic-tests as the browsable non-enquiry path', () => {
-    const service = SEED_SERVICES.find((item) => item.slug === 'diagnostic-tests');
-    expect(service?.enabled).toBe(true);
-    expect(service?.enquiryEnabled).toBe(false);
+  it('assigns every service to a seeded catalogue collection', () => {
+    const collectionSlugs = new Set(SEED_COLLECTIONS.map(({ slug }) => slug));
+    expect(SEED_SERVICES.every(({ collectionSlug }) => collectionSlugs.has(collectionSlug))).toBe(
+      true,
+    );
   });
 
-  it('marks travel-vaccinations as disabled, not merely enquiry-disabled', () => {
-    const service = SEED_SERVICES.find((item) => item.slug === 'travel-vaccinations');
-    expect(service?.enabled).toBe(false);
+  it('retires the former patient-care demonstration services', () => {
+    expect(RETIRED_SERVICE_SLUGS).toContain('general-health');
+    expect(RETIRED_SERVICE_SLUGS).toContain('cardiology');
+    expect(RETIRED_SERVICE_SLUGS).toContain('travel-vaccinations');
   });
 });

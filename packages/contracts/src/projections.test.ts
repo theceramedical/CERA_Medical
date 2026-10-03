@@ -14,7 +14,7 @@ import {
   toCustomerEnquiry,
   toPublicService,
   toStaffEnquiry,
-  toZohoLeadPayload,
+  toCrmLeadPayload,
 } from './projections.ts';
 
 /**
@@ -36,6 +36,8 @@ const enquiry: Enquiry = {
   name: 'Alex Fictional Morgan',
   email: 'alex.morgan@example.com',
   phone: '+441632960001',
+  institution: null,
+  country: null,
   serviceId: 'svc-cardiology',
   message: SECRET_MESSAGE,
   consentAt: '2026-09-01T10:00:00.000Z',
@@ -164,13 +166,13 @@ describe('staff projection', () => {
   });
 });
 
-describe('Zoho payload', () => {
-  const payload = toZohoLeadPayload(enquiry, service);
+describe('CRM payload', () => {
+  const payload = toCrmLeadPayload(enquiry, service);
   const serialised = JSON.stringify(payload);
 
   it('sends the customer status vocabulary, never the internal one', () => {
-    // Zoho users are not necessarily CERA staff.
-    expect(payload.CERA_Status).toBe('closed');
+    // CRM users are not necessarily CERA staff.
+    expect(payload.customerStatus).toBe('closed');
     expect(serialised).not.toContain('rejected_spam');
   });
 
@@ -183,30 +185,40 @@ describe('Zoho payload', () => {
   });
 
   it('uses the reference as the external deduplication key', () => {
-    expect(payload.External_Lead_ID).toBe('CERA-260901-A4B7Z');
+    expect(payload.externalReference).toBe('CERA-260901-A4B7Z');
   });
 
   it('sends the message as the only free text', () => {
-    expect(payload.Description).toBe(SECRET_MESSAGE);
+    expect(payload.description).toBe(SECRET_MESSAGE);
   });
 
-  it('supplies the Company field Zoho requires on a Lead', () => {
-    expect(payload.Company).toBe('Individual enquiry');
+  it('omits institution when the individual has not supplied one', () => {
+    expect(payload.company).toBeUndefined();
+  });
+
+  it('carries optional institution and country details to the CRM', () => {
+    const withOrganisation = toCrmLeadPayload(
+      { ...enquiry, institution: 'CERA Research Institute', country: 'United Kingdom' },
+      service,
+    );
+    expect(withOrganisation.company).toBe('CERA Research Institute');
+    expect(withOrganisation.description).toBe(SECRET_MESSAGE);
+    expect(withOrganisation.country).toBe('United Kingdom');
   });
 
   it('omits the phone key entirely when there is no phone number', () => {
-    // An explicit null would clear an existing value in Zoho on a re-upsert.
-    const payloadWithoutPhone = toZohoLeadPayload({ ...enquiry, phone: null }, service);
+    // An explicit null could clear an existing value on a re-upsert.
+    const payloadWithoutPhone = toCrmLeadPayload({ ...enquiry, phone: null }, service);
 
-    expect('Phone' in payloadWithoutPhone).toBe(false);
+    expect('phone' in payloadWithoutPhone).toBe(false);
   });
 
-  it('gives every source its own human-readable Lead_Source', () => {
-    // Sales report on Lead_Source, so two sources must never collapse into one
+  it('gives every source its own human-readable label', () => {
+    // CRM reporting uses this source label, so two sources must never collapse into one
     // label, and none may leak the internal snake_case value.
     const sources = EnquirySourceSchema.options;
     const labels = sources.map(
-      (source) => toZohoLeadPayload({ ...enquiry, source }, service).Lead_Source,
+      (source) => toCrmLeadPayload({ ...enquiry, source }, service).source,
     );
 
     expect(new Set(labels).size).toBe(sources.length);
@@ -217,7 +229,7 @@ describe('Zoho payload', () => {
 });
 
 describe('splitName', () => {
-  it('treats a single word as the last name, which Zoho requires', () => {
+  it('treats a single word as the last name', () => {
     expect(splitName('Cher')).toEqual({ lastName: 'Cher' });
   });
 

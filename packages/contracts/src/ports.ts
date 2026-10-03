@@ -1,9 +1,9 @@
-import type { ZohoLeadPayload } from './projections.ts';
+import type { CrmLeadPayload } from './projections.ts';
 
 /**
  * Swappable provider ports. Drivers are selected by environment variable alone
  * (ADR-006, ADR-007): fake for unit tests, local for Mailpit/SeaweedFS, live
- * for Zoho/Resend/R2.
+ * for ERPNext/Resend/R2.
  */
 
 export interface CrmUpsertResult {
@@ -12,7 +12,7 @@ export interface CrmUpsertResult {
 }
 
 export interface CrmPort {
-  upsertLead(payload: ZohoLeadPayload, idempotencyKey: string): Promise<CrmUpsertResult>;
+  upsertLead(payload: CrmLeadPayload, idempotencyKey: string): Promise<CrmUpsertResult>;
 }
 
 export interface EmailMessage {

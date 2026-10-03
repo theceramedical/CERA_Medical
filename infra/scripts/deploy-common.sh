@@ -23,15 +23,21 @@ require_release_file() {
 
 wait_healthy() {
   local service container state attempt
-  for service in web api worker cms commerce; do
+  for service in postgres valkey authentik-server authentik-worker web api worker cms commerce commerce-worker caddy; do
     container="$(compose ps -q "$service")"
     [[ -n "$container" ]] || { echo "$service is not running" >&2; return 1; }
     for attempt in {1..30}; do
       state="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$container")"
-      [[ "$state" == healthy ]] && break
-      [[ "$state" == unhealthy || "$state" == exited ]] && { echo "$service is $state" >&2; return 1; }
+      if [[ "$state" == healthy ]]; then break; fi
+      # Authentik, its worker, commerce-worker, and Caddy have no Docker
+      # healthcheck; their container must at least be running. Public smoke
+      # checks verify the edge routes after the containers start.
+      if [[ "$state" == running && ( "$service" == authentik-server || "$service" == authentik-worker || "$service" == commerce-worker || "$service" == caddy ) ]]; then break; fi
+      [[ "$state" == unhealthy || "$state" == exited || "$state" == dead ]] && { echo "$service is $state" >&2; return 1; }
       sleep 3
     done
-    [[ "$state" == healthy ]] || { echo "$service did not become healthy" >&2; return 1; }
+    if [[ "$state" != healthy && !( "$state" == running && ( "$service" == authentik-server || "$service" == authentik-worker || "$service" == commerce-worker || "$service" == caddy ) ) ]]; then
+      echo "$service did not become healthy (state=$state)" >&2; return 1
+    fi
   done
 }

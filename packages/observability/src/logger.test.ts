@@ -138,22 +138,22 @@ describe('timed', () => {
     // indistinguishable from a dropped line, which makes "did this finish"
     // unanswerable. `captureOneLine` asserts the count.
     const line = await captureOneLine(async (logger) => {
-      returned = await timed(logger, 'zoho.upsert', () => Promise.resolve('lead-99'));
+      returned = await timed(logger, 'erpnext.upsert', () => Promise.resolve('lead-99'));
     });
 
     expect(returned).toBe('lead-99');
-    expect(line).toMatchObject({ event: 'zoho.upsert', outcome: 'success', level: 'info' });
+    expect(line).toMatchObject({ event: 'erpnext.upsert', outcome: 'success', level: 'info' });
     expect(typeof line.durationMs).toBe('number');
   });
 
   it('rethrows on failure, so a failed delivery is not marked done', async () => {
     const line = await captureOneLine(async (logger) => {
       await expect(
-        timed(logger, 'zoho.upsert', () => Promise.reject(new Error('lead 4815 rejected'))),
+        timed(logger, 'erpnext.upsert', () => Promise.reject(new Error('lead 4815 rejected'))),
       ).rejects.toThrow('lead 4815 rejected');
     });
 
-    expect(line).toMatchObject({ event: 'zoho.upsert', outcome: 'failure', level: 'error' });
+    expect(line).toMatchObject({ event: 'erpnext.upsert', outcome: 'failure', level: 'error' });
   });
 
   it('does not put the upstream error message in msg', async () => {

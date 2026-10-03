@@ -17,7 +17,14 @@ export interface PortalEnquiry {
   readonly message: string;
   readonly name?: string;
   readonly phone?: string | null;
+  readonly institution?: string | null;
+  readonly country?: string | null;
   readonly serviceId?: string;
+  readonly consentVersion?: string;
+  readonly sequencingDataConsent?: boolean;
+  readonly samplesCompoundsConsent?: boolean;
+  readonly healthDataConsent?: boolean;
+  readonly updatesOptIn?: boolean;
   readonly internalStatus: InternalStatus;
   readonly ownerId: string | null;
   readonly notes: readonly string[];
@@ -169,9 +176,16 @@ export function projectPortalEnquiry(enquiry: PortalEnquiry): CustomerEnquiry {
       name: enquiry.name ?? 'Customer',
       email: enquiry.email,
       phone: enquiry.phone ?? null,
+      institution: enquiry.institution ?? null,
+      country: enquiry.country ?? null,
       serviceId: enquiry.serviceId ?? 'cardiology',
       message: enquiry.message,
       consentAt: enquiry.createdAt,
+      consentVersion: enquiry.consentVersion,
+      sequencingDataConsent: enquiry.sequencingDataConsent,
+      samplesCompoundsConsent: enquiry.samplesCompoundsConsent,
+      healthDataConsent: enquiry.healthDataConsent,
+      updatesOptIn: enquiry.updatesOptIn,
       source: 'web_general',
       internalStatus: enquiry.internalStatus,
       ownerId: enquiry.ownerId,

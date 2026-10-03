@@ -1,6 +1,7 @@
 import {
   CreateEnquiryResponseSchema,
   EnquiryInputSchema,
+  requiredServiceSpecificConsent,
   toCustomerEnquiry,
   toCustomerStatus,
   type Enquiry,
@@ -102,6 +103,19 @@ export function createEnquiryService(options: EnquiryServiceOptions) {
               path: 'serviceId',
               code: 'unknown_service',
               message: 'That service is not accepting enquiries.',
+            },
+          ],
+        });
+      }
+
+      const serviceConsent = requiredServiceSpecificConsent(input.serviceId);
+      if (serviceConsent !== null && input[serviceConsent] !== true) {
+        throw new ApiError('consent_required', {
+          fieldErrors: [
+            {
+              path: serviceConsent,
+              code: 'required',
+              message: 'Please accept the service-specific data and materials consent.',
             },
           ],
         });
@@ -212,9 +226,16 @@ function toEnquiryEntity(record: StoredEnquiry): Enquiry {
     name: record.name,
     email: record.email,
     phone: null,
+    institution: record.institution,
+    country: record.country,
     serviceId: record.serviceId,
     message: record.message,
     consentAt: record.consentAt,
+    consentVersion: record.consentVersion,
+    sequencingDataConsent: record.sequencingDataConsent,
+    samplesCompoundsConsent: record.samplesCompoundsConsent,
+    healthDataConsent: record.healthDataConsent,
+    updatesOptIn: record.updatesOptIn,
     source: 'web_general',
     internalStatus: record.internalStatus,
     ownerId: record.ownerId,

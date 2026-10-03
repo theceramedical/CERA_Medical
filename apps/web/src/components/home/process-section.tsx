@@ -5,7 +5,7 @@ import { SectionHeader } from '@cera/ui/section-header';
 import { HOMEPAGE_PROCESS } from '../../content/homepage.ts';
 
 /**
- * "How CERA Works" (design-language.md sections 5.3 and 4.1), on the `surface-tint-2` band.
+ * Five-stage project workflow supplied by CERA, on the `surface-tint-2` band.
  *
  * Three steps in an `<ol>`, which `ProcessSteps` renders. The ordering is in the markup, so the visible
  * `01` / `02` / `03` is `aria-hidden` - otherwise a screen reader announces "01 Explore, 1 of 3", which
@@ -18,7 +18,7 @@ export function ProcessSection() {
         <SectionHeader
           level={2}
           heading={<span id="process-heading">How CERA Works</span>}
-          subheading="Getting the care you need is simple."
+          subheading="Every project follows five agreed stages."
         />
 
         <ProcessSteps className="mt-12">

@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
-# Encrypted logical backups of all databases. An off-site copy is optional.
+# Encrypted logical backups of all databases. Backups stay on this host.
 set -euo pipefail
 source "$(dirname "$0")/deploy-common.sh" "${1:?environment required}"
 command -v age >/dev/null || { echo 'age is required on the host' >&2; exit 1; }
 require_release_file
 key="${BACKUP_AGE_PUBLIC_KEY:-$(sed -n 's/^BACKUP_AGE_PUBLIC_KEY=//p' "$CERA_ENV_FILE" | tail -1)}"
 [[ "$key" == age1* ]] || { echo 'BACKUP_AGE_PUBLIC_KEY is missing' >&2; exit 1; }
-backup_remote_file="${BACKUP_REMOTE_FILE:-$ROOT_DIR/.backup-remote}"
-if [[ -z "${BACKUP_OFFSITE_REMOTE:-}" && -f "$backup_remote_file" ]]; then
-  BACKUP_OFFSITE_REMOTE="$(cat "$backup_remote_file")"
-fi
-[[ "${BACKUP_OFFSITE_REMOTE:-}" != *$'\n'* ]] || { echo 'Invalid backup remote' >&2; exit 1; }
 backup_dir="${BACKUP_TARGET_DIR:-$ROOT_DIR/backups}"
 mkdir -p "$backup_dir"
 chmod 700 "$backup_dir"
@@ -30,10 +25,6 @@ for database in \
   compose exec -T postgres pg_dump -U postgres -Fc "$database" | age -r "$key" -o "$destination"
   test -s "$destination"
   chmod 600 "$destination"
-  if [[ -n "${BACKUP_OFFSITE_REMOTE:-}" ]]; then
-    command -v rclone >/dev/null || { echo 'rclone is required for off-site backups' >&2; exit 1; }
-    rclone copyto "$destination" "${BACKUP_OFFSITE_REMOTE%/}/$(basename "$destination")"
-  fi
   echo "Backed up $database: $destination"
 done
 retention="$(sed -n 's/^BACKUP_RETENTION_DAYS=//p' "$CERA_ENV_FILE" | tail -1)"

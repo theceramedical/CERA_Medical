@@ -197,7 +197,7 @@ describe('contact details are unreachable', () => {
     /**
      * Regression guard. The enquiry addresses were originally derived from the fixture
      * key, which encodes the internal status - so `enquiry-triaging@...` put the word
-     * `triaging` into a field that legitimately reaches a Zoho payload, and the leak
+     * `triaging` into a field that legitimately reaches a erpnext payload, and the leak
      * test asserting no internal status appears there failed on a fixture artefact.
      *
      * The fix was to derive the address from the person's name. This keeps it fixed,
@@ -621,7 +621,7 @@ describe('integration deliveries', () => {
 
   it('includes a dead letter for the ops view to surface', () => {
     expect(deadLetterDeliveryFixture.status).toBe('dead_letter');
-    expect(deadLetterDeliveryFixture.provider).toBe('zoho');
+    expect(deadLetterDeliveryFixture.provider).toBe('erpnext');
     expect(deadLetterDeliveryFixture.enquiryId).toBe(enquiryByKey('in-progress-dead-letter').id);
   });
 

@@ -10,7 +10,7 @@ export const SiteSettings: GlobalConfig = {
     update: ({ req }) => canAuthor(req.user),
   },
   fields: [
-    { name: 'tagline', type: 'text', defaultValue: 'Better Information. Healthier Lives.' },
+    { name: 'tagline', type: 'text', defaultValue: 'Biomedical Research and Development' },
     { name: 'email', type: 'email' },
     { name: 'phone', type: 'text' },
     { name: 'address', type: 'textarea' },
@@ -23,11 +23,11 @@ export const SiteSettings: GlobalConfig = {
       ],
       maxRows: 8,
     },
-    { name: 'newsletterHeading', type: 'text', defaultValue: 'Subscribe to Our Newsletter' },
+    { name: 'newsletterHeading', type: 'text', defaultValue: '' },
     {
       name: 'newsletterBody',
       type: 'text',
-      defaultValue: 'Get the latest health insights and updates.',
+      defaultValue: '',
     },
   ],
 };

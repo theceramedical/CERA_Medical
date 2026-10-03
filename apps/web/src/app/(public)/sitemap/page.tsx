@@ -48,8 +48,8 @@ export default function SitemapPage() {
 
       <div className="mx-auto max-w-site px-6 pb-16 md:px-10">
         <Text size="caption" tone="muted" measure>
-          Individual service and article pages are not listed yet; they arrive with the catalogue
-          and the content library, and will be listed here once they do.
+          Individual service pages are listed with the catalogue. Approved research updates will
+          appear when CERA Medical publishes them.
         </Text>
       </div>
     </>

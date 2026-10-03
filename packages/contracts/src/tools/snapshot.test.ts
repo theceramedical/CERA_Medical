@@ -42,7 +42,7 @@ describe('buildSnapshot', () => {
 
     expect(schemas).toHaveProperty('EnquirySchema');
     expect(schemas).toHaveProperty('CustomerEnquirySchema');
-    expect(schemas).toHaveProperty('ZohoLeadPayloadSchema');
+    expect(schemas).toHaveProperty('CrmLeadPayloadSchema');
   });
 });
 

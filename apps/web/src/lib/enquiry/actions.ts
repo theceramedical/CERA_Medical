@@ -6,8 +6,15 @@ export interface EnquiryFieldValues {
   readonly name: string;
   readonly email: string;
   readonly phone: string;
+  readonly institution: string;
+  readonly country: string;
   readonly serviceId: string;
   readonly message: string;
+  readonly consent: boolean;
+  readonly sequencingDataConsent: boolean;
+  readonly samplesCompoundsConsent: boolean;
+  readonly healthDataConsent: boolean;
+  readonly updatesOptIn: boolean;
 }
 
 export type EnquiryFormState =
@@ -34,15 +41,28 @@ export async function submitEnquiryAction(
     name: formString(formData, 'name'),
     email: formString(formData, 'email'),
     phone: formString(formData, 'phone'),
+    institution: formString(formData, 'institution'),
+    country: formString(formData, 'country'),
     serviceId: formString(formData, 'serviceId'),
     message: formString(formData, 'message'),
+    consent: formData.get('consent') === 'on',
+    sequencingDataConsent: formData.get('sequencingDataConsent') === 'on',
+    samplesCompoundsConsent: formData.get('samplesCompoundsConsent') === 'on',
+    healthDataConsent: formData.get('healthDataConsent') === 'on',
+    updatesOptIn: formData.get('updatesOptIn') === 'on',
   };
 
   const result = await submitEnquiry({
     body: {
       ...values,
       phone: values.phone.length > 0 ? values.phone : null,
-      consent: formData.get('consent') === 'on',
+      institution: values.institution.length > 0 ? values.institution : null,
+      country: values.country.length > 0 ? values.country : null,
+      consent: values.consent,
+      sequencingDataConsent: values.sequencingDataConsent,
+      samplesCompoundsConsent: values.samplesCompoundsConsent,
+      healthDataConsent: values.healthDataConsent,
+      updatesOptIn: values.updatesOptIn,
       source: formString(formData, 'source') || 'web_general',
     },
     idempotencyKey: formString(formData, 'idempotencyKey') || null,

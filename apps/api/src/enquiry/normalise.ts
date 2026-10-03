@@ -19,22 +19,56 @@ export function stripUnsafe(value: string): string {
 export function normaliseEnquiry(input: EnquiryInput): EnquiryInput {
   const email = EmailSchema.parse(stripUnsafe(input.email).toLowerCase());
   const phone = input.phone === undefined || input.phone === null ? null : stripUnsafe(input.phone);
+  const institutionValue = input.institution == null ? '' : stripUnsafe(input.institution);
+  const countryValue = input.country == null ? '' : stripUnsafe(input.country);
+  const institution = institutionValue.length === 0 ? null : institutionValue;
+  const country = countryValue.length === 0 ? null : countryValue;
 
   return {
     name: stripUnsafe(input.name),
     email,
     ...(phone === null ? {} : { phone }),
+    ...(institution === null ? {} : { institution }),
+    ...(country === null ? {} : { country }),
     serviceId: stripUnsafe(input.serviceId),
     message: stripUnsafe(input.message),
     consent: true,
+    ...(input.sequencingDataConsent === undefined
+      ? {}
+      : { sequencingDataConsent: input.sequencingDataConsent }),
+    ...(input.samplesCompoundsConsent === undefined
+      ? {}
+      : { samplesCompoundsConsent: input.samplesCompoundsConsent }),
+    ...(input.healthDataConsent === undefined
+      ? {}
+      : { healthDataConsent: input.healthDataConsent }),
+    ...(input.updatesOptIn === undefined ? {} : { updatesOptIn: input.updatesOptIn }),
     source: input.source,
   };
 }
 
 export function contentFingerprint(input: EnquiryInput): string {
-  return createHash('sha256')
-    .update(`${input.email}\n${input.serviceId}\n${input.message}`)
-    .digest('hex');
+  const extended =
+    input.institution != null ||
+    input.country != null ||
+    input.sequencingDataConsent === true ||
+    input.samplesCompoundsConsent === true ||
+    input.healthDataConsent === true ||
+    input.updatesOptIn === true;
+  const value = extended
+    ? [
+        input.email,
+        input.institution ?? '',
+        input.country ?? '',
+        input.serviceId,
+        input.message,
+        String(input.sequencingDataConsent === true),
+        String(input.samplesCompoundsConsent === true),
+        String(input.healthDataConsent === true),
+        String(input.updatesOptIn === true),
+      ].join('\n')
+    : [input.email, input.serviceId, input.message].join('\n');
+  return createHash('sha256').update(value).digest('hex');
 }
 
 export function hashIp(ip: string, salt: string): string {

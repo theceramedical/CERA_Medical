@@ -1,12 +1,12 @@
-import { toZohoLeadPayload } from '@cera/contracts';
+import { toCrmLeadPayload } from '@cera/contracts';
 import { describe, expect, it } from 'vitest';
 
 import { fakeCrm, fakeEmail } from './fake.ts';
 
 describe('fake adapters', () => {
-  it('upserts the same Zoho lead once for a repeated idempotency key', async () => {
+  it('upserts the same CRM lead once for a repeated idempotency key', async () => {
     const crm = fakeCrm();
-    const payload = toZohoLeadPayload(
+    const payload = toCrmLeadPayload(
       {
         id: '01900000-0000-7000-8000-000000000001',
         reference: 'CERA-260101-AAAAA',
@@ -25,8 +25,8 @@ describe('fake adapters', () => {
       },
       { title: 'Cardiology' },
     );
-    await crm.upsertLead(payload, 'zoho.lead.upsert/enq-1');
-    await crm.upsertLead(payload, 'zoho.lead.upsert/enq-1');
+    await crm.upsertLead(payload, 'erpnext.lead.upsert/enq-1');
+    await crm.upsertLead(payload, 'erpnext.lead.upsert/enq-1');
     expect(crm.upserts).toHaveLength(1);
     expect(JSON.stringify(payload)).not.toContain('ownerId');
   });

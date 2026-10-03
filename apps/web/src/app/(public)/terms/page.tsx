@@ -6,60 +6,53 @@ import { PolicyDocument } from '../../../components/policy-document.tsx';
 import type { PolicySection } from '../../../components/policy-document.tsx';
 import type { Metadata } from 'next';
 
-/**
- * Terms of service.
- *
- * Placeholder wording, marked as such for the same reason as the privacy notice. The medical-advice
- * disclaimer is the section that matters most on a site like this and is the one written to be
- * substantively correct rather than filled in later: a visitor who mistakes an information site for a
- * clinical one may delay getting care, and that is not a risk to leave to a later phase.
- */
-
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'The terms on which CERA Medical provides this website and its enquiry service.',
+  description: 'Draft terms for CERA Medical’s research service enquiries and projects.',
 };
 
 const SECTIONS: readonly PolicySection[] = [
   {
-    heading: 'This site is not medical advice',
+    heading: 'Status of these terms',
     paragraphs: [
-      'Everything published here is general information about services. It is not a diagnosis, not a treatment recommendation, and not a substitute for speaking to a qualified clinician about your own circumstances.',
-      'If you think you may have a medical emergency, contact emergency services immediately. Do not submit an enquiry and wait for a reply - enquiries are handled during working hours and are not monitored as an emergency channel.',
+      'CERA Medical has not supplied final website Terms of Service in the client content document. This draft summarizes the project workflow described there and must be reviewed and approved before it is treated as a contract.',
     ],
   },
   {
-    heading: 'What an enquiry is',
+    heading: 'Enquiries and project agreements',
     paragraphs: [
-      'Submitting an enquiry is a request to be contacted about a service. It is not a booking, not an appointment, and not a commitment by us to provide anything.',
-      'We will acknowledge your enquiry by email with a reference number. Progress is visible in your account.',
+      'A website enquiry asks CERA Medical to discuss a possible research service. It is not acceptance of a project. Before work starts, the research question, materials or data, scope, deliverables, timeline and cost are agreed in writing.',
     ],
   },
   {
-    heading: 'Using this site',
+    heading: 'Client responsibilities',
     paragraphs: [
-      'Please do not submit an enquiry on behalf of someone else without their knowledge, submit information that is not yours to share, or attempt to interfere with the operation of the site.',
-      'We may decline to act on an enquiry, and we may suspend access where the site is being misused.',
+      'The client is responsible for having authority to provide submitted data, samples and compounds and for obtaining the ethical approvals, participant or donor consent, safety information and data-sharing agreements required for the work. Do not send direct identifiers through the website form.',
+      'For human-derived samples, sequencing data or health, clinical, survey and programme data, follow the service-specific consent requirements and agree secure transfer arrangements before providing project files or materials.',
     ],
   },
   {
-    heading: 'Accuracy and availability',
+    heading: 'Study protocols and animal work',
     paragraphs: [
-      'We take care to keep service information current, but details change. Where something matters to your decision, ask us and we will confirm it.',
-      'We aim to keep the site available but do not guarantee uninterrupted access. Planned maintenance will be announced where it is likely to be noticed.',
+      'A study protocol or analysis plan is prepared before execution. Animal studies do not begin until the protocol has been approved by the institutional animal ethics committee.',
     ],
   },
   {
-    heading: 'Your account',
+    heading: 'Results and use',
     paragraphs: [
-      'You are responsible for keeping access to your account secure. Tell us promptly if you think someone else has gained access to it.',
-      'You can ask us to close your account at any time. Records we are required to keep will be retained as described in the privacy notice.',
+      'Methods, controls, analysis and reporting are defined in the agreed project protocol. Research results and computational predictions do not by themselves establish that a treatment is safe or effective for people, and are not medical advice or a clinical treatment recommendation.',
     ],
   },
   {
-    heading: 'Changes to these terms',
+    heading: 'Ownership, confidentiality and publication',
     paragraphs: [
-      'We will update this page when the terms change, and the date at the top will change with it. Material changes affecting existing enquiries will be notified by email rather than left to be noticed here.',
+      'The client-provided privacy draft says client files, samples and generated results remain client property and are used only for the requested work. Research collaborations require a separate written agreement for ownership, publication and authorship. Confirm confidentiality, output licensing and publication conditions in the project agreement.',
+    ],
+  },
+  {
+    heading: 'Contact',
+    paragraphs: [
+      'For project questions, contact CERA Medical at theceramedica@gmail.com or use the enquiry form.',
     ],
   },
 ];
@@ -68,14 +61,14 @@ export default function TermsPage() {
   return (
     <PolicyDocument
       title="Terms of Service"
-      lede="The terms on which we provide this website and the enquiry service."
-      updated="2026-09-23"
+      lede="Draft project terms based on the client’s service workflow."
+      updated="2026-10-03"
       notice={
-        <Alert tone="warning" title="This wording is a placeholder">
+        <Alert tone="warning" title="Draft — legal and client approval required">
           <Text size="body-sm">
-            These terms have not yet been through legal review and must not be relied on as final.
-            The first section, on medical advice, states the position the platform is built to - the
-            rest is provisional.
+            The supplied content includes service workflows and client responsibilities, but no
+            approved Terms of Service. Confirm project contracting, liability, fees, intellectual
+            property, cancellation and dispute terms before launch.
           </Text>
         </Alert>
       }

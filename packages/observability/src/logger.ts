@@ -176,7 +176,7 @@ export async function timed<T>(
      * Logged and rethrown, not swallowed.
      *
      * The caller decides what an error means; this only records that it happened
-     * and how long it took. Swallowing here would turn a failed Zoho delivery into
+     * and how long it took. Swallowing here would turn a failed erpnext delivery into
      * a silent success and leave the outbox row marked done.
      */
     // The event name is passed as the message explicitly. Without it pino derives

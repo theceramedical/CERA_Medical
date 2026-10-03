@@ -11,7 +11,7 @@ import { buildCustomerTimeline, customerStatusLabel, toCustomerStatus } from './
  *
  * None uses object spread, and that is the entire design. `{ ...enquiry }`
  * silently includes whatever is added to the entity later - so the day someone
- * adds a field, it appears in the customer response and the Zoho payload with no
+ * adds a field, it appears in the customer response and the CRM payload with no
  * code change, no review, and no test failure. Naming fields explicitly means a
  * new field is invisible until someone decides to expose it.
  */
@@ -102,9 +102,16 @@ export function toStaffEnquiry(
     name: enquiry.name,
     email: enquiry.email,
     phone: enquiry.phone,
+    institution: enquiry.institution,
+    country: enquiry.country,
     serviceId: enquiry.serviceId,
     message: enquiry.message,
     consentAt: enquiry.consentAt,
+    consentVersion: enquiry.consentVersion ?? 'legacy-unknown',
+    sequencingDataConsent: enquiry.sequencingDataConsent ?? false,
+    samplesCompoundsConsent: enquiry.samplesCompoundsConsent ?? false,
+    healthDataConsent: enquiry.healthDataConsent ?? false,
+    updatesOptIn: enquiry.updatesOptIn ?? false,
     source: enquiry.source,
     internalStatus: enquiry.internalStatus,
     ownerId: enquiry.ownerId,
@@ -118,40 +125,33 @@ export function toStaffEnquiry(
 }
 
 // ---------------------------------------------------------------------------
-// Zoho CRM payload
+// CRM payload
 // ---------------------------------------------------------------------------
 
-/**
- * Zoho requires `Company` on a Lead even for an individual enquirer, so a
- * constant is sent rather than inventing a value from the person's name.
- */
-export const ZOHO_COMPANY_PLACEHOLDER = 'Individual enquiry';
-
-export const ZohoLeadPayloadSchema = z.object({
-  Last_Name: z.string().min(1).max(120),
-  First_Name: z.string().max(120).optional(),
-  Email: EmailSchema,
-  Phone: z.string().max(24).optional(),
-  Company: z.string().min(1),
-  Lead_Source: z.string().min(1).max(100),
+export const CrmLeadPayloadSchema = z.object({
+  lastName: z.string().min(1).max(120),
+  firstName: z.string().max(120).optional(),
+  email: EmailSchema,
+  phone: z.string().max(24).optional(),
+  company: z.string().min(1).max(160).optional(),
+  source: z.string().min(1).max(100),
   /** The enquiry message. The only free text that leaves the platform. */
-  Description: z.string().max(2000),
+  description: z.string().max(2000),
   /** The enquiry reference, used for deduplication. See ADR-006. */
-  External_Lead_ID: z.string().min(1),
-  CERA_Service: z.string().max(160),
-  /** Customer vocabulary, never internal. Zoho users are not CERA staff. */
-  CERA_Status: z.string().max(40),
+  externalReference: z.string().min(1),
+  service: z.string().max(160),
+  /** Customer vocabulary, never internal. CRM users are not CERA staff. */
+  customerStatus: z.string().max(40),
+  country: z.string().max(80).optional(),
 });
-export type ZohoLeadPayload = z.infer<typeof ZohoLeadPayloadSchema>;
+export type CrmLeadPayload = z.infer<typeof CrmLeadPayloadSchema>;
 
 /**
- * Splits a full name into Zoho's required `Last_Name` and optional `First_Name`.
+ * Splits a full name into the lead's required surname and optional given name.
  *
- * Zoho makes `Last_Name` mandatory, so a single-word name becomes the last name
- * rather than being rejected or padded with a placeholder. For multi-word names
- * the final token is treated as the surname - imperfect for names that do not
- * follow that convention, but it is Zoho's data model, and the full name is
- * preserved in the enquiry record regardless.
+ * A single-word name becomes the surname rather than being rejected or padded
+ * with a placeholder. For multi-word names the final token is treated as the
+ * surname. The full name remains preserved in the enquiry record regardless.
  */
 export function splitName(fullName: string): { firstName?: string; lastName: string } {
   const parts = fullName
@@ -173,33 +173,38 @@ export function splitName(fullName: string): { firstName?: string; lastName: str
  * Builds the CRM payload.
  *
  * Note what is not here: no internal status, no owner identity, no internal
- * note, no audit trail, and no enquiry UUID. Zoho is a sales tool used by people
- * who are not necessarily CERA staff, so it receives the customer's own data and
+ * note, no audit trail, and no enquiry UUID. CRM users are not necessarily CERA
+ * staff, so the integration receives only the customer's own data and
  * the customer-facing status, and nothing about how CERA is handling the
  * enquiry internally.
  */
-export function toZohoLeadPayload(
+export function toCrmLeadPayload(
   enquiry: Enquiry,
   service: Pick<Service, 'title'>,
-): ZohoLeadPayload {
+): CrmLeadPayload {
   const { firstName, lastName } = splitName(enquiry.name);
   const customerStatus = toCustomerStatus(enquiry.internalStatus);
 
   return {
-    Last_Name: lastName,
-    ...(firstName !== undefined ? { First_Name: firstName } : {}),
-    Email: enquiry.email,
-    ...(enquiry.phone !== null ? { Phone: enquiry.phone } : {}),
-    Company: ZOHO_COMPANY_PLACEHOLDER,
-    Lead_Source: zohoLeadSource(enquiry.source),
-    Description: enquiry.message,
-    External_Lead_ID: enquiry.reference,
-    CERA_Service: service.title,
-    CERA_Status: customerStatus,
+    lastName,
+    ...(firstName !== undefined ? { firstName } : {}),
+    email: enquiry.email,
+    ...(enquiry.phone !== null ? { phone: enquiry.phone } : {}),
+    ...(enquiry.institution !== null && enquiry.institution !== undefined
+      ? { company: enquiry.institution }
+      : {}),
+    source: crmLeadSource(enquiry.source),
+    description: enquiry.message,
+    externalReference: enquiry.reference,
+    service: service.title,
+    customerStatus,
+    ...(enquiry.country !== null && enquiry.country !== undefined
+      ? { country: enquiry.country }
+      : {}),
   };
 }
 
-function zohoLeadSource(source: Enquiry['source']): string {
+function crmLeadSource(source: Enquiry['source']): string {
   switch (source) {
     case 'web_service_page':
       return 'Website - Service Page';

@@ -252,7 +252,7 @@ describeWithDb('constraints and triggers', () => {
     });
 
     it('refuses to change a reference once issued', async () => {
-      // Customers quote it and Zoho stores it, so a reference that changes makes
+      // Customers quote it and erpnext stores it, so a reference that changes makes
       // two records impossible to reconcile.
       const row = await insertEnquiry();
 

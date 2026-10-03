@@ -29,6 +29,20 @@
       "when": 1790586781324,
       "tag": "0003_married_ricochet",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790973965626,
+      "tag": "0004_jittery_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790975178789,
+      "tag": "0005_lonely_forgotten_one",
+      "breakpoints": true
     }
   ]
 }

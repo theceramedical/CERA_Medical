@@ -13,12 +13,11 @@
  */
 
 export const REFERENCE_SERVICE_SLUGS = [
-  'general-health',
-  'cardiology',
-  'orthopaedics',
-  'womens-health',
-  'diagnostic-tests',
-  'wellness-preventive-care',
+  'preclinical-studies',
+  'molecular-research',
+  'metagenomic-data-analysis',
+  'biomedical-omics-data-analysis',
+  'evidence-synthesis-technical-reports',
 ] as const;
 
 export type ReferenceServiceSlug = (typeof REFERENCE_SERVICE_SLUGS)[number];

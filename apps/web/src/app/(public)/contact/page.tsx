@@ -1,6 +1,6 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
-import { Clock, Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 
 import { AppButtonLink, AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
@@ -9,16 +9,13 @@ import type { LucideIcon } from 'lucide-react';
 import type { Metadata } from 'next';
 
 /**
- * Contact details.
- *
- * Placeholder values pending CERA's own (PRD 22), and deliberately obvious ones - a `0000` phone
- * number and an `example.com` address - so that nobody mistakes them for real and calls them. A
- * plausible-looking fake is worse than an obvious one.
+ * Contact details supplied by CERA Medical.
  */
 
 export const metadata: Metadata = {
   title: 'Contact CERA Medical',
-  description: 'How to reach CERA Medical by email or phone, and our opening hours.',
+  description:
+    'Contact CERA Medical by email or visit its laboratory and office in Haripur, Pakistan.',
 };
 
 /**
@@ -41,25 +38,20 @@ const CONTACT_ENTRIES: readonly ContactEntry[] = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'hello@example.com',
-    href: 'mailto:hello@example.com',
-  },
-  {
-    icon: Phone,
-    label: 'Phone',
-    // `tel:` keeps the number dialable on a phone, which is most of the traffic to a page like this.
-    value: '+44 (0)20 0000 0000',
-    href: 'tel:+442000000000',
-  },
-  {
-    icon: Clock,
-    label: 'Opening hours',
-    value: 'Monday to Friday, 9am to 5pm',
+    value: 'theceramedica@gmail.com',
+    href: 'mailto:theceramedica@gmail.com',
   },
   {
     icon: MapPin,
-    label: 'Address',
-    value: 'Placeholder address, pending confirmation',
+    label: 'Laboratory',
+    value:
+      'B2-105, B2 Building, Department of Biological and Health Sciences, PAF-IAST, Haripur, Pakistan',
+  },
+  {
+    icon: MapPin,
+    label: 'Office',
+    value:
+      '2nd Floor, BIC, C2 Building, Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST), Mang, Haripur, Pakistan',
   },
 ];
 
@@ -68,7 +60,7 @@ export default function ContactPage() {
     <>
       <PageHeader
         title="Contact us"
-        lede="For anything about a specific enquiry, quote its reference number and we will find it straight away."
+        lede="For project enquiries, contact CERA Medical by email or use the service request form. We aim to reply within three working days."
       />
 
       <div className="mx-auto grid max-w-site grid-cols-1 gap-12 px-6 py-12 md:px-10 lg:grid-cols-2 lg:py-16">
@@ -117,9 +109,9 @@ export default function ContactPage() {
           </Heading>
 
           <Text tone="muted" className="mt-4">
-            The enquiry form is the fastest route: it records which service you are asking about,
-            gives you a reference number straight away, and lets you follow progress without having
-            to call.
+            Describe the research service you need and your project requirements. Please do not
+            include participant names or other direct identifiers. Large datasets can be transferred
+            later through a secure link; arrange physical sample shipping with us first.
           </Text>
 
           <AppButtonLink href="/enquiry" variant="primary" className="mt-6">

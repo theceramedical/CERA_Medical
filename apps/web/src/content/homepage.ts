@@ -1,27 +1,21 @@
 import {
-  Activity,
-  Bone,
-  CalendarCheck,
-  ClipboardList,
-  HeartPulse,
-  Leaf,
-  MessageSquare,
+  Microscope,
+  Dna,
+  Database,
+  ChartNoAxesCombined,
+  FileText,
+  ClipboardCheck,
   Search,
   ShieldCheck,
-  Stethoscope,
-  Sun,
-  TestTube,
-  UserRound,
+  FlaskConical,
+  Users,
+  Workflow,
 } from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
 
 /**
- * The homepage's content, transcribed from the reference image (design-language.md section 6).
- *
- * **Placeholder pending CERA content approval (PRD 22).** Phase 06 replaces the services with the
- * Vendure catalogue and Phase 05 replaces the articles with Payload documents; the section components
- * take these shapes as props, so that swap changes this file and the data source and nothing else.
+ * Public-facing CERA Medical content supplied by the client.
  *
  * **Why this is not `@cera/contracts/fixtures`.** The fixture package says plainly that nothing in it
  * is imported by application code, and it is right to: every fixture is wrapped in a `Fixture` marker,
@@ -29,9 +23,7 @@ import type { LucideIcon } from 'lucide-react';
  * along with it. Bundling that into a client build to render six card titles would be a poor trade, and
  * the marker exists precisely so fixture data cannot be mistaken for real data at runtime.
  *
- * The cost of the separation is that the same words exist twice, which is a drift risk - so
- * `homepage.test.ts` imports both and asserts they agree. A test can reach the fixtures where the
- * application cannot, so the duplication is pinned without the coupling.
+ * Real catalogue descriptions come from the client-approved CERA service brief.
  */
 
 export interface ServiceSummary {
@@ -42,49 +34,39 @@ export interface ServiceSummary {
 }
 
 /**
- * The six services in the reference's card row.
- *
- * The icons are a judgement, not data - the reference draws generic glyphs and lucide has no
- * "orthopaedics" icon - so they live here beside the copy rather than in the catalogue. Phase 06 keeps
- * this mapping when the titles start coming from Vendure, because an icon is a presentation decision
- * and putting it in the catalogue would make it a merchandising field nobody maintains.
+ * Icon choices are presentation-only. Catalogue copy and service slugs are seeded separately in
+ * Vendure; the slugs here must stay aligned with that catalogue.
  */
 export const HOMEPAGE_SERVICES: readonly ServiceSummary[] = [
   {
-    slug: 'general-health',
-    title: 'General Health',
-    description: 'Comprehensive care for everyday health needs.',
-    icon: Stethoscope,
+    slug: 'preclinical-studies',
+    title: 'Preclinical Studies',
+    description: 'Safety and efficacy testing in animal models, cells and computer simulations.',
+    icon: Microscope,
   },
   {
-    slug: 'cardiology',
-    title: 'Cardiology',
-    description: 'Expert care for a healthier heart.',
-    icon: HeartPulse,
+    slug: 'molecular-research',
+    title: 'Molecular Research',
+    description: 'Molecular, biochemical and histological analysis of research samples.',
+    icon: Dna,
   },
   {
-    slug: 'orthopaedics',
-    title: 'Orthopaedics',
-    description: 'Getting you moving with confidence.',
-    icon: Bone,
+    slug: 'metagenomic-data-analysis',
+    title: 'Metagenomic Data Analysis',
+    description: 'Microbiome analysis from raw sequencing reads to publication-ready results.',
+    icon: Database,
   },
   {
-    slug: 'womens-health',
-    title: "Women's Health",
-    description: 'Specialist care for every stage of life.',
-    icon: UserRound,
+    slug: 'biomedical-omics-data-analysis',
+    title: 'Biomedical and Omics Data Analysis',
+    description: 'Statistical and computational analysis of biological and clinical datasets.',
+    icon: ChartNoAxesCombined,
   },
   {
-    slug: 'diagnostic-tests',
-    title: 'Diagnostic Tests',
-    description: 'Accurate results for better care.',
-    icon: TestTube,
-  },
-  {
-    slug: 'wellness-preventive-care',
-    title: 'Wellness & Preventive Care',
-    description: 'Stay healthy today and tomorrow.',
-    icon: Leaf,
+    slug: 'evidence-synthesis-technical-reports',
+    title: 'Evidence Synthesis and Technical Reports',
+    description: 'Reviews, assessments and reports that turn evidence into decisions.',
+    icon: FileText,
   },
 ];
 
@@ -96,19 +78,30 @@ export interface ProcessStepContent {
 
 export const HOMEPAGE_PROCESS: readonly ProcessStepContent[] = [
   {
-    title: 'Explore',
-    description: 'Browse our services and find the right care for you.',
+    title: 'Scoping',
+    description:
+      'Agree the research question, available data or materials, scope, timeline and cost.',
     icon: Search,
   },
   {
-    title: 'Enquire',
-    description: 'Submit a simple enquiry through our secure form.',
-    icon: MessageSquare,
+    title: 'Protocol',
+    description: 'Prepare the study protocol or analysis plan before work begins.',
+    icon: ClipboardCheck,
   },
   {
-    title: 'Follow Up',
-    description: 'Track your enquiry and stay updated in your account.',
-    icon: CalendarCheck,
+    title: 'Execution',
+    description: 'Carry out the agreed work with defined controls, replicates and quality checks.',
+    icon: FlaskConical,
+  },
+  {
+    title: 'Analysis and reporting',
+    description: 'Deliver results with figures, tables and documented methods.',
+    icon: Workflow,
+  },
+  {
+    title: 'Follow-up',
+    description: 'Discuss delivered work and complete included revision rounds.',
+    icon: Users,
   },
 ];
 
@@ -119,26 +112,7 @@ export interface ArticleSummary {
   readonly excerpt: string;
 }
 
-export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [
-  {
-    slug: '5-simple-habits-for-a-healthier-you',
-    category: 'Wellness',
-    title: '5 Simple Habits for a Healthier You',
-    excerpt: 'Small changes can make a big difference to your long-term health.',
-  },
-  {
-    slug: 'the-role-of-nutrition-in-wellbeing',
-    category: 'Nutrition',
-    title: 'The Role of Nutrition in Wellbeing',
-    excerpt: 'Discover how the right diet can support your physical and mental health.',
-  },
-  {
-    slug: 'understanding-heart-health',
-    category: 'Heart Health',
-    title: 'Understanding Heart Health',
-    excerpt: 'Learn about key risk factors and how to keep your heart healthy.',
-  },
-];
+export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [];
 
 export interface TrustItem {
   readonly label: string;
@@ -147,9 +121,9 @@ export interface TrustItem {
 
 /** The three-item row beneath the hero's buttons. */
 export const HERO_TRUST_ITEMS: readonly TrustItem[] = [
-  { label: 'Trusted Information', icon: ShieldCheck },
-  { label: 'Patient Focused', icon: Activity },
-  { label: 'A Healthier Tomorrow', icon: Sun },
+  { label: 'Documented methods', icon: ClipboardCheck },
+  { label: 'Reproducible analysis', icon: ShieldCheck },
+  { label: 'Research team support', icon: Users },
 ];
 
 /**
@@ -160,18 +134,18 @@ export const HERO_TRUST_ITEMS: readonly TrustItem[] = [
  * and makes it obvious that the split is a colour decision, not two headings.
  */
 export const HERO = {
-  eyebrow: 'Your Health, Our Priority.',
-  headlinePrimary: 'Trusted Medical Services,',
-  headlineAccent: 'Made Easier to Access.',
-  body: 'Clear information. Simple enquiries. Better care for a healthier tomorrow.',
+  eyebrow: 'Biomedical Research and Development',
+  headlinePrimary: 'Research Services,',
+  headlineAccent: 'From Study to Report.',
+  body: 'Preclinical studies, molecular laboratory work, data analysis and evidence synthesis for research teams and health organisations.',
   badge: {
-    title: 'Real People Real Care',
-    body: 'Access the right services with confidence.',
-    icon: ClipboardList,
+    title: 'Research with clear methods',
+    body: 'Documented workflows and outputs agreed for your project.',
+    icon: ClipboardCheck,
   },
 } as const;
 
 export const CTA_BAND = {
-  heading: 'Need help finding the right service?',
-  body: 'Our team is here to help you with any questions.',
+  heading: 'Ready to advance your research?',
+  body: 'Tell us about your project and the service you need.',
 } as const;

@@ -27,7 +27,11 @@ describe('OIDC boundary', () => {
     };
     const token = await sealHandshake(state);
     expect((await openHandshake(token)).state).toBe(state.state);
-    await expect(openHandshake(token.slice(0, -2) + 'xx')).rejects.toThrow();
+    const segments = token.split('.');
+    const tag = Buffer.from(segments[4]!, 'base64url');
+    tag[0] = tag[0]! ^ 1;
+    segments[4] = tag.toString('base64url');
+    await expect(openHandshake(segments.join('.'))).rejects.toThrow();
     await expect(
       openHandshake(await sealHandshake({ ...state, createdAt: Date.now() - 601_000 })),
     ).rejects.toThrow();

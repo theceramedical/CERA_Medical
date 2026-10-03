@@ -5,7 +5,6 @@ import { articleJsonLd, JsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
 import { RichText } from '../../../../components/rich-text.tsx';
-import { HOMEPAGE_ARTICLES } from '../../../../content/homepage.ts';
 import { getDocument, listPublishedDocuments } from '../../../../lib/cms/client.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
 import { siteUrl } from '../../../../lib/site-url.ts';
@@ -20,8 +19,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const draft = await draftMode();
   const document = await getDocument('post', slug, draft.isEnabled);
-  const fallback = HOMEPAGE_ARTICLES.find((article) => article.slug === slug);
-  const title = document?.title ?? fallback?.title;
+  const title = document?.title;
   if (title === undefined) {
     return pageMetadata({
       title: 'Article not found',
@@ -32,7 +30,7 @@ export async function generateMetadata({
   }
   return pageMetadata({
     title,
-    description: document?.excerpt ?? fallback?.excerpt ?? title,
+    description: document?.excerpt ?? title,
     path: `/articles/${slug}`,
     noIndex: document?.seo.noIndex === true,
   });
@@ -46,13 +44,11 @@ export default async function ArticleDetailPage({
   const { slug } = await params;
   const draft = await draftMode();
   const document = await getDocument('post', slug, draft.isEnabled);
-  const fallback = HOMEPAGE_ARTICLES.find((article) => article.slug === slug);
+  if (document === null) notFound();
+  if (document.status !== 'published' && !draft.isEnabled) notFound();
 
-  if (document === null && fallback === undefined) notFound();
-  if (document !== null && document.status !== 'published' && !draft.isEnabled) notFound();
-
-  const title = document?.title ?? fallback?.title ?? slug;
-  const excerpt = document?.excerpt ?? fallback?.excerpt ?? '';
+  const title = document.title;
+  const excerpt = document.excerpt ?? '';
   const related = (await listPublishedDocuments('post'))
     .filter((post) => post.slug !== slug)
     .slice(0, 3);
@@ -68,7 +64,7 @@ export default async function ArticleDetailPage({
       />
       <PageHeader title={title} lede={excerpt} />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        {document !== null ? <RichText body={document.body} /> : null}
+        <RichText body={document.body} />
 
         {related.length > 0 ? (
           <nav aria-label="Related articles" className="mt-16">

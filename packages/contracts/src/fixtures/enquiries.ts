@@ -22,7 +22,7 @@ import { enquirableServiceFixtures, serviceByKey } from './services.ts';
  * transition rules are never exercised - and `internalStatus` is the field the
  * customer projection must never expose, so an unexercised value is exactly where
  * a leak survives. Three further enquiries cover the cases that are about shape
- * rather than status: one carrying three notes, one with a dead-lettered Zoho
+ * rather than status: one carrying three notes, one with a dead-lettered erpnext
  * delivery, and one that no account has claimed.
  *
  * Histories are not hand-written as free text. Each path is declared as a list of
@@ -262,7 +262,7 @@ function buildEnquiry(seed: EnquirySeed): Fixture<Enquiry> {
        * Derived from the name, never from the fixture key.
        *
        * The key encodes the internal status - `triaging`, `rejected-spam` - and the
-       * email is customer-facing data that legitimately appears in a Zoho payload. An
+       * email is customer-facing data that legitimately appears in a erpnext payload. An
        * address built from the key therefore puts internal vocabulary into a field the
        * leak tests have to treat as safe, so `expect(payload).not.toContain('triaging')`
        * fails on a fixture artefact rather than a leak. A test that cries wolf is a
@@ -332,7 +332,7 @@ function buildStatusEvents(seed: EnquirySeed, enquiryId: string): Fixture<Enquir
  *
  * Every one is written to be a leak test on its own: each contains the word
  * `STAFF-ONLY`, so the projection test can assert that no customer-facing response
- * or Zoho payload contains that token anywhere, rather than checking a list of
+ * or erpnext payload contains that token anywhere, rather than checking a list of
  * specific strings that a new status would not be added to.
  */
 const STATUS_REASONS: Record<InternalStatus, string | null> = {

@@ -113,11 +113,13 @@ await app.register(
     createEnquiryService({
       store: postgresEnquiryStore(pool),
       allowedServiceIds: new Set([
-        'general-health',
-        'cardiology',
-        'orthopaedics',
-        'womens-health',
-        'wellness-preventive-care',
+        'preclinical-studies',
+        'molecular-research',
+        'metagenomic-data-analysis',
+        'biomedical-omics-data-analysis',
+        'evidence-synthesis-technical-reports',
+        'research-collaboration',
+        'other-enquiry',
       ]),
       ipSalt: requiredProductionSecret('IP_HASH_SALT', 'local-only'),
     }),

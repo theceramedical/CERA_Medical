@@ -5,7 +5,7 @@ import { claimBatch, failOrDeadLetter, type OutboxRow } from './claim.ts';
 function row(id: string, overrides: Partial<OutboxRow> = {}): OutboxRow {
   return {
     id,
-    eventType: 'zoho.lead.upsert',
+    eventType: 'erpnext.lead.upsert',
     attempts: 0,
     status: 'pending',
     lockedBy: null,

@@ -19,6 +19,8 @@ FIELDS = [
     {"fieldname": "custom_cera_service", "label": "CERA Service", "fieldtype": "Data", "insert_after": "custom_cera_reference"},
     {"fieldname": "custom_cera_status", "label": "CERA Status", "fieldtype": "Data", "insert_after": "custom_cera_service"},
     {"fieldname": "custom_cera_message", "label": "CERA Message", "fieldtype": "Small Text", "insert_after": "custom_cera_status"},
+    {"fieldname": "custom_cera_country", "label": "CERA Country", "fieldtype": "Data", "insert_after": "custom_cera_message"},
+    {"fieldname": "custom_cera_source", "label": "CERA Enquiry Source", "fieldtype": "Data", "insert_after": "custom_cera_country"},
 ]
 
 
