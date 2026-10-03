@@ -27,7 +27,8 @@ export const Pages: CollectionConfig = publishable({
       type: 'blocks',
       blocks: layoutBlocks,
       admin: {
-        description: 'Each block is a Phase 03/04 component. Nothing else is renderable.',
+        description:
+          'Build pages from approved, accessible sections. Every available block is rendered on the public site.',
       },
     },
     { name: 'body', type: 'richText', editor: constrainedEditor() },

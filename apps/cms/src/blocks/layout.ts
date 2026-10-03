@@ -45,4 +45,87 @@ export const CtaBandBlock: Block = {
   ],
 };
 
-export const layoutBlocks: Block[] = [HeroBlock, RichTextBlock, CtaBandBlock];
+export const SectionHeadingBlock: Block = {
+  slug: 'sectionHeading',
+  labels: { singular: 'Section heading', plural: 'Section headings' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 80 },
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+  ],
+};
+
+export const FeatureGridBlock: Block = {
+  slug: 'featureGrid',
+  labels: { singular: 'Feature grid', plural: 'Feature grids' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 80 },
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    {
+      name: 'features',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 12,
+      fields: [
+        { name: 'title', type: 'text', required: true, maxLength: 120 },
+        { name: 'description', type: 'textarea', required: true, maxLength: 600 },
+        { name: 'href', type: 'text', maxLength: 300 },
+        { name: 'linkLabel', type: 'text', maxLength: 80 },
+      ],
+    },
+  ],
+};
+
+export const ProcessStepsBlock: Block = {
+  slug: 'processSteps',
+  labels: { singular: 'Process steps', plural: 'Process steps' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 80 },
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    {
+      name: 'steps',
+      type: 'array',
+      required: true,
+      minRows: 2,
+      maxRows: 10,
+      fields: [
+        { name: 'title', type: 'text', required: true, maxLength: 120 },
+        { name: 'description', type: 'textarea', required: true, maxLength: 600 },
+      ],
+    },
+  ],
+};
+
+export const StatisticsBlock: Block = {
+  slug: 'statistics',
+  labels: { singular: 'Statistics', plural: 'Statistics' },
+  fields: [
+    { name: 'heading', type: 'text', maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 6,
+      fields: [
+        { name: 'value', type: 'text', required: true, maxLength: 32 },
+        { name: 'label', type: 'text', required: true, maxLength: 100 },
+        { name: 'detail', type: 'text', maxLength: 180 },
+      ],
+    },
+  ],
+};
+
+export const layoutBlocks: Block[] = [
+  HeroBlock,
+  SectionHeadingBlock,
+  FeatureGridBlock,
+  ProcessStepsBlock,
+  StatisticsBlock,
+  RichTextBlock,
+  CtaBandBlock,
+];
