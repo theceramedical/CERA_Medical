@@ -36,10 +36,10 @@ function lexical(paragraphs: readonly SourceParagraph[]) {
         return {
           type: 'heading',
           tag: level <= 2 ? 'h2' : 'h3',
-          format: '',
+          format: '' as const,
           indent: 0,
           version: 1,
-          direction: 'ltr',
+          direction: 'ltr' as const,
           children: [
             {
               type: 'text',
@@ -55,10 +55,10 @@ function lexical(paragraphs: readonly SourceParagraph[]) {
       }
       return {
         type: 'paragraph',
-        format: '',
+        format: '' as const,
         indent: 0,
         version: 1,
-        direction: 'ltr',
+        direction: 'ltr' as const,
         children: [
           {
             type: 'text',
@@ -72,7 +72,16 @@ function lexical(paragraphs: readonly SourceParagraph[]) {
         ],
       };
     });
-  return { root: { type: 'root', format: '', indent: 0, version: 1, direction: 'ltr', children } };
+  return {
+    root: {
+      type: 'root',
+      format: '' as const,
+      indent: 0,
+      version: 1,
+      direction: 'ltr' as const,
+      children,
+    },
+  };
 }
 
 function publicText(paragraphs: readonly SourceParagraph[]): readonly SourceParagraph[] {
@@ -141,7 +150,7 @@ async function upsert(
   payload: Payload,
   collection: 'pages' | 'policies' | 'service-presentations',
   slug: string,
-  data: Record<string, unknown>,
+  data: RequiredDataFromCollectionSlug<'pages' | 'policies' | 'service-presentations'>,
 ): Promise<void> {
   const found = await payload.find({
     collection,
@@ -156,7 +165,7 @@ async function upsert(
   if (existing === undefined) {
     await payload.create({
       collection,
-      data: record as RequiredDataFromCollectionSlug<typeof collection>,
+      data: record,
       overrideAccess: true,
       draft: false,
     });
