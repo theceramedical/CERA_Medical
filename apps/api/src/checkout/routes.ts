@@ -52,6 +52,20 @@ function tokenFromRequest(request: { headers: { cookie?: string | undefined } })
   return null;
 }
 
+function vendureCookieDomain(): string {
+  const site = process.env.CORS_ALLOWED_ORIGINS?.split(',')[0]?.trim();
+  if (site === undefined || site.length === 0) return '';
+  try {
+    const host = new URL(site).hostname;
+    if (host === 'localhost' || host.endsWith('.localhost')) return '';
+    const parts = host.split('.');
+    if (parts.length >= 2) return `; Domain=.${parts.slice(-2).join('.')}`;
+  } catch {
+    return '';
+  }
+  return '';
+}
+
 function setTokenCookie(
   reply: { header: (name: string, value: string) => void },
   token: string | null,
@@ -60,7 +74,7 @@ function setTokenCookie(
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
   reply.header(
     'set-cookie',
-    `${VENDURE_TOKEN_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+    `${VENDURE_TOKEN_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax${secure}${vendureCookieDomain()}`,
   );
 }
 
