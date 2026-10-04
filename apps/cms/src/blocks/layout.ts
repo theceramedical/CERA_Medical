@@ -108,6 +108,7 @@ const sectionToneField = {
 
 export const FeatureGridBlock: Block = {
   slug: 'featureGrid',
+  dbName: 'feat_grid',
   labels: { singular: 'Feature grid', plural: 'Feature grids' },
   fields: [
     { name: 'eyebrow', type: 'text', maxLength: 80 },
@@ -123,6 +124,7 @@ export const FeatureGridBlock: Block = {
     {
       name: 'features',
       type: 'array',
+      dbName: 'feat',
       required: true,
       minRows: 1,
       maxRows: 12,
@@ -134,6 +136,7 @@ export const FeatureGridBlock: Block = {
         {
           name: 'highlights',
           type: 'array',
+          dbName: 'hl',
           maxRows: 8,
           fields: [{ name: 'text', type: 'text', required: true, maxLength: 200 }],
         },
@@ -144,6 +147,7 @@ export const FeatureGridBlock: Block = {
 
 export const ProcessStepsBlock: Block = {
   slug: 'processSteps',
+  dbName: 'proc_steps',
   labels: { singular: 'Process steps', plural: 'Process steps' },
   fields: [
     { name: 'eyebrow', type: 'text', maxLength: 80 },
@@ -254,6 +258,7 @@ export const CalloutBandBlock: Block = {
 /** Service detail hero metadata (Stitch service pages). */
 export const ServiceHeroBlock: Block = {
   slug: 'serviceHero',
+  dbName: 'svc_hero',
   labels: { singular: 'Service hero', plural: 'Service heroes' },
   fields: [
     { name: 'eyebrow', type: 'text', maxLength: 120 },
@@ -270,6 +275,7 @@ export const ServiceHeroBlock: Block = {
 
 export const KeyValueListBlock: Block = {
   slug: 'keyValueList',
+  dbName: 'kv_list',
   labels: { singular: 'Specification list', plural: 'Specification lists' },
   fields: [
     { name: 'heading', type: 'text', required: true, maxLength: 160 },
@@ -291,6 +297,7 @@ export const KeyValueListBlock: Block = {
 /** Sticky sidebar enquiry card on service (product) pages. */
 export const ServiceEnquiryAsideBlock: Block = {
   slug: 'serviceEnquiryAside',
+  dbName: 'enq_aside',
   labels: { singular: 'Enquiry sidebar', plural: 'Enquiry sidebars' },
   fields: [
     { name: 'eyebrow', type: 'text', maxLength: 80, defaultValue: 'Project inquiry' },
@@ -300,6 +307,7 @@ export const ServiceEnquiryAsideBlock: Block = {
     {
       name: 'trustItems',
       type: 'array',
+      dbName: 'trust',
       maxRows: 8,
       fields: [{ name: 'label', type: 'text', required: true, maxLength: 160 }],
     },
@@ -308,6 +316,7 @@ export const ServiceEnquiryAsideBlock: Block = {
 
 export const ServiceSidebarCardBlock: Block = {
   slug: 'serviceSidebarCard',
+  dbName: 'side_card',
   labels: { singular: 'Sidebar card', plural: 'Sidebar cards' },
   fields: [
     { name: 'title', type: 'text', required: true, maxLength: 160 },
