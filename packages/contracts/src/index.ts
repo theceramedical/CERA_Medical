@@ -179,6 +179,7 @@ export { PREVIEW_TTL_SECONDS, signPreviewToken, verifyPreviewToken } from './pre
 export {
   formatPkrListPrice,
   PHYSICAL_PRODUCT_PRICES,
+  PhysicalProductSkuSchema,
   physicalProductListPriceMinor,
   type PhysicalProductPrice,
 } from './physical-catalog.ts';

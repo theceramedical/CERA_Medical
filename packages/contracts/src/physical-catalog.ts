@@ -1,7 +1,18 @@
+import { z } from 'zod';
+
 /**
  * Checkout list prices for shippable physical SKUs (PKR minor units, ×100).
  * Marketing copy lives in web/commerce seed; amounts must match everywhere.
  */
+
+/** Vendure variant SKU (e.g. `CR-CEL-8402`). Not a URL slug — see `SlugSchema`. */
+export const PhysicalProductSkuSchema = z
+  .string()
+  .min(1)
+  .max(40)
+  .regex(/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/, {
+    message: 'Expected an upper-case product SKU with hyphen separators',
+  });
 
 export interface PhysicalProductPrice {
   readonly sku: string;

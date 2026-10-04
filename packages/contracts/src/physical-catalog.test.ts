@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { AddCartLineBodySchema } from './cart.ts';
 import {
   formatPkrListPrice,
   PHYSICAL_PRODUCT_PRICES,
@@ -16,5 +17,14 @@ describe('physical catalog prices', () => {
     expect(new Set(PHYSICAL_PRODUCT_PRICES.map((row) => row.sku)).size).toBe(
       PHYSICAL_PRODUCT_PRICES.length,
     );
+  });
+
+  it('accepts catalogue SKUs in add-to-cart requests', () => {
+    for (const { sku } of PHYSICAL_PRODUCT_PRICES) {
+      expect(AddCartLineBodySchema.safeParse({ slug: sku, quantity: 1 }).success).toBe(true);
+    }
+    expect(
+      AddCartLineBodySchema.safeParse({ slug: 'preclinical-studies', quantity: 1 }).success,
+    ).toBe(false);
   });
 });

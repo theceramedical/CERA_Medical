@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { SlugSchema } from './primitives.ts';
+import { PhysicalProductSkuSchema } from './physical-catalog.ts';
 
 export const CartLineSchema = z.object({
   id: z.string().min(1),
-  slug: SlugSchema,
+  slug: PhysicalProductSkuSchema,
   title: z.string().min(1).max(160),
   quantity: z.number().int().min(1).max(99),
   unitPriceMinor: z.number().int().nonnegative(),
@@ -21,7 +21,7 @@ export const CartSchema = z.object({
 export type Cart = z.infer<typeof CartSchema>;
 
 export const AddCartLineBodySchema = z.object({
-  slug: SlugSchema,
+  slug: PhysicalProductSkuSchema,
   quantity: z.number().int().min(1).max(99).default(1),
 });
 
