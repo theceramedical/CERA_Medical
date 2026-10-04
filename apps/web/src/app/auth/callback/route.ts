@@ -4,7 +4,7 @@ import {
   SESSION_COOKIE_NAME,
 } from '@cera/contracts/session';
 import { NextResponse, type NextRequest } from 'next/server';
-import { authorizationCodeGrant } from 'openid-client';
+import { authorizationCodeGrant, fetchUserInfo } from 'openid-client';
 
 import {
   identityClaims,
@@ -47,7 +47,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
     let identity;
     try {
-      identity = identityClaims(tokens.claims() ?? {});
+      let claimSet: Record<string, unknown> = { ...(tokens.claims() ?? {}) };
+      const groups = claimSet.groups;
+      const needsUserInfo =
+        !Array.isArray(groups) || groups.length === 0 || typeof claimSet.email !== 'string';
+      if (
+        needsUserInfo &&
+        typeof tokens.access_token === 'string' &&
+        typeof claimSet.sub === 'string'
+      ) {
+        const userinfo = await fetchUserInfo(
+          await oidcConfiguration(),
+          tokens.access_token,
+          claimSet.sub,
+        );
+        claimSet = { ...claimSet, ...userinfo };
+      }
+      identity = identityClaims(claimSet);
     } catch (error) {
       errorReason = 'identity';
       throw error;

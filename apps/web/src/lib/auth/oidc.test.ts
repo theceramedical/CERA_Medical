@@ -4,6 +4,7 @@ import {
   createHandshakeSecrets,
   createPkce,
   configuredCallbackUrl,
+  registeredOidcRedirectUri,
   identityClaims,
   openHandshake,
   sealHandshake,
@@ -19,15 +20,18 @@ afterEach(() => {
 });
 
 describe('OIDC boundary', () => {
-  it('uses the registered public callback URI for token exchange', () => {
+  it('uses the registered public callback URI and keeps provider query params', () => {
     const originalRedirectUri = process.env.OIDC_REDIRECT_URI;
     process.env.OIDC_REDIRECT_URI = 'https://www.ceramedical.org/auth/callback';
     try {
+      expect(registeredOidcRedirectUri().toString()).toBe(
+        'https://www.ceramedical.org/auth/callback',
+      );
       expect(
         configuredCallbackUrl(
           new URL('http://0.0.0.0:3000/auth/callback?code=code&state=state'),
         ).toString(),
-      ).toBe('https://www.ceramedical.org/auth/callback');
+      ).toBe('https://www.ceramedical.org/auth/callback?code=code&state=state');
     } finally {
       if (originalRedirectUri === undefined) delete process.env.OIDC_REDIRECT_URI;
       else process.env.OIDC_REDIRECT_URI = originalRedirectUri;

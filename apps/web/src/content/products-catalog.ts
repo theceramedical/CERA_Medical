@@ -1,5 +1,8 @@
+import { formatPkrListPrice, physicalProductListPriceMinor } from '@cera/contracts';
+
+/** Shippable laboratory products (RUO). Scoped research work lives under /services. */
 export type ProductCategory =
-  'cell-lines' | 'molecular' | 'preclinical' | 'bioinformatics' | 'reagents';
+  'cell-lines' | 'molecular' | 'preclinical' | 'reagents' | 'consumables';
 
 export interface CatalogProduct {
   readonly sku: string;
@@ -9,26 +12,29 @@ export interface CatalogProduct {
   readonly description: string;
   readonly specs: readonly string[];
   readonly packLabel: string;
+  /** Vendure / checkout list price (PKR minor units). */
+  readonly listPriceMinor: number;
   readonly price: string;
   readonly bsl?: '1' | '2';
   readonly inStock: boolean;
+  /** Always physical goods: kits, cell lines, reagents, standards — not scoped services. */
+  readonly fulfillment: 'physical';
+  readonly shippingNote?: string;
 }
 
-export const PRODUCT_CATEGORIES: readonly { id: 'all' | ProductCategory; label: string }[] = [
-  { id: 'all', label: 'All Products (28)' },
-  { id: 'cell-lines', label: 'Primary & Tumor Cell Lines' },
-  { id: 'molecular', label: 'Molecular & qPCR Assay Kits' },
-  { id: 'preclinical', label: 'Preclinical Formulations' },
-  { id: 'bioinformatics', label: 'Bioinformatics Nextflow Workflows' },
-  { id: 'reagents', label: 'Antibodies & Reagents' },
-];
+function catalogPrice(sku: string): { listPriceMinor: number; price: string } {
+  const listPriceMinor = physicalProductListPriceMinor(sku);
+  return { listPriceMinor, price: formatPkrListPrice(listPriceMinor) };
+}
+
+const featuredPrice = catalogPrice('CR-CEL-8402');
 
 export const FEATURED_PRODUCT = {
   sku: 'CR-CEL-8402',
   title: 'CERA-GLIO-01: Authenticated Human Glioblastoma Multiforme Primary Cell Cohort',
   description:
     'Characterized panel comprising U87-MG & LN229 matched lineages. Sourced with complete donor consent, confirmed free of mycoplasma, bacteria, and viral contamination. Ideal for BBB penetrance, temozolomide resistance assays, and high-throughput drug screening.',
-  badges: ['BSL-2', 'Cryogenic (-196°C)', 'STR Authenticated'] as const,
+  badges: ['BSL-2', 'Cryogenic (-196°C)', 'STR Authenticated', 'Shippable'] as const,
   specs: [
     { label: 'Viability Post-Thaw', value: '> 92.4% (Trypan Blue)' },
     { label: 'Passage Number', value: 'Passage 4 (Documented)' },
@@ -37,8 +43,9 @@ export const FEATURED_PRODUCT = {
     { label: 'Format', value: '1.5 mL Cryovial (1.2×10⁶ cells)' },
     { label: 'Documentation', value: 'Complete CoA + STR Profile' },
   ] as const,
-  price: '$480.00',
-  priceNote: '(Tiered Academic Pricing)',
+  listPriceMinor: featuredPrice.listPriceMinor,
+  price: featuredPrice.price,
+  priceNote: '(Checkout total in PKR; tiered academic pricing on request)',
   imageSrc: '/images/article-cover-lab.svg',
   imageCaption: 'Automated Micromanipulation Suite',
 } as const;
@@ -57,9 +64,11 @@ export const CATALOG_PRODUCTS: readonly CatalogProduct[] = [
       'Universal ROX Reference Compatibility',
     ],
     packLabel: 'Standard Pack',
-    price: '$165.00',
+    ...catalogPrice('CR-MOL-1021'),
     bsl: '1',
     inStock: true,
+    fulfillment: 'physical',
+    shippingNote: 'Ambient or cold-pack dispatch',
   },
   {
     sku: 'CR-CEL-3091',
@@ -74,25 +83,30 @@ export const CATALOG_PRODUCTS: readonly CatalogProduct[] = [
       'GLP Phenotype Quality Certificate',
     ],
     packLabel: 'Vial + Supplements',
-    price: '$340.00',
+    ...catalogPrice('CR-CEL-3091'),
     bsl: '2',
     inStock: true,
+    fulfillment: 'physical',
+    shippingNote: 'Dry ice / LN₂ vapor shipper',
   },
   {
-    sku: 'CR-BIO-9014',
-    category: 'bioinformatics',
-    categoryLabel: 'Bioinformatics',
-    title: 'CERA-FLOW-PIPE: Clinical 16S/ITS Metagenomics Nextflow Pipeline v2.4',
+    sku: 'CR-MOL-3012',
+    category: 'molecular',
+    categoryLabel: 'Molecular Biology',
+    title: 'CERA-16S-LIB: 16S rRNA Amplicon Library Preparation Kit (96 Preps)',
     description:
-      'Containerized reproducible pipeline (Docker / Singularity). Fully supports Illumina paired-end and Oxford Nanopore reads with automated GATK4 and QIIME2 reporting.',
+      'Physical spin-column library prep kit for Illumina-compatible 16S/ITS amplicon sequencing. Includes indexed adapters, bead cleanup reagents, and batch-matched QC controls.',
     specs: [
-      'POSIX/SLURM/AWS Batch Ready',
-      'MultiQC Interactive Report Generator',
-      'Includes 1-Year Pipeline Patch Support',
+      '96 Reactions · Dual Indexing',
+      'Validated on Illumina MiSeq / NovaSeq',
+      'CoA with Lot-Matched Control Amplicons',
     ],
-    packLabel: 'Lab Enterprise License',
-    price: '$890.00',
+    packLabel: '96-Prep Kit',
+    ...catalogPrice('CR-MOL-3012'),
+    bsl: '1',
     inStock: true,
+    fulfillment: 'physical',
+    shippingNote: 'Cold-chain 2–8°C',
   },
   {
     sku: 'CR-MOL-2045',
@@ -107,9 +121,11 @@ export const CATALOG_PRODUCTS: readonly CatalogProduct[] = [
       'Validated on Qubit 4 Fluorometer',
     ],
     packLabel: '96 Preps',
-    price: '$210.00',
+    ...catalogPrice('CR-MOL-2045'),
     bsl: '1',
     inStock: true,
+    fulfillment: 'physical',
+    shippingNote: 'Ambient shipping',
   },
   {
     sku: 'CR-PRE-5510',
@@ -124,26 +140,48 @@ export const CATALOG_PRODUCTS: readonly CatalogProduct[] = [
       'HPLC-Verified Purity > 98.5%',
     ],
     packLabel: 'Panel Kit',
-    price: '$295.00',
+    ...catalogPrice('CR-PRE-5510'),
     bsl: '1',
     inStock: true,
+    fulfillment: 'physical',
+    shippingNote: 'Cold-pack dispatch',
   },
   {
-    sku: 'CR-BIO-4102',
-    category: 'bioinformatics',
-    categoryLabel: 'In Silico Tools',
-    title: 'CERA-PRISMA-TOOL: Molecular Docking & MD Simulation Scripts',
+    sku: 'CR-REG-1180',
+    category: 'consumables',
+    categoryLabel: 'Laboratory Consumables',
+    title: 'CERA-BUF-RNA: RNase-Free Nucleic Acid Storage & Transport Buffer',
     description:
-      'Curated and tested automation framework for GROMACS 2024, AutoDock Vina, and MM-PBSA energetic decomposition across high-performance GPU clusters.',
+      'Sterile, DEPC-treated buffer for short-term nucleic acid stabilization during cold-chain specimen transfer between collaborating laboratories.',
     specs: [
-      'Automated RMSD/RMSF Parsing',
-      'Python 3.11 Conda Environment Manifest',
-      'Pre-configured SLURM Job Schedulers',
+      '500 mL Sterile PET Bottle',
+      'Validated RNase/DNase-Free',
+      'Compatible with Clinical Specimen Tubes',
     ],
-    packLabel: 'Digital Download License',
-    price: '$320.00',
+    packLabel: '500 mL',
+    ...catalogPrice('CR-REG-1180'),
+    bsl: '1',
     inStock: true,
+    fulfillment: 'physical',
+    shippingNote: 'Ambient shipping',
   },
+];
+
+export const CATALOG_PRODUCT_COUNT = CATALOG_PRODUCTS.length;
+
+/** SKUs that must exist in Vendure (`SEED_PHYSICAL_PRODUCTS`). */
+export const PHYSICAL_PRODUCT_SKUS: readonly string[] = [
+  FEATURED_PRODUCT.sku,
+  ...CATALOG_PRODUCTS.map((product) => product.sku),
+];
+
+export const PRODUCT_CATEGORIES: readonly { id: 'all' | ProductCategory; label: string }[] = [
+  { id: 'all', label: `All Products (${String(CATALOG_PRODUCT_COUNT)})` },
+  { id: 'cell-lines', label: 'Primary & Tumor Cell Lines' },
+  { id: 'molecular', label: 'Molecular & qPCR Assay Kits' },
+  { id: 'preclinical', label: 'Preclinical Formulations' },
+  { id: 'reagents', label: 'Antibodies & Reagents' },
+  { id: 'consumables', label: 'Laboratory Consumables' },
 ];
 
 export function productEnquiryHref(sku: string): string {

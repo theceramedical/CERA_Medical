@@ -12,6 +12,7 @@ import {
 import Image from 'next/image';
 
 import {
+  CATALOG_PRODUCT_COUNT,
   CATALOG_PRODUCTS,
   FEATURED_PRODUCT,
   PRODUCT_CATEGORIES,
@@ -20,6 +21,8 @@ import {
   type ProductCategory,
 } from '../../content/products-catalog.ts';
 import { AppButtonLink, AppLink } from '../link.tsx';
+
+import { ProductPurchaseActions } from './product-purchase-actions.tsx';
 
 export function ProductsCatalog({
   query,
@@ -45,7 +48,7 @@ export function ProductsCatalog({
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-caption text-muted">
         <AppLink href="/">Home</AppLink>
         <span aria-hidden="true">/</span>
-        <span className="font-semibold text-heading">Products & Reagents</span>
+        <span className="font-semibold text-heading">Physical Products & Reagents</span>
       </nav>
 
       <section className="mb-8 rounded-lg border border-border bg-surface p-8 shadow-card">
@@ -53,15 +56,19 @@ export function ProductsCatalog({
           <div className="max-w-3xl">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent bg-surface-tint px-3 py-1 text-caption font-semibold text-accent">
               <Icon icon={ShieldCheck} size="sm" />
-              VALIDATED RESEARCH REAGENTS & BIOLOGICAL ASSETS · RUO GRADE
+              SHIPPABLE LABORATORY PRODUCTS · RUO GRADE · NOT RESEARCH SERVICES
             </p>
             <Heading level={1} size="h1" className="mb-3">
-              Research Products & Laboratory Reagents
+              Physical Research Products & Laboratory Reagents
             </Heading>
             <Text size="body-lg" tone="muted" className="max-w-2xl">
-              Peer-validated molecular assays, authenticated primary and glioblastoma cell lines,
-              bioinformatics Nextflow pipelines, and specialized biochemical kits formulated for
-              preclinical trials and academic research.
+              Catalogued, batch-released goods we ship to your lab: authenticated cell lines, assay
+              kits, biochemical reagents, and reference standards. For scoped study work (sequencing
+              runs, animal studies, evidence reviews), use{' '}
+              <AppLink href="/services" className="font-semibold text-accent">
+                Research Services
+              </AppLink>
+              .
             </Text>
           </div>
           <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto lg:flex-col">
@@ -71,7 +78,7 @@ export function ProductsCatalog({
             </AppButtonLink>
             <AppButtonLink href="#catalog-grid" variant="outline">
               <Icon icon={LayoutList} size="sm" />
-              Browse Catalog Inventory (28)
+              Browse Catalog Inventory ({CATALOG_PRODUCT_COUNT})
             </AppButtonLink>
           </div>
         </div>
@@ -106,7 +113,7 @@ export function ProductsCatalog({
             <input
               name="q"
               defaultValue={query ?? ''}
-              placeholder="Search products by catalog number, gene target, cell line, or pipeline..."
+              placeholder="Search by catalog number, SKU, cell line, kit, or reagent..."
               className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body"
             />
           </label>
@@ -222,10 +229,11 @@ export function ProductsCatalog({
                   {FEATURED_PRODUCT.priceNote}
                 </span>
               </div>
-              <div className="flex items-center gap-3">
-                <AppButtonLink href={productEnquiryHref(FEATURED_PRODUCT.sku)} variant="primary">
-                  Request Quote / Order
-                </AppButtonLink>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <ProductPurchaseActions
+                  sku={FEATURED_PRODUCT.sku}
+                  enquiryHref={productEnquiryHref(FEATURED_PRODUCT.sku)}
+                />
                 <AppButtonLink href="/methodology" variant="outline">
                   Technical Data Sheet
                 </AppButtonLink>
@@ -258,11 +266,11 @@ export function ProductsCatalog({
             Catalog Directory
           </Heading>
           <Text size="caption" tone="muted">
-            Displaying verified research reagents and computational bioinformatics suites.
+            Shippable SKUs with CoA, cold-chain options, and institutional MTA where required.
           </Text>
         </div>
         <Text size="caption" tone="muted">
-          Showing {filtered.length} of 28 Items
+          Showing {filtered.length} of {CATALOG_PRODUCT_COUNT} items
         </Text>
       </div>
 
@@ -288,9 +296,14 @@ export function ProductsCatalog({
               <Heading level={3} size="h4" className="mb-2">
                 {product.title}
               </Heading>
-              <Text size="caption" tone="muted" className="mb-4">
+              <Text size="caption" tone="muted" className="mb-2">
                 {product.description}
               </Text>
+              {product.shippingNote ? (
+                <Text size="caption" className="mb-3 font-medium text-accent">
+                  Shipping: {product.shippingNote}
+                </Text>
+              ) : null}
               <ul className="mb-4 list-none space-y-1 p-0 text-caption">
                 {product.specs.map((spec) => (
                   <li key={spec} className="flex items-center gap-1.5">
@@ -309,9 +322,11 @@ export function ProductsCatalog({
                   {product.price}
                 </span>
               </div>
-              <AppButtonLink href={productEnquiryHref(product.sku)} variant="primary" size="sm">
-                Request
-              </AppButtonLink>
+              <ProductPurchaseActions
+                sku={product.sku}
+                enquiryHref={productEnquiryHref(product.sku)}
+                compact
+              />
             </div>
           </article>
         ))}
@@ -323,8 +338,8 @@ export function ProductsCatalog({
             Laboratory Compliance & Quality Rigor
           </Heading>
           <Text size="caption" tone="muted">
-            Every reagent, biological lot, and pipeline module generated at CERA Medical adheres to
-            documented international preclinical protocols.
+            Every physical lot is batch-released with documented QC before dispatch from our Haripur
+            facility.
           </Text>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

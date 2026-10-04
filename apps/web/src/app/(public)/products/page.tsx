@@ -5,9 +5,9 @@ import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Products & Research Assets',
+    title: 'Physical Products & Laboratory Reagents',
     description:
-      'Validated research reagents, authenticated cell lines, biochemical kits, and bioinformatics pipelines from CERA Medical.',
+      'Shippable research-use-only reagents, cell lines, assay kits, and standards from CERA Medical — distinct from scoped research services.',
     path: '/products',
   });
 }

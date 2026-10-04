@@ -86,8 +86,13 @@ done
 if [[ "$bootstrap_ok" != true ]]; then
   echo 'WARNING: CMS bootstrap failed after 5 attempts. The release stays live; run bootstrap manually when CMS is ready.' >&2
 fi
-if ! compose exec -T authentik-server ak shell -c 'exec(__import__("sys").stdin.read())' \
-  < "$ROOT_DIR/infra/scripts/configure-authentik-cera.py"; then
+oidc_redirect_uri="$(grep -E '^OIDC_REDIRECT_URI=' "$CERA_ENV_FILE" | cut -d= -f2- | tr -d '\r' || true)"
+if [[ -z "$oidc_redirect_uri" ]]; then
+  echo 'OIDC_REDIRECT_URI missing from host secrets' >&2
+  exit 1
+fi
+if ! compose exec -T -e "OIDC_REDIRECT_URI=$oidc_redirect_uri" authentik-server ak shell \
+  -c 'exec(__import__("sys").stdin.read())' < "$ROOT_DIR/infra/scripts/configure-authentik-cera.py"; then
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Authentik CERA role setup failed' >&2
   exit 1

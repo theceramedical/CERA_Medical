@@ -6,6 +6,7 @@ import {
   createHandshakeSecrets,
   createPkce,
   oidcConfiguration,
+  registeredOidcRedirectUri,
   sealHandshake,
 } from '../../../lib/auth/oidc.ts';
 import { safeReturnTo } from '../../../lib/auth/return-to.ts';
@@ -20,7 +21,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const location = buildAuthorizationUrl(await oidcConfiguration(), {
       response_type: 'code',
       client_id: process.env.OIDC_CLIENT_ID ?? '',
-      redirect_uri: process.env.OIDC_REDIRECT_URI ?? `${url.origin}/auth/callback`,
+      redirect_uri: registeredOidcRedirectUri().toString(),
       scope: 'openid email profile cera_mfa',
       state,
       nonce,

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { RETIRED_SERVICE_SLUGS, SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
+import {
+  RETIRED_SERVICE_SLUGS,
+  SEED_COLLECTIONS,
+  SEED_PHYSICAL_PRODUCTS,
+  SEED_SERVICES,
+} from './seed-data.js';
 
 describe('CERA catalogue seed data', () => {
   it('contains the five client-provided research services', () => {
@@ -25,5 +30,13 @@ describe('CERA catalogue seed data', () => {
     expect(RETIRED_SERVICE_SLUGS).toContain('general-health');
     expect(RETIRED_SERVICE_SLUGS).toContain('cardiology');
     expect(RETIRED_SERVICE_SLUGS).toContain('travel-vaccinations');
+  });
+
+  it('seeds every public physical product SKU for checkout', () => {
+    expect(SEED_PHYSICAL_PRODUCTS.length).toBeGreaterThanOrEqual(6);
+    expect(SEED_PHYSICAL_PRODUCTS.every((product) => product.stockOnHand > 0)).toBe(true);
+    expect(new Set(SEED_PHYSICAL_PRODUCTS.map((product) => product.sku)).size).toBe(
+      SEED_PHYSICAL_PRODUCTS.length,
+    );
   });
 });

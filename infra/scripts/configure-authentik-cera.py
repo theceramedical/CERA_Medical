@@ -26,7 +26,15 @@ GROUPS_EXPRESSION = (
     'if group.name.startswith("cera-")]}'
 )
 
+import os
+
+REDIRECT_URI = os.environ.get(
+    "OIDC_REDIRECT_URI", "https://www.ceramedical.org/auth/callback"
+).strip()
+
 provider = OAuth2Provider.objects.get(name=PROVIDER_NAME)
+provider._redirect_uris = [{"matching_mode": "strict", "url": REDIRECT_URI}]
+provider.save(update_fields=["_redirect_uris"])
 mapping, _ = ScopeMapping.objects.get_or_create(
     name=MAPPING_NAME,
     defaults={"scope_name": "profile", "expression": GROUPS_EXPRESSION},

@@ -1,3 +1,5 @@
+import { formatPkrListPrice, physicalProductListPriceMinor } from '@cera/contracts';
+
 /** CERA Medical's client-supplied public research service catalogue. */
 
 export interface SeedCollection {
@@ -25,6 +27,83 @@ export const SEED_COLLECTIONS: readonly SeedCollection[] = [
   { slug: 'laboratory-research', name: 'Laboratory Research' },
   { slug: 'bioinformatics', name: 'Bioinformatics and Data Analysis' },
   { slug: 'evidence-reporting', name: 'Evidence and Reporting' },
+  { slug: 'physical-products', name: 'Physical Products & Reagents' },
+];
+
+/** Shippable catalogue SKUs — keep in sync with `apps/web/src/content/products-catalog.ts`. */
+export interface SeedPhysicalProduct {
+  readonly sku: string;
+  readonly name: string;
+  readonly summary: string;
+  readonly description: string;
+  readonly listPriceMinor: number;
+  readonly displayPriceText: string | null;
+  readonly stockOnHand: number;
+}
+
+function physicalProductSeed(
+  sku: string,
+  entry: Omit<SeedPhysicalProduct, 'sku' | 'listPriceMinor' | 'displayPriceText'>,
+): SeedPhysicalProduct {
+  const listPriceMinor = physicalProductListPriceMinor(sku);
+  return {
+    sku,
+    ...entry,
+    listPriceMinor,
+    displayPriceText: formatPkrListPrice(listPriceMinor),
+  };
+}
+
+export const SEED_PHYSICAL_PRODUCTS: readonly SeedPhysicalProduct[] = [
+  physicalProductSeed('CR-CEL-8402', {
+    name: 'CERA-GLIO-01: Authenticated Human Glioblastoma Multiforme Primary Cell Cohort',
+    summary: 'Authenticated human glioblastoma primary cell cohort for RUO assays.',
+    description:
+      'Characterized panel comprising U87-MG and LN229 matched lineages with STR authentication, mycoplasma-free release, and cold-chain dispatch documentation.',
+    stockOnHand: 12,
+  }),
+  physicalProductSeed('CR-MOL-1021', {
+    name: 'CERA-QPCR-100: High-Fidelity SybrGreen qPCR Master Mix (2X)',
+    summary: 'SybrGreen qPCR master mix for 96/384-well plates.',
+    description:
+      'Formulated with inert blue visualization dye for accurate plate loading. Chemical hot-start Taq polymerase with high sensitivity down to 2 template copies.',
+    stockOnHand: 80,
+  }),
+  physicalProductSeed('CR-CEL-3091', {
+    name: 'CERA-CELL-MG: Rat Striatal Primary Neuronal Culture Prep Kit',
+    summary: 'Cryopreserved E18 primary neurons with validated recovery.',
+    description:
+      'Cryopreserved E18 primary neurons harvested under aseptic microdissection. Validated via Tuj1 and MAP2 immunofluorescence.',
+    stockOnHand: 24,
+  }),
+  physicalProductSeed('CR-MOL-3012', {
+    name: 'CERA-16S-LIB: 16S rRNA Amplicon Library Preparation Kit (96 Preps)',
+    summary: 'Physical 16S/ITS library prep kit for Illumina workflows.',
+    description:
+      'Spin-column library prep kit for Illumina-compatible 16S/ITS amplicon sequencing with indexed adapters and batch-matched QC controls.',
+    stockOnHand: 36,
+  }),
+  physicalProductSeed('CR-MOL-2045', {
+    name: 'CERA-EXT-96: High-Yield Tissue & FFPE Nucleic Acid Extraction Kit',
+    summary: 'FFPE and fibrous tissue nucleic acid extraction kit.',
+    description:
+      'Optimized for archived formalin-fixed paraffin-embedded biopsies and tough fibrous tissues with superior DIN/RIN recovery.',
+    stockOnHand: 60,
+  }),
+  physicalProductSeed('CR-PRE-5510', {
+    name: 'CERA-NEURO-IC: Neurotoxicity Assay & Biomarker Standard Panel',
+    summary: 'Lyophilized neurotoxicity calibrator panel for assay validation.',
+    description:
+      'Striatal dopamine turnover, neuroinflammation indices, and microglial activation marker calibrators with HPLC-verified purity.',
+    stockOnHand: 40,
+  }),
+  physicalProductSeed('CR-REG-1180', {
+    name: 'CERA-BUF-RNA: RNase-Free Nucleic Acid Storage & Transport Buffer',
+    summary: 'Sterile RNase-free buffer for specimen cold-chain transfer.',
+    description:
+      'Sterile, DEPC-treated buffer for short-term nucleic acid stabilization during cold-chain specimen transfer between laboratories.',
+    stockOnHand: 120,
+  }),
 ];
 
 export const SEED_SERVICES: readonly SeedService[] = [

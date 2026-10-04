@@ -13,7 +13,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Cart',
-  description: 'Review your CERA Medical service order before checkout.',
+  description: 'Review physical products and research services before checkout.',
   path: '/cart',
   noIndex: true,
 });
@@ -32,17 +32,18 @@ export default async function CartPage() {
     <>
       <MarketingPageHeader
         title="Your cart"
-        lede="Fixed-price research service lines. Scope refinements can still be agreed in writing after purchase."
+        lede="Physical products and fixed-price service lines. Sign in after checkout to track orders at Account → Orders."
         breadcrumbs={[
           { label: 'Home', href: '/' },
-          { label: 'Services', href: '/services' },
+          { label: 'Products', href: '/products' },
           { label: 'Cart' },
         ]}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         {cart.lines.length === 0 ? (
           <Text tone="muted">
-            Your cart is empty. <AppLink href="/services">Browse services</AppLink>
+            Your cart is empty. <AppLink href="/products">Browse products</AppLink> or{' '}
+            <AppLink href="/services">research services</AppLink>.
           </Text>
         ) : (
           <>

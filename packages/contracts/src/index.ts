@@ -177,6 +177,13 @@ export {
 export { PREVIEW_TTL_SECONDS, signPreviewToken, verifyPreviewToken } from './preview-token.ts';
 
 export {
+  formatPkrListPrice,
+  PHYSICAL_PRODUCT_PRICES,
+  physicalProductListPriceMinor,
+  type PhysicalProductPrice,
+} from './physical-catalog.ts';
+
+export {
   ALL_SESSION_COOKIE_NAMES,
   OIDC_STATE_COOKIE_NAME,
   SESSION_COOKIE_NAME,

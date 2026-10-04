@@ -64,17 +64,17 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
   return {
     async getVariantIdBySku(session: ShopSession, sku: string): Promise<string> {
       const { data } = await post<{
-        product: { variants: { items: { id: string; sku: string }[] } } | null;
+        productVariants: { items: { id: string; sku: string }[] };
       }>(
         session,
-        `query ($slug: String!) {
-          product(slug: $slug) {
-            variants { items { id sku } }
+        `query ($sku: String!) {
+          productVariants(options: { filter: { sku: { eq: $sku } }, take: 1 }) {
+            items { id sku }
           }
         }`,
-        { slug: sku },
+        { sku },
       );
-      const variant = data.product?.variants.items.find((item) => item.sku === sku);
+      const variant = data.productVariants.items[0];
       if (variant === undefined) {
         throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
       }

@@ -18,7 +18,12 @@ import {
   ShippingMethodService,
 } from '@vendure/core';
 
-import { RETIRED_SERVICE_SLUGS, SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
+import {
+  RETIRED_SERVICE_SLUGS,
+  SEED_COLLECTIONS,
+  SEED_PHYSICAL_PRODUCTS,
+  SEED_SERVICES,
+} from './seed-data.js';
 import { assertCatalogueSeedAllowed } from './seed-environment.js';
 import { getConfig } from './vendure-config.js';
 
@@ -82,66 +87,42 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
   }
 
   for (const service of SEED_SERVICES) {
-    const existing = await products.findOneBySlug(ctx, service.slug);
-    const customFields = {
+    await seedCatalogueEntry(ctx, products, variants, assignedProducts, {
+      slug: service.slug,
+      sku: service.slug,
+      name: service.name,
+      description: service.description,
+      summary: service.summary,
+      collectionSlug: service.collectionSlug,
+      listPriceMinor: service.listPriceMinor,
+      displayPriceText: service.displayPriceText,
+      availabilityText: service.availabilityText,
+      stockOnHand: 999_999,
+      enabled: service.enabled,
       enquiryEnabled: service.enquiryEnabled,
       checkoutEnabled: service.checkoutEnabled,
-      internalNotes: service.internalNotes ?? undefined,
-    };
-    const localizedFields = {
-      availabilityText: service.availabilityText ?? undefined,
-      displayPriceText: service.displayPriceText ?? undefined,
-      shortSummary: service.summary,
-    };
-
-    let productId = existing?.id;
-    if (existing === undefined) {
-      const created = await products.create(ctx, {
-        enabled: service.enabled,
-        translations: [
-          {
-            languageCode: LanguageCode.en,
-            name: service.name,
-            slug: service.slug,
-            description: service.description,
-            customFields: localizedFields,
-          },
-        ],
-        customFields,
-      });
-
-      productId = created.id;
-    }
-    if (productId !== undefined)
-      assignedProducts.set(service.collectionSlug, [
-        ...(assignedProducts.get(service.collectionSlug) ?? []),
-        String(productId),
-      ]);
-    const seededVariants = await variants.findAll(ctx, {
-      filter: { sku: { eq: service.slug } },
-      take: 1,
+      internalNotes: service.internalNotes,
     });
-    if (seededVariants.totalItems === 0 && productId !== undefined) {
-      await variants.create(ctx, [
-        {
-          productId,
-          sku: service.slug,
-          price: service.listPriceMinor,
-          stockOnHand: 999_999,
-          translations: [{ languageCode: LanguageCode.en, name: service.name }],
-        },
-      ]);
-    } else if (seededVariants.items[0] !== undefined) {
-      const variant = seededVariants.items[0];
-      if (variant.price !== service.listPriceMinor) {
-        await variants.update(ctx, [
-          {
-            id: variant.id,
-            price: service.listPriceMinor,
-          },
-        ]);
-      }
-    }
+  }
+
+  for (const product of SEED_PHYSICAL_PRODUCTS) {
+    const slug = product.sku.toLowerCase();
+    await seedCatalogueEntry(ctx, products, variants, assignedProducts, {
+      slug,
+      sku: product.sku,
+      name: product.name,
+      description: product.description,
+      summary: product.summary,
+      collectionSlug: 'physical-products',
+      listPriceMinor: product.listPriceMinor,
+      displayPriceText: product.displayPriceText,
+      availabilityText: 'Shippable RUO product — dispatch after batch release',
+      stockOnHand: product.stockOnHand,
+      enabled: true,
+      enquiryEnabled: true,
+      checkoutEnabled: true,
+      internalNotes: null,
+    });
   }
 
   if (process.env.CHECKOUT_ENABLED === 'true') {
@@ -187,7 +168,92 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
-  console.warn(`Catalogue seed complete. ${String(SEED_SERVICES.length)} services.`);
+  console.warn(
+    `Catalogue seed complete. ${String(SEED_SERVICES.length)} services, ${String(SEED_PHYSICAL_PRODUCTS.length)} physical products.`,
+  );
+}
+
+async function seedCatalogueEntry(
+  ctx: Awaited<ReturnType<RequestContextService['create']>>,
+  products: ProductService,
+  variants: ProductVariantService,
+  assignedProducts: Map<string, string[]>,
+  entry: {
+    readonly slug: string;
+    readonly sku: string;
+    readonly name: string;
+    readonly description: string;
+    readonly summary: string;
+    readonly collectionSlug: string;
+    readonly listPriceMinor: number;
+    readonly displayPriceText: string | null;
+    readonly availabilityText: string | null;
+    readonly stockOnHand: number;
+    readonly enabled: boolean;
+    readonly enquiryEnabled: boolean;
+    readonly checkoutEnabled: boolean;
+    readonly internalNotes: string | null;
+  },
+): Promise<void> {
+  const existing = await products.findOneBySlug(ctx, entry.slug);
+  const customFields = {
+    enquiryEnabled: entry.enquiryEnabled,
+    checkoutEnabled: entry.checkoutEnabled,
+    internalNotes: entry.internalNotes ?? undefined,
+  };
+  const localizedFields = {
+    availabilityText: entry.availabilityText ?? undefined,
+    displayPriceText: entry.displayPriceText ?? undefined,
+    shortSummary: entry.summary,
+  };
+
+  let productId = existing?.id;
+  if (existing === undefined) {
+    const created = await products.create(ctx, {
+      enabled: entry.enabled,
+      translations: [
+        {
+          languageCode: LanguageCode.en,
+          name: entry.name,
+          slug: entry.slug,
+          description: entry.description,
+          customFields: localizedFields,
+        },
+      ],
+      customFields,
+    });
+
+    productId = created.id;
+  }
+  if (productId !== undefined)
+    assignedProducts.set(entry.collectionSlug, [
+      ...(assignedProducts.get(entry.collectionSlug) ?? []),
+      String(productId),
+    ]);
+  const seededVariants = await variants.findAll(ctx, {
+    filter: { sku: { eq: entry.sku } },
+    take: 1,
+  });
+  if (seededVariants.totalItems === 0 && productId !== undefined) {
+    await variants.create(ctx, [
+      {
+        productId,
+        sku: entry.sku,
+        price: entry.listPriceMinor,
+        stockOnHand: entry.stockOnHand,
+        translations: [{ languageCode: LanguageCode.en, name: entry.name }],
+      },
+    ]);
+  } else if (seededVariants.items[0] !== undefined) {
+    const variant = seededVariants.items[0];
+    await variants.update(ctx, [
+      {
+        id: variant.id,
+        price: entry.listPriceMinor,
+        stockOnHand: entry.stockOnHand,
+      },
+    ]);
+  }
 }
 
 async function ensureCheckoutMethods(
@@ -197,17 +263,26 @@ async function ensureCheckoutMethods(
   const shipping = app.get(ShippingMethodService);
   const payments = app.get(PaymentMethodService);
 
-  const existingShipping = await shipping.findAll(ctx, { take: 5 });
-  if (existingShipping.totalItems === 0) {
+  const existingShipping = await shipping.findAll(ctx, { take: 10 });
+  const hasLaboratoryShipping = existingShipping.items.some(
+    (method) => method.code === 'laboratory-shipping',
+  );
+  if (!hasLaboratoryShipping) {
     await shipping.create(ctx, {
-      code: 'digital-delivery',
+      code: 'laboratory-shipping',
       fulfillmentHandler: 'manual-fulfillment',
       checker: { code: 'default-shipping-eligibility-checker', arguments: [] },
       calculator: {
         code: 'default-shipping-calculator',
         arguments: [{ name: 'rate', value: '0' }],
       },
-      translations: [{ languageCode: LanguageCode.en, name: 'Digital delivery', description: '' }],
+      translations: [
+        {
+          languageCode: LanguageCode.en,
+          name: 'Laboratory shipping',
+          description: 'Cold-chain or ambient dispatch after batch release',
+        },
+      ],
     });
   }
 

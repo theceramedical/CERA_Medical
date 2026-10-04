@@ -50,6 +50,10 @@
       "types": "./src/preview-token.ts",
       "default": "./dist/preview-token.js"
     },
+    "./physical-catalog": {
+      "types": "./src/physical-catalog.ts",
+      "default": "./dist/physical-catalog.js"
+    },
     "./fixtures": {
       "types": "./src/fixtures/index.ts",
       "default": "./dist/fixtures/index.js"

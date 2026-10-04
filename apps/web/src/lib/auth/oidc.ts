@@ -14,9 +14,22 @@ export function createHandshakeSecrets() {
   return { state: randomBytes(16).toString('hex'), nonce: randomBytes(16).toString('hex') };
 }
 
-/** OIDC requires the token request redirect_uri to exactly match the registered callback. */
-export function configuredCallbackUrl(_requestUrl: URL): URL {
+/** Registered redirect URI (no query) — must match Authentik and the authorize request. */
+export function registeredOidcRedirectUri(): URL {
   return new URL(process.env.OIDC_REDIRECT_URI ?? new URL('/auth/callback', siteUrl()).toString());
+}
+
+/**
+ * Callback URL for `authorizationCodeGrant`: canonical origin/path with the provider's `code` and
+ * `state` query intact. Stripping `search` breaks token exchange behind reverse proxies that
+ * rewrite the request host to an internal address.
+ */
+export function configuredCallbackUrl(requestUrl: URL): URL {
+  const registered = registeredOidcRedirectUri();
+  const callback = new URL(registered.href);
+  callback.search = requestUrl.search;
+  callback.hash = requestUrl.hash;
+  return callback;
 }
 
 export function sessionKey(): Uint8Array {
