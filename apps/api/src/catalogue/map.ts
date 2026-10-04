@@ -12,7 +12,7 @@ import type { VendureProduct } from './types.ts';
  */
 export function mapVendureProduct(product: VendureProduct): Service {
   const collection = product.collections?.[0];
-  const variant = product.variants?.items[0];
+  const variant = product.variants?.[0];
   const listPriceMinor = variant !== undefined && variant.price > 0 ? variant.price : null;
 
   return ServiceSchema.parse({

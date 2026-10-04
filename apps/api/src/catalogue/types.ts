@@ -29,5 +29,5 @@ export interface VendureProduct {
     readonly name: string;
   }[];
   readonly customFields?: VendureCustomFields | null;
-  readonly variants?: { readonly items: readonly VendureVariant[] };
+  readonly variants?: readonly VendureVariant[];
 }

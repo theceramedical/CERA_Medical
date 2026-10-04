@@ -20,12 +20,10 @@ const PRODUCT_FIELDS = `
     shortSummary
   }
   variants {
-    items {
-      id
-      sku
-      price
-      priceWithTax
-    }
+    id
+    sku
+    price
+    priceWithTax
   }
 `;
 
