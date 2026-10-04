@@ -1,4 +1,3 @@
-import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { EnquiryForm } from '../../../components/enquiry-form.client.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
 import { getCurrentDocument } from '../../../lib/cms/client.ts';
@@ -29,9 +28,7 @@ export default async function EnquiryPage({
     getCurrentDocument('page', 'enquiry'),
     loadEnquiryFormData(),
   ]);
-  if (page === null) return <CmsPageUnavailable slug="enquiry" />;
-
-  const hero = sectionHeadingFromLayout(page.layout);
+  const hero = page === null ? null : sectionHeadingFromLayout(page.layout);
   const defaultMessage =
     productSku !== undefined && productSku.length > 0
       ? `Institutional quotation requested for catalog SKU ${productSku}. Please include intended research quantity, shipping destination, and any MTA requirements. Do not include patient names or other identifying details.`
@@ -40,8 +37,12 @@ export default async function EnquiryPage({
   return (
     <>
       <MarketingPageHeader
-        title={hero?.title ?? page.title}
-        lede={hero?.lede ?? page.excerpt ?? ''}
+        title={hero?.title ?? page?.title ?? 'Make an Enquiry'}
+        lede={
+          hero?.lede ??
+          page?.excerpt ??
+          'Tell us which service you are interested in and how to reach you. We will confirm by email and you can follow progress in your account.'
+        }
         eyebrow={hero?.eyebrow ?? 'Project enquiry'}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">

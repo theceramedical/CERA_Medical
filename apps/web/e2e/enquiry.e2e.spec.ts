@@ -6,7 +6,7 @@ test.describe('enquiry form', () => {
 
     await page.locator('input[name="name"]').fill('Alex Patient');
     await page.locator('#main input[name="email"]').fill('alex@example.com');
-    await page.locator('select[name="serviceId"]').selectOption('research-collaboration');
+    await page.locator('select[name="serviceId"]').selectOption('preclinical-studies');
     await page
       .locator('textarea[name="message"]')
       .fill('I would like to know about a first appointment.');
@@ -27,7 +27,7 @@ test.describe('enquiry form', () => {
 
     await page.locator('input[name="name"]').fill('Alex Patient');
     await page.locator('#main input[name="email"]').fill('not-an-email');
-    await page.locator('select[name="serviceId"]').selectOption('research-collaboration');
+    await page.locator('select[name="serviceId"]').selectOption('preclinical-studies');
     await page
       .locator('textarea[name="message"]')
       .fill('I would like to know about a first appointment.');
@@ -48,7 +48,7 @@ test.describe('enquiry form', () => {
     await page.goto('/enquiry');
     await page.locator('input[name="name"]').fill('Alex Patient');
     await page.locator('#main input[name="email"]').fill('alex-nojs@example.com');
-    await page.locator('select[name="serviceId"]').selectOption('research-collaboration');
+    await page.locator('select[name="serviceId"]').selectOption('preclinical-studies');
     await page
       .locator('textarea[name="message"]')
       .fill('I would like to know about a first appointment.');
