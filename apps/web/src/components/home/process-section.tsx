@@ -1,46 +1,66 @@
-import { Icon } from '@cera/ui/icon';
-import { ProcessStep, ProcessSteps } from '@cera/ui/process-step';
-import { SectionHeader } from '@cera/ui/section-header';
+import { Heading, Text } from '@cera/ui/typography';
 
 import { HOMEPAGE_PROCESS } from '../../content/homepage.ts';
 
-/**
- * Five-stage project workflow supplied by CERA, on the `surface-tint-2` band.
- *
- * Three steps in an `<ol>`, which `ProcessSteps` renders. The ordering is in the markup, so the visible
- * `01` / `02` / `03` is `aria-hidden` - otherwise a screen reader announces "01 Explore, 1 of 3", which
- * is the same information said twice with the numbers disagreeing about where they start.
- */
-export function ProcessSection() {
-  return (
-    <section aria-labelledby="process-heading" className="bg-surface-tint-2">
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <SectionHeader
-          level={2}
-          heading={<span id="process-heading">How CERA Works</span>}
-          subheading="A consistent workflow from first conversation to delivered results, with quality checks at each stage."
-        />
+export function ProcessSection({
+  eyebrow = 'Standardized timeline',
+  heading = 'How CERA Works',
+  subheading = 'A consistent workflow from first conversation to delivered results, with quality checks at each stage.',
+  steps,
+}: {
+  readonly eyebrow?: string;
+  readonly heading?: string;
+  readonly subheading?: string;
+  readonly steps?: readonly { title: string; description: string }[];
+}) {
+  const items = steps !== undefined && steps.length > 0 ? steps : HOMEPAGE_PROCESS;
+  const total = items.length;
 
-        <ProcessSteps className="mt-12">
-          {HOMEPAGE_PROCESS.map((step, index) => (
-            <ProcessStep
-              key={step.title}
-              ordinal={index + 1}
-              title={step.title}
-              description={step.description}
-              icon={<Icon icon={step.icon} size="lg" />}
-              /**
-               * A chevron after every step but the last.
-               *
-               * Computed rather than hard-coded, so adding a fourth step does not leave a chevron
-               * pointing at nothing. The chevrons are removed below `lg` rather than rotated: once the
-               * row stacks, a right-pointing arrow points across the layout instead of along it.
-               */
-              hasNext={index < HOMEPAGE_PROCESS.length - 1}
-              headingLevel={3}
-            />
-          ))}
-        </ProcessSteps>
+  return (
+    <section
+      aria-labelledby="process-heading"
+      className="border-b border-border bg-surface-tint py-16"
+    >
+      <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mb-12 max-w-2xl">
+          <Text
+            as="p"
+            size="eyebrow"
+            className="font-semibold tracking-widest text-accent uppercase"
+          >
+            {eyebrow}
+          </Text>
+          <Heading level={2} size="h2" id="process-heading" className="mt-1 mb-2">
+            {heading}
+          </Heading>
+          <Text tone="muted">{subheading}</Text>
+        </div>
+        <ol className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-5">
+          {items.map((step, index) => {
+            const n = String(index + 1).padStart(2, '0');
+            return (
+              <li
+                key={step.title}
+                className="flex flex-col justify-between rounded-lg border border-border bg-surface p-5"
+              >
+                <div>
+                  <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-surface-tint font-wordmark text-h4 font-bold text-primary shadow-sm">
+                    {n}
+                  </div>
+                  <Heading level={3} size="h4" className="mb-2">
+                    {step.title}
+                  </Heading>
+                  <Text size="caption" tone="muted">
+                    {step.description}
+                  </Text>
+                </div>
+                <div className="mt-4 border-t border-border pt-3 text-[11px] font-medium text-muted">
+                  Stage {index + 1} of {total}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

@@ -7,7 +7,7 @@ type LayoutBlock = Record<string, unknown>;
 
 const DEFAULT_ENQUIRY_ASIDE: LayoutBlock = {
   blockType: 'serviceEnquiryAside',
-  eyebrow: 'Project inquiry',
+  eyebrow: 'Direct study intake',
   title: 'Start a project conversation',
   body: 'Tell us about your research question, materials or data, expected outputs and timeline. Scope, cost and delivery are agreed in writing before work begins.',
   buttonLabel: 'Request this service',
@@ -21,7 +21,11 @@ const DEFAULT_ENQUIRY_ASIDE: LayoutBlock = {
 function featureGrid(
   heading: string,
   body: string,
-  features: readonly { title: string; description: string }[],
+  features: readonly {
+    title: string;
+    description: string;
+    highlights?: readonly { text: string }[];
+  }[],
 ): LayoutBlock {
   return {
     blockType: 'featureGrid',
@@ -212,42 +216,81 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
   serviceHeroBootstrapBlock('preclinical-studies'),
   {
     blockType: 'sectionHeading',
-    heading: 'Ethical preclinical research infrastructure',
-    body: 'In vivo and in vitro models conducted under institutional animal ethics approval with documented welfare, dosing, and analytical endpoints.',
+    heading: 'Service overview and laboratory capabilities',
+    body: 'We establish whether a candidate treatment is safe and effective before it reaches human trials. Studies may be in vivo in animal models, in vitro in cell-based systems, or in silico through computer simulation. Animal studies are designed under IAEC-approved written protocols.',
   },
   featureGrid(
-    'Therapeutic area and model capabilities',
-    'Representative study designs CERA supports for candidate screening and mechanistic validation.',
+    'Three investigation modalities',
+    'Cross-modal workflows from computational molecular prediction to biological verification.',
     [
+      {
+        title: 'In vivo models',
+        description:
+          'Standardized, ethically documented whole-organism testing with dedicated vivarium housing and behavioral telemetry suites.',
+        highlights: [
+          { text: 'Mice and rats (Sprague Dawley, Wistar)' },
+          { text: 'Rabbits and guinea pigs' },
+          { text: 'Behavioral assays and neurotoxicity' },
+          { text: 'Toxicology and pharmacokinetics' },
+        ],
+      },
+      {
+        title: 'In vitro assays',
+        description:
+          'Cellular-level viability, cytotoxicity, and mechanistic pathway verification inside our dedicated clean cell culture suite.',
+        highlights: [
+          { text: 'Glioblastoma lines (U87, LN229)' },
+          { text: 'Primary neurological and somatic cultures' },
+          { text: 'MTT, LDH, flow cytometry, ELISA' },
+          { text: 'Western blot and RT-qPCR profiling' },
+        ],
+      },
+      {
+        title: 'In silico dynamics',
+        description:
+          'Computational screening and molecular dynamics simulations to test drug-receptor affinity prior to wet-lab synthesis.',
+        highlights: [
+          { text: 'High-throughput molecular docking' },
+          { text: 'Molecular dynamics (MD) trajectories' },
+          { text: 'Binding-energy calculation (MM-GBSA)' },
+          { text: 'ADMET profiling and target prediction' },
+        ],
+      },
+    ],
+  ),
+  featureGrid(
+    'Active research focus areas',
+    'Specialized preclinical models currently maintained with validated baseline data.',
+    [
+      {
+        title: 'Methamphetamine neurotoxicity',
+        description:
+          'Evaluating striatal dopaminergic neurodegeneration, microglial activation, and neuroprotective therapeutic leads in rodent models.',
+      },
       {
         title: 'Social isolation stress',
         description:
-          'Neurochemical adaptations, anhedonia-like manifestations, and HPA-axis endocrine dysregulation in controlled cohorts.',
+          'Quantifying neurochemical adaptations, anhedonia-like manifestations, and HPA-axis endocrine dysregulation in controlled cohorts.',
       },
       {
         title: 'Morphine and nicotine dependence',
         description:
-          'Conditioned place preference, withdrawal escalation paradigms, and assessment of cessation or anti-relapse candidates.',
+          'Conditioned place preference, withdrawal escalation paradigms, and assessment of novel cessation or anti-relapse candidates.',
       },
       {
         title: 'Synthetic compounds in neuroscience',
         description:
-          'Screening novel small molecules for CNS receptor binding, blood-brain barrier permeability, and acute toxicity.',
+          'Screening novel small-molecule synthetic compounds for CNS receptor binding, blood-brain barrier permeability, and acute toxicity.',
       },
       {
         title: 'Gut-induced depression models',
         description:
-          'Microbiome-gut-brain axis, systemic inflammatory mediators, and therapeutic interventions for mood disorders.',
+          'Investigating the microbiome-gut-brain axis, systemic inflammatory mediators, and therapeutic interventions for mood disorders.',
       },
       {
         title: 'Natural products in glioblastoma',
         description:
-          'Secondary plant metabolites, selective cytotoxic potency, and synergistic apoptosis induction in human glioblastoma lines.',
-      },
-      {
-        title: 'In vitro cytotoxicity and histopathology',
-        description:
-          'Cell-line panels, tissue microarrays, and quantitative histopathology with blinded scoring.',
+          'Assessing secondary plant metabolites, selective cytotoxic potency, and synergistic apoptosis induction in human glioblastoma lines.',
       },
     ],
   ),
@@ -259,44 +302,65 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
       {
         title: 'Project scoping and commercial agreement',
         description:
-          'Define candidate treatment, endpoints, model requirements, sample sizes, budget, and milestone timelines in writing.',
+          'Define candidate treatment, analytical endpoints, animal/cell model requirements, statistical sample sizes, total budget, and milestone timelines in writing.',
       },
       {
         title: 'Protocol clearance and statistical locking',
         description:
-          'Formal submission to IAEC or biosafety committee. Protocol versioning and statistical power calculations locked.',
+          'Formal submission to the Institutional Animal Ethics Committee (IAEC) or Biosafety Committee. Protocol versioning and statistical power calculations permanently locked.',
       },
       {
-        title: 'In-life study execution and welfare monitoring',
+        title: 'Experimental execution and chain-of-custody',
         description:
-          'Daily welfare checks, dosing logs, adverse event recording, and interim data review against charter.',
+          'Assay execution using defined positive and negative controls, blinded investigator replicates, authenticated cell passage logs, and continuous environmental telemetry.',
       },
       {
-        title: 'Terminal analytics and histopathology',
+        title: 'Data curation, histology and biostatistics',
         description:
-          'Blinded histology, biomarker assays, and statistical analysis against pre-registered endpoints.',
+          'Raw data verification, blinded histopathological micro-imaging scoring, ANOVA/multivariate statistics, and compilation into publication-grade graphical summaries.',
       },
       {
-        title: 'Study report and data package',
+        title: 'Technical reporting and scientific review',
         description:
-          'GLP-aligned study report, raw data tables, and publication-ready figures under client ownership.',
+          'Delivery of full signed study dossier, comprehensive raw dataset repository, formal video conference briefing with study director, and one included technical revision cycle.',
       },
     ],
   ),
+  {
+    blockType: 'keyValueList',
+    heading: 'Mandatory compliance and investigator requirements',
+    body: 'To ensure compliance with national biomedical regulations and global publication integrity, all external sponsor projects must fulfill the following mandatory checkpoints before laboratory work commences:',
+    items: [
+      {
+        label: 'Institutional Animal Ethics Committee (IAEC) pre-clearance protocol',
+        detail: 'Required before animal acquisition or experiment initiation.',
+      },
+      {
+        label: 'Strict de-identification: zero participant or sponsor confidential identifiers',
+        detail: 'No direct identifiers in correspondence or sample labels.',
+      },
+      {
+        label: 'Safety Data Sheet (SDS) submission for all synthetic or extracted test items',
+        detail: 'Submitted before compound receipt.',
+      },
+      {
+        label: 'Strict biohazard chain-of-custody and hazardous biological waste destruction SOPs',
+        detail: 'Documented handover at intake and disposal.',
+      },
+    ],
+  },
+  {
+    blockType: 'ctaBand',
+    headline: 'Ready to scope your preclinical study?',
+    body: 'Discuss candidate compounds, cellular models, or in vivo animal paradigms with our study directors. We respond within three working days.',
+    href: '/enquiry',
+    label: 'Request preclinical scoping',
+  },
   DEFAULT_ENQUIRY_ASIDE,
   {
     blockType: 'serviceSidebarCard',
-    title: 'Ethics and welfare requirements',
-    items: [
-      {
-        label: 'IAEC approval',
-        detail: 'Institutional Animal Ethics Committee clearance required before any in vivo work.',
-      },
-      {
-        label: '3Rs alignment',
-        detail: 'Replacement, reduction, and refinement documented in every protocol.',
-      },
-    ],
+    title: 'Animal welfare governance',
+    body: 'Institutional animal ethics committee (IAEC/IRB) approval protocol is mandatory prior to animal acquisition, housing allocation, or experiment initiation. CERA operates strictly under 3Rs principles (Replacement, Reduction, Refinement).',
   },
 ];
 

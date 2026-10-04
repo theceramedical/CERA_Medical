@@ -348,6 +348,7 @@ export const servicePresentationBlocks: Block[] = [
   ProcessStepsBlock,
   KeyValueListBlock,
   CalloutBandBlock,
+  CtaBandBlock,
   FaqListBlock,
   ServiceEnquiryAsideBlock,
   ServiceSidebarCardBlock,

@@ -34,6 +34,37 @@ export function servicesCatalogueFromLayout(layout: unknown): ServicesCatalogueL
   };
 }
 
+export interface ServicesPageHero {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly body: string;
+  readonly badges: readonly string[];
+}
+
+export function servicesHeroFromLayout(layout: unknown): ServicesPageHero | null {
+  const blocks = Array.isArray(layout) ? (layout as LayoutBlock[]) : [];
+  const block = blocks.find((item) => item.blockType === 'sectionHeading');
+  if (block === undefined) return null;
+  const badges = Array.isArray(block.badges)
+    ? block.badges
+        .map((item) =>
+          typeof item === 'object' && item !== null && 'label' in item
+            ? String((item as { label: unknown }).label)
+            : '',
+        )
+        .filter((label) => label.trim().length > 0)
+    : [];
+  const heading = stringField(block, 'heading', '');
+  const body = stringField(block, 'body', '');
+  if (heading.length === 0) return null;
+  return {
+    eyebrow: stringField(block, 'eyebrow', 'CLINICAL RESEARCH INFRASTRUCTURE'),
+    heading,
+    body,
+    badges,
+  };
+}
+
 export function layoutBlocksWithoutServicesChrome(layout: unknown): readonly LayoutBlock[] {
   const blocks = Array.isArray(layout) ? (layout as LayoutBlock[]) : [];
   return blocks.filter(

@@ -17,6 +17,7 @@ Stitch HTML uses a different icon box and “R&D LABORATORIES” subtitle — **
 | `cera_medical_about_cera_medical_about`                 | `/about`                        | CMS `pages/about`                                                                                                     |
 | `cera_medical_contact_study_scoping_contact`            | `/contact`                      | CMS `pages/contact` + `site-settings`                                                                                 |
 | `cera_medical_research_updates_articles`                | `/articles`                     | CMS `posts`                                                                                                           |
+| Products catalog (`stitch_cera_medical_platform (1)`)   | `/products`                     | Static research-asset catalogue (SKU enquiry via `/enquiry?product=`)                                                 |
 | Status ribbon (homepage HTML)                           | All public pages                | CMS global `announcement`                                                                                             |
 
 ## Implemented from designs

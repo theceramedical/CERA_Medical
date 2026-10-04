@@ -113,7 +113,7 @@ export const HOMEPAGE_PROCESS: readonly ProcessStepContent[] = [
     icon: FlaskConical,
   },
   {
-    title: 'Analysis and reporting',
+    title: 'Analysis & reporting',
     description: 'Deliver results with figures, tables and documented methods.',
     icon: Workflow,
   },
@@ -197,8 +197,8 @@ export const HOMEPAGE_AUDIENCES: readonly AudienceSegment[] = [
       'Evidence synthesis and analysis with clear governance for sensitive or regulated data.',
     highlights: [
       'De-identified enquiry and project data',
-      'Retention aligned to policy',
-      'Staff-only operational notes',
+      'Retention aligned to regulatory policy',
+      'Staff-only operational security notes',
     ],
     icon: Hospital,
   },
@@ -264,25 +264,25 @@ export const HOMEPAGE_PRINCIPLES: readonly PrincipleItem[] = [
   {
     title: 'Written scope first',
     description:
-      'Every engagement records the research question, materials, deliverables, timeline and cost before laboratory or analysis work begins.',
+      'No ambiguity in experimental design, sample handling parameters, or final deliverables.',
     icon: FileCheck2,
   },
   {
     title: 'Traceable methods',
     description:
-      'Protocols, software versions and parameters are documented so results can be reviewed, reproduced, or extended in a follow-on study.',
+      'Every assay, batch number, and computational pipeline parameter is catalogued for audit.',
     icon: ClipboardCheck,
   },
   {
     title: 'Confidential handling',
     description:
-      'Project data and samples are handled under agreed retention and access rules. The public website never collects clinical records.',
+      'Strict NDA adherence, institutional air-gapped backups, and de-identified data processing.',
     icon: Lock,
   },
   {
     title: 'Clear communication',
     description:
-      'You receive a named reference for enquiries, status updates through your account when claimed, and a defined path for revisions.',
+      'Direct liaison with assigned laboratory leads without fragmented customer support intermediaries.',
     icon: MessagesSquare,
   },
 ];
@@ -295,19 +295,23 @@ export interface DeliverableItem {
 export const HOMEPAGE_DELIVERABLES: readonly DeliverableItem[] = [
   {
     title: 'Study or analysis plan',
-    description: 'Agreed endpoints, controls, and acceptance criteria before execution.',
+    description:
+      'Complete initial technical scoping with methodology, controls, sample acceptance criteria, and explicit delivery milestones.',
   },
   {
     title: 'Results package',
-    description: 'Figures, tables, and methods text suitable for internal review or publication.',
+    description:
+      'Structured raw and normalized data, high-resolution figures, statistical scripts, and reproducible pipeline documentation.',
   },
   {
     title: 'Data handover',
-    description: 'Processed outputs and metadata transferred through agreed secure channels.',
+    description:
+      'Secure, checksum-verified encrypted data transfer accompanied by comprehensive data dictionaries and SOPs.',
   },
   {
     title: 'Revision round',
-    description: 'Included discussion and one structured revision cycle on delivered reporting.',
+    description:
+      'A dedicated follow-up session with principal scientists and biostatisticians to fine-tune plots and report narratives.',
   },
 ];
 
@@ -318,18 +322,19 @@ export interface FaqPreviewItem {
 
 export const HOMEPAGE_FAQ_PREVIEW: readonly FaqPreviewItem[] = [
   {
-    question: 'How does a project begin?',
+    question: 'What information is needed to start an initial project scoping?',
     answer:
-      'We discuss your research question, available data or materials, required outputs, scope, timeline and cost. The agreed scope is recorded in writing before work begins.',
+      'We require a brief summary of your research objective, the biological materials or data formats available, estimated specimen volume or sequencing scale, and any critical institutional deadlines. No identifiable patient data should ever be submitted during initial web intake.',
   },
   {
-    question: 'What should I include in an enquiry?',
+    question: 'How are confidential research data and biological specimens secured?',
     answer:
-      'Describe the service you need, timeline, and outputs. Do not include participant names or other direct identifiers in the website form.',
+      'Specimens are accessioned into temperature-monitored, barcoded biostorage with multi-factor access logs. Computational omics data is handled within isolated network partitions featuring AES-256 encryption at rest and TLS 1.3 in transit, backed by reciprocal Non-Disclosure Agreements.',
   },
   {
-    question: 'How quickly will you reply?',
-    answer: 'We aim to respond within three working days with next steps or clarifying questions.',
+    question: 'What is the standard turnaround time for a comprehensive enquiry response?',
+    answer:
+      'Our target response window is three business days. A senior research coordinator evaluates technical feasibility, ethical prerequisites, and computational resource allocation, followed by scheduling a direct scoping teleconference.',
   },
 ];
 
@@ -344,20 +349,21 @@ export const HOMEPAGE_EXPLORE: readonly ExploreLink[] = [
   {
     title: 'How we work',
     description:
-      'Five project stages from scoping through follow-up, with quality checks at each step.',
+      'Review our laboratory standard operating procedures, validation pipelines, and governance framework.',
     href: '/methodology',
     icon: Workflow,
   },
   {
     title: 'About CERA Medical',
     description:
-      'Laboratory, computational, and reporting capabilities for biomedical research partners.',
+      'Discover our biomedical research facilities, executive leadership, and academic affiliations in Haripur.',
     href: '/about',
     icon: LineChart,
   },
   {
     title: 'Get started',
-    description: 'Contact details, service request guidance, and what happens after you submit.',
+    description:
+      'Connect directly with our study directors to discuss sample handling or custom bioinformatics protocols.',
     href: '/contact',
     icon: MessagesSquare,
   },

@@ -9,7 +9,7 @@ export function serviceHeroBootstrapBlock(slug: string) {
     }
   > = {
     'preclinical-studies': {
-      eyebrow: 'Research service line · ethical scoping validated',
+      eyebrow: 'Research service line 01 · ethical scoping validated',
       badges: [
         { label: 'Institutional animal ethics approval required' },
         { label: 'BSL-2 validated' },

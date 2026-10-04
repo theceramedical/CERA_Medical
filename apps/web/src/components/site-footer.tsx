@@ -5,7 +5,7 @@ import NextLink from 'next/link';
 import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppLink } from './link.tsx';
-import { MAIN_NAV, SUPPORT_NAV } from './navigation.ts';
+import { MAIN_NAV, SUPPORT_NAV, withProductsNav } from './navigation.ts';
 
 import type { NavItem } from './navigation.ts';
 
@@ -20,7 +20,7 @@ export async function SiteFooter() {
     getPublicGlobal<{ footer?: readonly NavItem[] }>('navigation'),
   ]);
   const email = settings?.email ?? 'contact@ceramedical.org';
-  const quickLinks = navigation?.footer?.length ? navigation.footer : MAIN_NAV;
+  const quickLinks = withProductsNav(navigation?.footer?.length ? navigation.footer : MAIN_NAV);
   return (
     <footer className="bg-surface-footer">
       <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-6 pt-12 pb-12 sm:grid-cols-2 md:px-10 lg:grid-cols-4">

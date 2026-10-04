@@ -97,6 +97,7 @@ const INITIAL: EnquiryFormState = { status: 'idle' };
 export interface EnquiryFormProps {
   readonly startedAt: string;
   readonly defaultServiceId?: string;
+  readonly defaultMessage?: string;
   readonly source?: 'web_service_page' | 'web_contact_page' | 'web_general';
   readonly serviceLocked?: boolean;
   readonly copy?: EnquiryFormCopy;
@@ -125,6 +126,7 @@ export interface EnquiryFormCopy {
 export function EnquiryForm({
   startedAt,
   defaultServiceId,
+  defaultMessage,
   source = 'web_general',
   serviceLocked = false,
   copy,
@@ -273,7 +275,7 @@ export function EnquiryForm({
         error={errorFor('message')}
         id="enquiry-message"
       >
-        <Textarea name="message" rows={6} defaultValue={values?.message ?? ''} />
+        <Textarea name="message" rows={6} defaultValue={values?.message ?? defaultMessage ?? ''} />
       </Field>
 
       <Checkbox

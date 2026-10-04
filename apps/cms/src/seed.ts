@@ -293,6 +293,7 @@ async function main(): Promise<void> {
       header: [
         { label: 'Home', href: '/' },
         { label: 'Services', href: '/services' },
+        { label: 'Products', href: '/products' },
         { label: 'Research Updates', href: '/articles' },
         { label: 'About', href: '/about' },
         { label: 'Contact', href: '/contact' },

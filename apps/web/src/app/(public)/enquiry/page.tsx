@@ -20,10 +20,11 @@ export function generateMetadata(): Metadata {
 export default async function EnquiryPage({
   searchParams,
 }: {
-  readonly searchParams: Promise<{ service?: string; source?: string }>;
+  readonly searchParams: Promise<{ service?: string; source?: string; product?: string }>;
 }) {
   const params = await searchParams;
   const serviceId = params.service;
+  const productSku = params.product?.trim();
   const [page, enquiryData] = await Promise.all([
     getCurrentDocument('page', 'enquiry'),
     loadEnquiryFormData(),
@@ -31,6 +32,10 @@ export default async function EnquiryPage({
   if (page === null) return <CmsPageUnavailable slug="enquiry" />;
 
   const hero = sectionHeadingFromLayout(page.layout);
+  const defaultMessage =
+    productSku !== undefined && productSku.length > 0
+      ? `Institutional quotation requested for catalog SKU ${productSku}. Please include intended research quantity, shipping destination, and any MTA requirements. Do not include patient names or other identifying details.`
+      : undefined;
 
   return (
     <>
@@ -44,6 +49,7 @@ export default async function EnquiryPage({
           startedAt={new Date().toISOString()}
           {...enquiryData}
           {...(serviceId === undefined ? {} : { defaultServiceId: serviceId })}
+          {...(defaultMessage === undefined ? {} : { defaultMessage })}
           source={params.source === 'web_contact_page' ? 'web_contact_page' : 'web_general'}
         />
       </div>

@@ -585,13 +585,20 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
         heading: 'Complete Service Portfolio',
         body: 'CERA Medical provides biomedical research and development services. We support principal investigators, biotech developers, and academic institutions through validated analytical protocols and strict ethical frameworks.',
         badges: [
-          { label: 'Institutional animal ethics board' },
-          { label: 'Documented analytical protocols' },
-          { label: 'Written scope before work begins' },
+          { label: 'Institutional Animal Ethics Board' },
+          { label: 'BSL-2 Validated Biosafety' },
+          { label: 'Reproducible Omics Pipelines' },
         ],
       },
       { blockType: 'servicesCatalogue' },
       ...servicesPageFacilitiesBlocks(),
+      {
+        blockType: 'ctaBand',
+        headline: 'Ready to scope your research study?',
+        body: 'Share your research question, materials or datasets. We respond within three working days with next steps — no clinical records on this form.',
+        href: '/enquiry',
+        label: 'Make an Enquiry',
+      },
     ] as NonNullable<Page['layout']>,
     body: lexicalFromStrings([]),
     seo: {

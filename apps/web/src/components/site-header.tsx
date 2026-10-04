@@ -7,14 +7,14 @@ import { checkoutEnabled } from '../lib/checkout-enabled.ts';
 import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppButtonLink } from './link.tsx';
-import { MAIN_NAV } from './navigation.ts';
+import { MAIN_NAV, withProductsNav } from './navigation.ts';
 import { HeaderScrollShadow } from './site-header.client.tsx';
 import { DesktopNavLinks } from './site-nav-links.client.tsx';
 import { MobileNav } from './site-nav.client.tsx';
 
 /**
  * The site header (design-language.md section 5.5): 80px tall, wordmark left, five nav items centred,
- * a search button and two calls to action on the right.
+ * a search button and two calls to action on the right. Products sits after Services.
  *
  * A server component, with three small client islands inside it. That split is the point rather than
  * an accident: the header is on every page, so anything that becomes client code here becomes client
@@ -26,7 +26,7 @@ export async function SiteHeader() {
   const navigation = await getPublicGlobal<{ header?: readonly { label: string; href: string }[] }>(
     'navigation',
   );
-  const navItems = navigation?.header?.length ? navigation.header : MAIN_NAV;
+  const navItems = withProductsNav(navigation?.header?.length ? navigation.header : MAIN_NAV);
   return (
     <HeaderScrollShadow>
       <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">

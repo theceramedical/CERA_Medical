@@ -54,6 +54,7 @@ export function homePageMarketingBlocks(): PageLayout {
     },
     {
       blockType: 'featureGrid',
+      eyebrow: 'Methodological rigor',
       heading: 'Built for rigorous research',
       body: 'One team for laboratory studies, computational analysis and evidence you can use.',
       tone: 'surface-tint',
@@ -77,27 +78,29 @@ export function homePageMarketingBlocks(): PageLayout {
     },
     {
       blockType: 'processSteps',
-      heading: 'What you receive',
+      heading: 'What You Receive',
       body: 'Deliverables are agreed in writing during scoping so everyone knows what “done” looks like before work starts.',
       tone: 'surface',
       steps: [
         {
           title: 'Study or analysis plan',
-          description: 'Agreed endpoints, controls, and acceptance criteria before execution.',
+          description:
+            'Complete initial technical scoping with methodology, controls, sample acceptance criteria, and explicit delivery milestones.',
         },
         {
           title: 'Results package',
           description:
-            'Figures, tables, and methods text suitable for internal review or publication.',
+            'Structured raw and normalized data, high-resolution figures, statistical scripts, and reproducible pipeline documentation.',
         },
         {
           title: 'Data handover',
-          description: 'Processed outputs and metadata transferred through agreed secure channels.',
+          description:
+            'Secure, checksum-verified encrypted data transfer accompanied by comprehensive data dictionaries and SOPs.',
         },
         {
           title: 'Revision round',
           description:
-            'Included discussion and one structured revision cycle on delivered reporting.',
+            'A dedicated follow-up session with principal scientists and biostatisticians to fine-tune plots and report narratives.',
         },
       ],
     },
@@ -122,7 +125,7 @@ export function homePageMarketingBlocks(): PageLayout {
             'Carry out the agreed work with defined controls, replicates and quality checks.',
         },
         {
-          title: 'Analysis and reporting',
+          title: 'Analysis & reporting',
           description: 'Deliver results with figures, tables and documented methods.',
         },
         {
@@ -134,7 +137,7 @@ export function homePageMarketingBlocks(): PageLayout {
     {
       blockType: 'featureGrid',
       heading: 'How we work with partners',
-      body: 'Principles that apply to every service line — from preclinical studies to omics analysis and evidence reports.',
+      body: 'Four foundational commitments behind every institutional research engagement.',
       tone: 'surface-tint',
       features: [
         {
@@ -161,7 +164,7 @@ export function homePageMarketingBlocks(): PageLayout {
     },
     {
       blockType: 'articlesPreview',
-      heading: 'Research insights',
+      heading: 'Health Insights & Articles',
       body: 'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.',
       viewAllHref: '/articles',
       viewAllLabel: 'View All Articles',
@@ -169,25 +172,25 @@ export function homePageMarketingBlocks(): PageLayout {
     },
     {
       blockType: 'faqList',
-      heading: 'Common questions',
+      heading: 'Common Questions',
       body: 'Quick answers before you submit an enquiry. Full detail lives on the FAQs page.',
       linkHref: '/faqs',
       linkLabel: 'All FAQs',
       items: [
         {
-          question: 'How does a project begin?',
+          question: 'What information is needed to start an initial project scoping?',
           answer:
-            'We discuss your research question, available data or materials, required outputs, scope, timeline and cost. The agreed scope is recorded in writing before work begins.',
+            'We require a brief summary of your research objective, the biological materials or data formats available, estimated specimen volume or sequencing scale, and any critical institutional deadlines. No identifiable patient data should ever be submitted during initial web intake.',
         },
         {
-          question: 'What should I include in an enquiry?',
+          question: 'How are confidential research data and biological specimens secured?',
           answer:
-            'Describe the service you need, timeline, and outputs. Do not include participant names or other direct identifiers in the website form.',
+            'Specimens are accessioned into temperature-monitored, barcoded biostorage with multi-factor access logs. Computational omics data is handled within isolated network partitions featuring AES-256 encryption at rest and TLS 1.3 in transit, backed by reciprocal Non-Disclosure Agreements.',
         },
         {
-          question: 'How quickly will you reply?',
+          question: 'What is the standard turnaround time for a comprehensive enquiry response?',
           answer:
-            'We aim to respond within three working days with next steps or clarifying questions.',
+            'Our target response window is three business days. A senior research coordinator evaluates technical feasibility, ethical prerequisites, and computational resource allocation, followed by scheduling a direct scoping teleconference.',
         },
       ],
     },
@@ -200,23 +203,23 @@ export function homePageMarketingBlocks(): PageLayout {
         {
           title: 'How we work',
           description:
-            'Five project stages from scoping through follow-up, with quality checks at each step.',
+            'Review our laboratory standard operating procedures, validation pipelines, and governance framework.',
           href: '/methodology',
           linkLabel: 'Read methodology',
         },
         {
           title: 'About CERA Medical',
           description:
-            'Laboratory, computational, and reporting capabilities for biomedical research partners.',
+            'Discover our biomedical research facilities, executive leadership, and academic affiliations in Haripur.',
           href: '/about',
-          linkLabel: 'About us',
+          linkLabel: 'Institutional overview',
         },
         {
           title: 'Get started',
           description:
-            'Contact details, service request guidance, and what happens after you submit.',
+            'Connect directly with our study directors to discuss sample handling or custom bioinformatics protocols.',
           href: '/contact',
-          linkLabel: 'Contact',
+          linkLabel: 'Direct contact details',
         },
       ],
     },

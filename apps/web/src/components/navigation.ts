@@ -15,14 +15,29 @@ export interface NavItem {
   readonly label: string;
 }
 
-/** The five items in the header's centre group, in reference order (design-language.md 5.5). */
+/** Header centre group. Products is the Stitch research-assets catalogue. */
 export const MAIN_NAV: readonly NavItem[] = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
+  { href: '/products', label: 'Products' },
   { href: '/articles', label: 'Research Updates' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
+
+/**
+ * CMS navigation can lag a seed. Insert Products after Services when the global omits it.
+ */
+export function withProductsNav(items: readonly NavItem[]): readonly NavItem[] {
+  if (items.some((item) => item.href === '/products')) return items;
+  const product: NavItem = { href: '/products', label: 'Products' };
+  const servicesIndex = items.findIndex((item) => item.href === '/services');
+  if (servicesIndex === -1)
+    return [items[0], product, ...items.slice(1)].filter(
+      (item): item is NavItem => item !== undefined,
+    );
+  return [...items.slice(0, servicesIndex + 1), product, ...items.slice(servicesIndex + 1)];
+}
 
 /** Footer "Support" column, per section 5.9. */
 export const SUPPORT_NAV: readonly NavItem[] = [
@@ -53,7 +68,7 @@ export const SOCIAL_LINKS = [
  * Whether a nav item is the page currently being viewed.
  *
  * `/` has to match exactly. Treating it as a prefix would mark Home as the current page on every
- * route on the site, which is worse than marking nothing: `aria-current="page"` on five items tells a
+ * route on the site, which is worse than marking nothing: `aria-current="page"` on every item tells a
  * screen reader user that they are in five places at once.
  *
  * Everything else matches as a prefix, so `/articles/heart-health` keeps Articles marked. That is the
