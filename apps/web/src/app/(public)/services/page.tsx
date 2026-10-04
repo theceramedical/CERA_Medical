@@ -53,7 +53,7 @@ export default async function ServicesPage({
         {...(degraded ? { degraded: true } : {})}
       />
       {bodyBlocks.length > 0 ? <CmsLayout blocks={bodyBlocks} /> : null}
-      {presentations.length === 0 ? (
+      {degraded && presentations.length === 0 ? (
         <div className="mx-auto max-w-site px-6 pb-12 md:px-10">
           <EmptyState
             heading="Catalogue unavailable"
