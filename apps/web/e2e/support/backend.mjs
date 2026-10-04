@@ -109,9 +109,64 @@ const SITE_SETTINGS = {
   ],
 };
 
-function json(response, status, body) {
-  response.writeHead(status, { 'content-type': 'application/json' });
+const E2E_ORIGIN = 'http://127.0.0.1:3100';
+const VENDURE_COOKIE = 'cera_vendure_token';
+
+const PHYSICAL_LINES = {
+  'CR-CEL-8402': {
+    title: 'CERA-GLIO-01: Authenticated Human Glioblastoma Multiforme Primary Cell Cohort',
+    unitPriceMinor: 13_440_000,
+  },
+  'CR-MOL-1021': {
+    title: 'CERA-QPCR-100: High-Fidelity SybrGreen qPCR Master Mix (2X)',
+    unitPriceMinor: 420_000,
+  },
+};
+
+/** @type {Map<string, { currencyCode: string, lines: object[] }>} */
+const carts = new Map();
+
+function cors(response) {
+  response.setHeader('access-control-allow-origin', E2E_ORIGIN);
+  response.setHeader('access-control-allow-credentials', 'true');
+  response.setHeader('access-control-allow-headers', 'content-type');
+  response.setHeader('access-control-allow-methods', 'GET, POST, OPTIONS');
+}
+
+function json(response, status, body, extraHeaders = {}) {
+  cors(response);
+  response.writeHead(status, { 'content-type': 'application/json', ...extraHeaders });
   response.end(JSON.stringify(body));
+}
+
+function readCookie(request, name) {
+  const raw = request.headers.cookie ?? '';
+  for (const part of raw.split(';')) {
+    const [key, ...rest] = part.trim().split('=');
+    if (key === name) return decodeURIComponent(rest.join('='));
+  }
+  return null;
+}
+
+function emptyCart() {
+  return { currencyCode: 'PKR', lines: [], subtotalMinor: 0, totalMinor: 0 };
+}
+
+function cartPayload(cart) {
+  const subtotalMinor = cart.lines.reduce((sum, line) => sum + line.lineTotalMinor, 0);
+  return {
+    currencyCode: cart.currencyCode,
+    lines: cart.lines,
+    subtotalMinor,
+    totalMinor: subtotalMinor,
+  };
+}
+
+function ensureSession(token) {
+  if (!carts.has(token)) {
+    carts.set(token, { currencyCode: 'PKR', lines: [] });
+  }
+  return carts.get(token);
 }
 
 function cmsPages(url) {
@@ -124,6 +179,13 @@ function cmsPages(url) {
 const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? '/', 'http://127.0.0.1');
   const path = url.pathname;
+
+  if (request.method === 'OPTIONS') {
+    cors(response);
+    response.writeHead(204);
+    response.end();
+    return;
+  }
 
   if (request.method === 'GET' && path === '/health') {
     json(response, 200, { ok: true });
@@ -161,6 +223,92 @@ const server = createServer(async (request, response) => {
       });
     } catch {
       json(response, 400, { error: { message: 'Invalid JSON.' } });
+    }
+    return;
+  }
+
+  if (request.method === 'GET' && path === '/v1/cart') {
+    const token = readCookie(request, VENDURE_COOKIE);
+    if (token === null) {
+      json(response, 200, emptyCart());
+      return;
+    }
+    const cart = carts.get(token);
+    json(response, 200, cart === undefined ? emptyCart() : cartPayload(cart));
+    return;
+  }
+
+  if (request.method === 'POST' && path === '/v1/cart/lines') {
+    let raw = '';
+    for await (const chunk of request) raw += chunk;
+    let body;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      json(response, 400, {
+        error: { code: 'validation_failed', message: 'Invalid JSON.', retryable: false },
+        requestId: 'e2e',
+      });
+      return;
+    }
+    const sku = body.slug;
+    const quantity = typeof body.quantity === 'number' ? body.quantity : 1;
+    const catalog = PHYSICAL_LINES[sku];
+    if (catalog === undefined) {
+      json(response, 404, {
+        error: { code: 'not_found', message: 'Not found.', retryable: false },
+        requestId: 'e2e',
+      });
+      return;
+    }
+    let token = readCookie(request, VENDURE_COOKIE);
+    if (token === null || token.length === 0) {
+      token = `e2e-${String(Date.now())}`;
+    }
+    const cart = ensureSession(token);
+    const lineTotalMinor = catalog.unitPriceMinor * quantity;
+    cart.lines = [
+      {
+        id: 'e2e-line-1',
+        slug: sku,
+        title: catalog.title,
+        quantity,
+        unitPriceMinor: catalog.unitPriceMinor,
+        lineTotalMinor,
+      },
+    ];
+    const payload = cartPayload(cart);
+    json(response, 200, payload, {
+      'set-cookie': `${VENDURE_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax`,
+    });
+    return;
+  }
+
+  if (request.method === 'POST' && path === '/v1/checkout/complete') {
+    let raw = '';
+    for await (const chunk of request) raw += chunk;
+    try {
+      const body = JSON.parse(raw);
+      const token = readCookie(request, VENDURE_COOKIE);
+      const cart = token === null ? undefined : carts.get(token);
+      if (
+        cart === undefined ||
+        cart.lines.length === 0 ||
+        typeof body.email !== 'string' ||
+        typeof body.fullName !== 'string'
+      ) {
+        json(response, 400, {
+          error: { code: 'validation_failed', message: 'Invalid checkout.', retryable: false },
+          requestId: 'e2e',
+        });
+        return;
+      }
+      json(response, 200, { orderCode: 'E2E-CHECKOUT-0001' });
+    } catch {
+      json(response, 400, {
+        error: { code: 'validation_failed', message: 'Invalid JSON.', retryable: false },
+        requestId: 'e2e',
+      });
     }
     return;
   }

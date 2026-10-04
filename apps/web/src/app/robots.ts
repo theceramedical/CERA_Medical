@@ -34,6 +34,8 @@ export default function robots(): MetadataRoute.Robots {
          * the same terms.
          */
         '/search',
+        '/cart',
+        '/checkout',
         '/api',
 
         // The design preview, which is not served in production at all. Listed so that if the guard is

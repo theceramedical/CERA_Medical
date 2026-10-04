@@ -16,6 +16,9 @@
     "//test:a11y": "The accessibility gate. Separate from test:e2e because it has to be runnable on its own in seconds during design work, while the E2E suite grows through phases 07 to 12 and will not be.",
     "test:a11y": "playwright test --project a11y",
     "test:e2e": "playwright test --project e2e",
+    "test:e2e:headed": "playwright test --project e2e --headed",
+    "test:checkout": "playwright test e2e/checkout.e2e.spec.ts --project e2e",
+    "test:headed": "playwright test --headed",
     "//test:visual": "Baselines are committed, so a regeneration is a reviewable diff. Use `test:visual:update` deliberately and read the resulting images before committing them.",
     "test:visual": "playwright test --project visual",
     "test:visual:update": "playwright test --project visual --update-snapshots"

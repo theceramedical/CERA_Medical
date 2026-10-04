@@ -40,6 +40,8 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
       : DEFAULT_TRUST;
   const badgeTitle = content.badgeTitle ?? HERO.badge.title;
   const badgeBody = content.badgeBody ?? HERO.badge.body;
+  const headlinePrimary = content.headlinePrimary ?? HERO.headlinePrimary;
+  const headlineAccent = content.headlineAccent ?? HERO.headlineAccent;
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-surface-tint pt-12 pb-16 lg:pt-16 lg:pb-20">
@@ -59,10 +61,9 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
               </Text>
             </div>
             <Heading level={1} size="display-1" className="mb-4 tracking-tight">
-              {content.headlinePrimary ?? HERO.headlinePrimary}
-              <br />
-              <span className="text-accent-hover">
-                {content.headlineAccent ?? HERO.headlineAccent}
+              <span className="block">{headlinePrimary}</span>
+              <span className="block text-accent-hover">
+                {headlineAccent.startsWith(' ') ? headlineAccent : ` ${headlineAccent}`}
               </span>
             </Heading>
             <Text size="body-lg" tone="muted" className="mb-8 max-w-xl leading-relaxed">

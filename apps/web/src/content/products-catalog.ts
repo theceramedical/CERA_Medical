@@ -188,6 +188,49 @@ export function productEnquiryHref(sku: string): string {
   return `/enquiry?product=${encodeURIComponent(sku)}`;
 }
 
+/** In-page anchor for a catalog card (`/products#…`). */
+export function productCatalogAnchorId(sku: string): string {
+  return `product-${sku.toLowerCase()}`;
+}
+
+export function productCatalogHref(sku: string): string {
+  return `/products#${productCatalogAnchorId(sku)}`;
+}
+
+/** SEO-friendly product URL (`/products/cr-cel-8402`). */
+export function productDetailPath(sku: string): string {
+  return `/products/${encodeURIComponent(sku.toLowerCase())}`;
+}
+
+export function listCatalogSlugs(): readonly string[] {
+  return [...new Set(PHYSICAL_PRODUCT_SKUS.map((sku) => sku.toLowerCase()))];
+}
+
+export type CatalogEntry =
+  | {
+      readonly kind: 'featured';
+      readonly sku: string;
+      readonly title: string;
+      readonly description: string;
+    }
+  | { readonly kind: 'catalog'; readonly product: CatalogProduct };
+
+export function findCatalogEntry(slug: string): CatalogEntry | null {
+  const normalized = slug.trim().toLowerCase();
+  if (normalized.length === 0) return null;
+  if (FEATURED_PRODUCT.sku.toLowerCase() === normalized) {
+    return {
+      kind: 'featured',
+      sku: FEATURED_PRODUCT.sku,
+      title: FEATURED_PRODUCT.title,
+      description: FEATURED_PRODUCT.description,
+    };
+  }
+  const product = CATALOG_PRODUCTS.find((row) => row.sku.toLowerCase() === normalized);
+  if (product === undefined) return null;
+  return { kind: 'catalog', product };
+}
+
 export function filterCatalog(
   products: readonly CatalogProduct[],
   params: {

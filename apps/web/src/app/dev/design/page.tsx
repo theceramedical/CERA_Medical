@@ -91,7 +91,7 @@ export default function DesignSystemPage() {
 
           <Contents />
 
-          <div className="mt-12 flex flex-col gap-12">
+          <div className="mt-12 flex min-w-0 flex-col gap-12">
             <TokenSections />
             <PrimitiveSections />
             <CompositeSections />
@@ -133,7 +133,7 @@ function Contents() {
       <Heading level={2} size="h4" id="contents-heading">
         Contents
       </Heading>
-      <ol className="mt-3 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-y-1 p-0">
+      <ol className="mt-3 grid min-w-0 list-none grid-cols-1 gap-y-1 p-0 min-[28rem]:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]">
         {SECTIONS.map(([id, label]) => (
           <li key={id}>
             <Link href={`#${id}`}>{label}</Link>

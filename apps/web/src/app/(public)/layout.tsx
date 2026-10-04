@@ -5,6 +5,7 @@ import { LivePreview } from '../../components/live-preview.client.tsx';
 import { SiteAnnouncementBar } from '../../components/site-announcement-bar.tsx';
 import { SiteFooter } from '../../components/site-footer.tsx';
 import { SiteHeader } from '../../components/site-header.tsx';
+import { SiteJsonLd } from '../../components/site-json-ld.tsx';
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
@@ -42,6 +43,7 @@ export default async function PublicLayout({ children }: { readonly children: Re
      * viewport as their toolbar appears, and `vh` is measured against the larger of the two.
      */
     <div className="flex min-h-dvh flex-col">
+      <SiteJsonLd />
       {/*
        * First in the DOM, so it is the first thing Tab reaches. That is the whole requirement of
        * SC 2.4.1 and it is positional - a skip link placed anywhere else is a skip link that is

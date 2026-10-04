@@ -286,13 +286,13 @@ function ScaleSection({ raw }: { readonly raw: Map<string, string> }) {
 
         return (
           <PreviewCase key={title} title={title} note={note}>
-            <dl className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-6 gap-y-2">
+            <dl className="grid min-w-0 w-full max-w-full grid-cols-1 gap-y-2 min-[40rem]:grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] min-[40rem]:gap-x-6">
               {entries.map(([name, value]) => (
-                <div key={name} className="flex flex-col border-b border-border py-1">
-                  <Text as="dt" size="body-sm" className="font-medium">
+                <div key={name} className="flex min-w-0 flex-col border-b border-border py-1">
+                  <Text as="dt" size="body-sm" className="min-w-0 font-medium break-words">
                     {name}
                   </Text>
-                  <Text as="dd" size="caption" tone="muted" className="break-words">
+                  <Text as="dd" size="caption" tone="muted" className="min-w-0 break-words">
                     {value}
                   </Text>
                 </div>

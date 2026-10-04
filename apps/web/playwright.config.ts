@@ -12,6 +12,15 @@ const PORT = 3100;
 const BASE_URL = `http://127.0.0.1:${String(PORT)}`;
 const BACKEND_URL = 'http://127.0.0.1:3101';
 
+/** Inlined on the shell command so `pnpm build` always sees public env vars (Playwright webServer env alone is not always picked up by nested scripts). */
+const E2E_APP_ENV = [
+  'CERA_ENABLE_DEV_ROUTES=1',
+  `API_INTERNAL_URL=${BACKEND_URL}`,
+  `CMS_API_URL=${BACKEND_URL}/api`,
+  `NEXT_PUBLIC_API_URL=${BACKEND_URL}`,
+  'NEXT_PUBLIC_CHECKOUT_ENABLED=true',
+].join(' ');
+
 export default defineConfig({
   testDir: './e2e',
 
@@ -37,12 +46,14 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: `pnpm build && pnpm exec next start --port ${String(PORT)}`,
+      command: `${E2E_APP_ENV} pnpm --filter @cera/contracts build && ${E2E_APP_ENV} pnpm build && ${E2E_APP_ENV} pnpm exec next start --port ${String(PORT)}`,
       url: BASE_URL,
       env: {
         CERA_ENABLE_DEV_ROUTES: '1',
         API_INTERNAL_URL: BACKEND_URL,
         CMS_API_URL: `${BACKEND_URL}/api`,
+        NEXT_PUBLIC_API_URL: BACKEND_URL,
+        NEXT_PUBLIC_CHECKOUT_ENABLED: 'true',
       },
       /**
        * Not reused, even locally.

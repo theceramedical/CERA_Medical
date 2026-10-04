@@ -17,6 +17,8 @@ import {
   FEATURED_PRODUCT,
   PRODUCT_CATEGORIES,
   filterCatalog,
+  productCatalogAnchorId,
+  productDetailPath,
   productEnquiryHref,
   type ProductCategory,
 } from '../../content/products-catalog.ts';
@@ -181,7 +183,10 @@ export function ProductsCatalog({
         </div>
       </section>
 
-      <section className="mb-12 overflow-hidden rounded-lg border-2 border-accent/40 bg-surface shadow-card">
+      <section
+        id={productCatalogAnchorId(FEATURED_PRODUCT.sku)}
+        className="mb-12 overflow-hidden rounded-lg border-2 border-accent/40 bg-surface shadow-card"
+      >
         <div className="flex items-center justify-between border-b border-border bg-surface-tint px-6 py-2">
           <span className="inline-flex items-center gap-2 text-caption font-bold uppercase tracking-wider text-accent">
             <Icon icon={Star} size="sm" />
@@ -204,7 +209,12 @@ export function ProductsCatalog({
               ))}
             </div>
             <Heading level={2} size="h3" className="mb-3">
-              {FEATURED_PRODUCT.title}
+              <AppLink
+                href={productDetailPath(FEATURED_PRODUCT.sku)}
+                className="text-heading underline decoration-1 underline-offset-2 hover:text-accent hover:decoration-2"
+              >
+                {FEATURED_PRODUCT.title}
+              </AppLink>
             </Heading>
             <Text size="body" tone="muted" className="mb-4">
               {FEATURED_PRODUCT.description}
@@ -281,6 +291,7 @@ export function ProductsCatalog({
         {filtered.map((product) => (
           <article
             key={product.sku}
+            id={productCatalogAnchorId(product.sku)}
             className="relative flex flex-col justify-between rounded-lg border border-border bg-surface p-5 shadow-card"
           >
             <div className="-mx-5 -mt-5 mb-4 rounded-t-lg border-t-4 border-accent" />
@@ -294,7 +305,12 @@ export function ProductsCatalog({
                 </span>
               </div>
               <Heading level={3} size="h4" className="mb-2">
-                {product.title}
+                <AppLink
+                  href={productDetailPath(product.sku)}
+                  className="text-heading underline decoration-1 underline-offset-2 hover:text-accent hover:decoration-2"
+                >
+                  {product.title}
+                </AppLink>
               </Heading>
               <Text size="caption" tone="muted" className="mb-2">
                 {product.description}

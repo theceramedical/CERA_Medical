@@ -1,3 +1,4 @@
+import { defaultOpenGraphImages, googleSiteVerification, SITE_NAME } from '../lib/seo-site.ts';
 import { siteUrl } from '../lib/site-url.ts';
 
 import { fontVariables } from './fonts.ts';
@@ -32,6 +33,8 @@ import './globals.css';
  */
 export const dynamic = 'force-dynamic';
 
+const googleVerification = googleSiteVerification();
+
 export const metadata: Metadata = {
   /**
    * `metadataBase` is what makes every relative URL in metadata resolve.
@@ -63,10 +66,13 @@ export const metadata: Metadata = {
 
   openGraph: {
     type: 'website',
-    siteName: 'CERA Medical',
+    siteName: SITE_NAME,
     locale: 'en_GB',
     url: './',
+    images: defaultOpenGraphImages(),
   },
+
+  ...(googleVerification === undefined ? {} : { verification: googleVerification }),
 
   /**
    * `summary_large_image` rather than `summary`.

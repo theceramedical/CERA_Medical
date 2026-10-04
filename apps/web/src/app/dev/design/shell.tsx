@@ -38,7 +38,7 @@ export function PreviewSection({
           {description}
         </Text>
       )}
-      <div className="mt-6 flex flex-col gap-8">{children}</div>
+      <div className="mt-6 flex min-w-0 flex-col gap-8">{children}</div>
     </section>
   );
 }
@@ -60,7 +60,7 @@ export function PreviewCase({
   readonly children: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="min-w-0 flex w-full max-w-full flex-col gap-3">
       <Heading level={3} size="h4">
         {title}
       </Heading>

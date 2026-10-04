@@ -1,5 +1,4 @@
-import { FIXTURE_SERVICE_SLUGS } from '../lib/catalogue-fixtures.ts';
-import { listPublishedDocuments } from '../lib/cms/client.ts';
+import { listSitemapEntries } from '../lib/indexable-sitemap.ts';
 import { siteUrl } from '../lib/site-url.ts';
 
 import type { MetadataRoute } from 'next';
@@ -10,52 +9,12 @@ import type { MetadataRoute } from 'next';
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = siteUrl();
-  const now = new Date();
+  const entries = await listSitemapEntries();
 
-  const staticRoutes = [
-    '/',
-    '/services',
-    '/products',
-    '/articles',
-    '/about',
-    '/contact',
-    '/methodology',
-    '/data-retention',
-    '/privacy',
-    '/terms',
-    '/faqs',
-    '/enquiry',
-    '/sitemap',
-  ];
-
-  const [posts, pages, presentations, policies] = await Promise.all([
-    listPublishedDocuments('post').catch(() => []),
-    listPublishedDocuments('page').catch(() => []),
-    listPublishedDocuments('servicePresentation').catch(() => []),
-    listPublishedDocuments('policy').catch(() => []),
-  ]);
-  const articleRoutes = posts.map((post) => `/articles/${post.slug}`);
-  const pageRoutes = pages.filter((page) => page.slug !== 'home').map((page) => `/${page.slug}`);
-  const policyRoutes = policies.map((policy) => {
-    if (policy.slug === 'privacy-policy' || policy.slug === 'privacy') return '/privacy';
-    if (policy.slug === 'terms-of-service' || policy.slug === 'terms') return '/terms';
-    if (policy.slug === 'data-retention-policy') return '/data-retention';
-    return `/${policy.slug}`;
-  });
-  const serviceRoutes = [
-    ...new Set([...FIXTURE_SERVICE_SLUGS, ...presentations.map((service) => service.slug)]),
-  ].map((slug) => `/services/${slug}`);
-
-  return [
-    ...new Set([
-      ...staticRoutes,
-      ...pageRoutes,
-      ...policyRoutes,
-      ...serviceRoutes,
-      ...articleRoutes,
-    ]),
-  ].map((path) => ({
-    url: new URL(path, origin).toString(),
-    lastModified: now,
+  return entries.map((entry) => ({
+    url: new URL(entry.path, origin).toString(),
+    ...(entry.lastModified !== undefined ? { lastModified: entry.lastModified } : {}),
+    ...(entry.changeFrequency !== undefined ? { changeFrequency: entry.changeFrequency } : {}),
+    ...(entry.priority !== undefined ? { priority: entry.priority } : {}),
   }));
 }
