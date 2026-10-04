@@ -1,5 +1,4 @@
 import { type LayoutBlock } from '../../components/cms-content-page.tsx';
-import { CmsPageUnavailable } from '../../components/cms-page-unavailable.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { HomeMarketingBlocks } from '../../components/home/home-marketing-blocks.tsx';
@@ -143,7 +142,24 @@ export default async function HomePage() {
     listPublishedDocuments('post'),
     listPublicServices(),
   ]);
-  if (document === null) return <CmsPageUnavailable slug="home" />;
+  if (document === null) {
+    return (
+      <>
+        <JsonLd data={organizationJsonLd(origin)} />
+        <JsonLd data={websiteJsonLd(origin)} />
+        <JsonLd data={medicalBusinessJsonLd(origin)} />
+        <HeroSection />
+        <MetricsBand />
+        <HomeMarketingBlocks
+          blocks={[]}
+          presentations={presentations}
+          posts={posts}
+          catalogue={catalogue.items}
+        />
+        <CtaBandSection />
+      </>
+    );
+  }
 
   const content = pageContent(document);
   const layoutBlocks = Array.isArray(document.layout) ? (document.layout as LayoutBlock[]) : [];

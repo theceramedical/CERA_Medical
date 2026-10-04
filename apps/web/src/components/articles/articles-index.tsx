@@ -100,7 +100,10 @@ export function ArticlesIndex({
                 Search
               </button>
             </div>
-            <div className="mt-4 flex items-center gap-2 overflow-x-auto" role="tablist">
+            <nav
+              className="mt-4 flex items-center gap-2 overflow-x-auto"
+              aria-label="Article topics"
+            >
               {ARTICLE_TOPICS.map((tab) => {
                 const selected = tab.id === active;
                 const href =
@@ -111,9 +114,10 @@ export function ArticlesIndex({
                   <AppLink
                     key={tab.id}
                     href={href}
+                    aria-current={selected ? 'page' : undefined}
                     className={
                       selected
-                        ? 'whitespace-nowrap rounded-full bg-accent px-3.5 py-1.5 text-caption font-semibold text-on-accent no-underline'
+                        ? 'whitespace-nowrap rounded-full bg-accent-fill px-3.5 py-1.5 text-caption font-semibold text-on-accent no-underline'
                         : 'whitespace-nowrap rounded-full bg-surface-tint px-3.5 py-1.5 text-caption text-muted no-underline'
                     }
                   >
@@ -121,7 +125,7 @@ export function ArticlesIndex({
                   </AppLink>
                 );
               })}
-            </div>
+            </nav>
           </form>
           <div className="grid grid-cols-2 gap-4 rounded-lg border border-border bg-surface px-4 py-3 text-caption text-muted md:grid-cols-4">
             <span>
@@ -198,7 +202,7 @@ export function ArticlesIndex({
                   study directors.
                 </Text>
               </div>
-              <Text size="caption" className="mt-4 text-accent md:mt-0">
+              <Text size="caption" className="mt-4 text-accent-fill md:mt-0">
                 Showing {rest.length} of {filtered.length} Articles
               </Text>
             </div>

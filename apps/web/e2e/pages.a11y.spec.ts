@@ -39,6 +39,7 @@ test.describe('heading structure', () => {
   for (const route of PUBLIC_ROUTES) {
     test(`${route} has exactly one h1 and no skipped levels`, async ({ page }) => {
       await page.goto(route);
+      await expect(page.locator('h1')).toHaveCount(1);
 
       const headings = await outline(page);
       const h1s = headings.filter(([level]) => level === 1);

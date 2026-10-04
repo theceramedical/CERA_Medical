@@ -4,30 +4,94 @@ import { createServer } from 'node:http';
 
 const ISO = '2026-01-01T00:00:00.000Z';
 
-const ENQUIRY_PAGE = {
-  id: 'e2e-enquiry-page',
-  slug: 'enquiry',
-  title: 'Make an Enquiry',
-  excerpt: 'Tell us which service you are interested in and how to reach you.',
-  body: null,
-  layout: [
-    {
-      blockType: 'sectionHeading',
-      eyebrow: 'Project enquiry',
-      heading: 'Make an Enquiry',
-      body: 'Tell us which service you are interested in and how to reach you.',
+function pageDoc(slug, title, layout) {
+  return {
+    id: `e2e-page-${slug}`,
+    slug,
+    title,
+    excerpt: `${title} — E2E fixture excerpt.`,
+    body: null,
+    layout,
+    seo: {
+      title: `${title} | CERA Medical`,
+      description: `${title} for browser test fixtures.`,
+      noIndex: false,
     },
-  ],
-  seo: {
-    title: 'Make an Enquiry | CERA Medical',
-    description: 'Submit an enquiry about a CERA Medical service and track it in your account.',
-    noIndex: false,
-  },
-  _status: 'published',
-  publishedAt: ISO,
-  createdAt: ISO,
-  updatedAt: ISO,
-};
+    _status: 'published',
+    publishedAt: ISO,
+    createdAt: ISO,
+    updatedAt: ISO,
+  };
+}
+
+const SECTION = (eyebrow, heading, body) => ({
+  blockType: 'sectionHeading',
+  eyebrow,
+  heading,
+  body,
+});
+
+const CMS_PAGES = new Map(
+  [
+    pageDoc('home', 'Home', [
+      {
+        blockType: 'hero',
+        eyebrow: 'Biomedical R&D',
+        headlinePrimary: 'Research with',
+        headlineAccent: 'documented rigor',
+        body: 'Preclinical studies, molecular research, and omics analysis for research teams.',
+        primaryHref: '/services',
+        primaryLabel: 'Explore Services',
+        secondaryHref: '/enquiry',
+        secondaryLabel: 'Make an Enquiry',
+      },
+      {
+        blockType: 'ctaBand',
+        headline: 'Start a project enquiry',
+        body: 'Tell us about your study scope and we will respond within three working days.',
+        href: '/enquiry',
+        label: 'Make an Enquiry',
+      },
+    ]),
+    pageDoc('services', 'Complete Service Portfolio', [
+      SECTION(
+        'CLINICAL RESEARCH INFRASTRUCTURE',
+        'Complete Service Portfolio',
+        'CERA Medical provides biomedical research and development services.',
+      ),
+      { blockType: 'servicesCatalogue' },
+    ]),
+    pageDoc('articles', 'Research Updates', [
+      SECTION('Insights', 'Research Updates', 'Articles and updates from CERA Medical.'),
+    ]),
+    pageDoc('about', 'About CERA Medical', [
+      SECTION(
+        'Our story',
+        'About CERA Medical',
+        'Biomedical research and development in Haripur, Pakistan.',
+      ),
+    ]),
+    pageDoc('contact', 'Contact', [
+      SECTION('Get in touch', 'Contact CERA Medical', 'Email or visit our laboratory and office.'),
+    ]),
+    pageDoc('enquiry', 'Make an Enquiry', [
+      SECTION(
+        'Project enquiry',
+        'Make an Enquiry',
+        'Tell us which service you are interested in and how to reach you.',
+      ),
+    ]),
+    pageDoc('faqs', 'Research Service FAQs', [
+      SECTION('Support', 'Research Service FAQs', 'Answers about CERA Medical research services.'),
+    ]),
+    pageDoc('search', 'Search', [
+      SECTION('Find content', 'Search', 'Search services and articles on ceramedical.org.'),
+    ]),
+    pageDoc('sitemap', 'Sitemap', [
+      SECTION('Site map', 'Sitemap', 'Every page on the CERA Medical website.'),
+    ]),
+  ].map((doc) => [doc.slug, doc]),
+);
 
 const SITE_SETTINGS = {
   enquiryForm: {
@@ -37,6 +101,12 @@ const SITE_SETTINGS = {
       { slug: 'other-enquiry', title: 'Other enquiry' },
     ],
   },
+  faqs: [
+    {
+      question: 'How do I request a quotation?',
+      answer: 'Use the enquiry form and select the service line that best matches your project.',
+    },
+  ],
 };
 
 function json(response, status, body) {
@@ -46,10 +116,9 @@ function json(response, status, body) {
 
 function cmsPages(url) {
   const slug = url.searchParams.get('where[slug][equals]');
-  if (slug === 'enquiry') {
-    return { docs: [ENQUIRY_PAGE] };
-  }
-  return { docs: [] };
+  if (slug === null) return { docs: [] };
+  const doc = CMS_PAGES.get(slug);
+  return { docs: doc === undefined ? [] : [doc] };
 }
 
 const server = createServer(async (request, response) => {

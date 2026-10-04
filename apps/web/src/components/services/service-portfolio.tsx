@@ -92,7 +92,7 @@ export function ServicePortfolio({
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <p className="mb-4 inline-flex items-center gap-2 rounded-sm border border-border bg-surface-tint px-2.5 py-1 text-caption font-semibold text-accent uppercase">
+              <p className="mb-4 inline-flex items-center gap-2 rounded-sm border border-border bg-surface-tint px-2.5 py-1 text-caption font-semibold text-accent-fill uppercase">
                 {pageHero.eyebrow}
               </p>
               <Heading level={1} size="h1" className="mb-3">
@@ -112,7 +112,7 @@ export function ServicePortfolio({
             <div className="rounded-lg border border-border bg-surface-tint p-5 shadow-card lg:col-span-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <span className="text-caption tracking-wide text-heading">LAB ACCREDITATION</span>
-                <span className="rounded-sm border border-accent/30 bg-surface px-2 py-0.5 text-[11px] font-semibold text-accent">
+                <span className="rounded-sm border border-accent/30 bg-surface px-2 py-0.5 text-[11px] font-semibold text-accent-fill">
                   VALIDATED
                 </span>
               </div>
@@ -170,9 +170,8 @@ export function ServicePortfolio({
               <input type="hidden" name="domain" value={activeDomain} />
             ) : null}
           </form>
-          <div
+          <nav
             className="mt-4 flex items-center gap-2 overflow-x-auto"
-            role="tablist"
             aria-label="Research Domains"
           >
             {SERVICE_DOMAINS.map((tab) => {
@@ -196,7 +195,7 @@ export function ServicePortfolio({
                 </AppLink>
               );
             })}
-          </div>
+          </nav>
         </div>
       </section>
 
@@ -224,7 +223,7 @@ export function ServicePortfolio({
                         <Icon icon={LucideIcon} size="lg" />
                       </div>
                       <div>
-                        <span className="text-[11px] font-semibold tracking-wider text-accent uppercase">
+                        <span className="text-[11px] font-semibold tracking-wider text-accent-fill uppercase">
                           {line.line}
                         </span>
                         <Heading level={2} size="h3">
@@ -232,7 +231,7 @@ export function ServicePortfolio({
                         </Heading>
                       </div>
                     </div>
-                    <span className="inline-flex items-center gap-1 rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-caption font-semibold text-accent">
+                    <span className="inline-flex items-center gap-1 rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-caption font-semibold text-accent-fill">
                       <span className="size-1.5 rounded-full bg-accent" />
                       {line.badge}
                     </span>
@@ -290,7 +289,7 @@ export function ServicePortfolio({
 
           <aside className="space-y-6 lg:col-span-4">
             <div className="sticky top-44 rounded-lg border border-border bg-surface p-6 shadow-md">
-              <p className="mb-2 text-caption tracking-wider text-accent uppercase">
+              <p className="mb-2 text-caption tracking-wider text-accent-fill uppercase">
                 INITIAL SCOPING
               </p>
               <Heading level={3} size="h4" className="mb-3">
@@ -326,7 +325,7 @@ export function ServicePortfolio({
                   href="mailto:contact@ceramedical.org"
                   className="inline-flex items-center gap-1.5 text-caption font-semibold text-primary"
                 >
-                  <Icon icon={Mail} size="sm" className="text-accent" />
+                  <Icon icon={Mail} size="sm" className="text-accent-fill" />
                   contact@ceramedical.org
                 </a>
                 <Text size="caption" tone="muted" className="mt-1">

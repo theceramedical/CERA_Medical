@@ -38,7 +38,7 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
     <>
       <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-sm border border-accent bg-surface-tint px-3 py-1 text-caption font-semibold tracking-wider text-accent uppercase">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-sm border border-accent bg-surface-tint px-3 py-1 text-caption font-semibold tracking-wider text-accent-fill uppercase">
             INSTITUTIONAL ACCESS & STUDY SCOPING
           </p>
           <Heading level={1} size="h1" className="mb-3">
@@ -55,7 +55,7 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                 key={item.title}
                 className="flex items-center gap-3 rounded-lg border border-border bg-surface-tint p-3"
               >
-                <Icon icon={Clock3} size="lg" className="text-accent" />
+                <Icon icon={Clock3} size="lg" className="text-accent-fill" />
                 <div>
                   <div className="text-caption text-heading">{item.title}</div>
                   <div className="text-caption font-medium text-muted">{item.value}</div>
@@ -83,7 +83,7 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                     scientific triage.
                   </Text>
                 </div>
-                <span className="rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-[11px] font-semibold text-accent">
+                <span className="rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-[11px] font-semibold text-accent-fill">
                   CRF-2025/SCOPING
                 </span>
               </div>
@@ -99,12 +99,12 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                       Physical Laboratory & Specimen Reception
                     </Heading>
                   </div>
-                  <span className="shrink-0 rounded-sm border border-accent bg-surface-tint px-2 py-0.5 text-[11px] font-medium text-accent">
+                  <span className="shrink-0 rounded-sm border border-accent bg-surface-tint px-2 py-0.5 text-[11px] font-medium text-accent-fill">
                     BSL-2 Validated Intake
                   </span>
                 </div>
                 <div className="flex items-start gap-2 text-caption text-muted">
-                  <Icon icon={MapPin} size="sm" className="mt-0.5 shrink-0 text-accent" />
+                  <Icon icon={MapPin} size="sm" className="mt-0.5 shrink-0 text-accent-fill" />
                   <p>
                     <strong className="text-heading">Room B2-105, B2 Building</strong>
                     <br />
@@ -183,7 +183,7 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                 </div>
                 <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-caption text-muted">
                   <span className="inline-flex items-center gap-1">
-                    <Icon icon={ShieldCheck} size="sm" className="text-accent" />
+                    <Icon icon={ShieldCheck} size="sm" className="text-accent-fill" />
                     Formal Scoping SLA:
                   </span>
                   <span className="font-semibold text-heading">Written Document ≤ 72 Hours</span>
@@ -196,7 +196,7 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
 
       <section className="border-t border-border bg-surface-tint py-12 md:py-16">
         <div className="mx-auto max-w-site px-6 md:px-10">
-          <p className="mb-2 text-caption font-semibold tracking-wider text-accent uppercase">
+          <p className="mb-2 text-caption font-semibold tracking-wider text-accent-fill uppercase">
             Institutional Governance
           </p>
           <Heading level={2} size="h2">
@@ -260,7 +260,7 @@ function CommRow({
   return (
     <div className="flex items-center justify-between rounded-[4px] border border-border bg-surface-tint p-2.5">
       <div className="flex items-center gap-2.5">
-        <Icon icon={icon} size="md" className="text-accent" />
+        <Icon icon={icon} size="md" className="text-accent-fill" />
         <div>
           <div className="text-[11px] text-muted">{label}</div>
           {href === undefined ? (

@@ -147,7 +147,7 @@ export function AboutProfile() {
 
       <section className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-sm border border-accent bg-surface px-3 py-1 text-caption font-semibold tracking-wider text-accent uppercase">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-sm border border-accent bg-surface px-3 py-1 text-caption font-semibold tracking-wider text-accent-fill uppercase">
             INSTITUTIONAL PROFILE · BIOMEDICAL RESEARCH & DEVELOPMENT
           </p>
           <Heading level={1} size="h1" className="mb-4">
@@ -168,7 +168,7 @@ export function AboutProfile() {
                 key={item.title}
                 className="flex items-center gap-3 rounded-lg border border-border bg-surface p-3 shadow-card"
               >
-                <Icon icon={ShieldCheck} size="lg" className="text-accent" />
+                <Icon icon={ShieldCheck} size="lg" className="text-accent-fill" />
                 <div>
                   <Heading level={2} size="h4">
                     {item.title}
@@ -185,7 +185,7 @@ export function AboutProfile() {
 
       <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <p className="text-caption font-semibold tracking-wider text-accent uppercase">
+          <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
             Core Capabilities & Services
           </p>
           <Heading level={2} size="h2" className="mt-1 mb-4">
@@ -218,7 +218,7 @@ export function AboutProfile() {
                 <ul className="space-y-2 border-t border-border pt-4">
                   {pillar.items.map((item) => (
                     <li key={item} className="flex items-center gap-2 text-caption">
-                      <Icon icon={CheckCircle2} size="sm" className="text-accent" />
+                      <Icon icon={CheckCircle2} size="sm" className="text-accent-fill" />
                       {item}
                     </li>
                   ))}
@@ -231,7 +231,7 @@ export function AboutProfile() {
 
       <section className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <p className="text-caption font-semibold tracking-wider text-accent uppercase">
+          <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
             Governance & Standard Operating Procedures
           </p>
           <Heading level={2} size="h2" className="mt-1 mb-4">
@@ -262,7 +262,7 @@ export function AboutProfile() {
                     {stage.body}
                   </Text>
                 </div>
-                <div className="mt-4 border-t border-border pt-3 text-xs font-semibold text-accent">
+                <div className="mt-4 border-t border-border pt-3 text-xs font-semibold text-accent-fill">
                   {stage.tag}
                 </div>
               </div>
@@ -280,7 +280,7 @@ export function AboutProfile() {
 
       <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <p className="text-caption font-semibold tracking-wider text-accent uppercase">
+          <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
             Physical Infrastructure
           </p>
           <Heading level={2} size="h2" className="mt-1 mb-4">
@@ -354,7 +354,7 @@ export function AboutProfile() {
       <section className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
           <div className="mx-auto mb-16 max-w-2xl text-center">
-            <p className="text-caption font-semibold tracking-wider text-accent uppercase">
+            <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
               Institutional Reliability
             </p>
             <Heading level={2} size="h2" className="mt-1 mb-3">
@@ -387,7 +387,7 @@ export function AboutProfile() {
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
           <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <p className="text-caption font-semibold tracking-wider text-accent uppercase">
+              <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
                 Institutional Access
               </p>
               <Heading level={2} size="h2" className="mt-1 mb-4">
@@ -400,7 +400,7 @@ export function AboutProfile() {
               </Text>
               <div className="mb-6 rounded-lg border border-border bg-surface-tint p-4">
                 <div className="mb-2 flex items-center gap-3 text-heading">
-                  <Icon icon={Mail} size="md" className="text-accent" />
+                  <Icon icon={Mail} size="md" className="text-accent-fill" />
                   Direct Communications
                 </div>
                 <p className="mb-1">
@@ -419,7 +419,7 @@ export function AboutProfile() {
             </div>
             <div className="rounded-lg border border-border bg-surface p-6 shadow-card lg:col-span-7 lg:p-8">
               <Heading level={3} size="h4" className="mb-6 flex items-center gap-2">
-                <Icon icon={Building2} size="md" className="text-accent" />
+                <Icon icon={Building2} size="md" className="text-accent-fill" />
                 Institutional Base & Laboratory Coordinates
               </Heading>
               <div className="space-y-6">
@@ -444,7 +444,7 @@ export function AboutProfile() {
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="rounded-lg bg-surface-tint p-2.5 text-accent">
+                  <div className="rounded-lg bg-surface-tint p-2.5 text-accent-fill">
                     <Icon icon={Building2} size="lg" />
                   </div>
                   <div>
@@ -458,7 +458,7 @@ export function AboutProfile() {
                       Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology
                       (PAF-IAST), Mang, Haripur, Pakistan.
                     </Text>
-                    <span className="mt-2 inline-block rounded-sm bg-surface-tint px-2 py-0.5 text-xs font-semibold text-accent">
+                    <span className="mt-2 inline-block rounded-sm bg-surface-tint px-2 py-0.5 text-xs font-semibold text-accent-fill">
                       Corporate Reg: SECP Islamabad Jurisdiction
                     </span>
                   </div>
@@ -525,7 +525,7 @@ function FacilityShowcase({
             {body}
           </Text>
         </div>
-        <div className="flex flex-wrap gap-4 border-t border-border pt-3 text-xs font-semibold text-accent">
+        <div className="flex flex-wrap gap-4 border-t border-border pt-3 text-xs font-semibold text-accent-fill">
           {tags.map((tag) => (
             <span key={tag}>{tag}</span>
           ))}
