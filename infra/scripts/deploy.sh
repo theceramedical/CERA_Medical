@@ -27,14 +27,20 @@ trap cleanup EXIT
 chmod 600 "$tmp"
 for app in web api worker cms commerce migrator; do
   image="$image_prefix/$app:$image_tag"
-  docker pull "$image"
   digest=''
-  while IFS= read -r reference; do
-    if [[ "$reference" == "$image_prefix/$app"@sha256:* ]]; then
-      digest="$reference"
-      break
-    fi
-  done < <(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$image")
+  if [[ "${CERA_SKIP_IMAGE_PULL:-}" == 1 ]]; then
+    docker image inspect "$image" >/dev/null
+    id="$(docker image inspect --format '{{.Id}}' "$image")"
+    digest="${image_prefix}/${app}@${id}"
+  else
+    docker pull "$image"
+    while IFS= read -r reference; do
+      if [[ "$reference" == "$image_prefix/$app"@sha256:* ]]; then
+        digest="$reference"
+        break
+      fi
+    done < <(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$image")
+  fi
   [[ "$digest" == *@sha256:* ]] || { echo "No registry digest for $image" >&2; exit 1; }
   printf '%s_IMAGE=%s\n' "${app^^}" "$digest" >> "$tmp"
 done

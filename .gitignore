@@ -67,8 +67,7 @@ Thumbs.db
 *.swp
 *~
 
-# Generated types
-apps/cms/src/payload-types.ts
+# Generated types (payload-types.ts is committed so CI/Docker builds typecheck without a DB)
 apps/commerce/src/generated-*.ts
 apps/commerce/.vendure/
 next-env.d.ts
