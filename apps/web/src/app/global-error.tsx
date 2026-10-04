@@ -1,7 +1,5 @@
 'use client';
 
-import { fontVariables } from './fonts.ts';
-
 import './globals.css';
 
 /**
@@ -26,7 +24,7 @@ import './globals.css';
  */
 export default function GlobalError() {
   return (
-    <html lang="en-GB" className={fontVariables}>
+    <html lang="en-GB">
       <body className="bg-surface">
         <main className="mx-auto flex min-h-dvh max-w-measure flex-col items-center justify-center px-6 text-center">
           {/* A real `h1`. This is the whole document, so it needs a top-level heading or a screen

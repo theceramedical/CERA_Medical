@@ -30,6 +30,10 @@ RUN if [ "$APP" = commerce ]; then \
 
 FROM node:24.21.0-bookworm-slim
 WORKDIR /app
+# Trivy gates production images on fixable OS CVEs (e.g. libpcre2 in bookworm).
+RUN apt-get update \
+  && apt-get upgrade -y --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system --gid 10001 cera && useradd --system --uid 10001 --gid cera cera
 # Vendure's local asset strategy writes beneath /app at runtime. Prepare that
 # directory before dropping privileges; production can switch to R2 later.
