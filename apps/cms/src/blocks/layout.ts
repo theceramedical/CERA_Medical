@@ -70,7 +70,6 @@ export const SectionHeadingBlock: Block = {
 export const ServicesCatalogueBlock: Block = {
   slug: 'servicesCatalogue',
   labels: { singular: 'Services catalogue', plural: 'Services catalogues' },
-  admin: { description: 'Labels for the service grid and search on /services.' },
   fields: [
     { name: 'searchLabel', type: 'text', defaultValue: 'Search services', maxLength: 80 },
     { name: 'applyLabel', type: 'text', defaultValue: 'Apply', maxLength: 40 },
@@ -272,7 +271,6 @@ export const ServiceHeroBlock: Block = {
 export const KeyValueListBlock: Block = {
   slug: 'keyValueList',
   labels: { singular: 'Specification list', plural: 'Specification lists' },
-  admin: { description: 'Instrument roster or labelled specifications (Stitch service detail).' },
   fields: [
     { name: 'heading', type: 'text', required: true, maxLength: 160 },
     { name: 'body', type: 'textarea', maxLength: 400 },

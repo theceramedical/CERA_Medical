@@ -3,6 +3,7 @@ import clientCopy from '../content/client-website-content.json' with { type: 'js
 import { homePageMarketingBlocks, servicesPageFacilitiesBlocks } from './bootstrap-home-layout.ts';
 import { buildServicePresentationLayout } from './bootstrap-service-layout.ts';
 
+import type { Page, ServicePresentation } from '../payload-types.ts';
 import type { Payload, PayloadRequest, RequiredDataFromCollectionSlug } from 'payload';
 
 /** Publication hooks treat local, unauthenticated API calls as system bootstrap (see publication.ts). */
@@ -32,7 +33,9 @@ function range(from: string, to: string): readonly SourceParagraph[] {
   return source.slice(sectionIndex(from), sectionIndex(to));
 }
 
-const SERVICE_CARD_ICONS: Record<string, string> = {
+type ServiceCardIcon = NonNullable<ServicePresentation['cardIcon']>;
+
+const SERVICE_CARD_ICONS: Record<string, ServiceCardIcon> = {
   'preclinical-studies': 'microscope',
   'molecular-research': 'dna',
   'metagenomic-data-analysis': 'database',
@@ -481,13 +484,14 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       content
         .find((item) => item.text.startsWith('Grid summary:'))
         ?.text.replace('Grid summary: ', '') ?? '';
+    const cardIcon = SERVICE_CARD_ICONS[slug];
     await upsert(payload, 'service-presentations', slug, {
       title,
       slug,
       serviceId: slug,
       excerpt,
       cardHighlights: [...(SERVICE_CARD_HIGHLIGHTS[slug] ?? [])],
-      cardIcon: SERVICE_CARD_ICONS[slug],
+      ...(cardIcon !== undefined ? { cardIcon } : {}),
       body: lexical(content),
       layout: buildServicePresentationLayout(slug),
       seo: {
@@ -559,7 +563,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
         href: '/enquiry',
         label: 'Make an Enquiry',
       },
-    ],
+    ] as NonNullable<Page['layout']>,
     body: lexical(intro),
     seo: {
       title: 'CERA Medical | Biomedical Research and Development',
@@ -588,7 +592,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       },
       { blockType: 'servicesCatalogue' },
       ...servicesPageFacilitiesBlocks(),
-    ],
+    ] as NonNullable<Page['layout']>,
     body: lexicalFromStrings([]),
     seo: {
       title: 'Research Services | CERA Medical',

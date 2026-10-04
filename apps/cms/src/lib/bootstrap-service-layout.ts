@@ -1,5 +1,8 @@
 import { serviceHeroBootstrapBlock } from './bootstrap-content-hero.ts';
 
+import type { ServicePresentation } from '../payload-types.ts';
+
+type ServiceLayout = NonNullable<ServicePresentation['layout']>;
 type LayoutBlock = Record<string, unknown>;
 
 const DEFAULT_ENQUIRY_ASIDE: LayoutBlock = {
@@ -375,8 +378,8 @@ const LAYOUT_BY_SLUG: Record<string, readonly LayoutBlock[]> = {
 };
 
 /** Full CMS layout for a Vendure catalogue service (public product page). */
-export function buildServicePresentationLayout(slug: string): LayoutBlock[] {
+export function buildServicePresentationLayout(slug: string): ServiceLayout {
   const blocks = LAYOUT_BY_SLUG[slug];
-  if (blocks !== undefined) return [...blocks];
-  return [serviceHeroBootstrapBlock(slug), DEFAULT_ENQUIRY_ASIDE];
+  if (blocks !== undefined) return blocks as ServiceLayout;
+  return [serviceHeroBootstrapBlock(slug), DEFAULT_ENQUIRY_ASIDE] as ServiceLayout;
 }

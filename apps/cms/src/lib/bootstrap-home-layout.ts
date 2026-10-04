@@ -1,5 +1,9 @@
+import type { Page } from '../payload-types.ts';
+
+type PageLayout = NonNullable<Page['layout']>;
+
 /** CMS layout blocks between homepage metrics and CTA — editable in Payload → Pages → home. */
-export function homePageMarketingBlocks() {
+export function homePageMarketingBlocks(): PageLayout {
   return [
     {
       blockType: 'servicesShowcase',
@@ -216,10 +220,10 @@ export function homePageMarketingBlocks() {
         },
       ],
     },
-  ];
+  ] as PageLayout;
 }
 
-export function servicesPageFacilitiesBlocks() {
+export function servicesPageFacilitiesBlocks(): PageLayout {
   return [
     {
       blockType: 'featureGrid',
@@ -269,5 +273,5 @@ export function servicesPageFacilitiesBlocks() {
       heading: 'Empowering South Asian clinical trials and basic science',
       body: 'Operating from our laboratory base in Haripur, Pakistan, CERA Medical combines local research accessibility with documented methods suitable for teaching hospitals, public health programmes, and biotech collaborators.',
     },
-  ];
+  ] as PageLayout;
 }
