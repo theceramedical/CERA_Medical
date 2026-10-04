@@ -14,13 +14,8 @@ export const ceraStripePaymentHandler = new PaymentMethodHandler({
   },
   createPayment: async (_ctx, order, _amount, args, metadata) => {
     const apiKey = typeof args.apiKey === 'string' ? args.apiKey : process.env.STRIPE_SECRET_KEY;
-    const intentId =
-      metadata !== null &&
-      typeof metadata === 'object' &&
-      'paymentIntentId' in metadata &&
-      typeof (metadata as { paymentIntentId?: unknown }).paymentIntentId === 'string'
-        ? (metadata as { paymentIntentId: string }).paymentIntentId
-        : null;
+    const paymentIntentId = (metadata as { paymentIntentId?: string }).paymentIntentId;
+    const intentId = typeof paymentIntentId === 'string' ? paymentIntentId : null;
 
     if (apiKey === undefined || apiKey.length === 0) {
       return {
