@@ -63,18 +63,21 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
 
   return {
     async getVariantIdBySku(session: ShopSession, sku: string): Promise<string> {
+      // Shop API exposes `product(slug)` + `variants[]`, not admin `productVariants`.
+      // Physical catalogue slugs are the lower-case SKU (see commerce seed).
       const { data } = await post<{
-        productVariants: { items: { id: string; sku: string }[] };
+        product: { variants: { id: string; sku: string }[] } | null;
       }>(
         session,
-        `query ($sku: String!) {
-          productVariants(options: { filter: { sku: { eq: $sku } }, take: 1 }) {
-            items { id sku }
+        `query ($slug: String!) {
+          product(slug: $slug) {
+            variants { id sku }
           }
         }`,
-        { sku },
+        { slug: sku.toLowerCase() },
       );
-      const variant = data.productVariants.items[0];
+      const variants = data.product?.variants ?? [];
+      const variant = variants.find((row) => row.sku === sku) ?? variants[0];
       if (variant === undefined) {
         throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
       }
