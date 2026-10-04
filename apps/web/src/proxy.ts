@@ -62,6 +62,7 @@ export function proxy(request: NextRequest): NextResponse {
   const csp = buildCsp(nonce, {
     mediaOrigin: originOf(process.env.S3_PUBLIC_URL),
     apiOrigin: originOf(process.env.NEXT_PUBLIC_API_URL),
+    authOrigin: originOf(process.env.OIDC_ISSUER),
   });
 
   const requestHeaders = new Headers(request.headers);

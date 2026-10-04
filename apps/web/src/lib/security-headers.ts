@@ -29,6 +29,8 @@ export interface CspOrigins {
   readonly mediaOrigin?: string | undefined;
   /** `apps/api`, which the browser calls directly for enquiry submission and the portal. */
   readonly apiOrigin?: string | undefined;
+  /** Authentik (`OIDC_ISSUER`), used when the sign-in route prefetches the authorize redirect. */
+  readonly authOrigin?: string | undefined;
 }
 
 /**
@@ -51,6 +53,7 @@ export function buildCsp(nonce: string, origins: CspOrigins = {}): string {
 
   const connectSources = ["'self'"];
   if (origins.apiOrigin !== undefined) connectSources.push(origins.apiOrigin);
+  if (origins.authOrigin !== undefined) connectSources.push(origins.authOrigin);
 
   const directives: Record<string, readonly string[] | null> = {
     'default-src': ["'self'"],

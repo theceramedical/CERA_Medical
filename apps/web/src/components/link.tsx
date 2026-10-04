@@ -46,12 +46,21 @@ function requiresSession(href: string): boolean {
   );
 }
 
+/** OIDC start routes redirect off-site; prefetching them triggers Authentik before the user clicks. */
+function isOidcStartRoute(href: string): boolean {
+  return href === '/auth/signin' || href.startsWith('/auth/signin?');
+}
+
+function requiresNoPrefetch(href: string): boolean {
+  return requiresSession(href) || isOidcStartRoute(href);
+}
+
 export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
   const routable = !external && !NON_ROUTER_HREF.test(href);
 
   return (
     <UiLink
-      as={routable ? (requiresSession(href) ? NoPrefetchNextLink : NextLink) : 'a'}
+      as={routable ? (requiresNoPrefetch(href) ? NoPrefetchNextLink : NextLink) : 'a'}
       external={external}
       href={href}
       {...rest}
@@ -67,6 +76,8 @@ export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
  * ctrl-click, "copy link address", and the browser's status bar all silently stop working - and this
  * is the binding that makes reaching for the right one no more effort than the wrong one.
  */
-export function AppButtonLink(props: UiButtonLinkProps) {
-  return <UiButtonLink as={NextLink} {...props} />;
+export function AppButtonLink({ href, ...props }: UiButtonLinkProps) {
+  const linkAs =
+    typeof href === 'string' && requiresNoPrefetch(href) ? NoPrefetchNextLink : NextLink;
+  return <UiButtonLink as={linkAs} href={href} {...props} />;
 }
