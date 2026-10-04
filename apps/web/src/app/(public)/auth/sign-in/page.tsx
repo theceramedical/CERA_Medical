@@ -1,7 +1,10 @@
 import { Heading, Text } from '@cera/ui/typography';
+import { redirect } from 'next/navigation';
 
 import { AppButtonLink } from '../../../../components/link.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
+import { safeReturnTo } from '../../../../lib/auth/return-to.ts';
+import { getSession } from '../../../../lib/auth/session.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -21,8 +24,16 @@ export default async function SignInPage({
   readonly searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
+  const safeNext = safeReturnTo(next ?? null);
+  const session = await getSession();
+  if (session !== null) {
+    redirect(safeNext);
+  }
+
   const href =
-    next === undefined ? '/auth/signin' : `/auth/signin?next=${encodeURIComponent(next)}`;
+    safeNext.length > 0 && safeNext !== '/'
+      ? `/auth/signin?next=${encodeURIComponent(safeNext)}`
+      : '/auth/signin';
 
   return (
     <>

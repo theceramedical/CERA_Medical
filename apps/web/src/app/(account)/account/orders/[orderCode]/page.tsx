@@ -26,7 +26,10 @@ export default async function AccountOrderDetailPage({
   const { orderCode } = await params;
   let order: CustomerOrder;
   try {
-    order = await authenticatedApi<CustomerOrder>(`/v1/me/orders/${encodeURIComponent(orderCode)}`);
+    order = await authenticatedApi<CustomerOrder>(
+      `/v1/me/orders/${encodeURIComponent(orderCode)}`,
+      { returnTo: `/account/orders/${encodeURIComponent(orderCode)}` },
+    );
   } catch {
     notFound();
   }

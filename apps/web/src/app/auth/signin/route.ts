@@ -32,7 +32,13 @@ export async function GET(request: Request): Promise<NextResponse> {
     response.cookies.set(
       OIDC_STATE_COOKIE_NAME,
       await sealHandshake({ state, nonce, verifier: pkce.verifier, next, createdAt: Date.now() }),
-      { httpOnly: true, sameSite: 'lax', secure: true, path: '/', maxAge: 600 },
+      {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+        path: '/',
+        maxAge: 600,
+      },
     );
     return response;
   } catch {

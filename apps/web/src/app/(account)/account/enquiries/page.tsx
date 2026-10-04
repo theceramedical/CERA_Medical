@@ -13,7 +13,9 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Your enquiries' };
 export default async function AccountEnquiriesPage() {
-  const { items } = await authenticatedApi<{ items: CustomerEnquiry[] }>('/v1/me/enquiries');
+  const { items } = await authenticatedApi<{ items: CustomerEnquiry[] }>('/v1/me/enquiries', {
+    returnTo: '/account/enquiries',
+  });
   return (
     <>
       <PageHeader title="Your enquiries" lede="Every enquiry claimed to this account." />

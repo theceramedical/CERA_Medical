@@ -11,7 +11,10 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = { title: 'Claim an enquiry' };
 async function requestClaim() {
   'use server';
-  await authenticatedApi('/v1/enquiries/claim/request', { method: 'POST' });
+  await authenticatedApi('/v1/enquiries/claim/request', {
+    method: 'POST',
+    returnTo: '/account/claim',
+  });
   redirect('/account/claim?sent=1');
 }
 async function consumeClaim(form: FormData) {
@@ -19,6 +22,7 @@ async function consumeClaim(form: FormData) {
   await authenticatedApi('/v1/enquiries/claim/consume', {
     method: 'POST',
     body: { token: form.get('token') },
+    returnTo: '/account/claim',
   });
   redirect('/account/enquiries');
 }

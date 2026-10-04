@@ -109,6 +109,9 @@ export function identityClaims(claims: Record<string, unknown>) {
       ),
     ),
   ];
+  if (roles.length === 0 && claims.email_verified === true) {
+    roles.push('customer');
+  }
   roles.forEach((role) => RoleSchema.parse(role));
   const amr = Array.isArray(claims.amr) ? claims.amr : [];
   return {

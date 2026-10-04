@@ -21,7 +21,9 @@ function formatMoney(minor: number, currency: string): string {
 export default async function AccountOrdersPage() {
   if (!checkoutEnabled()) notFound();
 
-  const { items } = await authenticatedApi<{ items: CustomerOrder[] }>('/v1/me/orders');
+  const { items } = await authenticatedApi<{ items: CustomerOrder[] }>('/v1/me/orders', {
+    returnTo: '/account/orders',
+  });
 
   return (
     <>

@@ -68,4 +68,14 @@ describe('OIDC boundary', () => {
     expect(c.mfa).toBe(true);
     expect(() => identityClaims({ sub: 'x', groups: ['cera-administrators'] })).toThrow();
   });
+
+  it('assigns customer when email is verified and no CERA groups are mapped', () => {
+    const c = identityClaims({
+      sub: 'sub-2',
+      email: 'buyer@example.test',
+      email_verified: true,
+      groups: [],
+    });
+    expect(c.roles).toEqual(['customer']);
+  });
 });

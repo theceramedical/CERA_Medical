@@ -16,6 +16,7 @@ export default async function AccountEnquiryDetailPage({
   const { reference } = await params;
   const e = await authenticatedApi<CustomerEnquiry>(
     `/v1/me/enquiries/${encodeURIComponent(reference)}`,
+    { returnTo: `/account/enquiries/${encodeURIComponent(reference)}` },
   );
   return (
     <>

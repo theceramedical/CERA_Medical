@@ -34,6 +34,7 @@ async function saveProfile(formData: FormData) {
   await authenticatedApi('/v1/me/profile', {
     method: 'PATCH',
     body: { displayName, phone: phone.length === 0 ? null : phone },
+    returnTo: '/account/profile',
   });
   redirect('/account/profile?saved=1');
 }
@@ -44,7 +45,7 @@ export default async function AccountProfilePage({
   readonly searchParams: Promise<{ saved?: string; invalid?: string }>;
 }) {
   const [profile, { saved, invalid }] = await Promise.all([
-    authenticatedApi<CustomerProfile>('/v1/me/profile'),
+    authenticatedApi<CustomerProfile>('/v1/me/profile', { returnTo: '/account/profile' }),
     searchParams,
   ]);
 
