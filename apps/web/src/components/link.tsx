@@ -46,17 +46,23 @@ function requiresSession(href: string): boolean {
   );
 }
 
-/** OIDC start routes redirect off-site; prefetching them triggers Authentik before the user clicks. */
-function isOidcStartRoute(href: string): boolean {
-  return href === '/auth/signin' || href.startsWith('/auth/signin?');
+/** OIDC routes redirect off-site; prefetch/RSC fetch must not hit Authentik before a real navigation. */
+function isOidcBrowserRoute(href: string): boolean {
+  return (
+    href === '/auth/signin' ||
+    href.startsWith('/auth/signin?') ||
+    href === '/auth/signout' ||
+    href.startsWith('/auth/signout?')
+  );
 }
 
 function requiresNoPrefetch(href: string): boolean {
-  return requiresSession(href) || isOidcStartRoute(href);
+  return requiresSession(href) || isOidcBrowserRoute(href);
 }
 
 export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
-  const routable = !external && !NON_ROUTER_HREF.test(href);
+  const oidcRoute = !external && isOidcBrowserRoute(href);
+  const routable = !external && !oidcRoute && !NON_ROUTER_HREF.test(href);
 
   return (
     <UiLink

@@ -184,6 +184,7 @@ export interface Media {
    * Required. Describe the image for someone who cannot see it. Decorative images still need a short honest label, not an empty string.
    */
   alt: string;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -810,6 +811,15 @@ export interface ServicePresentation {
             blockType: 'calloutBand';
           }
         | {
+            headline: string;
+            body?: string | null;
+            href: string;
+            label: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaBand';
+          }
+        | {
             eyebrow?: string | null;
             heading: string;
             body?: string | null;
@@ -1124,6 +1134,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1647,6 +1658,16 @@ export interface ServicePresentationsSelect<T extends boolean = true> {
               eyebrow?: T;
               heading?: T;
               body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBand?:
+          | T
+          | {
+              headline?: T;
+              body?: T;
+              href?: T;
+              label?: T;
               id?: T;
               blockName?: T;
             };
