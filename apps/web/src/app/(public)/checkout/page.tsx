@@ -36,6 +36,7 @@ export default async function CheckoutPage() {
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <CheckoutForm
           cartTotalLabel={`${(cart.totalMinor / 100).toFixed(2)} ${cart.currencyCode}`}
+          showTestPayment={process.env.NODE_ENV !== 'production'}
         />
       </div>
     </>

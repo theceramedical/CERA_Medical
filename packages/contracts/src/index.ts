@@ -79,6 +79,9 @@ export {
   CartSchema,
   CheckoutCompleteBodySchema,
   CheckoutCompleteResponseSchema,
+  CheckoutPaymentMethodSchema,
+  SafepayCheckoutStartBodySchema,
+  SafepayCheckoutStartResponseSchema,
 } from './cart.ts';
 
 export {

@@ -1,33 +1,25 @@
-# Production checkout (cart / pay)
+# Production checkout
 
-After [ADR-011](../../.planning/adr/ADR-011-checkout-enablement.md):
+Checkout is gated by `CHECKOUT_ENABLED` / `NEXT_PUBLIC_CHECKOUT_ENABLED`. The release workflow runs `infra/scripts/ensure-production-checkout-env.sh` on deploy to flip those flags and add Safepay placeholders.
 
-## Host `/opt/cera/.env`
+## Payments
 
-```bash
-sudo bash /opt/cera/infra/scripts/ensure-production-checkout-env.sh /opt/cera/.env
-```
+| Method           | Handler             | When                                                       |
+| ---------------- | ------------------- | ---------------------------------------------------------- |
+| Safepay (hosted) | `cera-safepay`      | `SAFEPAY_MERCHANT_SECRET` + `SAFEPAY_MERCHANT_API_KEY` set |
+| Cash on delivery | `cera-cod`          | Always when checkout is enabled                            |
+| Test settlement  | `cera-test-payment` | Non-production only                                        |
 
-Then set **`STRIPE_SECRET_KEY`** (live key) on the host. Local/dev uses `cera-test-payment` when `STRIPE_SECRET_KEY` is empty and `CERA_ENV=production` is not paired with Stripe — production commerce uses Stripe when the key is set.
+Set on the host (`/opt/cera/.env`):
 
-Required variables:
+| Variable                   | Purpose                                      |
+| -------------------------- | -------------------------------------------- |
+| `SAFEPAY_MERCHANT_SECRET`  | Server-side Safepay API auth                 |
+| `SAFEPAY_MERCHANT_API_KEY` | Public merchant API key for payment sessions |
+| `SAFEPAY_ENVIRONMENT`      | `production` or `sandbox`                    |
 
-| Variable                       | Production value   |
-| ------------------------------ | ------------------ |
-| `CHECKOUT_ENABLED`             | `true`             |
-| `NEXT_PUBLIC_CHECKOUT_ENABLED` | `true`             |
-| `STRIPE_SECRET_KEY`            | Stripe live secret |
+Local/dev uses `cera-test-payment` when Safepay is not configured.
 
-GitHub **production** environment variable (for web image build):
+## Smoke test
 
-| Variable                      | Value  |
-| ----------------------------- | ------ |
-| `PRODUCTION_CHECKOUT_ENABLED` | `true` |
-
-## Release
-
-1. Merge to `main`.
-2. Repository owner runs **Release to production** workflow (`release.yml`).
-3. Deploy re-seeds catalogue when `CERA_ALLOW_PRODUCTION_CATALOGUE_SEED=approved` and `CHECKOUT_ENABLED=true` (shipping + payment methods + list prices).
-
-Verify: `/cart`, add a service, complete checkout (Stripe or test handler per env).
+Verify: `/cart`, add a service, checkout with COD or Safepay (per env).

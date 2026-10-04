@@ -61,7 +61,9 @@ export const apiEnvSchema = commonEnvSchema
     OIDC_JWKS_URI: url,
     VENDURE_SHOP_API_URL: url,
     CHECKOUT_ENABLED: z.enum(['true', 'false']).default('false'),
-    STRIPE_SECRET_KEY: z.string().optional(),
+    SAFEPAY_MERCHANT_SECRET: z.string().optional(),
+    SAFEPAY_MERCHANT_API_KEY: z.string().optional(),
+    SAFEPAY_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
     CMS_API_URL: url,
     RESEND_WEBHOOK_SECRET: nonEmpty.describe('Svix whsec_... signing secret'),
     RATE_LIMIT_ENQUIRY_PER_IP_HOUR: z.coerce.number().int().min(1).default(10),
@@ -179,7 +181,9 @@ export const cmsEnvSchema = commonEnvSchema
 
 export const commerceEnvSchema = commonEnvSchema.extend({
   CHECKOUT_ENABLED: z.enum(['true', 'false']).default('false'),
-  STRIPE_SECRET_KEY: z.string().optional(),
+  SAFEPAY_MERCHANT_SECRET: z.string().optional(),
+  SAFEPAY_MERCHANT_API_KEY: z.string().optional(),
+  SAFEPAY_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
   PORT: port.default(3002),
   DB_HOST: nonEmpty,
   DB_PORT: port.default(5432),

@@ -134,13 +134,14 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       return { cart: mapOrder(result as VendureOrder), token };
     },
 
-    async completeTestCheckout(
+    async completeCheckout(
       session: ShopSession,
       input: {
         email: string;
         fullName: string;
         countryCode: string;
-        paymentIntentId?: string | undefined;
+        paymentMethod: 'cod' | 'safepay' | 'test';
+        safepayTracker?: string | undefined;
       },
     ): Promise<{ orderCode: string; token: string | null }> {
       const address = {
@@ -197,9 +198,16 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       );
 
       const paymentCode =
-        process.env.STRIPE_SECRET_KEY !== undefined && process.env.STRIPE_SECRET_KEY.length > 0
-          ? 'cera-stripe'
-          : 'cera-test-payment';
+        input.paymentMethod === 'cod'
+          ? 'cera-cod'
+          : input.paymentMethod === 'safepay'
+            ? 'cera-safepay'
+            : 'cera-test-payment';
+
+      const metadata: Record<string, string> = {};
+      if (input.paymentMethod === 'safepay' && input.safepayTracker !== undefined) {
+        metadata.safepayTracker = input.safepayTracker;
+      }
 
       const payment = await post<{ addPaymentToOrder: { __typename: string; code?: string } }>(
         { token },
@@ -213,8 +221,7 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         {
           input: {
             method: paymentCode,
-            metadata:
-              input.paymentIntentId !== undefined ? { paymentIntentId: input.paymentIntentId } : {},
+            metadata,
           },
         },
       );

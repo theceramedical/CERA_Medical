@@ -50,7 +50,9 @@ services:
       CMS_API_URL: http://cms:3001/api
       CORS_ALLOWED_ORIGINS: ${NEXT_PUBLIC_SITE_URL:?required}
       CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      SAFEPAY_MERCHANT_SECRET: ${SAFEPAY_MERCHANT_SECRET:-}
+      SAFEPAY_MERCHANT_API_KEY: ${SAFEPAY_MERCHANT_API_KEY:-}
+      SAFEPAY_ENVIRONMENT: ${SAFEPAY_ENVIRONMENT:-sandbox}
     networks: [cera-private, cera-public]
     depends_on:
       postgres: { condition: service_healthy }
@@ -139,7 +141,9 @@ services:
       COMMERCE_PORT: 3002
       CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
       CERA_ENV: ${CERA_ENV:?required}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      SAFEPAY_MERCHANT_SECRET: ${SAFEPAY_MERCHANT_SECRET:-}
+      SAFEPAY_MERCHANT_API_KEY: ${SAFEPAY_MERCHANT_API_KEY:-}
+      SAFEPAY_ENVIRONMENT: ${SAFEPAY_ENVIRONMENT:-sandbox}
     networks: [cera-private, cera-public]
     depends_on:
       postgres: { condition: service_healthy }

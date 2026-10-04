@@ -1,6 +1,8 @@
-import { CartSchema, type Cart } from '@cera/contracts';
+import { CartSchema, SafepayCheckoutStartResponseSchema, type Cart } from '@cera/contracts';
 
 import { apiUrl } from './catalogue/client.ts';
+
+export type CheckoutPaymentMethod = 'cod' | 'safepay' | 'test';
 
 export async function fetchCart(cookieHeader?: string | null): Promise<Cart> {
   const init: RequestInit = { credentials: 'include' };
@@ -25,7 +27,8 @@ export async function completeCheckout(body: {
   email: string;
   fullName: string;
   countryCode?: string;
-  paymentIntentId?: string;
+  paymentMethod: CheckoutPaymentMethod;
+  safepayTracker?: string;
 }): Promise<{ orderCode: string }> {
   const response = await fetch(`${apiUrl()}/v1/checkout/complete`, {
     method: 'POST',
@@ -36,3 +39,21 @@ export async function completeCheckout(body: {
   if (!response.ok) throw new Error('checkout_failed');
   return (await response.json()) as { orderCode: string };
 }
+
+export async function startSafepayCheckout(body: {
+  email: string;
+  fullName: string;
+  redirectUrl: string;
+  cancelUrl: string;
+}): Promise<{ checkoutUrl: string; tracker: string }> {
+  const response = await fetch(`${apiUrl()}/v1/checkout/safepay/start`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) throw new Error('safepay_start_failed');
+  return SafepayCheckoutStartResponseSchema.parse(await response.json());
+}
+
+export const CHECKOUT_CONTACT_STORAGE_KEY = 'cera_checkout_contact';

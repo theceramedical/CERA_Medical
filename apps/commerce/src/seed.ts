@@ -211,30 +211,28 @@ async function ensureCheckoutMethods(
     });
   }
 
-  const handlerCode =
-    (process.env.CERA_ENV ?? 'local') === 'production' && process.env.STRIPE_SECRET_KEY
-      ? 'cera-stripe'
-      : 'cera-test-payment';
-  const existingPayments = await payments.findAll(ctx, { take: 10 });
-  const hasHandler = existingPayments.items.some((method) => method.handler.code === handlerCode);
-  if (!hasHandler) {
+  const production = (process.env.CERA_ENV ?? 'local') === 'production';
+  const hasSafepay =
+    process.env.SAFEPAY_MERCHANT_SECRET !== undefined &&
+    process.env.SAFEPAY_MERCHANT_SECRET.length > 0;
+  const handlerCodes: { code: string; name: string }[] = [
+    { code: 'cera-cod', name: 'Cash on delivery' },
+  ];
+  if (hasSafepay) {
+    handlerCodes.unshift({ code: 'cera-safepay', name: 'Pay online (Safepay)' });
+  } else if (!production) {
+    handlerCodes.unshift({ code: 'cera-test-payment', name: 'Test payment' });
+  }
+
+  const existingPayments = await payments.findAll(ctx, { take: 20 });
+  for (const { code, name } of handlerCodes) {
+    const hasHandler = existingPayments.items.some((method) => method.handler.code === code);
+    if (hasHandler) continue;
     await payments.create(ctx, {
-      code: handlerCode,
+      code,
       enabled: true,
-      handler: {
-        code: handlerCode,
-        arguments:
-          handlerCode === 'cera-stripe'
-            ? [{ name: 'apiKey', value: process.env.STRIPE_SECRET_KEY ?? '' }]
-            : [],
-      },
-      translations: [
-        {
-          languageCode: LanguageCode.en,
-          name: handlerCode === 'cera-stripe' ? 'Card payment' : 'Test payment',
-          description: '',
-        },
-      ],
+      handler: { code, arguments: [] },
+      translations: [{ languageCode: LanguageCode.en, name, description: '' }],
     });
   }
 }

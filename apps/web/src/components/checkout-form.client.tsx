@@ -5,14 +5,26 @@ import { Text } from '@cera/ui/typography';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { completeCheckout } from '../lib/cart-client.ts';
+import {
+  CHECKOUT_CONTACT_STORAGE_KEY,
+  completeCheckout,
+  startSafepayCheckout,
+  type CheckoutPaymentMethod,
+} from '../lib/cart-client.ts';
 
 import { AppLink } from './link.tsx';
 
-export function CheckoutForm({ cartTotalLabel }: { readonly cartTotalLabel: string }) {
+export function CheckoutForm({
+  cartTotalLabel,
+  showTestPayment,
+}: {
+  readonly cartTotalLabel: string;
+  readonly showTestPayment: boolean;
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>('safepay');
 
   return (
     <form
@@ -25,6 +37,7 @@ export function CheckoutForm({ cartTotalLabel }: { readonly cartTotalLabel: stri
         const data = new FormData(form);
         const emailRaw = data.get('email');
         const nameRaw = data.get('fullName');
+        const methodRaw = data.get('paymentMethod');
         if (typeof emailRaw !== 'string' || typeof nameRaw !== 'string') {
           setError('Enter your name and email.');
           setPending(false);
@@ -32,17 +45,83 @@ export function CheckoutForm({ cartTotalLabel }: { readonly cartTotalLabel: stri
         }
         const email = emailRaw;
         const fullName = nameRaw;
-        void completeCheckout({ email, fullName, countryCode: 'PK' })
+        const method =
+          methodRaw === 'cod' || methodRaw === 'safepay' || methodRaw === 'test'
+            ? methodRaw
+            : paymentMethod;
+
+        if (method === 'safepay') {
+          const origin = window.location.origin;
+          const contact = { email, fullName };
+          try {
+            sessionStorage.setItem(CHECKOUT_CONTACT_STORAGE_KEY, JSON.stringify(contact));
+          } catch {
+            /* ignore quota errors */
+          }
+          void startSafepayCheckout({
+            email,
+            fullName,
+            redirectUrl: `${origin}/checkout/return`,
+            cancelUrl: `${origin}/checkout`,
+          })
+            .then(({ checkoutUrl }) => {
+              window.location.assign(checkoutUrl);
+            })
+            .catch(() => {
+              setError('Could not start Safepay checkout. Try COD or contact us.');
+              setPending(false);
+            });
+          return;
+        }
+
+        void completeCheckout({ email, fullName, countryCode: 'PK', paymentMethod: method })
           .then((result) =>
             router.push(`/checkout/confirmation?order=${encodeURIComponent(result.orderCode)}`),
           )
           .catch(() => {
-            setError('Payment could not be completed. Try again or contact us.');
+            setError('Order could not be completed. Try again or contact us.');
             setPending(false);
           });
       }}
     >
       <Text tone="muted">Order total: {cartTotalLabel}</Text>
+      <fieldset className="space-y-2">
+        <Text size="body-sm" className="font-medium">
+          Payment method
+        </Text>
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="safepay"
+            checked={paymentMethod === 'safepay'}
+            onChange={() => setPaymentMethod('safepay')}
+          />
+          <Text size="body-sm">Pay online (Safepay)</Text>
+        </label>
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="cod"
+            checked={paymentMethod === 'cod'}
+            onChange={() => setPaymentMethod('cod')}
+          />
+          <Text size="body-sm">Cash on delivery</Text>
+        </label>
+        {showTestPayment ? (
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="test"
+              checked={paymentMethod === 'test'}
+              onChange={() => setPaymentMethod('test')}
+            />
+            <Text size="body-sm">Test payment (development)</Text>
+          </label>
+        ) : null}
+      </fieldset>
       <label className="block">
         <Text size="body-sm" className="mb-1 font-medium">
           Full name
@@ -70,11 +149,15 @@ export function CheckoutForm({ cartTotalLabel }: { readonly cartTotalLabel: stri
         </Text>
       ) : null}
       <Button type="submit" variant="primary" disabled={pending} className="w-full justify-center">
-        {pending ? 'Processing…' : 'Pay and confirm order'}
+        {pending
+          ? 'Processing…'
+          : paymentMethod === 'safepay'
+            ? 'Continue to Safepay'
+            : 'Confirm order'}
       </Button>
       <Text size="body-sm" tone="muted">
-        Local/dev uses test settlement. Production uses Stripe when configured.{' '}
-        <AppLink href="/contact">Need help?</AppLink>
+        Online payments are processed on Safepay&apos;s secure hosted page. COD orders are confirmed
+        without prepayment. <AppLink href="/contact">Need help?</AppLink>
       </Text>
     </form>
   );

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run on the production host (e.g. /opt/cera). Idempotently enables checkout env vars.
-# Set STRIPE_SECRET_KEY manually before taking card payments in production.
+# Set SAFEPAY_MERCHANT_SECRET and SAFEPAY_MERCHANT_API_KEY before taking online payments.
 set -euo pipefail
 ENV_FILE="${1:-/opt/cera/.env}"
 [[ -f "$ENV_FILE" ]] || { echo "Missing $ENV_FILE" >&2; exit 1; }
@@ -18,9 +18,15 @@ set_var() {
 set_var CHECKOUT_ENABLED true
 set_var NEXT_PUBLIC_CHECKOUT_ENABLED true
 
-if ! grep -q '^STRIPE_SECRET_KEY=' "$ENV_FILE"; then
-  printf '\n# Required for production card payments (cera-stripe handler)\nSTRIPE_SECRET_KEY=\n' >> "$ENV_FILE"
-  echo "Added STRIPE_SECRET_KEY= placeholder — set your Stripe secret before go-live." >&2
+for key in SAFEPAY_MERCHANT_SECRET SAFEPAY_MERCHANT_API_KEY; do
+  if ! grep -q "^${key}=" "$ENV_FILE"; then
+    printf '\n# Required for Safepay hosted checkout (cera-safepay handler)\n%s=\n' "$key" >> "$ENV_FILE"
+    echo "Added ${key}= placeholder — set your Safepay credentials before go-live." >&2
+  fi
+done
+
+if ! grep -q '^SAFEPAY_ENVIRONMENT=' "$ENV_FILE"; then
+  printf '\nSAFEPAY_ENVIRONMENT=production\n' >> "$ENV_FILE"
 fi
 
 chmod 600 "$ENV_FILE"

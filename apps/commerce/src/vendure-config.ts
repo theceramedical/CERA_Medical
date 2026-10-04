@@ -14,8 +14,9 @@ import { HardenPlugin } from '@vendure/harden-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq/index.js';
 
 import { productCustomFields } from './plugins/catalogue-fields.js';
+import { ceraCodPaymentHandler } from './plugins/cera-cod-payment.js';
 import { ceraTestPaymentHandler } from './plugins/cera-payments.js';
-import { ceraStripePaymentHandler } from './plugins/cera-stripe-payment.js';
+import { ceraSafepayPaymentHandler } from './plugins/cera-safepay-payment.js';
 import { RejectCheckoutInterceptor } from './plugins/checkout-neutralisation/order-interceptor.js';
 import {
   denyAdminPaymentRule,
@@ -28,15 +29,16 @@ function isCheckoutEnabled(): boolean {
 
 function paymentMethodHandlers() {
   if (!isCheckoutEnabled()) return [];
-  const production = (process.env.CERA_ENV ?? 'local') === 'production';
-  if (
-    production &&
-    process.env.STRIPE_SECRET_KEY !== undefined &&
-    process.env.STRIPE_SECRET_KEY.length > 0
-  ) {
-    return [ceraStripePaymentHandler];
+  const handlers = [ceraCodPaymentHandler];
+  const hasSafepay =
+    process.env.SAFEPAY_MERCHANT_SECRET !== undefined &&
+    process.env.SAFEPAY_MERCHANT_SECRET.length > 0;
+  if (hasSafepay) {
+    handlers.unshift(ceraSafepayPaymentHandler);
+  } else if ((process.env.CERA_ENV ?? 'local') !== 'production') {
+    handlers.unshift(ceraTestPaymentHandler);
   }
-  return [ceraTestPaymentHandler];
+  return handlers;
 }
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
