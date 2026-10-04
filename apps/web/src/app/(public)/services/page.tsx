@@ -12,7 +12,7 @@ import { listPublicServices } from '../../../lib/catalogue/client.ts';
 import { listPublishedDocuments, getCurrentDocument } from '../../../lib/cms/client.ts';
 import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
-import { serviceCardIcon } from '../../../lib/service-card-icon.ts';
+import { serviceCardIcon } from '../../../lib/service-card-icon';
 import {
   layoutBlocksWithoutServicesChrome,
   servicesCatalogueFromLayout,

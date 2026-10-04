@@ -1,6 +1,8 @@
 import { CartSchema, SafepayCheckoutStartResponseSchema, type Cart } from '@cera/contracts';
 
-import { apiUrl } from './catalogue/client.ts';
+function apiUrl(): string {
+  return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+}
 
 export type CheckoutPaymentMethod = 'cod' | 'safepay' | 'test';
 

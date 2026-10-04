@@ -7,7 +7,7 @@ import NextLink from 'next/link';
 import type { ContentDocument } from '@cera/contracts';
 import type { PublicService } from '@cera/contracts/projections';
 
-import { serviceCardIcon } from '../../lib/service-card-icon.ts';
+import { serviceCardIcon } from '../../lib/service-card-icon';
 import { AppButtonLink } from '../link.tsx';
 
 export interface ServicesSectionProps {
