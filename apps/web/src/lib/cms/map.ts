@@ -57,7 +57,7 @@ function cardHighlightsFromDoc(doc: PayloadDocument): readonly string[] | undefi
       const text = (row as { text?: unknown }).text;
       return typeof text === 'string' ? text : null;
     })
-    .filter((text): text is string => text.length > 0);
+    .filter((text): text is string => typeof text === 'string' && text.length > 0);
   return items.length > 0 ? items : undefined;
 }
 
