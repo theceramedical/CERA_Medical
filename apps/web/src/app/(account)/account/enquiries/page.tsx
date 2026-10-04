@@ -13,9 +13,13 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Your enquiries' };
 export default async function AccountEnquiriesPage() {
-  const { items } = await authenticatedApi<{ items: CustomerEnquiry[] }>('/v1/me/enquiries', {
-    returnTo: '/account/enquiries',
-  });
+  const { items: rawItems } = await authenticatedApi<{ items: CustomerEnquiry[] }>(
+    '/v1/me/enquiries',
+    {
+      returnTo: '/account/enquiries',
+    },
+  );
+  const items = Array.isArray(rawItems) ? rawItems : [];
   return (
     <>
       <PageHeader title="Your enquiries" lede="Every enquiry claimed to this account." />
@@ -58,11 +62,13 @@ export default async function AccountEnquiriesPage() {
                       <div className="flex gap-4">
                         <FileText aria-hidden className="mt-1 size-5 shrink-0 text-accent" />
                         <div>
-                          <Text size="caption" tone="muted">
+                          <Text as="span" size="caption" tone="muted" className="block">
                             Reference {e.reference}
                           </Text>
-                          <Text className="mt-1 font-semibold text-copy">{e.serviceTitle}</Text>
-                          <Text size="body-sm" tone="muted" className="mt-1">
+                          <Text as="span" className="mt-1 block font-semibold text-copy">
+                            {e.serviceTitle}
+                          </Text>
+                          <Text as="span" size="body-sm" tone="muted" className="mt-1 block">
                             View the enquiry details and its current progress.
                           </Text>
                         </div>

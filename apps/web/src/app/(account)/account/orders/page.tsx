@@ -21,9 +21,10 @@ function formatMoney(minor: number, currency: string): string {
 export default async function AccountOrdersPage() {
   if (!checkoutEnabled()) notFound();
 
-  const { items } = await authenticatedApi<{ items: CustomerOrder[] }>('/v1/me/orders', {
+  const { items: rawItems } = await authenticatedApi<{ items: CustomerOrder[] }>('/v1/me/orders', {
     returnTo: '/account/orders',
   });
+  const items = Array.isArray(rawItems) ? rawItems : [];
 
   return (
     <>
@@ -63,13 +64,13 @@ export default async function AccountOrdersPage() {
                       <div className="flex gap-4">
                         <Package aria-hidden className="mt-1 size-5 shrink-0 text-accent" />
                         <div>
-                          <Text size="caption" tone="muted">
+                          <Text as="span" size="caption" tone="muted" className="block">
                             Order {order.orderCode}
                           </Text>
-                          <Text className="mt-1 font-semibold text-copy">
+                          <Text as="span" className="mt-1 block font-semibold text-copy">
                             {formatMoney(order.totalMinor, order.currencyCode)}
                           </Text>
-                          <Text size="body-sm" tone="muted" className="mt-1">
+                          <Text as="span" size="body-sm" tone="muted" className="mt-1 block">
                             {order.paymentLabel} · {order.lines.length}{' '}
                             {order.lines.length === 1 ? 'line' : 'lines'}
                           </Text>

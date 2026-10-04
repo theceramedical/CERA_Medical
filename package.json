@@ -24,6 +24,8 @@
     "test:contract": "pnpm -r test:contract",
     "test:integration": "pnpm -r test:integration",
     "test:e2e": "pnpm --filter web test:e2e",
+    "test:portal": "pnpm --filter web test:portal:headed",
+    "test:live:ui": "pnpm --filter web test:live:ui",
     "test:a11y": "pnpm --filter web test:a11y",
     "test:visual": "pnpm --filter web test:visual",
     "test:authz": "pnpm --filter api test:authz",

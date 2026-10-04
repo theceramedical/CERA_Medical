@@ -2,6 +2,7 @@ import { Heading, Text } from '@cera/ui/typography';
 import { redirect } from 'next/navigation';
 
 import { AppButtonLink } from '../../../../components/link.tsx';
+import { OidcSignInContinue } from '../../../../components/oidc-sign-in-continue.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
 import { safeReturnTo } from '../../../../lib/auth/return-to.ts';
 import { getSession } from '../../../../lib/auth/session.ts';
@@ -30,11 +31,6 @@ export default async function SignInPage({
     redirect(safeNext);
   }
 
-  const href =
-    safeNext.length > 0 && safeNext !== '/'
-      ? `/auth/signin?next=${encodeURIComponent(safeNext)}`
-      : '/auth/signin';
-
   return (
     <>
       <PageHeader
@@ -50,9 +46,7 @@ export default async function SignInPage({
             Use your verified email to view enquiries, receive secure claim links and update your
             contact details.
           </Text>
-          <AppButtonLink href={href} variant="primary" className="mt-8">
-            Continue to secure sign in
-          </AppButtonLink>
+          <OidcSignInContinue next={safeNext} className="mt-8" />
         </section>
         <aside className="rounded-lg bg-surface-tint p-6">
           <Heading level={2} size="h4">

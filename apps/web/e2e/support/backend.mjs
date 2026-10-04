@@ -1,5 +1,7 @@
 import { createServer } from 'node:http';
 
+import { openE2eSession } from './session.mjs';
+
 /** Browser-suite fixture for the web app's server-side API and CMS calls. */
 
 const ISO = '2026-01-01T00:00:00.000Z';
@@ -109,7 +111,7 @@ const SITE_SETTINGS = {
   ],
 };
 
-const E2E_ORIGIN = 'http://127.0.0.1:3100';
+const E2E_ORIGIN = 'http://localhost:3100';
 const VENDURE_COOKIE = 'cera_vendure_token';
 
 const PHYSICAL_LINES = {
@@ -130,7 +132,7 @@ function cors(response) {
   response.setHeader('access-control-allow-origin', E2E_ORIGIN);
   response.setHeader('access-control-allow-credentials', 'true');
   response.setHeader('access-control-allow-headers', 'content-type');
-  response.setHeader('access-control-allow-methods', 'GET, POST, OPTIONS');
+  response.setHeader('access-control-allow-methods', 'GET, POST, PATCH, OPTIONS');
 }
 
 function json(response, status, body, extraHeaders = {}) {
@@ -167,6 +169,58 @@ function ensureSession(token) {
     carts.set(token, { currencyCode: 'PKR', lines: [] });
   }
   return carts.get(token);
+}
+
+const PORTAL_ENQUIRY = {
+  reference: 'CERA-E2E-PORTAL1',
+  serviceTitle: 'Cardiology research',
+  submittedAt: ISO,
+  status: 'received',
+  statusLabel: 'Enquiry received',
+  updatedAt: ISO,
+  timeline: [{ status: 'received', label: 'Enquiry received', at: ISO }],
+};
+
+/** @type {{ displayName: string; phone: string | null; email: string }} */
+let portalProfile = {
+  displayName: 'Portal Customer',
+  phone: null,
+  email: 'portal-customer@example.com',
+};
+
+async function portalClaims(request) {
+  const raw = request.headers.authorization?.replace(/^Bearer\s+/i, '');
+  if (raw === undefined || raw.length === 0) return null;
+  try {
+    const claims = await openE2eSession(raw);
+    const now = Math.floor(Date.now() / 1000);
+    if (
+      !claims.exp ||
+      !claims.absoluteExp ||
+      claims.exp <= now ||
+      claims.absoluteExp <= now ||
+      !Array.isArray(claims.roles)
+    ) {
+      return null;
+    }
+    return claims;
+  } catch {
+    return null;
+  }
+}
+
+function portalAuthStatus(claims, emailVerified) {
+  if (claims === null) return 401;
+  if (!claims.roles.includes('customer')) return 404;
+  if (emailVerified && claims.emailVerified !== true) return 403;
+  return null;
+}
+
+function apiError(response, status, code) {
+  json(response, status, {
+    error: { code, message: 'Fixture error.', retryable: false },
+    requestId: 'e2e',
+  });
 }
 
 function cmsPages(url) {
@@ -310,6 +364,104 @@ const server = createServer(async (request, response) => {
         requestId: 'e2e',
       });
     }
+    return;
+  }
+
+  if (path === '/v1/me/profile' && (request.method === 'GET' || request.method === 'PATCH')) {
+    const claims = await portalClaims(request);
+    const auth = portalAuthStatus(claims, false);
+    if (auth !== null) {
+      apiError(
+        response,
+        auth,
+        auth === 401 ? 'unauthenticated' : auth === 403 ? 'forbidden' : 'not_found',
+      );
+      return;
+    }
+    if (request.method === 'GET') {
+      json(response, 200, { ...portalProfile, email: claims.email });
+      return;
+    }
+    let raw = '';
+    for await (const chunk of request) raw += chunk;
+    try {
+      const body = JSON.parse(raw);
+      portalProfile = {
+        ...portalProfile,
+        displayName: String(body.displayName ?? portalProfile.displayName),
+        phone: body.phone === null || body.phone === '' ? null : String(body.phone),
+      };
+      json(response, 200, { ...portalProfile, email: claims.email });
+    } catch {
+      apiError(response, 400, 'validation_failed');
+    }
+    return;
+  }
+
+  if (request.method === 'GET' && path === '/v1/me/enquiries') {
+    const claims = await portalClaims(request);
+    const auth = portalAuthStatus(claims, true);
+    if (auth !== null) {
+      apiError(
+        response,
+        auth,
+        auth === 401 ? 'unauthenticated' : auth === 403 ? 'forbidden' : 'not_found',
+      );
+      return;
+    }
+    json(response, 200, { items: [] });
+    return;
+  }
+
+  const enquiryDetail = /^\/v1\/me\/enquiries\/([^/]+)$/.exec(path);
+  if (request.method === 'GET' && enquiryDetail !== null) {
+    const claims = await portalClaims(request);
+    const auth = portalAuthStatus(claims, true);
+    if (auth !== null) {
+      apiError(
+        response,
+        auth,
+        auth === 401 ? 'unauthenticated' : auth === 403 ? 'forbidden' : 'not_found',
+      );
+      return;
+    }
+    const ref = decodeURIComponent(enquiryDetail[1]);
+    if (ref !== PORTAL_ENQUIRY.reference) {
+      apiError(response, 404, 'not_found');
+      return;
+    }
+    json(response, 200, PORTAL_ENQUIRY);
+    return;
+  }
+
+  if (request.method === 'GET' && path === '/v1/me/orders') {
+    const claims = await portalClaims(request);
+    const auth = portalAuthStatus(claims, true);
+    if (auth !== null) {
+      apiError(
+        response,
+        auth,
+        auth === 401 ? 'unauthenticated' : auth === 403 ? 'forbidden' : 'not_found',
+      );
+      return;
+    }
+    json(response, 200, { items: [] });
+    return;
+  }
+
+  const orderDetail = /^\/v1\/me\/orders\/([^/]+)$/.exec(path);
+  if (request.method === 'GET' && orderDetail !== null) {
+    const claims = await portalClaims(request);
+    const auth = portalAuthStatus(claims, true);
+    if (auth !== null) {
+      apiError(
+        response,
+        auth,
+        auth === 401 ? 'unauthenticated' : auth === 403 ? 'forbidden' : 'not_found',
+      );
+      return;
+    }
+    apiError(response, 404, 'not_found');
     return;
   }
 

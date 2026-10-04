@@ -83,7 +83,12 @@ export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
  * is the binding that makes reaching for the right one no more effort than the wrong one.
  */
 export function AppButtonLink({ href, ...props }: UiButtonLinkProps) {
+  const hrefStr = typeof href === 'string' ? href : '';
   const linkAs =
-    typeof href === 'string' && requiresNoPrefetch(href) ? NoPrefetchNextLink : NextLink;
+    hrefStr.length > 0 && isOidcBrowserRoute(hrefStr)
+      ? 'a'
+      : hrefStr.length > 0 && requiresNoPrefetch(hrefStr)
+        ? NoPrefetchNextLink
+        : NextLink;
   return <UiButtonLink as={linkAs} href={href} {...props} />;
 }

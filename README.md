@@ -70,18 +70,19 @@ ERPNext (or another CRM driver) is an environment change rather than a code chan
 
 ## Commands
 
-| Command                        | Purpose                                               |
-| ------------------------------ | ----------------------------------------------------- |
-| `pnpm dev`                     | Every app in watch mode                               |
-| `pnpm lint`                    | ESLint across all workspaces, zero warnings tolerated |
-| `pnpm typecheck`               | TypeScript across all workspaces                      |
-| `pnpm test`                    | Unit and contract tests                               |
-| `pnpm test:e2e`                | Playwright end-to-end tests                           |
-| `pnpm test:a11y`               | Automated accessibility checks                        |
-| `pnpm build`                   | Production build of every app                         |
-| `pnpm health`                  | Verify the local stack                                |
-| `pnpm stack:up` / `stack:down` | Start or stop local infrastructure                    |
-| `pnpm stack:reset`             | Stop and **delete all local data**                    |
+| Command                        | Purpose                                                      |
+| ------------------------------ | ------------------------------------------------------------ |
+| `pnpm dev`                     | Every app in watch mode                                      |
+| `pnpm lint`                    | ESLint across all workspaces, zero warnings tolerated        |
+| `pnpm typecheck`               | TypeScript across all workspaces                             |
+| `pnpm test`                    | Unit and contract tests                                      |
+| `pnpm test:e2e`                | Playwright end-to-end tests                                  |
+| `pnpm test:live:ui`            | Playwright UI — headed manual portal checklist on `pnpm dev` |
+| `pnpm test:a11y`               | Automated accessibility checks                               |
+| `pnpm build`                   | Production build of every app                                |
+| `pnpm health`                  | Verify the local stack                                       |
+| `pnpm stack:up` / `stack:down` | Start or stop local infrastructure                           |
+| `pnpm stack:reset`             | Stop and **delete all local data**                           |
 
 ## Repository layout
 

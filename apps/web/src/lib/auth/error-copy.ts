@@ -20,6 +20,11 @@ const errors: Record<string, AuthErrorCopy> = {
     lede: 'The identity provider did not return the account details CERA needs.',
     plan: 'Check that your Authentik account has a verified email address. If it still fails, contact the CERA administrator.',
   },
+  email_unverified: {
+    title: 'Verify your email to use the portal',
+    lede: 'Your sign-in succeeded, but CERA can only show enquiries for a verified email address.',
+    plan: 'Complete email verification in your sign-in service, then sign in again from the sign-in page.',
+  },
   mfa: {
     title: 'Staff sign-in requires multi-factor authentication',
     lede: 'Your account has a staff role, but Authentik did not confirm a second factor for this sign-in.',

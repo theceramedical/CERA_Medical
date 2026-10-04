@@ -29,6 +29,14 @@ export default async function AccountDashboardPage() {
           </Alert>
         ) : (
           <div className="flex flex-col gap-6">
+            {!session.emailVerified ? (
+              <Alert tone="warning" title="Verify your email to use enquiries and orders">
+                <Text size="body-sm">
+                  Your profile can be updated now. Enquiries, orders, and claim links need a
+                  verified email in your sign-in service.
+                </Text>
+              </Alert>
+            ) : null}
             <Text>
               Signed in as {session.email}.{' '}
               <AppLink href="/account/profile">Update your profile</AppLink>
@@ -37,13 +45,12 @@ export default async function AccountDashboardPage() {
               {' · '}
               <AppLink href="/auth/signout">Sign out</AppLink>
             </Text>
-            <AppLink href="/account/enquiries">View your enquiries</AppLink>
-            {checkoutEnabled() ? (
-              <>
-                {' · '}
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-4">
+              <AppLink href="/account/enquiries">View your enquiries</AppLink>
+              {checkoutEnabled() ? (
                 <AppLink href="/account/orders">View your orders</AppLink>
-              </>
-            ) : null}
+              ) : null}
+            </div>
             <Text tone="muted">
               Open enquiries appear here once they are claimed to this account.
             </Text>

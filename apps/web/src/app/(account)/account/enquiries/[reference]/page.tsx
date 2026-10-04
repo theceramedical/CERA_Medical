@@ -1,4 +1,5 @@
 import { Text } from '@cera/ui/typography';
+import { notFound } from 'next/navigation';
 
 import type { CustomerEnquiry } from '@cera/contracts';
 
@@ -14,10 +15,15 @@ export default async function AccountEnquiryDetailPage({
   params: Promise<{ reference: string }>;
 }) {
   const { reference } = await params;
-  const e = await authenticatedApi<CustomerEnquiry>(
-    `/v1/me/enquiries/${encodeURIComponent(reference)}`,
-    { returnTo: `/account/enquiries/${encodeURIComponent(reference)}` },
-  );
+  let e: CustomerEnquiry;
+  try {
+    e = await authenticatedApi<CustomerEnquiry>(
+      `/v1/me/enquiries/${encodeURIComponent(reference)}`,
+      { returnTo: `/account/enquiries/${encodeURIComponent(reference)}` },
+    );
+  } catch {
+    notFound();
+  }
   return (
     <>
       <PageHeader title={e.reference} lede={e.serviceTitle} />

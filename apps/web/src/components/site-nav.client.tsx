@@ -135,7 +135,7 @@ export function MobileNav({ items }: { readonly items: readonly NavItem[] }) {
             {/* The two calls to action, which are hidden at this width in the header's right-hand
                 group. They are here rather than there so they exist exactly once in the document. */}
             <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-              <ButtonLink as={NextLink} href="/auth/sign-in" variant="outline" fullWidth>
+              <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
                 Sign In
               </ButtonLink>
               <ButtonLink as={NextLink} href="/enquiry" variant="accent" fullWidth>
