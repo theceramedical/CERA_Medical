@@ -16,7 +16,12 @@ import {
 } from './enums.ts';
 import { PageSchema, PaginationQuerySchema } from './pagination.ts';
 import { EnquiryReferenceSchema, SlugSchema, SubjectIdSchema, Uuidv7Schema } from './primitives.ts';
-import { CustomerEnquirySchema, PublicServiceSchema, StaffEnquirySchema } from './projections.ts';
+import {
+  CustomerEnquirySchema,
+  CustomerOrderSchema,
+  PublicServiceSchema,
+  StaffEnquirySchema,
+} from './projections.ts';
 
 /**
  * Request and response schemas for every endpoint in the API surface.
@@ -168,6 +173,14 @@ export const ListMyEnquiriesResponseSchema = PageSchema(CustomerEnquirySchema);
 
 /** A customer addresses their own enquiry by reference; the row id is never exposed. */
 export const MyEnquiryParamsSchema = z.object({ reference: EnquiryReferenceSchema });
+
+export const ListMyOrdersResponseSchema = z.object({
+  items: z.array(CustomerOrderSchema),
+});
+
+export const MyOrderParamsSchema = z.object({
+  orderCode: z.string().min(1).max(48),
+});
 
 // ---------------------------------------------------------------------------
 // Staff: queue and detail

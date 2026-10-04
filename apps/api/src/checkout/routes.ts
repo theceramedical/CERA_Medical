@@ -13,7 +13,15 @@ import { sendApiError, sendCode } from '../http.ts';
 import { createSafepayHostedCheckout } from './safepay.ts';
 import { createVendureShopClient } from './vendure-shop.ts';
 
-import type { FastifyPluginCallback } from 'fastify';
+import type { SessionClaims } from '../auth/session.ts';
+import type { RecordCommerceOrderInput } from '../orders/postgres-store.ts';
+import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
+
+export interface CheckoutRoutesOptions {
+  readonly shopApiUrl: string;
+  readonly recordOrder?: (input: RecordCommerceOrderInput) => Promise<void>;
+  readonly readSession?: (request: FastifyRequest) => Promise<SessionClaims | null>;
+}
 
 export const VENDURE_TOKEN_COOKIE = 'cera_vendure_token';
 
@@ -56,8 +64,8 @@ function setTokenCookie(
   );
 }
 
-export const checkoutRoutes = (shopApiUrl: string): FastifyPluginCallback => {
-  const shop = createVendureShopClient(shopApiUrl);
+export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCallback => {
+  const shop = createVendureShopClient(options.shopApiUrl);
 
   return (app, _options, done) => {
     app.get('/v1/cart', async (request, reply) => {
@@ -177,15 +185,41 @@ export const checkoutRoutes = (shopApiUrl: string): FastifyPluginCallback => {
         return;
       }
       try {
-        const session = { token: tokenFromRequest(request) };
-        const result = await shop.completeCheckout(session, {
-          email: body.email,
-          fullName: body.fullName,
-          countryCode: body.countryCode,
-          paymentMethod: body.paymentMethod,
-          ...(body.safepayTracker !== undefined ? { safepayTracker: body.safepayTracker } : {}),
-        });
+        const vendureSession = { token: tokenFromRequest(request) };
+        const { cart, token: cartToken } = await shop.getActiveCart(vendureSession);
+        if (cart === null || cart.lines.length === 0) {
+          sendCode(request, reply, 'validation_failed');
+          return;
+        }
+        const result = await shop.completeCheckout(
+          { token: cartToken },
+          {
+            email: body.email,
+            fullName: body.fullName,
+            countryCode: body.countryCode,
+            paymentMethod: body.paymentMethod,
+            ...(body.safepayTracker !== undefined ? { safepayTracker: body.safepayTracker } : {}),
+          },
+        );
         setTokenCookie(reply, result.token);
+        if (options.recordOrder !== undefined) {
+          const auth =
+            options.readSession !== undefined ? await options.readSession(request) : null;
+          const subjectId =
+            auth !== null &&
+            auth.emailVerified &&
+            auth.email.toLowerCase() === body.email.toLowerCase()
+              ? auth.sub
+              : null;
+          await options.recordOrder({
+            orderCode: result.orderCode,
+            email: body.email,
+            fullName: body.fullName,
+            paymentMethod: body.paymentMethod,
+            cart,
+            customerSubjectId: subjectId,
+          });
+        }
         return reply
           .code(200)
           .send(CheckoutCompleteResponseSchema.parse({ orderCode: result.orderCode }));

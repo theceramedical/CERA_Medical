@@ -20,6 +20,14 @@ Set on the host (`/opt/cera/.env`):
 
 Local/dev uses `cera-test-payment` when Safepay is not configured.
 
+## Customer order history
+
+Signed-in customers with a **verified email** see checkout orders at `/account/orders` (API: `GET /v1/me/orders`). Orders match the account when the checkout email equals the verified OIDC email, or when the order was placed while signed in.
+
+## ERPNext (CRM)
+
+Each completed checkout writes a `commerce_orders` row and enqueues `erpnext.order.upsert` on the app outbox. The worker upserts an ERPNext **Lead** (same adapter as enquiries) with `custom_cera_reference` = Vendure order code and a description of lines and payment method. Staff can review leads on `crm.ceramedical.org`; Vendure remains the fulfilment source of truth.
+
 ## Smoke test
 
-Verify: `/cart`, add a service, checkout with COD or Safepay (per env).
+Verify: `/cart`, add a service, checkout with COD or Safepay (per env), then sign in and open `/account/orders`.

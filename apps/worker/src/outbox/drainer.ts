@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
-import { toCrmLeadPayload } from '@cera/contracts';
+import { toCrmLeadFromCommerceOrder, toCrmLeadPayload } from '@cera/contracts';
+import { z } from 'zod';
 
 import type { CrmPort, EmailPort, Enquiry } from '@cera/contracts';
 
@@ -13,7 +14,7 @@ interface Job {
   aggregate_id: string;
   event_type: string;
   attempts: number;
-  payload: { token?: string };
+  payload: { token?: string; orderId?: string; customerName?: string };
 }
 export function outboxDrainer(
   pool: Pool,
@@ -78,6 +79,72 @@ export function outboxDrainer(
         onError(error);
       } finally {
         client.release();
+      }
+      return;
+    }
+    if (job.event_type === 'erpnext.order.upsert') {
+      try {
+        const orderId = job.payload.orderId;
+        if (orderId === undefined) throw new Error('order_id_missing');
+        const result = await pool.query<{
+          order_code: string;
+          customer_email: string;
+          payment_method: string;
+          currency_code: string;
+          total_minor: number;
+          lines: unknown;
+        }>('SELECT * FROM commerce_orders WHERE id=$1', [orderId]);
+        const row = result.rows[0];
+        if (row === undefined) throw new Error('order_missing');
+        const lines = z
+          .array(
+            z.object({
+              title: z.string(),
+              quantity: z.number(),
+              lineTotalMinor: z.number(),
+            }),
+          )
+          .parse(row.lines);
+        const paymentMethod = z.enum(['cod', 'safepay', 'test']).parse(row.payment_method);
+        const customerName =
+          typeof job.payload.customerName === 'string' && job.payload.customerName.length > 0
+            ? job.payload.customerName
+            : 'Customer';
+        await crm.upsertLead(
+          toCrmLeadFromCommerceOrder({
+            orderCode: row.order_code,
+            customerEmail: row.customer_email,
+            customerName,
+            paymentMethod,
+            currencyCode: row.currency_code,
+            totalMinor: row.total_minor,
+            lines,
+          }),
+          job.id,
+        );
+        await pool.query(
+          "UPDATE outbox SET status='done',last_error=NULL,locked_at=NULL,locked_by=NULL WHERE id=$1 AND locked_by=$2",
+          [job.id, workerId],
+        );
+      } catch (error) {
+        const attempts = job.attempts + 1;
+        const dead = attempts >= 8;
+        const classification =
+          error instanceof Error && /^[a-z_]+(?:_\d+)?$/.test(error.message)
+            ? error.message
+            : 'provider_failed';
+        await pool.query(
+          `UPDATE outbox SET status=$2,attempts=$3,last_error=$4,available_at=$5,locked_at=NULL,locked_by=NULL WHERE id=$1 AND locked_by=$6`,
+          [
+            job.id,
+            dead ? 'dead_letter' : 'pending',
+            attempts,
+            classification,
+            new Date(Date.now() + backoffMs(attempts)),
+            workerId,
+          ],
+        );
+        onError(error);
       }
       return;
     }

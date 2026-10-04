@@ -17,6 +17,7 @@ export {
   outboxStatusEnum,
 } from './shared.ts';
 
+export { commerceOrders } from './commerce-orders.ts';
 export { enquiries, enquiryStatusEvents, internalNotes } from './enquiries.ts';
 export { customerProfiles, emailSuppressions } from './identity.ts';
 export { auditEvents } from './audit.ts';

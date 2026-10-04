@@ -95,7 +95,9 @@ describe('authorization matrix', () => {
   it('blocks anonymous customers from /v1/me/*', () => {
     expect(expectedStatus('anonymous', 'GET', '/v1/me/enquiries')).toBe(401);
     expect(expectedStatus('customer', 'GET', '/v1/me/enquiries')).toBe(200);
+    expect(expectedStatus('customer', 'GET', '/v1/me/orders')).toBe(200);
     expect(expectedStatus('operations', 'GET', '/v1/me/enquiries')).toBe(404);
+    expect(expectedStatus('operations', 'GET', '/v1/me/orders')).toBe(404);
   });
 
   it('requires a verified email to claim', () => {

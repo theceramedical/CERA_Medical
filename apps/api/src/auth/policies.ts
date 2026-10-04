@@ -26,6 +26,7 @@ export const ROUTE_POLICIES: readonly RouteDeclaration[] = [
   { method: 'GET', path: '/v1/cart', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/cart/lines', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/checkout/complete', policy: { kind: 'public' } },
+  { method: 'POST', path: '/v1/checkout/safepay/start', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/webhooks/resend', policy: { kind: 'signature' } },
   {
     method: 'POST',
@@ -43,6 +44,12 @@ export const ROUTE_POLICIES: readonly RouteDeclaration[] = [
   {
     method: 'GET',
     path: '/v1/me/enquiries/:reference',
+    policy: { kind: 'customer', emailVerified: true },
+  },
+  { method: 'GET', path: '/v1/me/orders', policy: { kind: 'customer', emailVerified: true } },
+  {
+    method: 'GET',
+    path: '/v1/me/orders/:orderCode',
     policy: { kind: 'customer', emailVerified: true },
   },
   { method: 'GET', path: '/v1/ops/enquiries', policy: { kind: 'staff', roles: STAFF_ROLES } },

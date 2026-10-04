@@ -33,7 +33,9 @@ export default async function CheckoutConfirmationPage({
         scoping.
       </Text>
       <Text className="mt-6">
-        <AppLink href="/account">View your account</AppLink>
+        <AppLink href="/account/orders">View your orders</AppLink>
+        {' · '}
+        <AppLink href="/account">Account home</AppLink>
         {' · '}
         <AppLink href="/services">Browse more services</AppLink>
       </Text>

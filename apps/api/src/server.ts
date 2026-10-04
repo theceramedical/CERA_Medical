@@ -13,6 +13,7 @@ import { enquiryRoutes } from './enquiry/routes.ts';
 import { createEnquiryService } from './enquiry/service.ts';
 import { healthRoutes } from './health.ts';
 import { opsRoutes } from './ops/routes.ts';
+import { postgresCommerceOrderStore } from './orders/postgres-store.ts';
 import { postgresPortalStore } from './portal/postgres-store.ts';
 import { portalRoutes } from './portal/routes.ts';
 import { searchRoutes } from './search/routes.ts';
@@ -108,11 +109,7 @@ await app.register(
   }),
 );
 
-if (process.env.CHECKOUT_ENABLED === 'true') {
-  await app.register(
-    checkoutRoutes(process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api'),
-  );
-}
+const commerceOrderStore = postgresCommerceOrderStore(pool);
 
 await app.register(searchRoutes({ catalogue: catalogueClient }));
 await app.register(
@@ -137,7 +134,22 @@ const portalStore = postgresPortalStore(pool);
 const readSession = createSessionReader(
   requiredProductionSecret('SESSION_SECRET', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='),
 );
-await app.register(portalRoutes({ store: portalStore, readSession }));
+if (process.env.CHECKOUT_ENABLED === 'true') {
+  await app.register(
+    checkoutRoutes({
+      shopApiUrl: process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api',
+      recordOrder: commerceOrderStore.record.bind(commerceOrderStore),
+      readSession,
+    }),
+  );
+}
+await app.register(
+  portalRoutes({
+    store: portalStore,
+    readSession,
+    orderStore: process.env.CHECKOUT_ENABLED === 'true' ? commerceOrderStore : null,
+  }),
+);
 await app.register(opsRoutes({ store: portalStore, readSession }));
 await app.register(
   resendWebhookRoutes(requiredProductionSecret('RESEND_WEBHOOK_SECRET', 'whsec_local')),

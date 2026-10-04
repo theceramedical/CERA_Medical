@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest';
 import {
   APPEND_ONLY_TABLES,
   auditEvents,
+  commerceOrders,
   customerProfiles,
   emailSuppressions,
   enquiries,
@@ -63,7 +64,14 @@ const sqlForTag = (match: string): string => {
 const initialSql = sqlForTag('initial_cera_app_schema');
 const triggerSql = sqlForTag('append_only_audit_trail');
 
+const allMigrationSql = journal.entries
+  .map((entry) =>
+    readFileSync(join(MIGRATIONS_DIR, `${entry.tag}.sql`), 'utf8').replaceAll('\r\n', '\n'),
+  )
+  .join('\n');
+
 const ALL_TABLES = [
+  commerceOrders,
   enquiries,
   enquiryStatusEvents,
   internalNotes,
@@ -76,9 +84,10 @@ const ALL_TABLES = [
 ];
 
 describe('table inventory', () => {
-  it('declares the nine tables the phase specifies', () => {
+  it('declares the application tables the phase specifies', () => {
     expect(ALL_TABLES.map(getTableName).sort()).toEqual([
       'audit_events',
+      'commerce_orders',
       'customer_profiles',
       'email_suppressions',
       'enquiries',
@@ -110,7 +119,9 @@ describe('table inventory', () => {
 
   it('creates every table in the generated SQL', () => {
     for (const table of ALL_TABLES) {
-      expect(initialSql, getTableName(table)).toContain(`CREATE TABLE "${getTableName(table)}"`);
+      expect(allMigrationSql, getTableName(table)).toContain(
+        `CREATE TABLE "${getTableName(table)}"`,
+      );
     }
   });
 });

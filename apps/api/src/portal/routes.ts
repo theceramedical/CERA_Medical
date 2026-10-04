@@ -10,11 +10,13 @@ import { sendApiError, sendCode, sendZodError } from '../http.ts';
 import { emailHashOf, projectPortalEnquiry, type PortalStore } from './store.ts';
 
 import type { SessionClaims } from '../auth/session.ts';
+import type { CommerceOrderStore } from '../orders/postgres-store.ts';
 import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
 
 export interface PortalRoutesOptions {
   readonly store: PortalStore;
   readonly readSession: (request: FastifyRequest) => Promise<SessionClaims | null>;
+  readonly orderStore?: CommerceOrderStore | null;
 }
 
 const ProfilePatchSchema = z.object({
@@ -94,6 +96,38 @@ export const portalRoutes = (options: PortalRoutesOptions): FastifyPluginCallbac
         if (session === null) throw new ApiError('unauthenticated');
         const items = (await options.store.listForSubject(session.sub)).map(projectPortalEnquiry);
         return reply.send({ items });
+      } catch (error) {
+        if (error instanceof ApiError) return sendApiError(request, reply, error);
+        sendCode(request, reply, 'internal_error');
+      }
+    });
+
+    app.get('/v1/me/orders', async (request, reply) => {
+      try {
+        const session = await guarded(request);
+        if (session === null) throw new ApiError('unauthenticated');
+        if (options.orderStore === null || options.orderStore === undefined) {
+          throw new ApiError('not_found');
+        }
+        const items = await options.orderStore.listForAccount(session.email, session.sub);
+        return reply.send({ items });
+      } catch (error) {
+        if (error instanceof ApiError) return sendApiError(request, reply, error);
+        sendCode(request, reply, 'internal_error');
+      }
+    });
+
+    app.get('/v1/me/orders/:orderCode', async (request, reply) => {
+      try {
+        const session = await guarded(request);
+        if (session === null) throw new ApiError('unauthenticated');
+        if (options.orderStore === null || options.orderStore === undefined) {
+          throw new ApiError('not_found');
+        }
+        const { orderCode } = request.params as { orderCode: string };
+        const order = await options.orderStore.getForAccount(session.email, session.sub, orderCode);
+        if (order === null) throw new ApiError('not_found');
+        return reply.send(order);
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
         sendCode(request, reply, 'internal_error');

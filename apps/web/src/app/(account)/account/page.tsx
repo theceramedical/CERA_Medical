@@ -4,6 +4,7 @@ import { Text } from '@cera/ui/typography';
 import { AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
 import { getSession } from '../../../lib/auth/session.ts';
+import { checkoutEnabled } from '../../../lib/checkout-enabled.ts';
 
 import type { Metadata } from 'next';
 
@@ -37,6 +38,12 @@ export default async function AccountDashboardPage() {
               <AppLink href="/auth/signout">Sign out</AppLink>
             </Text>
             <AppLink href="/account/enquiries">View your enquiries</AppLink>
+            {checkoutEnabled() ? (
+              <>
+                {' · '}
+                <AppLink href="/account/orders">View your orders</AppLink>
+              </>
+            ) : null}
             <Text tone="muted">
               Open enquiries appear here once they are claimed to this account.
             </Text>

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { type Enquiry, type EnquiryStatusEvent, EnquirySchema, type Service } from './entities.ts';
 import { CustomerStatusSchema, DeliveryStatusSchema } from './enums.ts';
-import { EmailSchema, UtcTimestampSchema } from './primitives.ts';
+import { EmailSchema, SlugSchema, UtcTimestampSchema } from './primitives.ts';
 import { buildCustomerTimeline, customerStatusLabel, toCustomerStatus } from './status.ts';
 
 /**
@@ -213,6 +213,81 @@ function crmLeadSource(source: Enquiry['source']): string {
     case 'web_general':
       return 'Website';
   }
+}
+
+// ---------------------------------------------------------------------------
+// Customer commerce orders (checkout)
+// ---------------------------------------------------------------------------
+
+export const CustomerOrderPaymentMethodSchema = z.enum(['cod', 'safepay', 'test']);
+
+export const CustomerOrderLineSchema = z.object({
+  slug: SlugSchema,
+  title: z.string().min(1).max(160),
+  quantity: z.number().int().min(1).max(99),
+  lineTotalMinor: z.number().int().nonnegative(),
+});
+
+export const CustomerOrderSchema = z.object({
+  orderCode: z.string().min(1).max(48),
+  placedAt: UtcTimestampSchema,
+  paymentMethod: CustomerOrderPaymentMethodSchema,
+  paymentLabel: z.string().min(1).max(80),
+  currencyCode: z.string().length(3),
+  totalMinor: z.number().int().nonnegative(),
+  lines: z.array(CustomerOrderLineSchema).min(1),
+});
+export type CustomerOrder = z.infer<typeof CustomerOrderSchema>;
+
+export function customerOrderPaymentLabel(
+  method: z.infer<typeof CustomerOrderPaymentMethodSchema>,
+): string {
+  switch (method) {
+    case 'cod':
+      return 'Cash on delivery';
+    case 'safepay':
+      return 'Pay online (Safepay)';
+    case 'test':
+      return 'Test payment';
+  }
+}
+
+export interface CommerceOrderCrmInput {
+  readonly orderCode: string;
+  readonly customerEmail: string;
+  readonly customerName: string;
+  readonly paymentMethod: z.infer<typeof CustomerOrderPaymentMethodSchema>;
+  readonly currencyCode: string;
+  readonly totalMinor: number;
+  readonly lines: readonly {
+    readonly title: string;
+    readonly quantity: number;
+    readonly lineTotalMinor: number;
+  }[];
+}
+
+export function toCrmLeadFromCommerceOrder(order: CommerceOrderCrmInput): CrmLeadPayload {
+  const { firstName, lastName } = splitName(order.customerName);
+  const lineSummary = order.lines
+    .map(
+      (line) =>
+        `${line.title} ×${String(line.quantity)} (${order.currencyCode} ${(line.lineTotalMinor / 100).toFixed(2)})`,
+    )
+    .join('; ');
+  const total = `${order.currencyCode} ${(order.totalMinor / 100).toFixed(2)}`;
+  return {
+    lastName,
+    ...(firstName !== undefined ? { firstName } : {}),
+    email: order.customerEmail,
+    source: 'Website - Checkout',
+    description: `Order ${order.orderCode}. Payment: ${customerOrderPaymentLabel(order.paymentMethod)}. Total: ${total}. Lines: ${lineSummary}`,
+    externalReference: order.orderCode,
+    service:
+      order.lines.length === 1
+        ? (order.lines.at(0)?.title ?? 'Service order')
+        : 'Multiple services',
+    customerStatus: 'Order placed',
+  };
 }
 
 // ---------------------------------------------------------------------------
