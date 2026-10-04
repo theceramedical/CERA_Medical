@@ -1,17 +1,19 @@
-import { ButtonLink } from '@cera/ui/button';
 import { EmptyState } from '@cera/ui/empty-state';
 import { Heading, Text } from '@cera/ui/typography';
-import { ArrowLeft, CheckCircle2, Clock3, ShieldCheck } from 'lucide-react';
 import { draftMode } from 'next/headers';
 import { notFound } from 'next/navigation';
 
+import { CmsLayout } from '../../../../components/cms-content-page.tsx';
 import { JsonLd, serviceJsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
-import { PageHeader } from '../../../../components/page-header.tsx';
+import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { RichText } from '../../../../components/rich-text.tsx';
+import { ServiceEnquiryAside } from '../../../../components/service-enquiry-aside.tsx';
 import { getPublicService, listPublicServices } from '../../../../lib/catalogue/client.ts';
 import { getDocument, getPublishedDocument } from '../../../../lib/cms/client.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
+import { serviceHeroFromLayout } from '../../../../lib/service-hero.ts';
+import { parseServiceLayout } from '../../../../lib/service-layout.ts';
 import { siteUrl } from '../../../../lib/site-url.ts';
 
 import type { Metadata } from 'next';
@@ -73,6 +75,8 @@ export default async function ServiceDetailPage({
 
   const draft = await draftMode();
   const presentation = await getDocument('servicePresentation', slug, draft.isEnabled);
+  const { mainBlocks, enquiryAside, sidebarCards } = parseServiceLayout(presentation?.layout);
+  const hasStructuredLayout = mainBlocks.length > 0;
 
   return (
     <>
@@ -84,70 +88,63 @@ export default async function ServiceDetailPage({
           url: absoluteUrl(`/services/${slug}`),
         })}
       />
-      <PageHeader
+      <MarketingPageHeader
         title={presentation?.title ?? service.title}
         lede={presentation?.excerpt ?? service.summary}
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Services', href: '/services' },
+          { label: presentation?.title ?? service.title },
+        ]}
+        availability={service.availabilityText}
+        {...(() => {
+          const hero = serviceHeroFromLayout(slug, presentation?.layout);
+          return {
+            ...(hero.eyebrow !== undefined ? { eyebrow: hero.eyebrow } : {}),
+            badges: hero.badges,
+            ...(hero.noticeTitle !== undefined && hero.noticeBody !== undefined
+              ? { notice: { title: hero.noticeTitle, body: hero.noticeBody } }
+              : {}),
+          };
+        })()}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <AppLink
-          href="/services"
-          className="inline-flex items-center gap-2 text-body-sm font-medium"
-        >
-          <ArrowLeft aria-hidden className="size-4" /> All services
-        </AppLink>
-        <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <article>
-            {service.availabilityText !== null ? (
-              <Text tone="muted">{service.availabilityText}</Text>
-            ) : null}
-            {service.displayPrice !== null ? (
-              <Text className="mt-2 font-medium">{service.displayPrice}</Text>
-            ) : null}
-            <div className="mt-6">
-              {presentation !== null ? (
-                <RichText body={presentation.body} />
-              ) : (
-                <Text>{service.description}</Text>
-              )}
-            </div>
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <article className="min-w-0 space-y-12">
+            {hasStructuredLayout ? (
+              <>
+                {presentation?.body ? (
+                  <div className="prose-measure">
+                    <RichText body={presentation.body} />
+                  </div>
+                ) : null}
+                <CmsLayout blocks={mainBlocks} embedded />
+              </>
+            ) : (
+              <>
+                {service.displayPrice !== null ? (
+                  <Text className="font-medium">{service.displayPrice}</Text>
+                ) : null}
+                <div>
+                  {presentation !== null ? (
+                    <RichText body={presentation.body} />
+                  ) : (
+                    <Text>{service.description}</Text>
+                  )}
+                </div>
+              </>
+            )}
           </article>
 
-          <aside className="h-fit rounded-lg border border-border bg-surface-tint p-6 shadow-card">
-            <Heading level={2} size="h4">
-              Start a project conversation
-            </Heading>
-            <Text size="body-sm" tone="muted" className="mt-3">
-              Tell us about your research question, materials or data, expected outputs and
-              timeline. Scope, cost and delivery are agreed in writing before work begins.
-            </Text>
-            {service.enquiryEnabled ? (
-              <ButtonLink
-                href={`/services/${slug}/enquiry`}
-                as={AppLink}
-                className="mt-6 w-full justify-center"
-              >
-                Request this service
-              </ButtonLink>
-            ) : (
-              <Text size="body-sm" tone="muted" className="mt-6">
-                This service is available by referral only.
-              </Text>
-            )}
-            <ul className="mt-6 flex list-none flex-col gap-3 border-t border-border pt-6 p-0">
-              <li className="flex gap-3">
-                <Clock3 aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
-                <Text size="body-sm">Reply target: within three working days</Text>
-              </li>
-              <li className="flex gap-3">
-                <ShieldCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
-                <Text size="body-sm">Do not include direct participant identifiers</Text>
-              </li>
-              <li className="flex gap-3">
-                <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
-                <Text size="body-sm">Protocol, timeline and deliverables documented</Text>
-              </li>
-            </ul>
-          </aside>
+          <ServiceEnquiryAside
+            slug={slug}
+            displayPrice={service.displayPrice}
+            listPriceMinor={service.listPriceMinor}
+            productCheckoutEnabled={service.checkoutEnabled}
+            enquiryEnabled={service.enquiryEnabled}
+            enquiryAside={enquiryAside}
+            sidebarCards={sidebarCards}
+          />
         </div>
 
         {allServices.items.filter((item) => item.slug !== slug).slice(0, 3).length > 0 ? (

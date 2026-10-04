@@ -14,11 +14,30 @@ import { HardenPlugin } from '@vendure/harden-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq/index.js';
 
 import { productCustomFields } from './plugins/catalogue-fields.js';
+import { ceraTestPaymentHandler } from './plugins/cera-payments.js';
+import { ceraStripePaymentHandler } from './plugins/cera-stripe-payment.js';
 import { RejectCheckoutInterceptor } from './plugins/checkout-neutralisation/order-interceptor.js';
 import {
   denyAdminPaymentRule,
   denyShopCheckoutRule,
 } from './plugins/checkout-neutralisation/validation-rule.js';
+
+function isCheckoutEnabled(): boolean {
+  return process.env.CHECKOUT_ENABLED === 'true';
+}
+
+function paymentMethodHandlers() {
+  if (!isCheckoutEnabled()) return [];
+  const production = (process.env.CERA_ENV ?? 'local') === 'production';
+  if (
+    production &&
+    process.env.STRIPE_SECRET_KEY !== undefined &&
+    process.env.STRIPE_SECRET_KEY.length > 0
+  ) {
+    return [ceraStripePaymentHandler];
+  }
+  return [ceraTestPaymentHandler];
+}
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -69,7 +88,7 @@ function assetServerOptions(s3: boolean): AssetServerOptions {
 }
 
 /**
- * Vendure configuration. Checkout is off in three independent layers (ADR-005).
+ * Vendure configuration. Checkout is off unless CHECKOUT_ENABLED=true (ADR-011).
  *
  * `synchronize` stays false. Custom-field changes ship as migrations, never as
  * a boot-time ALTER. Pushing schema from the running process is how two
@@ -88,8 +107,8 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
       port: options.seed ? 0 : Number(process.env.PORT ?? process.env.COMMERCE_PORT ?? 3002),
       adminApiPath: 'admin-api',
       shopApiPath: 'shop-api',
-      shopApiValidationRules: [denyShopCheckoutRule],
-      adminApiValidationRules: [denyAdminPaymentRule],
+      shopApiValidationRules: isCheckoutEnabled() ? [] : [denyShopCheckoutRule],
+      adminApiValidationRules: isCheckoutEnabled() ? [] : [denyAdminPaymentRule],
       cors: {
         origin: (process.env.CORS_ALLOWED_ORIGINS ?? '')
           .split(',')
@@ -122,11 +141,10 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
       migrations: [path.join(dirname, 'migrations/*.js')],
     },
     paymentOptions: {
-      // Layer 1. The scaffold dummy handler is not imported.
-      paymentMethodHandlers: [],
+      paymentMethodHandlers: paymentMethodHandlers(),
     },
     orderOptions: {
-      orderInterceptors: [new RejectCheckoutInterceptor()],
+      orderInterceptors: isCheckoutEnabled() ? [] : [new RejectCheckoutInterceptor()],
     },
     customFields: {
       Product: productCustomFields,

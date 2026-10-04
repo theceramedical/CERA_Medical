@@ -1,9 +1,11 @@
 import { ArticleCard } from '@cera/ui/article-card';
 import { EmptyState } from '@cera/ui/empty-state';
 
+import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { AppLink } from '../../../components/link.tsx';
-import { PageHeader } from '../../../components/page-header.tsx';
-import { listPublishedDocuments } from '../../../lib/cms/client.ts';
+import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
+import { getCurrentDocument, listPublishedDocuments } from '../../../lib/cms/client.ts';
+import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -17,7 +19,13 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function ArticlesPage() {
-  const published = await listPublishedDocuments('post');
+  const [published, page] = await Promise.all([
+    listPublishedDocuments('post'),
+    getCurrentDocument('page', 'articles'),
+  ]);
+  if (page === null) return <CmsPageUnavailable slug="articles" />;
+
+  const hero = sectionHeadingFromLayout(page.layout);
   const items = published.map((post) => ({
     slug: post.slug,
     title: post.title,
@@ -27,9 +35,10 @@ export default async function ArticlesPage() {
 
   return (
     <>
-      <PageHeader
-        title="Research Updates"
-        lede="Project news and research articles approved for publication by CERA Medical."
+      <MarketingPageHeader
+        title={hero?.title ?? page.title}
+        lede={hero?.lede ?? page.excerpt ?? ''}
+        eyebrow={hero?.eyebrow ?? 'Insights and methods'}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         {items.length === 0 ? (

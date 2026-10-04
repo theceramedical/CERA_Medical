@@ -1,4 +1,4 @@
-import { HOMEPAGE_SERVICES } from '../content/homepage.ts';
+import { FIXTURE_SERVICE_SLUGS } from '../lib/catalogue-fixtures.ts';
 import { listPublishedDocuments } from '../lib/cms/client.ts';
 import { siteUrl } from '../lib/site-url.ts';
 
@@ -42,10 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return `/${policy.slug}`;
   });
   const serviceRoutes = [
-    ...new Set([
-      ...HOMEPAGE_SERVICES.map((service) => service.slug),
-      ...presentations.map((service) => service.slug),
-    ]),
+    ...new Set([...FIXTURE_SERVICE_SLUGS, ...presentations.map((service) => service.slug)]),
   ].map((slug) => `/services/${slug}`);
 
   return [

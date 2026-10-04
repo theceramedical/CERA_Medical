@@ -61,6 +61,9 @@ export const ServiceSchema = z.object({
   displayPrice: z.string().max(80).nullable(),
   availabilityText: z.string().max(200).nullable(),
   enquiryEnabled: z.boolean(),
+  /** Fixed SKU list price (minor units) when checkout is enabled. */
+  listPriceMinor: z.number().int().nonnegative().nullable(),
+  checkoutEnabled: z.boolean(),
   mediaId: z.string().nullable(),
   status: ServiceStatusSchema,
   createdAt: UtcTimestampSchema,
@@ -91,6 +94,10 @@ export const ContentDocumentSchema = z.object({
   body: z.unknown(),
   /** Payload page layout blocks, rendered by the web app's constrained block renderer. */
   layout: z.unknown().optional(),
+  /** Service presentation catalogue card bullets (optional). */
+  cardHighlights: z.array(z.string().max(160)).max(6).optional(),
+  /** Lucide key for catalogue/home cards (`microscope`, `dna`, …). */
+  cardIcon: z.string().max(32).optional(),
   seo: SeoSchema,
   mediaIds: z.array(z.string()).max(50),
   status: PublicationStatusSchema,

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Products &amp; Research Assets | CERA Medical R&amp;D Facility</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&amp;family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#8deff9",
+            "error": "#ba1a1a",
+            "on-surface": "#0b1d2b",
+            "inverse-on-surface": "#e7f2ff",
+            "surface-tint": "#256489",
+            "surface": "#f7f9ff",
+            "primary-container": "#0a5378",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#001e2f",
+            "on-secondary": "#ffffff",
+            "on-surface-variant": "#41484e",
+            "surface-variant": "#d3e5f7",
+            "on-error-container": "#93000a",
+            "outline-variant": "#c1c7cf",
+            "inverse-primary": "#95cdf8",
+            "outline": "#71787f",
+            "primary": "#003b58",
+            "surface-container-low": "#ecf4ff",
+            "on-tertiary-container": "#abc0ea",
+            "on-background": "#0b1d2b",
+            "primary-fixed-dim": "#95cdf8",
+            "secondary-fixed": "#90f2fc",
+            "surface-container-high": "#d8eafd",
+            "on-primary": "#ffffff",
+            "tertiary-fixed": "#d7e3ff",
+            "on-tertiary-fixed": "#021b3d",
+            "tertiary": "#22375a",
+            "tertiary-container": "#3a4e72",
+            "background": "#f7f9ff",
+            "on-secondary-container": "#006e75",
+            "surface-container-highest": "#d3e5f7",
+            "primary-fixed": "#c9e6ff",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-fixed-variant": "#33476a",
+            "on-primary-container": "#8ec6f0",
+            "secondary": "#006970",
+            "on-secondary-fixed-variant": "#004f55",
+            "error-container": "#ffdad6",
+            "surface-dim": "#cadcef",
+            "on-primary-fixed-variant": "#004b6f",
+            "inverse-surface": "#213240",
+            "on-secondary-fixed": "#002022",
+            "tertiary-fixed-dim": "#b2c7f1",
+            "secondary-fixed-dim": "#72d5df",
+            "surface-bright": "#f7f9ff",
+            "on-error": "#ffffff",
+            "surface-container": "#e1efff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "margin": "2rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-2xl": "3rem",
+            "gutter": "1.5rem",
+            "space-xl": "2rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "body-sm": ["\"Source Sans 3\""],
+            "headline-xl": ["\"Source Sans 3\""],
+            "headline-sm": ["\"Source Sans 3\""],
+            "display-brand": ["Montserrat"],
+            "headline-lg-mobile": ["\"Source Sans 3\""],
+            "label-sm": ["\"Source Sans 3\""],
+            "headline-md": ["\"Source Sans 3\""],
+            "body-md": ["\"Source Sans 3\""],
+            "label-md": ["\"Source Sans 3\""],
+            "headline-xl-mobile": ["\"Source Sans 3\""],
+            "body-lg": ["\"Source Sans 3\""],
+            "code-tabular": ["\"Source Sans 3\""],
+            "headline-lg": ["\"Source Sans 3\""]
+          },
+          "fontSize": {
+            "body-sm": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "headline-xl": ["2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "0em", "fontWeight": "600" }],
+            "display-brand": ["1.75rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "0em", "fontWeight": "600" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.025em", "fontWeight": "600" }],
+            "headline-md": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "body-md": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "headline-xl-mobile": ["1.875rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "code-tabular": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "headline-lg": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-surface-variant selection:text-primary">
+<!-- 1. Top Bar Navigation (Shared Component Specification) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 sticky z-50 h-20">
+<div class="w-full max-w-[1200px] mx-auto px-margin h-full flex items-center justify-between">
+<!-- Brand Logo / Wordmark -->
+<a class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight flex items-center gap-2" href="/products">
+<span class="w-8 h-8 rounded bg-primary-container text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+</span>
+<span>CERA MEDICAL</span>
+</a>
+<!-- Desktop Nav Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/">Home</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/services">Services</a>
+<!-- ACTIVE TAB: Products / Catalogue screen mapped -->
+<a class="text-primary dark:text-inverse-primary border-b-2 border-primary dark:border-inverse-primary font-label-md text-label-md pb-1" href="/products">Products</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/research">Research Updates</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/about">About</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/contact">Contact</a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-4">
+<button aria-label="Search Catalog" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="search">search</span>
+</button>
+<a class="hidden sm:inline-block font-label-md text-label-md text-primary font-semibold hover:bg-surface-container-low px-3 py-2 rounded transition-colors duration-150" href="/signin">
+          Sign In
+        </a>
+<a class="bg-primary-container text-white px-4 py-2 rounded text-label-md font-label-md font-semibold hover:bg-primary transition-colors duration-150 shadow-sm" href="/enquiry">
+          Make an Enquiry
+        </a>
+</div>
+</div>
+</header>
+<!-- Specimen / Protocol Status Ribbon -->
+<div class="w-full bg-gradient-to-r from-[#1B5882] to-[#005B7D] text-white py-1.5 px-margin text-center">
+<div class="max-w-[1200px] mx-auto flex items-center justify-between text-xs tracking-wide">
+<span class="flex items-center gap-1.5 font-medium">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+        RUO GRADE: ISO 15189 / GLP Documented Quality Standard
+      </span>
+<span class="hidden md:inline font-light opacity-90">
+        Biomedical Research Products, Validated Cell Lines, Assay Kits &amp; Reagents · Cold-Chain Dispatch Guaranteed
+      </span>
+<span class="font-code-tabular text-secondary-fixed">Live Batches: v2025.04.1</span>
+</div>
+</div>
+<!-- Breadcrumb & Container Wrapper -->
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-margin py-6">
+<!-- Breadcrumb Bar -->
+<nav aria-label="Breadcrumb" class="mb-6 flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<a class="hover:text-primary" href="/">Home</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-semibold">Products &amp; Reagents</span>
+</nav>
+<!-- 2. Hero Section -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 mb-8 shadow-sm">
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+<div class="max-w-3xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-secondary text-secondary rounded-full font-label-sm text-label-sm mb-4">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified">verified</span>
+            VALIDATED RESEARCH REAGENTS &amp; BIOLOGICAL ASSETS · RUO GRADE
+          </div>
+<h1 class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight mb-3">
+            Research Products &amp; Laboratory Reagents
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            Peer-validated molecular assays, authenticated primary and glioblastoma cell lines, bioinformatics Nextflow pipelines, and specialized biochemical kits formulated for preclinical trials and academic research.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto">
+<a class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-container text-white font-label-md text-label-md rounded font-semibold hover:bg-primary transition-colors shadow-sm" href="#order-process">
+<span class="material-symbols-outlined text-[18px]" data-icon="description">description</span>
+            Procurement &amp; Order Protocol
+          </a>
+<a class="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-primary text-primary font-label-md text-label-md rounded font-semibold hover:bg-surface-container-low transition-colors" href="#catalog-grid">
+<span class="material-symbols-outlined text-[18px]" data-icon="view_agenda">view_agenda</span>
+            Browse Catalog Inventory (28)
+          </a>
+</div>
+</div>
+<!-- 4 Assurance Badges (Level 1 Cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-8 border-t border-outline-variant">
+<div class="flex items-start gap-3 p-3 bg-surface rounded border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="assignment_turned_in">assignment_turned_in</span>
+<div>
+<h2 class="font-label-md text-label-md text-primary font-semibold">CoA with Every Batch</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Batch-specific Certificates of Analysis and QC spectrometry logs included.</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-surface rounded border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="fingerprint">fingerprint</span>
+<div>
+<h2 class="font-label-md text-label-md text-primary font-semibold">Mycoplasma-Free STR</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">High-fidelity 16-locus STR profiling verified against international standards.</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-surface rounded border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="ac_unit">ac_unit</span>
+<div>
+<h2 class="font-label-md text-label-md text-primary font-semibold">Cold Chain Dispatch</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Continuous temperature logging with dry-ice &amp; liquid nitrogen couriers.</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-surface rounded border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="shield">shield</span>
+<div>
+<h2 class="font-label-md text-label-md text-primary font-semibold">GLP &amp; ISO 15189</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Stringent adherence to laboratory best practices and cleanroom isolation.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Filter & Search Controls Bar -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 mb-8 shadow-sm">
+<div class="flex flex-col md:flex-row gap-4 mb-4">
+<!-- Search Input -->
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-xl" data-icon="search">search</span>
+<input class="w-full h-10 pl-10 pr-4 text-body-md font-body-md bg-white border border-outline-variant rounded focus:border-primary focus:ring-2 focus:ring-secondary focus:outline-none" placeholder="Search products by catalog number, gene target, cell line, or pipeline..." type="text"/>
+</div>
+<!-- Filter Dropdowns & Stock Toggle -->
+<div class="flex items-center flex-wrap sm:flex-nowrap gap-3">
+<select class="h-10 px-3 border border-outline-variant rounded text-body-sm font-body-sm bg-white text-on-surface focus:border-primary focus:ring-1 focus:ring-primary">
+<option>Biosafety: All Levels</option>
+<option>BSL-1 (Non-pathogenic)</option>
+<option>BSL-2 (Containment Req.)</option>
+</select>
+<select class="h-10 px-3 border border-outline-variant rounded text-body-sm font-body-sm bg-white text-on-surface focus:border-primary focus:ring-1 focus:ring-primary">
+<option>Sort: Relevance</option>
+<option>Catalog Number (A-Z)</option>
+<option>Highest Stock Level</option>
+<option>Price: Low to High</option>
+</select>
+<label class="inline-flex items-center gap-2 cursor-pointer h-10 px-3 bg-surface rounded border border-outline-variant">
+<input checked="" class="w-4 h-4 rounded border-outline text-primary focus:ring-secondary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-primary font-semibold">In-Stock Only</span>
+</label>
+</div>
+</div>
+<!-- Category Filter Tabs -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-t border-outline-variant pt-3">
+<button class="px-4 py-1.5 bg-primary-container text-white font-label-md text-label-md rounded font-medium whitespace-nowrap" type="button">
+          All Products (28)
+        </button>
+<button class="px-4 py-1.5 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded font-medium whitespace-nowrap transition-colors" type="button">
+          Primary &amp; Tumor Cell Lines
+        </button>
+<button class="px-4 py-1.5 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded font-medium whitespace-nowrap transition-colors" type="button">
+          Molecular &amp; qPCR Assay Kits
+        </button>
+<button class="px-4 py-1.5 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded font-medium whitespace-nowrap transition-colors" type="button">
+          Preclinical Formulations
+        </button>
+<button class="px-4 py-1.5 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded font-medium whitespace-nowrap transition-colors" type="button">
+          Bioinformatics Nextflow Workflows
+        </button>
+<button class="px-4 py-1.5 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded font-medium whitespace-nowrap transition-colors" type="button">
+          Antibodies &amp; Reagents
+        </button>
+</div>
+</section>
+<!-- 4. Featured Flagship Spotlight (Level 2 Highlight Card) -->
+<section class="bg-surface-container-lowest border-2 border-secondary/40 rounded-xl overflow-hidden mb-12 shadow-sm">
+<div class="bg-surface-container-low px-6 py-2 border-b border-outline-variant flex items-center justify-between">
+<span class="flex items-center gap-2 font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill">star</span>
+          Featured Flagship Research Cohort
+        </span>
+<span class="font-code-tabular text-body-sm text-on-surface-variant font-semibold">SKU: #CR-CEL-8402</span>
+</div>
+<div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Product Details -->
+<div class="lg:col-span-7">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-error-container text-error rounded font-label-sm text-label-sm font-semibold">BSL-2</span>
+<span class="px-2 py-0.5 bg-surface-container-high text-primary rounded font-label-sm text-label-sm font-semibold">Cryogenic (-196°C)</span>
+<span class="px-2 py-0.5 bg-secondary-fixed/50 text-on-secondary-fixed-variant rounded font-label-sm text-label-sm font-semibold">STR Authenticated</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary font-bold mb-3">
+            CERA-GLIO-01: Authenticated Human Glioblastoma Multiforme Primary Cell Cohort
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 leading-relaxed">
+            Characterized panel comprising U87-MG &amp; LN229 matched lineages. Sourced with complete donor consent, confirmed free of mycoplasma, bacteria, and viral contamination. Ideal for BBB penetrance, temozolomide resistance assays, and high-throughput drug screening.
+          </p>
+<!-- Specifications Matrix -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-surface p-4 rounded border border-outline-variant mb-6 text-body-sm font-body-sm">
+<div>
+<span class="block text-on-surface-variant font-label-sm text-label-sm">Viability Post-Thaw</span>
+<span class="font-semibold text-primary">&gt; 92.4% (Trypan Blue)</span>
+</div>
+<div>
+<span class="block text-on-surface-variant font-label-sm text-label-sm">Passage Number</span>
+<span class="font-semibold text-primary">Passage 4 (Documented)</span>
+</div>
+<div>
+<span class="block text-on-surface-variant font-label-sm text-label-sm">Storage Condition</span>
+<span class="font-semibold text-primary">Vapor Phase LN2</span>
+</div>
+<div>
+<span class="block text-on-surface-variant font-label-sm text-label-sm">Doubling Time</span>
+<span class="font-semibold text-primary">~ 28.5 Hours</span>
+</div>
+<div>
+<span class="block text-on-surface-variant font-label-sm text-label-sm">Format</span>
+<span class="font-semibold text-primary">1.5 mL Cryovial (1.2×10⁶ cells)</span>
+</div>
+<div>
+<span class="block text-on-surface-variant font-label-sm text-label-sm">Documentation</span>
+<span class="font-semibold text-primary">Complete CoA + STR Profile</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<div class="text-primary">
+<span class="text-xs text-on-surface-variant block font-medium">Institutional Quotation</span>
+<span class="text-2xl font-bold font-display-brand">$480.00</span>
+<span class="text-xs text-secondary ml-1 font-semibold">(Tiered Academic Pricing)</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 bg-primary-container text-white font-label-md text-label-md rounded font-semibold hover:bg-primary transition-colors flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="shopping_cart">shopping_cart</span>
+                Request Quote / Order
+              </button>
+<button class="px-4 py-2.5 border border-outline text-primary font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="picture_as_pdf">picture_as_pdf</span>
+                Technical Data Sheet
+              </button>
+</div>
+</div>
+</div>
+<!-- Reference Lab Image -->
+<div class="lg:col-span-5 relative rounded-lg overflow-hidden border border-outline-variant bg-surface-container-high h-[300px]">
+<img class="w-full h-full object-cover" data-alt="High-precision biomedical laboratory setup showing automated robotic liquid handler and researcher operating fluorescence microscope in a sterile cleanroom environment with cool clinical cyan and navy lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1Jnm5C0L8jLhKJwMfNL91vSK6gHzyvYtWftxb95CeRGOHWiTN4eY7H0qqdqHa0u1WLXvLjFykf5J40ZXD7_olAVePSJQJhDw1ak12lXpHx-YO5DWsaBB3i3VOm-WTygxKPLblGX4an-HNqMjLmufpMlsPorGnKUvtPx8t35VDBbBRiJ93j15h1GfV_dUHTx-c9q0PreLXidN25UYQQVN0z3FXnb7tGCfr-KW35xfrV-e9AxKpALzhmQ"/>
+<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-primary/90 to-transparent p-4 text-white">
+<div class="flex items-center justify-between text-xs font-medium">
+<span>Automated Micromanipulation Suite</span>
+<span class="bg-secondary px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">QC Verified</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Product Grid (Organized into categorized cards with clear SKUs, specifications, and instant actions) -->
+<div class="mb-4 flex items-center justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary font-bold">Catalog Directory</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Displaying verified research reagents and computational bioinformatics suites.</p>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+        Showing 6 of 28 Items
+      </div>
+</div>
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="catalog-grid">
+<!-- Product Card 1: qPCR Mix -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative">
+<div class="border-t-4 border-secondary -mt-5 -mx-5 mb-4 rounded-t-lg"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-code-tabular text-xs font-bold text-secondary bg-surface-container-low px-2 py-0.5 rounded">Cat #CR-MOL-1021</span>
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm rounded font-medium">Molecular Biology</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            CERA-QPCR-100: High-Fidelity SybrGreen qPCR Master Mix (2X)
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+            Formulated with inert blue visualization dye for accurate 96/384-well plate loading. Features chemical hot-start Taq polymerase with high sensitivity down to 2 template copies.
+          </p>
+<ul class="text-body-sm font-body-sm space-y-1 mb-4 text-on-surface">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> 500 Reactions (5 × 1 mL)</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> -20°C Stability: 18 Months</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Universal ROX Reference Compatibility</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-on-surface-variant block font-medium">Standard Pack</span>
+<span class="text-lg font-bold text-primary font-display-brand">$165.00</span>
+</div>
+<button class="px-3 py-1.5 bg-primary-container text-white rounded font-label-md text-label-md font-medium hover:bg-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Request
+          </button>
+</div>
+</article>
+<!-- Product Card 2: Neuronal Culture Prep -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative">
+<div class="border-t-4 border-secondary -mt-5 -mx-5 mb-4 rounded-t-lg"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-code-tabular text-xs font-bold text-secondary bg-surface-container-low px-2 py-0.5 rounded">Cat #CR-CEL-3091</span>
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm rounded font-medium">Cellular Models</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            CERA-CELL-MG: Rat Striatal Primary Neuronal Culture Prep Kit
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+            Cryopreserved E18 primary neurons harvested under aseptic microdissection. Validated via Tuj1 and MAP2 immunofluorescence with 95% post-thaw recovery rate.
+          </p>
+<ul class="text-body-sm font-body-sm space-y-1 mb-4 text-on-surface">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> 1×10⁶ Viable Neurons / Cryovial</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Complete Neurobasal Plus Supplement</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> GLP Phenotype Quality Certificate</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-on-surface-variant block font-medium">Vial + Supplements</span>
+<span class="text-lg font-bold text-primary font-display-brand">$340.00</span>
+</div>
+<button class="px-3 py-1.5 bg-primary-container text-white rounded font-label-md text-label-md font-medium hover:bg-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Request
+          </button>
+</div>
+</article>
+<!-- Product Card 3: Nextflow Metagenomics Pipeline -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative">
+<div class="border-t-4 border-secondary -mt-5 -mx-5 mb-4 rounded-t-lg"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-code-tabular text-xs font-bold text-secondary bg-surface-container-low px-2 py-0.5 rounded">Cat #CR-BIO-9014</span>
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm rounded font-medium">Bioinformatics</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            CERA-FLOW-PIPE: Clinical 16S/ITS Metagenomics Nextflow Pipeline v2.4
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+            Containerized reproducible pipeline (Docker / Singularity). Fully supports Illumina paired-end and Oxford Nanopore reads with automated GATK4 and QIIME2 reporting.
+          </p>
+<ul class="text-body-sm font-body-sm space-y-1 mb-4 text-on-surface">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> POSIX/SLURM/AWS Batch Ready</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> MultiQC Interactive Report Generator</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Includes 1-Year Pipeline Patch Support</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-on-surface-variant block font-medium">Lab Enterprise License</span>
+<span class="text-lg font-bold text-primary font-display-brand">$890.00</span>
+</div>
+<button class="px-3 py-1.5 bg-primary-container text-white rounded font-label-md text-label-md font-medium hover:bg-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Request
+          </button>
+</div>
+</article>
+<!-- Product Card 4: Nucleic Acid Column Kit -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative">
+<div class="border-t-4 border-secondary -mt-5 -mx-5 mb-4 rounded-t-lg"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-code-tabular text-xs font-bold text-secondary bg-surface-container-low px-2 py-0.5 rounded">Cat #CR-MOL-2045</span>
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm rounded font-medium">Reagents &amp; Kits</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            CERA-EXT-96: High-Yield Tissue &amp; FFPE Nucleic Acid Extraction Kit
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+            Optimized for archived formalin-fixed paraffin-embedded biopsies and tough fibrous tissues. Delivers superior DIN/RIN recovery with minimal cross-linking residues.
+          </p>
+<ul class="text-body-sm font-body-sm space-y-1 mb-4 text-on-surface">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> 96 Preparations Spin-Column Format</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Optimized De-crosslinking Buffers</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Validated on Qubit 4 Fluorometer</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-on-surface-variant block font-medium">96 Preps</span>
+<span class="text-lg font-bold text-primary font-display-brand">$210.00</span>
+</div>
+<button class="px-3 py-1.5 bg-primary-container text-white rounded font-label-md text-label-md font-medium hover:bg-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Request
+          </button>
+</div>
+</article>
+<!-- Product Card 5: Neurotoxicity Panel -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative">
+<div class="border-t-4 border-secondary -mt-5 -mx-5 mb-4 rounded-t-lg"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-code-tabular text-xs font-bold text-secondary bg-surface-container-low px-2 py-0.5 rounded">Cat #CR-PRE-5510</span>
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm rounded font-medium">Assay Standards</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            CERA-NEURO-IC: Neurotoxicity Assay &amp; Biomarker Standard Panel
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+            Designed for striatal dopamine turnover, neuroinflammation indices, and microglial activation markers (Iba-1 &amp; GFAP quantification).
+          </p>
+<ul class="text-body-sm font-body-sm space-y-1 mb-4 text-on-surface">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> 6 Recombinant Calibrator Standards</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Lyophilized at &lt; 2% Moisture</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> HPLC-Verified Purity &gt; 98.5%</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-on-surface-variant block font-medium">Panel Kit</span>
+<span class="text-lg font-bold text-primary font-display-brand">$295.00</span>
+</div>
+<button class="px-3 py-1.5 bg-primary-container text-white rounded font-label-md text-label-md font-medium hover:bg-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Request
+          </button>
+</div>
+</article>
+<!-- Product Card 6: Molecular Docking Bundle -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative">
+<div class="border-t-4 border-secondary -mt-5 -mx-5 mb-4 rounded-t-lg"></div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-code-tabular text-xs font-bold text-secondary bg-surface-container-low px-2 py-0.5 rounded">Cat #CR-BIO-4102</span>
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm rounded font-medium">In Silico Tools</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            CERA-PRISMA-TOOL: Molecular Docking &amp; MD Simulation Scripts
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+            Curated and tested automation framework for GROMACS 2024, AutoDock Vina, and MM-PBSA energetic decomposition across high-performance GPU clusters.
+          </p>
+<ul class="text-body-sm font-body-sm space-y-1 mb-4 text-on-surface">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Automated RMSD/RMSF Parsing</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Python 3.11 Conda Environment Manifest</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span> Pre-configured SLURM Job Schedulers</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-on-surface-variant block font-medium">Digital Download License</span>
+<span class="text-lg font-bold text-primary font-display-brand">$320.00</span>
+</div>
+<button class="px-3 py-1.5 bg-primary-container text-white rounded font-label-md text-label-md font-medium hover:bg-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Request
+          </button>
+</div>
+</article>
+</section>
+<!-- 6. Technical Quality & Compliance Standards Banner -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 mb-12 shadow-sm">
+<div class="text-center max-w-2xl mx-auto mb-8">
+<h2 class="font-headline-md text-headline-md text-primary font-bold mb-2">Laboratory Compliance &amp; Quality Rigor</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Every reagent, biological lot, and pipeline module generated at CERA Medical adheres to documented international preclinical protocols.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="border border-outline-variant p-5 rounded-lg bg-surface flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-2xl" data-icon="biotech">biotech</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold mb-2">STR Fingerprinting &amp; Purity</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            All cell lines undergo 16-marker STR DNA profiling. Batch lots are verified negative for mycoplasma using nested PCR and fluorescent Hoechst 33258 staining.
+          </p>
+</div>
+<div class="border border-outline-variant p-5 rounded-lg bg-surface flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-2xl" data-icon="thermostat">thermostat</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold mb-2">Cold-Chain Telemetry</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Cryogenic biological specimens are dispatched in monitored dry-vapor shippers (-196°C) with real-time temperature loggers accessible to receiving facilities.
+          </p>
+</div>
+<div class="border border-outline-variant p-5 rounded-lg bg-surface flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-2xl" data-icon="policy">policy</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold mb-2">Institutional MTA Protocols</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Seamless standard Material Transfer Agreements (MTAs) aligned with global RUO regulations to accelerate procurement for university and pharma laboratories.
+          </p>
+</div>
+</div>
+</section>
+<!-- 7. Order & Institutional Procurement Process (How to Order) -->
+<section class="bg-surface-container-low border border-outline-variant rounded-xl p-8 mb-12" id="order-process">
+<div class="max-w-2xl mb-8">
+<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider block mb-1">Standard Operating Procedure</span>
+<h2 class="font-headline-md text-headline-md text-primary font-bold">Institutional Procurement Protocol</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Simple, regulated pathway for biopharma partners, hospital biobanks, and university departments.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-5 rounded border border-outline-variant relative">
+<span class="text-3xl font-display-brand font-bold text-surface-tint opacity-30 absolute top-3 right-4">01</span>
+<div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-sm mb-3">1</div>
+<h3 class="font-label-md text-label-md text-primary font-semibold mb-1">Select &amp; Request Quote</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Identify catalog SKUs and indicate intended research quantity or trial scale.</p>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-5 rounded border border-outline-variant relative">
+<span class="text-3xl font-display-brand font-bold text-surface-tint opacity-30 absolute top-3 right-4">02</span>
+<div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-sm mb-3">2</div>
+<h3 class="font-label-md text-label-md text-primary font-semibold mb-1">Review CoA &amp; MTA</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Receive batch lot data, QC release documents, and execute standard RUO MTA terms.</p>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-5 rounded border border-outline-variant relative">
+<span class="text-3xl font-display-brand font-bold text-surface-tint opacity-30 absolute top-3 right-4">03</span>
+<div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-sm mb-3">3</div>
+<h3 class="font-label-md text-label-md text-primary font-semibold mb-1">PO / Grant Processing</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Process institutional Purchase Orders (PO), NIH/HEC academic grant disbursements.</p>
+</div>
+<!-- Step 4 -->
+<div class="bg-surface-container-lowest p-5 rounded border border-outline-variant relative">
+<span class="text-3xl font-display-brand font-bold text-surface-tint opacity-30 absolute top-3 right-4">04</span>
+<div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-sm mb-3">4</div>
+<h3 class="font-label-md text-label-md text-primary font-semibold mb-1">Cold-Chain Delivery</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Express temperature-monitored courier directly to recipient laboratory loading dock.</p>
+</div>
+</div>
+</section>
+<!-- 8. CTA Pre-Footer Band -->
+<section class="bg-primary text-white rounded-xl p-8 mb-12 shadow-md relative overflow-hidden">
+<div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+<div class="max-w-2xl">
+<h2 class="font-headline-md text-headline-md font-bold mb-2">
+            Need custom reagent formulation, bulk assay synthesis, or proprietary cell line immortalization?
+          </h2>
+<p class="font-body-md text-body-md opacity-90">
+            Our molecular pharmacology and tissue engineering laboratories collaborate directly with external PIs to deliver tailored biological assets under GLP compliance.
+          </p>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<a class="px-5 py-3 bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-bold rounded hover:bg-secondary-fixed transition-colors" href="/contact">
+            Contact Product Specialist
+          </a>
+<a class="px-5 py-3 border border-white/40 text-white font-label-md text-label-md font-semibold rounded hover:bg-white/10 transition-colors" href="/services">
+            Browse Services Portfolio
+          </a>
+</div>
+</div>
+</section>
+</main>
+<!-- 9. Footer (Shared Component Specification) -->
+<footer class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline flat no shadows w-full">
+<div class="w-full max-w-[1200px] mx-auto px-margin py-space-2xl">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
+<!-- Logo & Institutional Credentials -->
+<div class="md:col-span-4">
+<div class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary mb-3">
+            CERA MEDICAL
+          </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant dark:text-outline-variant mb-4">
+            Center for Excellence in Research &amp; Analytics (CERA) Medical Ltd. Certified biomedical contract research facility, genomics core laboratory, and clinical trial repository.
+          </p>
+<div class="text-xs text-on-surface-variant font-code-tabular">
+            Facility ID: CERA-PK-HRP-04<br/>
+            Accreditations: ISO 15189:2022 · GLP Compliant Core
+          </div>
+</div>
+<!-- Links Column 1: Regulatory -->
+<div class="md:col-span-3">
+<h4 class="font-label-md text-label-md text-primary dark:text-inverse-primary font-bold mb-3">Governance &amp; Rigor</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/compliance">Regulatory Compliance</a></li>
+<li><a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/sops">Standard Operating Procedures</a></li>
+<li><a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/accreditations">Laboratory Accreditations</a></li>
+<li><a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/privacy">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/terms">Terms of Service</a></li>
+</ul>
+</div>
+<!-- Links Column 2: Facility Contact -->
+<div class="md:col-span-5">
+<h4 class="font-label-md text-label-md text-primary dark:text-inverse-primary font-bold mb-3">Bio-Repository Dispatch Desk</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant dark:text-outline-variant mb-2">
+            Biomedical Research Complex, Haripur Innovation Zone, Khyber Pakhtunkhwa, Pakistan.
+          </p>
+<div class="text-body-sm text-on-surface-variant space-y-1">
+<div><strong class="font-semibold text-primary">Inquiries:</strong> reagents-procurement@cera-medical.org</div>
+<div><strong class="font-semibold text-primary">Cold Chain Dispatch:</strong> +92 (995) 615-802</div>
+</div>
+</div>
+</div>
+<!-- Separation Line & Copyright -->
+<div class="pt-6 border-t border-outline-variant dark:border-outline flex flex-col md:flex-row items-center justify-between text-body-sm text-on-surface-variant dark:text-outline-variant">
+<div>
+          © 2025 CERA Medical R&amp;D Ltd. All rights reserved. Registered biomedical clinical trial facility.
+        </div>
+<div class="mt-4 md:mt-0 flex gap-6 text-label-sm font-label-sm">
+<span class="text-primary dark:text-inverse-primary">For Research Use Only (RUO). Not for diagnostic procedures.</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

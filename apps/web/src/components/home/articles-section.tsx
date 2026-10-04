@@ -5,33 +5,66 @@ import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import NextLink from 'next/link';
 
-import { HOMEPAGE_ARTICLES } from '../../content/homepage.ts';
+import type { ContentDocument } from '@cera/contracts';
+
 import { AppButtonLink } from '../link.tsx';
+
+const DEFAULT_COVERS = [
+  '/images/article-cover-data.svg',
+  '/images/article-cover-research.svg',
+  '/images/article-cover-lab.svg',
+] as const;
+
+export interface ArticlesSectionProps {
+  readonly heading?: string;
+  readonly subheading?: string;
+  readonly viewAllHref?: string;
+  readonly viewAllLabel?: string;
+  readonly maxPosts?: number;
+  readonly posts?: readonly ContentDocument[];
+}
 
 /**
  * The three-article row (design-language.md section 5.4).
  */
-export function ArticlesSection() {
+export function ArticlesSection({
+  heading = 'Research insights',
+  subheading = 'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.',
+  viewAllHref = '/articles',
+  viewAllLabel = 'View All Articles',
+  maxPosts = 3,
+  posts,
+}: ArticlesSectionProps) {
+  const articles = (posts ?? []).slice(0, maxPosts).map((post, index) => ({
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt ?? '',
+    category: 'Article',
+    coverSrc: DEFAULT_COVERS[index % DEFAULT_COVERS.length] ?? DEFAULT_COVERS[0],
+  }));
+
+  if (articles.length === 0) return null;
+
   return (
     <section aria-labelledby="articles-heading" className="bg-surface">
       <div className="mx-auto max-w-site px-6 py-14 md:px-10 lg:py-20">
         <SectionHeader
           level={2}
-          heading={<span id="articles-heading">Research insights</span>}
-          subheading="Practical guidance on scoping laboratory work, omics analysis, and evidence reporting."
+          heading={<span id="articles-heading">{heading}</span>}
+          subheading={subheading}
           action={
             <AppButtonLink
-              href="/articles"
+              href={viewAllHref}
               variant="ghost"
               iconEnd={<Icon icon={ArrowRight} size="sm" />}
             >
-              View All Articles
+              {viewAllLabel}
             </AppButtonLink>
           }
         />
 
         <ul className="mt-12 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
-          {HOMEPAGE_ARTICLES.map((article) => (
+          {articles.map((article) => (
             <ArticleCard
               key={article.slug}
               title={article.title}

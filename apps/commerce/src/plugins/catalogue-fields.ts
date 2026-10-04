@@ -1,11 +1,10 @@
 import { LanguageCode, type CustomFieldConfig } from '@vendure/core';
 
 /**
- * Custom fields on Product. A service is not a purchasable SKU.
+ * Custom fields on Product (research service lines in Vendure).
  *
- * `displayPriceText` is a string so nothing downstream can treat a service as
- * chargeable (data-contracts.md 2.1). `internalNotes` is `internal: true`,
- * which hides it from both the Shop API and the Admin API public projection.
+ * `displayPriceText` is presentational; the chargeable amount is the default
+ * variant price when checkout is enabled (ADR-011).
  */
 export const productCustomFields: CustomFieldConfig[] = [
   {
@@ -22,6 +21,14 @@ export const productCustomFields: CustomFieldConfig[] = [
     nullable: false,
     defaultValue: true,
     label: [{ languageCode: LanguageCode.en, value: 'Enquiry enabled' }],
+  },
+  {
+    name: 'checkoutEnabled',
+    type: 'boolean',
+    public: true,
+    nullable: false,
+    defaultValue: true,
+    label: [{ languageCode: LanguageCode.en, value: 'Checkout enabled (fixed SKU)' }],
   },
   {
     name: 'displayPriceText',

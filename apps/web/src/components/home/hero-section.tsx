@@ -2,10 +2,18 @@ import { Icon } from '@cera/ui/icon';
 import { IconDisc } from '@cera/ui/icon-disc';
 import { HeroScript } from '@cera/ui/script-art';
 import { Heading, Text } from '@cera/ui/typography';
+import { ClipboardCheck, ShieldCheck, Users } from 'lucide-react';
 import Image from 'next/image';
 
-import { HERO, HERO_TRUST_ITEMS } from '../../content/homepage.ts';
 import { AppButtonLink } from '../link.tsx';
+
+import type { LucideIcon } from 'lucide-react';
+
+const DEFAULT_TRUST: readonly { label: string; icon: LucideIcon }[] = [
+  { label: 'Documented methods', icon: ClipboardCheck },
+  { label: 'Reproducible analysis', icon: ShieldCheck },
+  { label: 'Research team support', icon: Users },
+];
 
 export interface HeroContent {
   readonly eyebrow?: string | undefined;
@@ -18,6 +26,9 @@ export interface HeroContent {
   readonly secondaryLabel?: string | undefined;
   readonly imageUrl?: string | undefined;
   readonly imageAlt?: string | undefined;
+  readonly badgeTitle?: string | undefined;
+  readonly badgeBody?: string | undefined;
+  readonly trustLabels?: readonly string[] | undefined;
 }
 
 /**
@@ -25,14 +36,24 @@ export interface HeroContent {
  * stacked below `lg`.
  */
 export function HeroSection({ content = {} }: { readonly content?: HeroContent }) {
-  const hero = { ...HERO, ...content };
+  const trustItems =
+    content.trustLabels !== undefined && content.trustLabels.length > 0
+      ? content.trustLabels.map((label, index) => ({
+          label,
+          icon: DEFAULT_TRUST[index % DEFAULT_TRUST.length]?.icon ?? ClipboardCheck,
+        }))
+      : DEFAULT_TRUST;
+  const badgeTitle = content.badgeTitle;
+  const badgeBody = content.badgeBody;
   return (
     <section className="bg-surface-tint">
       <div className="mx-auto grid max-w-site grid-cols-1 items-center gap-12 px-6 py-16 md:px-10 lg:grid-cols-12 lg:py-20">
         <div className="lg:col-span-7">
-          <Text as="p" size="eyebrow" tone="muted">
-            {hero.eyebrow}
-          </Text>
+          {content.eyebrow ? (
+            <Text as="p" size="eyebrow" tone="muted">
+              {content.eyebrow}
+            </Text>
+          ) : null}
 
           {/*
            * One `<h1>`, two colours.
@@ -46,7 +67,7 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
            * break still reads a sentence that makes sense.
            */}
           <Heading level={1} size="display-1" className="mt-4">
-            {hero.headlinePrimary}
+            {content.headlinePrimary}
             <br />
             {/*
              * `text-accent-hover`, not `text-accent`, despite nothing here hovering.
@@ -56,19 +77,21 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
              * see `TEXT_PAIRINGS` in `@cera/ui/pairings`. Using the token that reads better in this
              * position would be an unverified colour pair on the largest text on the site.
              */}
-            <span className="text-accent-hover">{hero.headlineAccent}</span>
+            <span className="text-accent-hover">{content.headlineAccent}</span>
           </Heading>
 
-          <Text size="body-lg" tone="muted" measure className="mt-6">
-            {hero.body}
-          </Text>
+          {content.body ? (
+            <Text size="body-lg" tone="muted" measure className="mt-6">
+              {content.body}
+            </Text>
+          ) : null}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <AppButtonLink href={hero.primaryHref ?? '/services'} variant="primary" size="lg">
-              {hero.primaryLabel ?? 'Explore Services'}
+            <AppButtonLink href={content.primaryHref ?? '/services'} variant="primary" size="lg">
+              {content.primaryLabel ?? 'Explore Services'}
             </AppButtonLink>
-            <AppButtonLink href={hero.secondaryHref ?? '/enquiry'} variant="outline" size="lg">
-              {hero.secondaryLabel ?? 'Make an Enquiry'}
+            <AppButtonLink href={content.secondaryHref ?? '/enquiry'} variant="outline" size="lg">
+              {content.secondaryLabel ?? 'Make an Enquiry'}
             </AppButtonLink>
           </div>
 
@@ -80,7 +103,7 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
            * and three floating strings are not.
            */}
           <ul className="mt-10 flex list-none flex-col gap-4 p-0 sm:flex-row sm:gap-8">
-            {HERO_TRUST_ITEMS.map((item) => (
+            {trustItems.map((item) => (
               <li key={item.label} className="flex items-center gap-2">
                 <Icon icon={item.icon} size="sm" className="shrink-0 text-accent" />
                 <Text size="body-sm" tone="muted">
@@ -125,9 +148,9 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
              * lazy-loads it and the measurement is of an empty box.
              */}
             <Image
-              src={hero.imageUrl ?? '/images/hero-portrait.svg'}
+              src={content.imageUrl ?? '/images/hero-portrait.svg'}
               alt={
-                hero.imageAlt ??
+                content.imageAlt ??
                 'Stylised illustration of preclinical, omics, and analysis workflows offered by CERA Medical.'
               }
               width={640}
@@ -166,26 +189,23 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
            * card that extends past its column does both at some width. `max-w-xs` caps it so the copy
            * wraps inside the card instead of widening it.
            */}
-          <div className="mt-4 rounded-lg bg-surface p-5 shadow-md lg:absolute lg:bottom-6 lg:-left-6 lg:mt-0 lg:max-w-xs">
-            <div className="flex items-start gap-4">
-              <IconDisc tone="accent">
-                <Icon icon={HERO.badge.icon} size="lg" />
-              </IconDisc>
-
-              <div>
-                {/*
-                 * `h2`, because this card is a top-level sibling of the hero's `h1` rather than a
-                 * subsection of it. Drawn at `h4`, which is the size the reference uses.
-                 */}
-                <Heading level={2} size="h4">
-                  {HERO.badge.title}
-                </Heading>
-                <Text size="caption" tone="muted" className="mt-1">
-                  {HERO.badge.body}
-                </Text>
+          {badgeTitle && badgeBody ? (
+            <div className="mt-4 rounded-lg bg-surface p-5 shadow-md lg:absolute lg:bottom-6 lg:-left-6 lg:mt-0 lg:max-w-xs">
+              <div className="flex items-start gap-4">
+                <IconDisc tone="accent">
+                  <Icon icon={ClipboardCheck} size="lg" />
+                </IconDisc>
+                <div>
+                  <Heading level={2} size="h4">
+                    {badgeTitle}
+                  </Heading>
+                  <Text size="caption" tone="muted" className="mt-1">
+                    {badgeBody}
+                  </Text>
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </section>

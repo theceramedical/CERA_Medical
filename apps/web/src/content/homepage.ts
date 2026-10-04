@@ -38,6 +38,8 @@ export interface ServiceSummary {
   readonly title: string;
   readonly description: string;
   readonly icon: LucideIcon;
+  /** Optional bullet highlights (Stitch service cards). */
+  readonly highlights?: readonly string[];
 }
 
 /**
@@ -51,12 +53,15 @@ export const HOMEPAGE_SERVICES: readonly ServiceSummary[] = [
     description:
       'Safety and efficacy testing in animal models, cells and computer simulations — scoped with ethics approval before samples move.',
     icon: Microscope,
+    highlights: ['In vitro cytotoxicity assays', 'Histopathology tissue microarrays'],
   },
   {
     slug: 'molecular-research',
     title: 'Molecular Research',
-    description: 'Molecular, biochemical and histological analysis of research samples.',
+    description:
+      'Molecular, biochemical and histological analysis of research samples conducted in validated biosafety environments.',
     icon: Dna,
+    highlights: ['RT-qPCR, ELISA and Western blotting', 'High-fidelity DNA/RNA extractions'],
   },
   {
     slug: 'metagenomic-data-analysis',
@@ -64,18 +69,23 @@ export const HOMEPAGE_SERVICES: readonly ServiceSummary[] = [
     description:
       'Microbiome analysis from raw sequencing reads through QC, annotation, and publication-ready figures.',
     icon: Database,
+    highlights: ['16S/18S and shotgun metagenomics', 'Alpha and beta diversity calculations'],
   },
   {
     slug: 'biomedical-omics-data-analysis',
     title: 'Biomedical and Omics Data Analysis',
-    description: 'Statistical and computational analysis of biological and clinical datasets.',
+    description:
+      'Statistical and computational analysis of biological and clinical datasets with reproducible pipelines.',
     icon: ChartNoAxesCombined,
+    highlights: ['RNA-seq differential expression', 'Multi-cohort clinical regression modelling'],
   },
   {
     slug: 'evidence-synthesis-technical-reports',
     title: 'Evidence Synthesis and Technical Reports',
-    description: 'Reviews, assessments and reports that turn evidence into decisions.',
+    description:
+      'Systematic reviews, meta-analyses, and technical reports that turn evidence into decisions.',
     icon: FileText,
+    highlights: ['PRISMA-compliant search workflows', 'GRADE evidence quality grading'],
   },
 ];
 
@@ -197,14 +207,15 @@ export const HOMEPAGE_AUDIENCES: readonly AudienceSegment[] = [
 export interface MetricHighlight {
   readonly value: string;
   readonly label: string;
+  readonly detail?: string;
 }
 
 /** Grounded in the published catalogue, process, and FAQ — not revenue or client counts. */
 export const HOMEPAGE_METRICS: readonly MetricHighlight[] = [
-  { value: '5', label: 'Research service lines' },
-  { value: '5', label: 'Agreed project stages' },
-  { value: '3 days', label: 'Target enquiry response' },
-  { value: '1 team', label: 'Lab, data & reporting' },
+  { value: '5', label: 'Research service lines', detail: 'End-to-end wet & dry lab' },
+  { value: '5', label: 'Agreed project stages', detail: 'Rigorous QC milestones' },
+  { value: '3 days', label: 'Target enquiry response', detail: 'Rapid preliminary scoping' },
+  { value: '1 team', label: 'Lab, data & reporting', detail: 'Cross-disciplinary alignment' },
 ];
 
 export interface TrustItem {

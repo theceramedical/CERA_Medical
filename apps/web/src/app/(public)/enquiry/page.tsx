@@ -1,6 +1,9 @@
+import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { EnquiryForm } from '../../../components/enquiry-form.client.tsx';
-import { PageHeader } from '../../../components/page-header.tsx';
-import { getPublicGlobal } from '../../../lib/cms/client.ts';
+import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
+import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
+import { loadEnquiryFormData } from '../../../lib/enquiry-form-server.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -21,20 +24,25 @@ export default async function EnquiryPage({
 }) {
   const params = await searchParams;
   const serviceId = params.service;
-  const settings = await getPublicGlobal<{ enquiryForm?: Record<string, unknown> }>(
-    'site-settings',
-  );
+  const [page, enquiryData] = await Promise.all([
+    getCurrentDocument('page', 'enquiry'),
+    loadEnquiryFormData(),
+  ]);
+  if (page === null) return <CmsPageUnavailable slug="enquiry" />;
+
+  const hero = sectionHeadingFromLayout(page.layout);
 
   return (
     <>
-      <PageHeader
-        title="Make an Enquiry"
-        lede="Tell us which service you are interested in and how to reach you. We will confirm by email and you can follow progress in your account."
+      <MarketingPageHeader
+        title={hero?.title ?? page.title}
+        lede={hero?.lede ?? page.excerpt ?? ''}
+        eyebrow={hero?.eyebrow ?? 'Project enquiry'}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <EnquiryForm
           startedAt={new Date().toISOString()}
-          {...(settings?.enquiryForm === undefined ? {} : { copy: settings.enquiryForm })}
+          {...enquiryData}
           {...(serviceId === undefined ? {} : { defaultServiceId: serviceId })}
           source={params.source === 'web_contact_page' ? 'web_contact_page' : 'web_general'}
         />

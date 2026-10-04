@@ -125,6 +125,7 @@ jobs:
             BUILD_API_URL=${{ vars.PRODUCTION_API_URL }}
             BUILD_CMS_URL=${{ vars.PRODUCTION_CMS_URL }}
             BUILD_MEDIA_URL=${{ vars.PRODUCTION_MEDIA_URL }}
+            BUILD_CHECKOUT_ENABLED=${{ vars.PRODUCTION_CHECKOUT_ENABLED != '' && vars.PRODUCTION_CHECKOUT_ENABLED || 'true' }}
           cache-from: type=gha,scope=production-${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=production-${{ matrix.app }}
           provenance: true
@@ -198,6 +199,8 @@ jobs:
             "docker login ghcr.io --username '$GITHUB_ACTOR' --password-stdin"
           tar -cf - compose.yaml infra/compose infra/caddy infra/postgres infra/erpnext infra/scripts infra/systemd | \
             ssh "$DEPLOY_USER@$DEPLOY_HOST" 'mkdir -p /opt/cera && tar -xf - -C /opt/cera'
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" \
+            'bash /opt/cera/infra/scripts/ensure-production-checkout-env.sh /opt/cera/.env'
           ssh "$DEPLOY_USER@$DEPLOY_HOST" \
             "cd /opt/cera && IMAGE_PREFIX='$IMAGE_PREFIX' IMAGE_TAG='$IMAGE_TAG' bash infra/scripts/deploy.sh production"
       - name: Smoke test

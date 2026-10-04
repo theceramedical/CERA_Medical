@@ -2,7 +2,7 @@ import 'server-only';
 
 import { PublicServiceSchema, type PublicService } from '@cera/contracts/projections';
 
-import { HOMEPAGE_SERVICES } from '../../content/homepage.ts';
+import { fixturePublicServices } from '../catalogue-fixtures.ts';
 
 /**
  * Server-side catalogue reads through `apps/api`, never Vendure.
@@ -11,7 +11,7 @@ import { HOMEPAGE_SERVICES } from '../../content/homepage.ts';
  * restart degrades to cached copy rather than a blank services grid (WP-07.6).
  */
 
-function apiUrl(): string {
+export function apiUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 }
 
@@ -55,17 +55,5 @@ export async function getPublicService(slug: string): Promise<PublicService | nu
 }
 
 function fixtureServices(): PublicService[] {
-  return HOMEPAGE_SERVICES.map((service) =>
-    PublicServiceSchema.parse({
-      slug: service.slug,
-      title: service.title,
-      summary: service.description,
-      description: service.description,
-      category: null,
-      displayPrice: null,
-      availabilityText: null,
-      enquiryEnabled: service.slug !== 'diagnostic-tests',
-      mediaId: null,
-    }),
-  );
+  return fixturePublicServices();
 }

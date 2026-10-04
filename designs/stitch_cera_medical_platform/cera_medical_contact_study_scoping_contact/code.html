@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact &amp; Study Scoping | CERA MEDICAL</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#001e2f",
+            "on-error-container": "#93000a",
+            "inverse-on-surface": "#e7f2ff",
+            "surface-container-high": "#d8eafd",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#d3e5f7",
+            "surface": "#f7f9ff",
+            "secondary-container": "#8deff9",
+            "surface-container": "#e1efff",
+            "outline": "#71787f",
+            "primary-container": "#0a5378",
+            "surface-bright": "#f7f9ff",
+            "tertiary-fixed-dim": "#b2c7f1",
+            "primary-fixed": "#c9e6ff",
+            "primary": "#003b58",
+            "error": "#ba1a1a",
+            "on-surface": "#0b1d2b",
+            "inverse-primary": "#95cdf8",
+            "secondary": "#006970",
+            "tertiary": "#22375a",
+            "on-primary-container": "#8ec6f0",
+            "surface-container-lowest": "#ffffff",
+            "surface-dim": "#cadcef",
+            "surface-tint": "#256489",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#002022",
+            "on-surface-variant": "#41484e",
+            "on-secondary-fixed-variant": "#004f55",
+            "on-primary-fixed-variant": "#004b6f",
+            "on-tertiary-fixed-variant": "#33476a",
+            "primary-fixed-dim": "#95cdf8",
+            "background": "#f7f9ff",
+            "inverse-surface": "#213240",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#90f2fc",
+            "on-background": "#0b1d2b",
+            "on-secondary-container": "#006e75",
+            "on-error": "#ffffff",
+            "tertiary-fixed": "#d7e3ff",
+            "surface-container-low": "#ecf4ff",
+            "on-tertiary-container": "#abc0ea",
+            "on-tertiary-fixed": "#021b3d",
+            "tertiary-container": "#3a4e72",
+            "outline-variant": "#c1c7cf",
+            "secondary-fixed-dim": "#72d5df",
+            "surface-variant": "#d3e5f7",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "margin": "2rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem",
+            "gutter-mobile": "1rem",
+            "space-md": "1rem",
+            "space-2xl": "3rem"
+          },
+          "fontFamily": {
+            "display-brand": [
+              "Montserrat"
+            ],
+            "code-tabular": [
+              "\"Source Sans 3\""
+            ],
+            "label-md": [
+              "\"Source Sans 3\""
+            ],
+            "body-md": [
+              "\"Source Sans 3\""
+            ],
+            "headline-sm": [
+              "\"Source Sans 3\""
+            ],
+            "body-sm": [
+              "\"Source Sans 3\""
+            ],
+            "headline-lg": [
+              "\"Source Sans 3\""
+            ],
+            "headline-xl": [
+              "\"Source Sans 3\""
+            ],
+            "label-sm": [
+              "\"Source Sans 3\""
+            ],
+            "body-lg": [
+              "\"Source Sans 3\""
+            ],
+            "headline-lg-mobile": [
+              "\"Source Sans 3\""
+            ],
+            "headline-xl-mobile": [
+              "\"Source Sans 3\""
+            ],
+            "headline-md": [
+              "\"Source Sans 3\""
+            ]
+          },
+          "fontSize": {
+            "display-brand": [
+              "1.75rem",
+              {
+                "lineHeight": "2rem",
+                "letterSpacing": "-0.02em",
+                "fontWeight": "700"
+              }
+            ],
+            "code-tabular": [
+              "0.875rem",
+              {
+                "lineHeight": "1.25rem",
+                "fontWeight": "400"
+              }
+            ],
+            "label-md": [
+              "0.875rem",
+              {
+                "lineHeight": "1.25rem",
+                "letterSpacing": "0.01em",
+                "fontWeight": "600"
+              }
+            ],
+            "body-md": [
+              "1rem",
+              {
+                "lineHeight": "1.5rem",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-sm": [
+              "1.25rem",
+              {
+                "lineHeight": "1.75rem",
+                "letterSpacing": "0em",
+                "fontWeight": "600"
+              }
+            ],
+            "body-sm": [
+              "0.875rem",
+              {
+                "lineHeight": "1.25rem",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-lg": [
+              "2rem",
+              {
+                "lineHeight": "2.5rem",
+                "letterSpacing": "-0.01em",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-xl": [
+              "2.5rem",
+              {
+                "lineHeight": "3rem",
+                "letterSpacing": "-0.015em",
+                "fontWeight": "700"
+              }
+            ],
+            "label-sm": [
+              "0.75rem",
+              {
+                "lineHeight": "1rem",
+                "letterSpacing": "0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "body-lg": [
+              "1.125rem",
+              {
+                "lineHeight": "1.75rem",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-lg-mobile": [
+              "1.5rem",
+              {
+                "lineHeight": "2rem",
+                "letterSpacing": "0em",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-xl-mobile": [
+              "1.875rem",
+              {
+                "lineHeight": "2.25rem",
+                "letterSpacing": "-0.01em",
+                "fontWeight": "700"
+              }
+            ],
+            "headline-md": [
+              "1.5rem",
+              {
+                "lineHeight": "2rem",
+                "letterSpacing": "-0.005em",
+                "fontWeight": "600"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-border {
+      border-color: #DCE7EF;
+    }
+    .card-shadow {
+      box-shadow: 0 1px 3px rgba(19, 41, 75, 0.05), 0 1px 2px rgba(19, 41, 75, 0.03);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- TOP NAVIGATION BAR (Shared Component Exact Schema) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 sticky z-50 h-20">
+<div class="w-full max-w-[1200px] mx-auto px-margin h-full flex items-center justify-between">
+<!-- Brand Wordmark -->
+<a class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight flex items-center gap-2" href="#">
+<span class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-lg shadow-sm">C</span>
+<span>CERA MEDICAL</span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="#">Services</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="#">Research Updates</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="#">About</a>
+<!-- Active Tab: Contact -->
+<a class="text-primary dark:text-inverse-primary border-b-2 border-primary dark:border-inverse-primary font-label-md text-label-md pb-1" href="#">Contact</a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-4">
+<button aria-label="Search" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 rounded-lg" type="button">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+<a class="hidden sm:inline-block text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-150 px-3 py-2" href="#">
+          Sign In
+        </a>
+<a class="bg-primary hover:bg-[#143047] text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-lg transition-colors duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2" href="#scoping-form">
+          Make an Enquiry
+        </a>
+</div>
+</div>
+</header>
+<!-- Institutional Status Notice Ribbon -->
+<div class="w-full bg-[#1B5882] text-[#FFFFFF] py-2 border-b border-[#143047] text-xs font-label-sm tracking-wide">
+<div class="max-w-[1200px] mx-auto px-margin flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+<span>Direct Scientific Inquiries &amp; Formal Protocol Scoping · SECP Reg. R&amp;D Entity · Haripur Campus</span>
+</div>
+<div class="hidden md:flex items-center gap-6 text-[11px] text-surface-container-high opacity-90">
+<span>BSL-2 Active Intake</span>
+<span>•</span>
+<span>ISO 15189 Aligned</span>
+<span>•</span>
+<span>IAEC Ethically Cleared</span>
+</div>
+</div>
+</div>
+<main class="w-full">
+<!-- HERO SECTION -->
+<section class="w-full bg-surface-container-lowest border-b border-outline-variant py-space-xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<!-- Category Pill -->
+<div class="inline-flex items-center gap-2 bg-[#EBF6FC] text-[#0A7A84] border border-[#0E8A93] px-3 py-1 rounded-[4px] font-label-sm text-label-sm tracking-wider uppercase mb-4">
+<span class="material-symbols-outlined text-[16px]">biotech</span>
+<span>INSTITUTIONAL ACCESS &amp; STUDY SCOPING</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight mb-3">
+          Contact CERA Medical
+        </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mb-8 leading-relaxed">
+          Connect directly with our study directors, principal investigators, and laboratory management at the Haripur Research Facility. We reply to all protocol and evidence scoping inquiries within three working days.
+        </p>
+<!-- Institutional Trust Badges Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+<div class="flex items-center gap-3 p-3 bg-surface-container-low border border-outline-variant rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[22px]">timer</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface">Response Target</div>
+<div class="font-code-tabular text-code-tabular text-on-surface-variant font-medium">&lt; 3 Working Days</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low border border-outline-variant rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[22px]">verified_user</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface">Data Integrity</div>
+<div class="font-code-tabular text-code-tabular text-on-surface-variant font-medium">Zero PII / De-Identified</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low border border-outline-variant rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[22px]">handshake</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface">IP Protection</div>
+<div class="font-code-tabular text-code-tabular text-on-surface-variant font-medium">Mutual NDA Upon Request</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low border border-outline-variant rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[22px]">domain</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface">Governance</div>
+<div class="font-code-tabular text-code-tabular text-on-surface-variant font-medium">SECP Registered Entity</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TWO-COLUMN MAIN CONTENT SECTION -->
+<section class="w-full py-space-2xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- COLUMN 1: FORM (7 Columns) -->
+<div class="lg:col-span-7" id="scoping-form">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl card-shadow p-6 sm:p-8">
+<div class="border-b border-outline-variant pb-5 mb-6">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                    Project &amp; Protocol Scoping Form
+                  </h2>
+<span class="text-[11px] font-label-sm text-secondary bg-[#EBF6FC] px-2.5 py-1 rounded border border-[#0E8A93]">
+                    CRF-2025/SCOPING
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                  Submit pre-trial specs, molecular requests, or bioinformatic datasets for scientific triage.
+                </p>
+</div>
+<form class="space-y-5" onsubmit="event.preventDefault(); alert('Study inquiry received. A PhD Study Director has been assigned.');">
+<!-- Full Name & Title -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="fullName">
+                    Full Name &amp; Academic / Institutional Title <span class="text-error">*</span>
+</label>
+<input class="w-full h-10 px-3 bg-surface-container-lowest border border-outline-variant rounded-[4px] font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="fullName" placeholder="e.g. Dr. Jane Doe, Principal Investigator" required="" type="text"/>
+</div>
+<!-- Email & Organization Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="email">
+                      Institutional Email Address <span class="text-error">*</span>
+</label>
+<input class="w-full h-10 px-3 bg-surface-container-lowest border border-outline-variant rounded-[4px] font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="email" placeholder="name@institution.edu / .org" required="" type="email"/>
+<span class="font-code-tabular text-[11px] text-on-surface-variant mt-0.5 block">Academic or corporate domain required</span>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="institution">
+                      Institution / Organization Name <span class="text-error">*</span>
+</label>
+<input class="w-full h-10 px-3 bg-surface-container-lowest border border-outline-variant rounded-[4px] font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="institution" placeholder="University or BioPharma Ltd." required="" type="text"/>
+</div>
+</div>
+<!-- Service Line & Timeline -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="discipline">
+                      Primary Service Line of Interest <span class="text-error">*</span>
+</label>
+<select class="w-full h-10 px-3 bg-surface-container-lowest border border-outline-variant rounded-[4px] font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="discipline" required="">
+<option disabled="" selected="" value="">Select service specialization...</option>
+<option value="preclinical">Preclinical Animal Studies</option>
+<option value="invitro">In Vitro Assays &amp; Cell Culture</option>
+<option value="molecular">Molecular Biology &amp; qPCR / Sanger</option>
+<option value="metagenomics">Metagenomics &amp; Bioinformatics Pipelines</option>
+<option value="prisma">Evidence Synthesis / PRISMA Reviews</option>
+<option value="custom">Custom Assay Development</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="timeline">
+                      Estimated Timeline / Milestone <span class="text-error">*</span>
+</label>
+<select class="w-full h-10 px-3 bg-surface-container-lowest border border-outline-variant rounded-[4px] font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="timeline" required="">
+<option disabled="" selected="" value="">Select desired milestone target...</option>
+<option value="immediate">Immediate (&lt; 30 days execution)</option>
+<option value="next_quarter">Next Quarter (Q2/Q3 Planned)</option>
+<option value="grant_scoping">Grant Scoping / Budgeting Phase</option>
+<option value="exploratory">Exploratory / Feasibility Dialogue</option>
+</select>
+</div>
+</div>
+<!-- Brief Protocol Summary -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<label class="block font-label-sm text-label-sm text-on-surface" for="scope">
+                      Brief Protocol Summary or Research Scope <span class="text-error">*</span>
+</label>
+<span class="text-[11px] font-code-tabular text-on-surface-variant">Confidential Transmission</span>
+</div>
+<textarea class="w-full p-3 bg-surface-container-lowest border border-outline-variant rounded-[4px] font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors resize-y" id="scope" placeholder="Please describe research objectives, sample types/quantities, animal model preferences, or computational datasets. Do NOT include protected health information or patient identifiers." required="" rows="5"></textarea>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-1 flex items-start gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary mt-0.5">info</span>
+<span>For complex study appendices (&gt;10MB), our Study Director will provision an encrypted secure SFTP portal post-triage.</span>
+</p>
+</div>
+<!-- Mandatory Compliance Checkboxes -->
+<div class="pt-2 space-y-3 bg-surface-container-low p-4 rounded-lg border border-outline-variant">
+<label class="flex items-start gap-3 cursor-pointer">
+<input class="mt-1 h-4 w-4 rounded-[4px] border-outline-variant text-primary focus:ring-secondary" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface leading-snug">
+                      Require Mutual Non-Disclosure Agreement (NDA) prior to protocol transmission
+                    </span>
+</label>
+<label class="flex items-start gap-3 cursor-pointer">
+<input class="mt-1 h-4 w-4 rounded-[4px] border-outline-variant text-primary focus:ring-secondary" required="" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface leading-snug">
+                      Confirm all biological samples/datasets will be de-identified and ethically cleared (IRB/IAEC) <span class="text-error">*</span>
+</span>
+</label>
+</div>
+<!-- Submit Button -->
+<div class="pt-2">
+<button class="w-full bg-[#0A5378] hover:bg-[#143047] text-[#FFFFFF] font-label-md text-label-md py-3 px-6 rounded-[6px] flex items-center justify-center gap-2 transition-colors duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2" type="submit">
+<span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+<span>Submit Study Inquiry for Review</span>
+</button>
+</div>
+<!-- Compliance Footnote -->
+<div class="pt-2 text-center">
+<p class="font-code-tabular text-[12px] text-on-surface-variant leading-relaxed">
+                    All inquiries are reviewed by a PhD-level Study Director. Strict cryptographic and confidentiality safeguards apply in accordance with SECP and bioethics directives.
+                  </p>
+</div>
+</form>
+</div>
+</div>
+<!-- COLUMN 2: DIRECT CONTACT & COORDINATES (5 Columns) -->
+<div class="lg:col-span-5 space-y-6">
+<!-- Laboratory Coordinates Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl card-shadow p-6 relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1 bg-secondary"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">science</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                    Physical Laboratory &amp; Specimen Reception
+                  </h3>
+</div>
+<span class="text-[11px] font-label-sm text-[#0A7A84] bg-[#EBF6FC] border border-[#0E8A93] px-2 py-0.5 rounded-[4px] font-medium">
+                  BSL-2 Validated Intake
+                </span>
+</div>
+<div class="space-y-3 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5 shrink-0">location_on</span>
+<p class="leading-relaxed">
+<strong class="text-on-surface font-semibold">Room B2-105, B2 Building</strong><br/>
+                    Department of Biological and Health Sciences<br/>
+                    Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST)<br/>
+                    Khanpur Road, Mang, Haripur, Khyber Pakhtunkhwa, Pakistan.
+                  </p>
+</div>
+<!-- Specimen Delivery Protocol Alert Box -->
+<div class="bg-surface-container-low border border-outline-variant p-3.5 rounded-[6px] mt-3">
+<div class="flex items-center gap-1.5 text-primary font-label-sm text-label-sm mb-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">ac_unit</span>
+<span>Specimen Delivery Protocol</span>
+</div>
+<p class="text-[13px] text-on-surface-variant leading-relaxed">
+                    Specimen intake hours: Monday–Friday 09:00–16:00 PKT. Prior cold-chain notification required 48 hours prior to dry ice/liquid nitrogen delivery.
+                  </p>
+</div>
+</div>
+</div>
+<!-- Executive & Directorate Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl card-shadow p-6">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">corporate_fare</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                    Administrative &amp; Executive Directorate
+                  </h3>
+</div>
+<span class="text-[11px] font-label-sm text-on-surface-variant bg-surface-container border border-outline-variant px-2 py-0.5 rounded-[4px]">
+                  SECP Islamabad
+                </span>
+</div>
+<div class="space-y-2 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5 shrink-0">apartment</span>
+<p class="leading-relaxed">
+                    2nd Floor, Business Incubation Center (BIC),<br/>
+                    C2 Building, PAF-IAST Campus,<br/>
+                    Haripur, Pakistan.
+                  </p>
+</div>
+<div class="pt-2 text-[12px] font-code-tabular text-on-surface-variant border-t border-outline-variant">
+                  SECP Corporate Registration: <strong>CERA Medical R&amp;D Ltd. (Sec. 42 / Non-Profit / Life Sciences)</strong>
+</div>
+</div>
+</div>
+<!-- Direct Communications Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl card-shadow p-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-[24px]">contact_support</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">
+                  Direct Inquiries &amp; Communications
+                </h3>
+</div>
+<div class="space-y-3 font-body-sm text-body-sm">
+<div class="flex items-center justify-between p-2.5 bg-surface-container-low rounded-[4px] border border-outline-variant">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">mail</span>
+<div>
+<div class="text-[11px] font-label-sm text-on-surface-variant">Primary Institutional Email</div>
+<a class="font-medium text-primary hover:underline" href="mailto:contact@ceramedical.org">contact@ceramedical.org</a>
+</div>
+</div>
+<span class="text-[11px] font-code-tabular text-secondary font-medium">PGP Encrypted</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-container-low rounded-[4px] border border-outline-variant">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">alternate_email</span>
+<div>
+<div class="text-[11px] font-label-sm text-on-surface-variant">Secondary / Urgent Inquiries</div>
+<a class="font-medium text-primary hover:underline" href="mailto:theceramedica@gmail.com">theceramedica@gmail.com</a>
+</div>
+</div>
+<span class="text-[11px] font-code-tabular text-on-surface-variant">Mirror Inbox</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-container-low rounded-[4px] border border-outline-variant">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">call</span>
+<div>
+<div class="text-[11px] font-label-sm text-on-surface-variant">Direct Lab Line / Study Desk</div>
+<span class="font-medium text-on-surface">+92 (0) 995 645112</span>
+</div>
+</div>
+<span class="text-[11px] font-code-tabular text-on-surface-variant">09:00 - 17:00 PKT</span>
+</div>
+<!-- SLA Assurance Ribbon -->
+<div class="mt-4 pt-3 border-t border-outline-variant flex items-center justify-between text-xs text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+                    Formal Scoping SLA:
+                  </span>
+<span class="font-semibold text-primary">Written Document ≤ 72 Hours</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FAQ SECTION: Scoping & Governance Questions -->
+<section class="w-full bg-surface-container-low border-t border-outline-variant py-space-2xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="max-w-2xl mb-8">
+<div class="inline-flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider mb-2">
+<span class="material-symbols-outlined text-[18px]">quiz</span>
+<span>Institutional Governance</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">
+            Frequently Asked Scoping &amp; Governance Questions
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">
+            Institutional guidelines governing research collaboration, biological transfer, and contractual compliance.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- FAQ Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 card-shadow">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">pets</span>
+<div>
+<h3 class="font-headline-sm text-[1.125rem] text-primary font-semibold mb-2">
+                  How does CERA Medical handle ethics and animal welfare?
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  All in vivo studies strictly require Institutional Animal Ethics Committee (IAEC) approval prior to commencement. We operate in strict adherence to the internationally recognized 3Rs principles (Replacement, Reduction, and Refinement) and standard veterinary welfare parameters.
+                </p>
+</div>
+</div>
+</div>
+<!-- FAQ Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 card-shadow">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">badge</span>
+<div>
+<h3 class="font-headline-sm text-[1.125rem] text-primary font-semibold mb-2">
+                  Can external research sponsors visit the laboratory?
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Yes. In-person facility audits, project oversight sessions, and physical specimen drop-offs are fully supported. In-person access requires protocol clearance and prior security notification for access to the PAF-IAST Haripur campus.
+                </p>
+</div>
+</div>
+</div>
+<!-- FAQ Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 card-shadow">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">qr_code_2</span>
+<div>
+<h3 class="font-headline-sm text-[1.125rem] text-primary font-semibold mb-2">
+                  What is the sample de-identification requirement?
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  We enforce a strict Zero Protected Health Information (Zero PII) policy. All human, clinical, or biological specimens must be pre-coded with alphanumeric 2D barcoded IDs before physical accession or digital database ingest.
+                </p>
+</div>
+</div>
+</div>
+<!-- FAQ Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 card-shadow">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">request_quote</span>
+<div>
+<h3 class="font-headline-sm text-[1.125rem] text-primary font-semibold mb-2">
+                  Do you provide formal quotes for grant applications?
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Yes. We routinely generate institutional Letters of Support (LoS), formalized budgetary line-item schedules, and methodology descriptions for national and international grant submissions (e.g., HEC, NIH, Welcome Trust) within 5 working days.
+                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PRE-FOOTER BANNER -->
+<section class="w-full bg-[#003B58] text-[#FFFFFF] py-space-xl border-t border-b border-[#002022]">
+<div class="max-w-[1200px] mx-auto px-margin flex flex-col md:flex-row items-center justify-between gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-[#FFFFFF]">
+            Need Immediate Technical Clarification with a Study Director?
+          </h2>
+<p class="font-body-md text-body-md text-surface-container-high mt-1 max-w-xl">
+            Our principal investigators and laboratory specialists are available for direct protocol feasibility assessments.
+          </p>
+</div>
+<div class="flex flex-wrap items-center gap-3 shrink-0">
+<a class="bg-secondary-fixed hover:bg-secondary-fixed-dim text-on-secondary-fixed font-label-md text-label-md px-5 py-2.5 rounded-lg flex items-center gap-2 transition-colors duration-150" href="tel:+92995645112">
+<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>
+<span>Call Direct Lab Line</span>
+</a>
+<a class="bg-transparent border border-surface-container-high hover:bg-white/10 text-[#FFFFFF] font-label-md text-label-md px-5 py-2.5 rounded-lg transition-colors duration-150" href="#">
+            Browse Services Portfolio
+          </a>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER (Shared Component Exact Schema) -->
+<footer class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline w-full flat no shadows">
+<div class="w-full max-w-[1200px] mx-auto px-margin py-space-2xl">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10">
+<div class="md:col-span-4">
+<a class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary block mb-3" href="#">
+            CERA MEDICAL
+          </a>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm mb-4 leading-relaxed">
+            Registered biomedical clinical research facility advancing preclinical pharmacology, multi-omics sequencing, and synthesis reviews through rigorous clinical methodology.
+          </p>
+<div class="flex items-center gap-2 text-xs font-code-tabular text-on-surface-variant">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary"></span>
+<span>SECP Registered Biomedical Entity · License #2024/09-BIO</span>
+</div>
+</div>
+<div class="md:col-span-5">
+<div class="font-label-sm text-label-sm text-primary dark:text-inverse-primary uppercase tracking-wider mb-3">
+            Institutional Accreditations &amp; Standards
+          </div>
+<div class="grid grid-cols-2 gap-3 text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified</span>
+<span>Good Laboratory Practice (GLP)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified</span>
+<span>ISO 15189 Aligned</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified</span>
+<span>IAEC Certified Welfare</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified</span>
+<span>BSL-2 Operational Core</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-3">
+<div class="font-label-sm text-label-sm text-primary dark:text-inverse-primary uppercase tracking-wider mb-3">
+            Facility Desk
+          </div>
+<div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant">
+<p>PAF-IAST Campus, Haripur, PK</p>
+<p>Desk: +92 (0) 995 645112</p>
+<p>Inquiries: contact@ceramedical.org</p>
+</div>
+</div>
+</div>
+<!-- Footer Bottom Bar with Shared Component Links -->
+<div class="pt-6 border-t border-outline-variant dark:border-outline flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant dark:text-outline-variant">
+          © 2025 CERA Medical R&amp;D Ltd. All rights reserved. Registered biomedical clinical trial facility.
+        </p>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="#">Regulatory Compliance</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="#">Standard Operating Procedures</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="#">Laboratory Accreditations</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

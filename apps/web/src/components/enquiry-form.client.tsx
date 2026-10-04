@@ -15,7 +15,7 @@ import {
 
 import { AppLink } from './link.tsx';
 
-export const ENQUIRABLE_SERVICES = [
+const FALLBACK_SERVICES: readonly { slug: string; title: string }[] = [
   { slug: 'preclinical-studies', title: 'Preclinical Studies' },
   { slug: 'molecular-research', title: 'Molecular Research' },
   { slug: 'metagenomic-data-analysis', title: 'Metagenomic Data Analysis' },
@@ -24,9 +24,7 @@ export const ENQUIRABLE_SERVICES = [
     slug: 'evidence-synthesis-technical-reports',
     title: 'Evidence Synthesis and Technical Reports',
   },
-  { slug: 'research-collaboration', title: 'Research collaboration' },
-  { slug: 'other-enquiry', title: 'Other enquiry' },
-] as const;
+];
 
 function serviceConsent(
   serviceId: string,
@@ -102,6 +100,7 @@ export interface EnquiryFormProps {
   readonly source?: 'web_service_page' | 'web_contact_page' | 'web_general';
   readonly serviceLocked?: boolean;
   readonly copy?: EnquiryFormCopy;
+  readonly services?: readonly { slug: string; title: string }[];
 }
 
 export interface EnquiryFormCopy {
@@ -113,6 +112,14 @@ export interface EnquiryFormCopy {
   readonly updatesOptIn?: string;
   readonly contactNotice?: string;
   readonly successMessage?: string;
+  readonly retentionFooter?: string;
+  readonly labels?: Partial<
+    Record<
+      'name' | 'email' | 'phone' | 'institution' | 'country' | 'serviceId' | 'message' | 'submit',
+      string
+    >
+  >;
+  readonly hints?: Partial<Record<'email' | 'serviceLocked' | 'message', string>>;
 }
 
 export function EnquiryForm({
@@ -121,12 +128,16 @@ export function EnquiryForm({
   source = 'web_general',
   serviceLocked = false,
   copy,
+  services = FALLBACK_SERVICES,
 }: EnquiryFormProps) {
   const [state, action, pending] = useActionState(submitEnquiryAction, INITIAL);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const serviceOptions = services.length > 0 ? services : FALLBACK_SERVICES;
   const [selectedService, setSelectedService] = useState(
-    defaultServiceId ?? ENQUIRABLE_SERVICES[0].slug,
+    defaultServiceId ?? serviceOptions[0]?.slug ?? 'preclinical-studies',
   );
+  const labels = copy?.labels ?? {};
+  const hints = copy?.hints ?? {};
   const summaryRef = useRef<HTMLDivElement>(null);
   const summaryId = useId();
 
@@ -191,45 +202,58 @@ export function EnquiryForm({
         value={copy?.consentVersion ?? 'cera-brief-2026-10-03-v1'}
       />
 
-      <Field label="Name" required error={errorFor('name')} id="enquiry-name">
+      <Field label={labels.name ?? 'Name'} required error={errorFor('name')} id="enquiry-name">
         <Input name="name" autoComplete="name" defaultValue={values?.name ?? ''} />
       </Field>
       <Field
-        label="Email address"
+        label={labels.email ?? 'Email address'}
         required
         error={errorFor('email')}
         id="enquiry-email"
-        hint="We use this address to reply to your request."
+        hint={hints.email ?? 'We use this address to reply to your request.'}
       >
         <Input name="email" type="email" autoComplete="email" defaultValue={values?.email ?? ''} />
       </Field>
-      <Field label="Phone" error={errorFor('phone')} id="enquiry-phone">
+      <Field label={labels.phone ?? 'Phone'} error={errorFor('phone')} id="enquiry-phone">
         <Input name="phone" type="tel" autoComplete="tel" defaultValue={values?.phone ?? ''} />
       </Field>
-      <Field label="Institution" error={errorFor('institution')} id="enquiry-institution">
+      <Field
+        label={labels.institution ?? 'Institution'}
+        error={errorFor('institution')}
+        id="enquiry-institution"
+      >
         <Input
           name="institution"
           autoComplete="organization"
           defaultValue={values?.institution ?? ''}
         />
       </Field>
-      <Field label="Country" error={errorFor('country')} id="enquiry-country">
+      <Field label={labels.country ?? 'Country'} error={errorFor('country')} id="enquiry-country">
         <Input name="country" autoComplete="country-name" defaultValue={values?.country ?? ''} />
       </Field>
       <Field
-        label="Service required"
+        label={labels.serviceId ?? 'Service required'}
         required
         error={errorFor('serviceId')}
         id="enquiry-serviceId"
-        hint={serviceLocked ? 'This enquiry is for the service you were reading about.' : undefined}
+        hint={
+          serviceLocked
+            ? (hints.serviceLocked ?? 'This enquiry is for the service you were reading about.')
+            : undefined
+        }
       >
         <Select
           name="serviceId"
-          defaultValue={values?.serviceId ?? defaultServiceId ?? ENQUIRABLE_SERVICES[0].slug}
+          defaultValue={
+            values?.serviceId ??
+            defaultServiceId ??
+            serviceOptions[0]?.slug ??
+            'preclinical-studies'
+          }
           disabled={serviceLocked}
           onChange={(event) => setSelectedService(event.currentTarget.value)}
         >
-          {ENQUIRABLE_SERVICES.map((service) => (
+          {serviceOptions.map((service) => (
             <option key={service.slug} value={service.slug}>
               {service.title}
             </option>
@@ -240,9 +264,12 @@ export function EnquiryForm({
         <input type="hidden" name="serviceId" value={defaultServiceId} />
       ) : null}
       <Field
-        label="Project description"
+        label={labels.message ?? 'Project description'}
         required
-        hint="Describe your samples, compounds or data, timeline and what you need. Do not include patient names or other identifying details."
+        hint={
+          hints.message ??
+          'Describe your samples, compounds or data, timeline and what you need. Do not include patient names or other identifying details.'
+        }
         error={errorFor('message')}
         id="enquiry-message"
       >
@@ -276,8 +303,8 @@ export function EnquiryForm({
       />
       <Text size="caption" tone="muted">
         {copy?.contactNotice ?? 'The details you enter here are used only to answer your enquiry.'}{' '}
-        See the <AppLink href="/data-retention">Data Retention Policy</AppLink> for how long they
-        are kept.
+        {copy?.retentionFooter ?? 'See the Data Retention Policy for how long they are kept.'}{' '}
+        <AppLink href="/data-retention">Data Retention Policy</AppLink>
       </Text>
 
       <div aria-hidden="true" className="hidden">
@@ -288,7 +315,7 @@ export function EnquiryForm({
       </div>
 
       <Button type="submit" variant="primary" loading={pending}>
-        Submit enquiry
+        {labels.submit ?? 'Submit enquiry'}
       </Button>
     </form>
   );

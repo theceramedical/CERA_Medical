@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Molecular Research Service | CERA MEDICAL</title>
+<!-- Material Symbols Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Brand Typography -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&amp;family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Verbatim Tailwind Config Injection -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed-variant": "#004f55",
+            "primary-fixed-dim": "#95cdf8",
+            "tertiary": "#22375a",
+            "on-error-container": "#93000a",
+            "on-background": "#0b1d2b",
+            "inverse-on-surface": "#e7f2ff",
+            "secondary": "#006970",
+            "on-primary-fixed-variant": "#004b6f",
+            "surface-container-high": "#d8eafd",
+            "on-tertiary-fixed": "#021b3d",
+            "secondary-container": "#8deff9",
+            "surface-container-low": "#ecf4ff",
+            "on-tertiary-container": "#abc0ea",
+            "on-tertiary-fixed-variant": "#33476a",
+            "on-primary-container": "#8ec6f0",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#256489",
+            "tertiary-fixed": "#d7e3ff",
+            "tertiary-fixed-dim": "#b2c7f1",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#0b1d2b",
+            "secondary-fixed": "#90f2fc",
+            "on-primary-fixed": "#001e2f",
+            "secondary-fixed-dim": "#72d5df",
+            "surface-container": "#e1efff",
+            "outline": "#71787f",
+            "on-secondary-fixed": "#002022",
+            "on-tertiary": "#ffffff",
+            "error": "#ba1a1a",
+            "surface-variant": "#d3e5f7",
+            "on-surface-variant": "#41484e",
+            "primary-fixed": "#c9e6ff",
+            "background": "#f7f9ff",
+            "outline-variant": "#c1c7cf",
+            "on-secondary-container": "#006e75",
+            "primary": "#003b58",
+            "on-primary": "#ffffff",
+            "surface-container-highest": "#d3e5f7",
+            "surface-dim": "#cadcef",
+            "inverse-primary": "#95cdf8",
+            "surface": "#f7f9ff",
+            "surface-bright": "#f7f9ff",
+            "inverse-surface": "#213240",
+            "primary-container": "#0a5378",
+            "tertiary-container": "#3a4e72"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1.5rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-xl": "2rem",
+            "margin": "2rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1rem"
+          },
+          "fontFamily": {
+            "label-sm": [
+              "\"Source Sans 3\""
+            ],
+            "headline-sm": [
+              "\"Source Sans 3\""
+            ],
+            "display-brand": [
+              "Montserrat"
+            ],
+            "headline-xl-mobile": [
+              "\"Source Sans 3\""
+            ],
+            "body-lg": [
+              "\"Source Sans 3\""
+            ],
+            "code-tabular": [
+              "\"Source Sans 3\""
+            ],
+            "headline-lg-mobile": [
+              "\"Source Sans 3\""
+            ],
+            "headline-lg": [
+              "\"Source Sans 3\""
+            ],
+            "label-md": [
+              "\"Source Sans 3\""
+            ],
+            "body-md": [
+              "\"Source Sans 3\""
+            ],
+            "headline-xl": [
+              "\"Source Sans 3\""
+            ],
+            "body-sm": [
+              "\"Source Sans 3\""
+            ],
+            "headline-md": [
+              "\"Source Sans 3\""
+            ]
+          },
+          "fontSize": {
+            "label-sm": [
+              "0.75rem",
+              {
+                "lineHeight": "1rem",
+                "letterSpacing": "0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-sm": [
+              "1.25rem",
+              {
+                "lineHeight": "1.75rem",
+                "letterSpacing": "0em",
+                "fontWeight": "600"
+              }
+            ],
+            "display-brand": [
+              "1.75rem",
+              {
+                "lineHeight": "2rem",
+                "letterSpacing": "-0.02em",
+                "fontWeight": "700"
+              }
+            ],
+            "headline-xl-mobile": [
+              "1.875rem",
+              {
+                "lineHeight": "2.25rem",
+                "letterSpacing": "-0.01em",
+                "fontWeight": "700"
+              }
+            ],
+            "body-lg": [
+              "1.125rem",
+              {
+                "lineHeight": "1.75rem",
+                "fontWeight": "400"
+              }
+            ],
+            "code-tabular": [
+              "0.875rem",
+              {
+                "lineHeight": "1.25rem",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-lg-mobile": [
+              "1.5rem",
+              {
+                "lineHeight": "2rem",
+                "letterSpacing": "0em",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-lg": [
+              "2rem",
+              {
+                "lineHeight": "2.5rem",
+                "letterSpacing": "-0.01em",
+                "fontWeight": "600"
+              }
+            ],
+            "label-md": [
+              "0.875rem",
+              {
+                "lineHeight": "1.25rem",
+                "letterSpacing": "0.01em",
+                "fontWeight": "600"
+              }
+            ],
+            "body-md": [
+              "1rem",
+              {
+                "lineHeight": "1.5rem",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-xl": [
+              "2.5rem",
+              {
+                "lineHeight": "3rem",
+                "letterSpacing": "-0.015em",
+                "fontWeight": "700"
+              }
+            ],
+            "body-sm": [
+              "0.875rem",
+              {
+                "lineHeight": "1.25rem",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-md": [
+              "1.5rem",
+              {
+                "lineHeight": "2rem",
+                "letterSpacing": "-0.005em",
+                "fontWeight": "600"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-gradient-ribbon {
+      background: linear-gradient(90deg, #1B5882, #005B7D);
+    }
+    .custom-cta-gradient {
+      background: linear-gradient(135deg, #1B5882 0%, #005B7D 100%);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased font-body-md selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col">
+<!-- Shared Component: TopNavBar (Exact mapping from JSON & Style Guidance) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 sticky z-50 h-20">
+<div class="w-full max-w-[1200px] mx-auto px-margin h-full flex items-center justify-between">
+<!-- Brand Logo Lockup -->
+<a class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-secondary active:scale-[0.98] transition-transform duration-100" href="/index.html">
+<span class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-display-brand text-xl font-bold tracking-tighter">
+          C
+        </span>
+<span class="tracking-tight">CERA MEDICAL</span>
+</a>
+<!-- Desktop Navigation Links (Services is Active as this is a Services detail page) -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-secondary" href="/home">
+          Home
+        </a>
+<a class="text-primary dark:text-inverse-primary border-b-2 border-primary dark:border-inverse-primary font-label-md text-label-md pb-1 focus:outline-none focus:ring-2 focus:ring-secondary" href="/services">
+          Services
+        </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-secondary" href="/research-updates">
+          Research Updates
+        </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-secondary" href="/about">
+          About
+        </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-secondary" href="/contact">
+          Contact
+        </a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center space-x-4">
+<!-- Trailing Icon Search -->
+<button aria-label="Search clinical studies and assays" class="p-2 text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-secondary">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</button>
+<!-- Secondary Action: Sign In -->
+<a class="hidden sm:inline-flex items-center justify-center px-4 py-2 border-[1.5px] border-primary-container text-primary-container hover:bg-surface-container-low font-label-md text-label-md rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary active:scale-[0.98] transition duration-150" href="/signin">
+          Sign In
+        </a>
+<!-- Primary Action: Make an Enquiry -->
+<a class="inline-flex items-center justify-center px-5 py-2.5 bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 active:scale-[0.98] transition duration-150" href="#conversation-card">
+          Make an Enquiry
+        </a>
+</div>
+</div>
+</header>
+<!-- Laboratory Status Specimen Ribbon -->
+<div class="custom-gradient-ribbon text-on-primary py-2 px-margin border-b border-primary/20">
+<div class="max-w-[1200px] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs font-label-sm uppercase tracking-wider">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+<span class="font-bold">LABORATORY STATUS:</span>
+<span class="opacity-90">BSL-2 VALIDATED · ISO 15189 / GLP COMPLIANT STERILE WORKFLOWS</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="bg-black/20 px-2 py-0.5 rounded font-mono text-[11px] text-primary-fixed">FACILITY ID: PK-MOL-042</span>
+<span class="opacity-80 hidden sm:inline">HARIPUR REGIONAL GENOMICS FACILITY</span>
+</div>
+</div>
+</div>
+<!-- Breadcrumb Path Scaffolding -->
+<div class="bg-surface-container-lowest border-b border-outline-variant/60">
+<div class="max-w-[1200px] mx-auto px-margin py-3">
+<nav aria-label="Breadcrumb" class="flex items-center text-xs font-label-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="/home">Home</a>
+<span class="mx-2 text-outline-variant">/</span>
+<a class="hover:text-primary transition-colors" href="/services">Services</a>
+<span class="mx-2 text-outline-variant">/</span>
+<span aria-current="page" class="text-primary font-semibold">Molecular Research</span>
+</nav>
+</div>
+</div>
+<!-- Hero Section -->
+<section class="bg-surface-container-lowest border-b border-outline-variant">
+<div class="max-w-[1200px] mx-auto px-margin py-space-xl lg:py-space-2xl">
+<!-- Eyebrow Badge -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-low border border-secondary text-secondary font-label-sm text-label-sm mb-4">
+<span class="material-symbols-outlined text-[16px]" data-icon="science">science</span>
+        RESEARCH SERVICE LINE 02 · STERILE BIOSAFETY BSL-2 VALIDATED
+      </div>
+<!-- Hero Headline -->
+<h1 class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight mb-4">
+        Molecular Research
+      </h1>
+<!-- Verbatim Summary Lede -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mb-6">
+        Molecular, biochemical and histological analysis of research samples conducted in validated sterile biosafety environments.
+      </p>
+<!-- Written Agreement & Availability Callout -->
+<div class="flex items-start gap-3 p-3.5 bg-surface-container-low/70 border border-secondary-container/80 rounded-xl mb-6 max-w-3xl">
+<span class="material-symbols-outlined text-secondary text-[22px] mt-0.5" data-icon="verified">verified</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block">Scope, timeline and cost agreed in writing for each project</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Certified chain-of-custody protocols &amp; documented reagent trace matrix provided with every assay execution.</span>
+</div>
+</div>
+<!-- Compliance & Protocol Badges -->
+<div class="flex flex-wrap gap-2.5 mb-8">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="shield">shield</span>
+          BSL-2 Validated Wet-Lab
+        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="inventory_2">inventory_2</span>
+          GLP Compliant Reagent Tracking
+        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="policy">policy</span>
+          Institutional Review Board (IRB) Aligned
+        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="pin">pin</span>
+          Coded Human Samples Protocol
+        </span>
+</div>
+<!-- Mandatory Research Scope & Governance Notice Box -->
+<div class="p-5 border-l-4 border-primary-container bg-surface-container rounded-r-xl">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary-container text-[24px] mt-0.5" data-icon="gavel">gavel</span>
+<div>
+<h2 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider mb-1">
+              Important Governance Notice &amp; Research Scope
+            </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Research Scope &amp; Human Sample Governance: Wet-lab services are conducted strictly for research and translational discovery, not direct clinical diagnosis. All human-derived specimens must be coded and supplied without direct participant identifiers, supported by Institutional Review Board (IRB) or Ethics Committee approval.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Body Content: Asymmetric 2-Column Desktop Grid -->
+<main class="flex-grow py-space-xl lg:py-space-2xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Column 1: Main Content Flow (7/12 desktop) -->
+<article class="lg:col-span-7 space-y-space-2xl">
+<!-- Section 1: Overview & Lab Infrastructure -->
+<section class="space-y-6">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight flex items-center gap-2">
+<span class="w-1.5 h-6 bg-secondary rounded-full inline-block"></span>
+              Wet-Lab Infrastructure &amp; Analytical Rigor
+            </h2>
+<!-- Facility Photograph Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<img class="w-full h-80 object-cover" data-alt="A clean, state-of-the-art molecular biology research laboratory with high-key cool blue ambient illumination. In the foreground, an analytical research scientist in a sterile white lab coat, protective safety goggles, and nitrile gloves carefully operates a precision micro-pipette over a 96-well assay plate. High-throughput automated genetic analyzers and inverted digital fluorescent microscopes stand on deep grey phenolic resin workbenches in the background. The visual tone is authoritative, sterile, and scientific, matching deep navy and cool cyan palettes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqw6enoRzI5BANsl95A4OjsE7rFVevREh4rJRSoHl7Xcfg2MDr2GTh00g5VPWiAAGcGdXFIrUDWYMFNjilg1SO1aS9hGa34YTiiheh9gF9qcTW363f2-kJc8fTZ4jEoOAPTQW9pr5wAXQo0rmNyWfwCPOT5WG-k6mCzqJeCwtmqYjBzj68U-BCAQo3m9PaPB7OkSd1W45cDBOwLeL-ziYI6175uA6O421IlBLLCek0pmu3gnQp7irBxA"/>
+<div class="p-4 bg-surface-container-low/60 border-t border-outline-variant/60 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5" data-icon="photo_camera">photo_camera</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                  CERA Molecular Research Suite — Haripur BSL-2 Facility. Equipped for high-fidelity Sanger sequencing, quantitative PCR, and multi-marker tissue immunohistochemistry.
+                </p>
+</div>
+</div>
+<!-- Deep Body Narrative -->
+<div class="space-y-4 font-body-md text-body-md text-on-surface leading-relaxed">
+<p>
+                CERA Medical provides comprehensive molecular, biochemical, and histological analysis designed to support academic principal investigators, biotechnology innovators, and pharmaceutical development programs. Operating within validated BSL-2 sterile laboratory suites, our technical team executes rigorous assays with defined positive/negative controls, multi-point standard curves, and documented replicate matrices.
+              </p>
+<p>
+                All research workflows—from nucleic acid extraction through fluorescent microscopy and quantitative protein blotting—are conducted under strict Standard Operating Procedures (SOPs). Human-derived biospecimens must be coded prior to reception to ensure absolute participant anonymity and ethical alignment.
+              </p>
+</div>
+</section>
+<!-- Section 2: Core Laboratory Assay Capabilities (Structured Bento Grid) -->
+<section class="space-y-6">
+<div class="border-b border-outline-variant pb-3">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+                Core Laboratory Assay Capabilities
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Validated assay methodologies conducted in accordance with international GLP and ISO 15189 analytical standards.
+              </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Capability 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm hover:border-secondary transition-colors duration-150">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="dna">strikethrough_s</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">
+                  Sanger Sequencing &amp; Fragment Analysis
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Capillary electrophoresis, plasmid validation, PCR product confirmation, targeted mutation screening, and microsatellite genotyping with trace file (.ab1) outputs.
+                </p>
+</div>
+<!-- Capability 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm hover:border-secondary transition-colors duration-150">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="query_stats">query_stats</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">
+                  Quantitative Real-Time PCR (RT-qPCR)
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  High-precision SYBR Green and TaqMan probe-based gene expression profiling, copy number variation (CNV), viral load quantification, and validation of RNA-seq datasets.
+                </p>
+</div>
+<!-- Capability 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm hover:border-secondary transition-colors duration-150">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="biotechnology">chips</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">
+                  Protein Biochemistry &amp; Immunoassays
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Standard and quantitative Western blotting with chemiluminescent detection, sandwich and competitive ELISA, total protein quantification (BCA/Bradford), and microplate multiplexing.
+                </p>
+</div>
+<!-- Capability 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm hover:border-secondary transition-colors duration-150">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="layers">layers</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">
+                  Histopathology &amp; Tissue Micro-Sectioning
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Formalin-fixed paraffin-embedded (FFPE) and cryo-sectioning, microtomy (3-5 µm sections), Hematoxylin and Eosin (H&amp;E) staining, and specialized histological tissue staining.
+                </p>
+</div>
+<!-- Capability 5 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm hover:border-secondary transition-colors duration-150">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="visibility">visibility</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">
+                  Microscopy &amp; Immunofluorescence (IF)
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  High-resolution brightfield, phase contrast, and multi-channel inverted fluorescence microscopy for subcellular localization, cellular viability, and co-localization analysis.
+                </p>
+</div>
+<!-- Capability 6 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm hover:border-secondary transition-colors duration-150">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="filter_alt">filter_alt</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">
+                  High-Fidelity Nucleic Acid Extraction
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  High-yield DNA, total RNA, miRNA, and dual DNA/RNA extractions from challenging tissues, cell pellets, blood, FFPE scrolls, and biopsy specimens with fluorometric Qubit QC and spectrophotometric (NanoDrop) purity checks.
+                </p>
+</div>
+</div>
+</section>
+<!-- Section 3: 4-Tier Sample Governance & Chain-of-Custody -->
+<section class="space-y-6">
+<div class="border-b border-outline-variant pb-3">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+                4-Tier Sample Governance &amp; Chain-of-Custody
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Rigorous tracking protocol to ensure absolute integrity from specimen intake to archiving.
+              </p>
+</div>
+<div class="space-y-3">
+<!-- Tier 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-start gap-4 shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary font-bold flex items-center justify-center shrink-0 text-sm">
+                  1
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary">
+                    Sample Reception &amp; De-Identification Verification
+                  </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Strict intake checking 2D cryogenic barcodes and verified lack of Personally Identifiable Information (PII). Un-coded clinical samples are rejected at intake.
+                  </p>
+</div>
+</div>
+<!-- Tier 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-start gap-4 shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary font-bold flex items-center justify-center shrink-0 text-sm">
+                  2
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary">
+                    Cold-Chain Integrity &amp; Storage Monitoring
+                  </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Continuous preservation via calibrated -80°C ultra-low temperature freezers and liquid nitrogen storage dewar banks equipped with redundant 24/7 cloud telemetry alarms.
+                  </p>
+</div>
+</div>
+<!-- Tier 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-start gap-4 shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary font-bold flex items-center justify-center shrink-0 text-sm">
+                  3
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary">
+                    Quality Control (QC) &amp; Baseline Viability Gate
+                  </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Fluorometric quantification, A260/A280 absorbance ratios, capillary RNA Integrity Number (RIN) scores, and total protein BCA validation prior to downstream assay allocation.
+                  </p>
+</div>
+</div>
+<!-- Tier 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-start gap-4 shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary font-bold flex items-center justify-center shrink-0 text-sm">
+                  4
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary">
+                    Post-Study Specimen Archival or Certified Destruction
+                  </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Standard 90-day retention post-study technical dossier transmission, followed by certified biomedical autoclave incineration or pre-arranged secure cold-chain return shipment.
+                  </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: 5-Stage Molecular Project Lifecycle -->
+<section class="space-y-6">
+<div class="border-b border-outline-variant pb-3">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+                5-Stage Molecular Project Lifecycle
+              </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Standard operating timeline for scoping, assay execution, and publication-ready deliverable packaging.
+              </p>
+</div>
+<div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-outline-variant">
+<div class="relative">
+<span class="absolute -left-6 top-1 w-4 h-4 rounded-full bg-secondary ring-4 ring-background"></span>
+<span class="font-mono text-xs font-semibold text-secondary">STAGE 01</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Scoping &amp; Assay Matrix Agreement</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Definition of experimental endpoints, replicates, biological power, volume tolerances, and limits of detection (LOD) documented in signed study charter.</p>
+</div>
+<div class="relative">
+<span class="absolute -left-6 top-1 w-4 h-4 rounded-full bg-secondary ring-4 ring-background"></span>
+<span class="font-mono text-xs font-semibold text-secondary">STAGE 02</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Ethics Clearance &amp; Coded Sample Reception</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Receipt of IRB/IEC approval documentation, transfer of anonymized 2D barcodes, and verification of cold-chain transit logs upon Haripur dock entry.</p>
+</div>
+<div class="relative">
+<span class="absolute -left-6 top-1 w-4 h-4 rounded-full bg-secondary ring-4 ring-background"></span>
+<span class="font-mono text-xs font-semibold text-secondary">STAGE 03</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Extraction, Reagent Verification &amp; QC</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Nucleic acid or protein lysis, batch lot traceability, negative extraction controls, and Qubit/NanoDrop yield verification before main run.</p>
+</div>
+<div class="relative">
+<span class="absolute -left-6 top-1 w-4 h-4 rounded-full bg-secondary ring-4 ring-background"></span>
+<span class="font-mono text-xs font-semibold text-secondary">STAGE 04</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Experimental Assay Execution</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Blinded operator replicates, calibrated thermal cycler runs, automated liquid handling, and continuous digital raw data telemetry collection.</p>
+</div>
+<div class="relative">
+<span class="absolute -left-6 top-1 w-4 h-4 rounded-full bg-primary-container ring-4 ring-background"></span>
+<span class="font-mono text-xs font-semibold text-primary">STAGE 05</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Technical Dossier &amp; Publication-Ready Figures</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Delivery of normalized data matrices, standard curves, blot densitometry, raw .ab1 and .eds instrument files, and peer-review ready vector charts.</p>
+</div>
+</div>
+</section>
+<!-- Section 5: Laboratory Instrumentation Roster -->
+<section class="space-y-4">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+              Laboratory Instrumentation Roster
+            </h2>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+<ul class="divide-y divide-outline-variant/60 font-body-sm text-body-sm">
+<li class="py-2.5 flex items-center justify-between">
+<span class="font-semibold text-primary">Applied Biosystems Genetic Analyzer 3500 Series</span>
+<span class="text-on-surface-variant font-mono text-xs">Capillary Sanger &amp; Fragment</span>
+</li>
+<li class="py-2.5 flex items-center justify-between">
+<span class="font-semibold text-primary">Applied Biosystems QuantStudio 5 Real-Time PCR System</span>
+<span class="text-on-surface-variant font-mono text-xs">96-Well 0.2 mL Fluorescent Block</span>
+</li>
+<li class="py-2.5 flex items-center justify-between">
+<span class="font-semibold text-primary">Esco Airstream Class II Type A2 Biosafety Cabinets</span>
+<span class="text-on-surface-variant font-mono text-xs">BSL-2 Sterile Extraction Cell</span>
+</li>
+<li class="py-2.5 flex items-center justify-between">
+<span class="font-semibold text-primary">Leica RM2235 Manual Rotary Microtome &amp; Cryostat</span>
+<span class="text-on-surface-variant font-mono text-xs">FFPE &amp; Frozen Sectioning (3-5 µm)</span>
+</li>
+<li class="py-2.5 flex items-center justify-between">
+<span class="font-semibold text-primary">Bio-Rad ChemiDoc MP Imaging System</span>
+<span class="text-on-surface-variant font-mono text-xs">Chemiluminescent &amp; Multiplex IF</span>
+</li>
+</ul>
+</div>
+</section>
+</article>
+<!-- Column 2: Sticky Sidebar (5/12 desktop) -->
+<aside class="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
+<!-- Card A: Intake Conversation Form Box -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm border-t-4 border-t-primary-container" id="conversation-card">
+<div class="flex items-center gap-2 text-secondary mb-1">
+<span class="material-symbols-outlined text-[20px]" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Project Inquiry</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary font-bold mb-2">
+              Start a project conversation
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-5 leading-relaxed">
+              Tell us about your research question, specimen types, volume, expected outputs and timeline. Scope, cost and deliverables are agreed in writing before wet-lab work commences.
+            </p>
+<form class="space-y-4" onsubmit="event.preventDefault(); alert('Inquiry successfully routed to study director.');">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="investigator-name">Lead Investigator &amp; Institution</label>
+<input class="w-full h-10 px-3 border border-outline-variant rounded text-on-surface font-body-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 outline-none" id="investigator-name" placeholder="Dr. Sarah Chen, University Department" required="" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="work-email">Institutional Email</label>
+<input class="w-full h-10 px-3 border border-outline-variant rounded text-on-surface font-body-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 outline-none" id="work-email" placeholder="name@institution.edu" required="" type="email"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="assay-type">Primary Assay Requirement</label>
+<select class="w-full h-10 px-3 border border-outline-variant rounded text-on-surface font-body-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 outline-none bg-surface-container-lowest" id="assay-type">
+<option>Sanger Sequencing &amp; Fragment Analysis</option>
+<option>Quantitative Real-Time PCR (RT-qPCR)</option>
+<option>Western Blotting &amp; Protein Immunoassay</option>
+<option>Histopathology &amp; Micro-Sectioning</option>
+<option>Nucleic Acid Extraction / Biobanking</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-1" for="sample-summary">Specimen Count &amp; Estimated Matrix</label>
+<textarea class="w-full p-3 border border-outline-variant rounded text-on-surface font-body-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 outline-none" id="sample-summary" placeholder="e.g., 48 coded frozen tissue biopsies, total RNA extraction requested, gene expression panel..." rows="3"></textarea>
+</div>
+<button class="w-full py-3 bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-sm transition duration-150 flex items-center justify-center gap-2" type="submit">
+<span>Request Molecular Scoping</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<div class="mt-5 pt-4 border-t border-outline-variant/60 space-y-2 text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="schedule">schedule</span>
+<span>Reply target: within three working days</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="person_off">person_off</span>
+<span>Do not include direct participant identifiers</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="qr_code">qr_code</span>
+<span>Coded samples only (guidance provided)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="description">description</span>
+<span>Written protocol, controls and deliverables documented</span>
+</div>
+</div>
+</div>
+<!-- Card B: Sample Requirements & Delivery Specifications -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-5">
+<h4 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="ac_unit">ac_unit</span>
+              Delivery Specifications &amp; Handling
+            </h4>
+<div class="space-y-3 font-body-sm text-body-sm text-on-surface">
+<div>
+<span class="font-semibold block text-primary">Tissue &amp; Cell Pellets:</span>
+<span class="text-on-surface-variant">Snap-frozen in liquid N2 or submerged in RNAlater. Shipped on dry ice with temperature logger.</span>
+</div>
+<div>
+<span class="font-semibold block text-primary">Whole Blood / Biofluids:</span>
+<span class="text-on-surface-variant">EDTA or PAXgene tubes, min 2.0 mL volume. Verified non-infectious, coded barcoding.</span>
+</div>
+<div>
+<span class="font-semibold block text-primary">Receiving Protocol:</span>
+<span class="text-on-surface-variant">Notify laboratory reception 48 hours prior to dry ice courier dispatch.</span>
+</div>
+</div>
+</div>
+<!-- Card C: Accreditations & Standards Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<h4 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="verified_user">verified_user</span>
+              Laboratory Accreditations
+            </h4>
+<ul class="space-y-2 text-xs font-body-sm text-on-surface-variant">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check_circle">check_circle</span>
+                ISO 15189 Aligned Quality Architecture
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check_circle">check_circle</span>
+                OECD Principles of Good Laboratory Practice (GLP)
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check_circle">check_circle</span>
+                IAEC/IRB Coordinated Protocol Compliance
+              </li>
+</ul>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<span class="text-[11px] font-mono text-outline uppercase block">Direct Protocol Inquiry:</span>
+<a class="font-label-md text-label-md text-primary hover:text-secondary underline decoration-secondary" href="mailto:contact@ceramedical.org">contact@ceramedical.org</a>
+<span class="block text-xs text-on-surface-variant mt-1">Haripur, Khyber Pakhtunkhwa, Pakistan Facility</span>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Related Research Services Band (3-Card Bento) -->
+<section class="bg-surface-container-low border-t border-outline-variant py-space-xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+            Explore Related Services
+          </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Cross-functional translational capabilities across our laboratory network.
+          </p>
+</div>
+<a class="hidden sm:inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:text-secondary font-semibold" href="/services">
+          View all service lines
+          <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Related 1 -->
+<a class="group bg-surface-container-lowest border border-outline-variant hover:border-secondary rounded-xl p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between" href="/services/preclinical-studies">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container text-secondary flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[24px]" data-icon="vital_signs">vital_signs</span>
+</div>
+<span class="font-mono text-xs font-semibold text-secondary">SERVICE LINE 01</span>
+<h3 class="font-headline-sm text-headline-sm text-primary group-hover:text-secondary transition-colors mt-1 mb-2">
+              Preclinical Studies
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              In vivo pharmacokinetics, biodistribution modeling, and acute safety evaluations governed under stringent bioethics boards.
+            </p>
+</div>
+<div class="mt-6 pt-3 border-t border-outline-variant/40 flex items-center text-xs font-semibold text-primary group-hover:text-secondary">
+            Learn more about Preclinical
+            <span class="material-symbols-outlined text-[16px] ml-1" data-icon="chevron_right">chevron_right</span>
+</div>
+</a>
+<!-- Related 2 -->
+<a class="group bg-surface-container-lowest border border-outline-variant hover:border-secondary rounded-xl p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between" href="/services/metagenomic-data-analysis">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container text-secondary flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[24px]" data-icon="scatter_plot">scatter_plot</span>
+</div>
+<span class="font-mono text-xs font-semibold text-secondary">SERVICE LINE 03</span>
+<h3 class="font-headline-sm text-headline-sm text-primary group-hover:text-secondary transition-colors mt-1 mb-2">
+              Metagenomic Data Analysis
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              High-throughput 16S/ITS and shotgun metagenomics profiling for environmental, host-microbiome, and infectious disease reservoirs.
+            </p>
+</div>
+<div class="mt-6 pt-3 border-t border-outline-variant/40 flex items-center text-xs font-semibold text-primary group-hover:text-secondary">
+            Learn more about Metagenomics
+            <span class="material-symbols-outlined text-[16px] ml-1" data-icon="chevron_right">chevron_right</span>
+</div>
+</a>
+<!-- Related 3 -->
+<a class="group bg-surface-container-lowest border border-outline-variant hover:border-secondary rounded-xl p-6 transition-all duration-200 hover:shadow-md flex flex-col justify-between" href="/services/biomedical-omics-data-analysis">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container text-secondary flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[24px]" data-icon="hub">hub</span>
+</div>
+<span class="font-mono text-xs font-semibold text-secondary">SERVICE LINE 04</span>
+<h3 class="font-headline-sm text-headline-sm text-primary group-hover:text-secondary transition-colors mt-1 mb-2">
+              Biomedical and Omics Data Analysis
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Multi-omics computational pipelines integrating RNA-seq differential expression, variant discovery, and proteomics quantitation.
+            </p>
+</div>
+<div class="mt-6 pt-3 border-t border-outline-variant/40 flex items-center text-xs font-semibold text-primary group-hover:text-secondary">
+            Learn more about Omics Analysis
+            <span class="material-symbols-outlined text-[16px] ml-1" data-icon="chevron_right">chevron_right</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- Bottom CTA Band (Gradient #1B5882 to #005B7D) -->
+<section class="custom-cta-gradient text-on-primary py-space-xl">
+<div class="max-w-[1200px] mx-auto px-margin flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="space-y-2 max-w-2xl text-center md:text-left">
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-on-primary">
+          Ready to scope your molecular research project?
+        </h2>
+<p class="font-body-md text-body-md text-primary-fixed leading-relaxed">
+          Discuss your target genes, protein assays, or histopathology requirements with our laboratory directors. We reply within three working days.
+        </p>
+</div>
+<a class="shrink-0 px-6 py-3 bg-surface-container-lowest text-primary hover:bg-surface font-label-md text-label-md font-semibold rounded-lg shadow transition duration-150" href="#conversation-card">
+        Request Molecular Scoping
+      </a>
+</div>
+</section>
+<!-- Shared Component: Footer (Exact mapping from JSON & Style Guidance) -->
+<footer class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline w-full flat no shadows">
+<div class="w-full max-w-[1200px] mx-auto px-margin py-space-2xl">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+<!-- Brand Summary Column -->
+<div class="md:col-span-2 space-y-3">
+<div class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight flex items-center gap-2">
+<span class="w-7 h-7 rounded bg-primary-container text-on-primary flex items-center justify-center font-display-brand text-sm font-bold">C</span>
+<span>CERA MEDICAL</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-md">
+            Biomedical research facility executing certified clinical diagnostics, genomic sequencing, and translational pharmacology with rigorous GLP quality controls.
+          </p>
+<div class="text-xs font-mono text-outline">
+            Haripur Research Campus · Khyber Pakhtunkhwa, Pakistan
+          </div>
+</div>
+<!-- Links Column 1 -->
+<div>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-3">Institutional</h4>
+<ul class="space-y-2">
+<li>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/regulatory-compliance">Regulatory Compliance</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/sop">Standard Operating Procedures</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/accreditations">Laboratory Accreditations</a>
+</li>
+</ul>
+</div>
+<!-- Links Column 2 -->
+<div>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-3">Governance</h4>
+<ul class="space-y-2">
+<li>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/privacy-policy">Privacy Policy</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/terms-of-service">Terms of Service</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-body-sm text-body-sm transition-colors duration-150" href="/ethics-board">IRB / Ethics Protocol</a>
+</li>
+</ul>
+</div>
+</div>
+<!-- Copyright Bar -->
+<div class="pt-8 border-t border-outline-variant/60 flex flex-col sm:flex-row items-center justify-between text-xs text-on-surface-variant">
+<p class="font-body-sm text-body-sm">
+          © 2025 CERA Medical R&amp;D Ltd. All rights reserved. Registered biomedical clinical trial facility.
+        </p>
+<div class="flex space-x-6 mt-4 sm:mt-0 font-label-sm text-label-sm">
+<span class="text-outline">BSL-2 / ISO 15189 Aligned</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

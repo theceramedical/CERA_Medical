@@ -234,6 +234,8 @@ export const PublicServiceSchema = z.object({
   displayPrice: z.string().nullable(),
   availabilityText: z.string().nullable(),
   enquiryEnabled: z.boolean(),
+  listPriceMinor: z.number().int().nonnegative().nullable(),
+  checkoutEnabled: z.boolean(),
   mediaId: z.string().nullable(),
 });
 export type PublicService = z.infer<typeof PublicServiceSchema>;
@@ -251,6 +253,8 @@ export function toPublicService(service: Service): PublicService {
     displayPrice: service.displayPrice,
     availabilityText: service.availabilityText,
     enquiryEnabled: service.enquiryEnabled,
+    listPriceMinor: service.listPriceMinor,
+    checkoutEnabled: service.checkoutEnabled,
     mediaId: service.mediaId,
   };
 }

@@ -1,5 +1,8 @@
 import clientCopy from '../content/client-website-content.json' with { type: 'json' };
 
+import { homePageMarketingBlocks, servicesPageFacilitiesBlocks } from './bootstrap-home-layout.ts';
+import { buildServicePresentationLayout } from './bootstrap-service-layout.ts';
+
 import type { Payload, PayloadRequest, RequiredDataFromCollectionSlug } from 'payload';
 
 /** Publication hooks treat local, unauthenticated API calls as system bootstrap (see publication.ts). */
@@ -28,6 +31,37 @@ function sectionIndex(title: string): number {
 function range(from: string, to: string): readonly SourceParagraph[] {
   return source.slice(sectionIndex(from), sectionIndex(to));
 }
+
+const SERVICE_CARD_ICONS: Record<string, string> = {
+  'preclinical-studies': 'microscope',
+  'molecular-research': 'dna',
+  'metagenomic-data-analysis': 'database',
+  'biomedical-omics-data-analysis': 'chart',
+  'evidence-synthesis-technical-reports': 'fileText',
+};
+
+const SERVICE_CARD_HIGHLIGHTS: Record<string, readonly { text: string }[]> = {
+  'preclinical-studies': [
+    { text: 'In vitro cytotoxicity assays' },
+    { text: 'Histopathology tissue microarrays' },
+  ],
+  'molecular-research': [
+    { text: 'RT-qPCR, ELISA and Western blotting' },
+    { text: 'High-fidelity DNA/RNA extractions' },
+  ],
+  'metagenomic-data-analysis': [
+    { text: '16S/18S and shotgun metagenomics' },
+    { text: 'Alpha and beta diversity calculations' },
+  ],
+  'biomedical-omics-data-analysis': [
+    { text: 'RNA-seq differential expression' },
+    { text: 'Multi-cohort clinical regression modelling' },
+  ],
+  'evidence-synthesis-technical-reports': [
+    { text: 'PRISMA-compliant search workflows' },
+    { text: 'GRADE evidence quality grading' },
+  ],
+};
 
 function lexicalFromStrings(paragraphs: readonly string[]) {
   return {
@@ -320,6 +354,52 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   const settingsPatch: Record<string, unknown> = {};
   if (!Array.isArray(dynamicSettings.faqs) || dynamicSettings.faqs.length === 0)
     settingsPatch.faqs = faqDefaults;
+  if (
+    !Array.isArray(dynamicSettings.contactLocations) ||
+    dynamicSettings.contactLocations.length === 0
+  ) {
+    settingsPatch.contactLocations = [
+      {
+        label: 'Email',
+        value: 'contact@ceramedical.org',
+        href: 'mailto:contact@ceramedical.org',
+        icon: 'mail',
+      },
+      {
+        label: 'Laboratory',
+        value:
+          'B2-105, B2 Building, Department of Biological and Health Sciences, PAF-IAST, Haripur, Pakistan',
+        icon: 'mapPin',
+      },
+      {
+        label: 'Office',
+        value:
+          '2nd Floor, BIC, C2 Building, Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST), Mang, Haripur, Pakistan',
+        icon: 'mapPin',
+      },
+    ];
+  }
+  const contactEnquiry = dynamicSettings.contactEnquiry as Record<string, unknown> | undefined;
+  if (contactEnquiry?.heading === undefined || contactEnquiry.heading === '') {
+    settingsPatch.contactEnquiry = {
+      heading: 'Enquiring about a service?',
+      body: 'Describe the research service you need and your project requirements. Please do not include participant names or other direct identifiers. Large datasets can be transferred later through a secure link; arrange physical sample shipping with us first.',
+      buttonLabel: 'Make an Enquiry',
+      buttonHref: '/enquiry?source=web_contact_page',
+      formSectionTitle: 'Service request form',
+      showInlineForm: false,
+    };
+  }
+  const enquiry = (dynamicSettings.enquiryForm ?? {}) as Record<string, unknown>;
+  if (!Array.isArray(enquiry.extraServices) || enquiry.extraServices.length === 0) {
+    settingsPatch.enquiryForm = {
+      ...enquiry,
+      extraServices: [
+        { slug: 'research-collaboration', title: 'Research collaboration' },
+        { slug: 'other-enquiry', title: 'Other enquiry' },
+      ],
+    };
+  }
   if (!formSettings.consentVersion)
     settingsPatch.enquiryForm = {
       ...formSettings,
@@ -343,6 +423,23 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     await payload.updateGlobal({
       slug: 'site-settings',
       data: settingsPatch,
+      overrideAccess: true,
+    });
+  }
+
+  const announcement = await payload.findGlobal({ slug: 'announcement', overrideAccess: true });
+  const ann = announcement as { enabled?: boolean; statusLabel?: string };
+  if (!ann.statusLabel) {
+    await payload.updateGlobal({
+      slug: 'announcement',
+      data: {
+        enabled: false,
+        statusLabel: 'Lab accredited',
+        message:
+          'Biomedical testing and metagenomic workflows — confirm accreditation claims before enabling this banner.',
+        href: '/methodology',
+        linkLabel: 'Review protocol standards',
+      },
       overrideAccess: true,
     });
   }
@@ -380,21 +477,22 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   ] as const;
   for (const [start, end, slug, title] of services) {
     const content = publicText(range(start, end));
+    const excerpt =
+      content
+        .find((item) => item.text.startsWith('Grid summary:'))
+        ?.text.replace('Grid summary: ', '') ?? '';
     await upsert(payload, 'service-presentations', slug, {
       title,
       slug,
       serviceId: slug,
-      excerpt:
-        content
-          .find((item) => item.text.startsWith('Grid summary:'))
-          ?.text.replace('Grid summary: ', '') ?? '',
+      excerpt,
+      cardHighlights: [...(SERVICE_CARD_HIGHLIGHTS[slug] ?? [])],
+      cardIcon: SERVICE_CARD_ICONS[slug],
       body: lexical(content),
+      layout: buildServicePresentationLayout(slug),
       seo: {
         title: `${title} | CERA Medical`,
-        description:
-          content
-            .find((item) => item.text.startsWith('Grid summary:'))
-            ?.text.replace('Grid summary: ', '') ?? '',
+        description: excerpt,
       },
     });
   }
@@ -419,13 +517,47 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
         primaryLabel: 'Explore Services',
         secondaryHref: '/enquiry',
         secondaryLabel: 'Make an Enquiry',
+        badgeTitle: 'Scope before samples move',
+        badgeBody:
+          'Every project starts with a written plan, agreed timelines, and outputs you can trace.',
+        trustItems: [
+          { label: 'Documented methods' },
+          { label: 'Reproducible analysis' },
+          { label: 'Research team support' },
+        ],
       },
+      {
+        blockType: 'statistics',
+        items: [
+          {
+            value: '5',
+            label: 'Research service lines',
+            detail: 'End-to-end wet & dry lab',
+          },
+          {
+            value: '5',
+            label: 'Agreed project stages',
+            detail: 'Rigorous QC milestones',
+          },
+          {
+            value: '3 days',
+            label: 'Target enquiry response',
+            detail: 'Rapid preliminary scoping',
+          },
+          {
+            value: '1 team',
+            label: 'Lab, data & reporting',
+            detail: 'Cross-disciplinary alignment',
+          },
+        ],
+      },
+      ...homePageMarketingBlocks(),
       {
         blockType: 'ctaBand',
         headline: 'Ready to advance your research?',
         body: 'Share your research question, materials or datasets. We respond within three working days with next steps — no clinical records on this form.',
         href: '/enquiry',
-        label: 'Contact CERA Medical',
+        label: 'Make an Enquiry',
       },
     ],
     body: lexical(intro),
@@ -442,7 +574,22 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       intro
         .find((item) => item.text.startsWith('Introduction:'))
         ?.text.replace('Introduction: ', '') ?? '',
-    body: lexical(publicText(range('1.6 Facilities', '1.8 Service request form'))),
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Clinical research infrastructure',
+        heading: 'Complete Service Portfolio',
+        body: 'CERA Medical provides biomedical research and development services. We support principal investigators, biotech developers, and academic institutions through validated analytical protocols and strict ethical frameworks.',
+        badges: [
+          { label: 'Institutional animal ethics board' },
+          { label: 'Documented analytical protocols' },
+          { label: 'Written scope before work begins' },
+        ],
+      },
+      { blockType: 'servicesCatalogue' },
+      ...servicesPageFacilitiesBlocks(),
+    ],
+    body: lexicalFromStrings([]),
     seo: {
       title: 'Research Services | CERA Medical',
       description: 'Research services from CERA Medical.',
@@ -456,6 +603,14 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     title: 'About CERA Medical',
     slug: 'about',
     excerpt: 'Biomedical research and development, laboratory and computational services.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'About CERA Medical',
+        heading: 'About CERA Medical',
+        body: 'A biomedical research and development company providing laboratory, computational and evidence services.',
+      },
+    ],
     body: lexical(publicText(about)),
     seo: {
       title: 'About CERA Medical',
@@ -468,6 +623,14 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     title: 'How We Work',
     slug: 'methodology',
     excerpt: 'Project methodologies and research pipelines.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Methodology',
+        heading: 'How We Work',
+        body: 'Every project follows five stages, with service-specific methods set out in a protocol or analysis plan.',
+      },
+    ],
     body: lexical(publicText(source.slice(methodStart, privacyStart))),
     seo: {
       title: 'Methodology | CERA Medical',
@@ -479,10 +642,112 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     title: 'Get Started',
     slug: 'contact',
     excerpt: 'Ready to advance your research?',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Study scoping and contact',
+        heading: 'Contact us',
+        body: 'For project enquiries, contact CERA Medical by email or use the service request form. We aim to reply within three working days.',
+      },
+    ],
     body: lexical(contact),
     seo: {
       title: 'Contact CERA Medical',
       description: 'Contact CERA Medical about research services.',
+    },
+  });
+  await upsert(payload, 'pages', 'articles', {
+    title: 'Research Updates',
+    slug: 'articles',
+    excerpt: 'Project news and research articles approved for publication by CERA Medical.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Insights and methods',
+        heading: 'Research Updates',
+        body: 'Project news and research articles approved for publication by CERA Medical.',
+      },
+    ],
+    body: lexicalFromStrings([]),
+    seo: {
+      title: 'Research Updates | CERA Medical',
+      description: 'Research updates published by CERA Medical.',
+    },
+  });
+  await upsert(payload, 'pages', 'search', {
+    title: 'Search',
+    slug: 'search',
+    excerpt: 'Find a service or an article.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Site search',
+        heading: 'Search',
+        body: 'Find a service or an article.',
+      },
+    ],
+    body: lexicalFromStrings([]),
+    seo: {
+      title: 'Search | CERA Medical',
+      description: 'Search CERA Medical services and articles.',
+      noIndex: true,
+    },
+  });
+  await upsert(payload, 'pages', 'enquiry', {
+    title: 'Make an Enquiry',
+    slug: 'enquiry',
+    excerpt:
+      'Tell us which service you are interested in and how to reach you. We will confirm by email and you can follow progress in your account.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Project enquiry',
+        heading: 'Make an Enquiry',
+        body: 'Tell us which service you are interested in and how to reach you. We will confirm by email and you can follow progress in your account.',
+      },
+    ],
+    body: lexicalFromStrings([]),
+    seo: {
+      title: 'Make an Enquiry | CERA Medical',
+      description: 'Submit an enquiry about a CERA Medical service and track it in your account.',
+    },
+  });
+  await upsert(payload, 'pages', 'sitemap', {
+    title: 'Sitemap',
+    slug: 'sitemap',
+    excerpt: 'Every page on this site, in one list.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Site map',
+        heading: 'Sitemap',
+        body: 'Every page on this site, in one list. If the navigation has not turned up what you need, it is here.',
+      },
+    ],
+    body: lexicalFromStrings([
+      'Individual service pages are listed with the catalogue. Approved research updates appear when CERA Medical publishes them.',
+    ]),
+    seo: {
+      title: 'Sitemap | CERA Medical',
+      description: 'Every page on the CERA Medical website, in one list.',
+    },
+  });
+  await upsert(payload, 'pages', 'faqs', {
+    title: 'Research Service FAQs',
+    slug: 'faqs',
+    excerpt: 'Answers about CERA Medical research services and project enquiries.',
+    layout: [
+      {
+        blockType: 'sectionHeading',
+        eyebrow: 'Support',
+        heading: 'Research Service FAQs',
+        body: 'Answers about CERA Medical’s research services and project requests.',
+      },
+    ],
+    body: lexicalFromStrings([]),
+    seo: {
+      title: 'Research Service FAQs | CERA Medical',
+      description: 'Answers about CERA Medical research services and project enquiries.',
     },
   });
 

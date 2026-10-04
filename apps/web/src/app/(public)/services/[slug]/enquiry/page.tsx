@@ -5,7 +5,8 @@ import { EnquiryForm } from '../../../../../components/enquiry-form.client.tsx';
 import { AppLink } from '../../../../../components/link.tsx';
 import { PageHeader } from '../../../../../components/page-header.tsx';
 import { getPublicService } from '../../../../../lib/catalogue/client.ts';
-import { getPublicGlobal } from '../../../../../lib/cms/client.ts';
+import { getPublishedDocument } from '../../../../../lib/cms/client.ts';
+import { loadEnquiryFormData } from '../../../../../lib/enquiry-form-server.ts';
 import { pageMetadata } from '../../../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -39,17 +40,19 @@ export default async function ServiceEnquiryPage({
 }) {
   const { slug } = await params;
   const service = await getPublicService(slug);
-  const settings = await getPublicGlobal<{ enquiryForm?: Record<string, unknown> }>(
-    'site-settings',
-  );
+  const [presentation, enquiryData] = await Promise.all([
+    getPublishedDocument('servicePresentation', slug),
+    loadEnquiryFormData(),
+  ]);
   if (service === 'gone' || service === null) notFound();
+  const serviceTitle = presentation?.title ?? service.title;
 
   if (!service.enquiryEnabled) {
     return (
       <div className="mx-auto max-w-site px-6 py-16 md:px-10">
         <EmptyState
           heading="Enquiries are by referral only"
-          description={`${service.title} is not available through the public enquiry form.`}
+          description={`${serviceTitle} is not available through the public enquiry form.`}
           action={<AppLink href="/services">View other services</AppLink>}
         />
       </div>
@@ -59,13 +62,13 @@ export default async function ServiceEnquiryPage({
   return (
     <>
       <PageHeader
-        title={`Enquire about ${service.title}`}
+        title={`Enquire about ${serviceTitle}`}
         lede="Tell us how to reach you. Do not include symptoms, conditions, or test results."
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <EnquiryForm
           startedAt={new Date().toISOString()}
-          {...(settings?.enquiryForm === undefined ? {} : { copy: settings.enquiryForm })}
+          {...enquiryData}
           defaultServiceId={slug}
           source="web_service_page"
           serviceLocked

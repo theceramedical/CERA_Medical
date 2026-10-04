@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Research Updates — CERA Medical | Biomedical Insights &amp; Laboratory Technical Notes</title>
+<meta content="Project news and research articles approved for publication by CERA Medical. Practical guidance on scoping laboratory work, omics analysis, and evidence reporting." name="description"/>
+<!-- Google Fonts: Montserrat (display) & Source Sans 3 (body/data/headings) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&amp;family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#f7f9ff",
+            "inverse-on-surface": "#e7f2ff",
+            "on-tertiary-fixed": "#021b3d",
+            "on-background": "#0b1d2b",
+            "secondary-container": "#8deff9",
+            "tertiary": "#22375a",
+            "on-tertiary-container": "#abc0ea",
+            "surface-container-low": "#ecf4ff",
+            "inverse-primary": "#95cdf8",
+            "on-error-container": "#93000a",
+            "on-primary-fixed": "#001e2f",
+            "on-tertiary-fixed-variant": "#33476a",
+            "on-secondary-container": "#006e75",
+            "on-surface": "#0b1d2b",
+            "inverse-surface": "#213240",
+            "secondary": "#006970",
+            "on-tertiary": "#ffffff",
+            "on-error": "#ffffff",
+            "error": "#ba1a1a",
+            "tertiary-fixed-dim": "#b2c7f1",
+            "surface-dim": "#cadcef",
+            "primary-fixed-dim": "#95cdf8",
+            "secondary-fixed": "#90f2fc",
+            "surface-variant": "#d3e5f7",
+            "outline-variant": "#c1c7cf",
+            "on-primary-container": "#8ec6f0",
+            "primary": "#003b58",
+            "tertiary-fixed": "#d7e3ff",
+            "on-surface-variant": "#41484e",
+            "on-secondary-fixed-variant": "#004f55",
+            "on-secondary-fixed": "#002022",
+            "outline": "#71787f",
+            "error-container": "#ffdad6",
+            "primary-container": "#0a5378",
+            "surface-container-highest": "#d3e5f7",
+            "primary-fixed": "#c9e6ff",
+            "surface-container": "#e1efff",
+            "on-primary-fixed-variant": "#004b6f",
+            "secondary-fixed-dim": "#72d5df",
+            "surface-container-high": "#d8eafd",
+            "tertiary-container": "#3a4e72",
+            "surface": "#f7f9ff",
+            "on-primary": "#ffffff",
+            "surface-tint": "#256489",
+            "on-secondary": "#ffffff",
+            "background": "#f7f9ff",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-2xl": "3rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1rem",
+            "space-xl": "2rem",
+            "margin": "2rem"
+          },
+          "fontFamily": {
+            "display-brand": ["Montserrat", "sans-serif"],
+            "body-sm": ["\"Source Sans 3\"", "sans-serif"],
+            "label-md": ["\"Source Sans 3\"", "sans-serif"],
+            "headline-lg": ["\"Source Sans 3\"", "sans-serif"],
+            "code-tabular": ["\"Source Sans 3\"", "monospace"],
+            "body-md": ["\"Source Sans 3\"", "sans-serif"],
+            "headline-sm": ["\"Source Sans 3\"", "sans-serif"],
+            "headline-md": ["\"Source Sans 3\"", "sans-serif"],
+            "label-sm": ["\"Source Sans 3\"", "sans-serif"],
+            "headline-xl": ["\"Source Sans 3\"", "sans-serif"],
+            "body-lg": ["\"Source Sans 3\"", "sans-serif"],
+            "headline-xl-mobile": ["\"Source Sans 3\"", "sans-serif"],
+            "headline-lg-mobile": ["\"Source Sans 3\"", "sans-serif"]
+          },
+          "fontSize": {
+            "display-brand": ["1.75rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "headline-lg": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "code-tabular": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "body-md": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "0em", "fontWeight": "600" }],
+            "headline-md": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.025em", "fontWeight": "600" }],
+            "headline-xl": ["2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "headline-xl-mobile": ["1.875rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "0em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-surface-variant selection:text-primary font-body-md text-body-md">
+<!-- Specimen / Protocol Live Status Ribbon -->
+<aside aria-label="Clinical Protocol Status" class="w-full bg-gradient-to-r from-[#1B5882] to-[#005B7D] text-on-primary py-1.5 px-margin text-xs font-semibold tracking-wider flex items-center justify-between border-b border-primary/20">
+<div class="max-w-[1200px] w-full mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+<span class="tracking-wide">HARIPUR R&amp;D CAMPUS · ACTIVE OMICS PIPELINE BATCH #849 · ISO 15189 COMPLIANT</span>
+</div>
+<div class="hidden sm:flex items-center gap-4 text-xs font-normal opacity-90">
+<span>GLP-CERTIFIED PROTOCOLS</span>
+<span class="opacity-40">|</span>
+<span>PEER-REVIEW VERIFIED</span>
+</div>
+</div>
+</aside>
+<!-- 1. HEADER & NAVIGATION (Tier A Shared Chrome - 80px) -->
+<header class="docked full-width top-0 sticky z-50 h-20 bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none">
+<div class="w-full max-w-[1200px] mx-auto px-margin h-full flex items-center justify-between">
+<!-- Brand Logo / Wordmark -->
+<a class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight flex items-center gap-2 group" href="/">
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="biotechnology">chips</span>
+</div>
+<div class="flex items-baseline">
+<span class="text-primary font-extrabold text-xl tracking-tight">CERA</span>
+<span class="ml-1.5 text-secondary font-semibold text-xs tracking-[0.28em]">MEDICAL</span>
+</div>
+</a>
+<!-- Center Navigation Links -->
+<nav class="hidden md:flex items-center gap-8 h-full">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/">Home</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/services">Services</a>
+<!-- Active Link: Research Updates -->
+<a class="text-primary dark:text-inverse-primary border-b-2 border-primary dark:border-inverse-primary font-label-md text-label-md pb-1 flex items-center h-full" href="/articles">Research Updates</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/about">About</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary font-label-md text-label-md transition-colors duration-150" href="/contact">Contact</a>
+</nav>
+<!-- Right Action Cluster -->
+<div class="flex items-center gap-3">
+<!-- Search Action Button -->
+<button aria-label="Search articles" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-lg transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</button>
+<!-- Sign In -->
+<a class="hidden sm:inline-flex px-3.5 py-1.5 text-label-md font-label-md text-primary border border-primary/30 hover:border-primary rounded-lg hover:bg-surface-container-low transition-colors duration-150" href="/login">
+          Sign In
+        </a>
+<!-- Make an Enquiry Primary CTA -->
+<a class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md shadow-sm hover:bg-[#004f55] transition-all duration-150 flex items-center gap-1.5" href="/enquiry">
+<span>Make an Enquiry</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</header>
+<main>
+<!-- 2. PAGE HEADER / HERO BAND -->
+<section class="bg-surface-container-low border-b border-outline-variant/60 py-space-xl md:py-space-2xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<!-- Breadcrumb -->
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant mb-4">
+<a class="hover:text-primary transition-colors" href="/">Home</a>
+<span class="material-symbols-outlined text-[12px] opacity-60" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-semibold">Research Updates</span>
+</nav>
+<div class="max-w-3xl">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-primary/10 text-primary font-label-sm text-label-sm uppercase tracking-wider mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            Biomedical Insights &amp; Methodological Notes
+          </span>
+<h1 class="font-headline-xl text-headline-xl md:text-headline-xl text-primary font-bold tracking-tight mb-4">
+            Research Updates
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 leading-relaxed">
+            Project news and research articles approved for publication by CERA Medical. Practical guidance on scoping laboratory work, omics analysis, and evidence reporting for research teams and partner institutions.
+          </p>
+</div>
+<!-- Search & Filter Bar Scaffolding -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm border border-outline-variant/70 mb-6">
+<div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+<!-- Search Input -->
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 text-body-md font-body-md rounded-lg border border-outline-variant bg-surface-bright focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder:text-outline" placeholder="Search articles, methods, or protocols..." type="text"/>
+</div>
+<!-- Category Pill Filters -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none" role="tablist">
+<button aria-selected="true" class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-secondary text-on-secondary shadow-sm whitespace-nowrap" role="tab">
+                All Updates
+              </button>
+<button aria-selected="false" class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-variant whitespace-nowrap transition-colors" role="tab">
+                Research Methods
+              </button>
+<button aria-selected="false" class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-variant whitespace-nowrap transition-colors" role="tab">
+                Data Analysis
+              </button>
+<button aria-selected="false" class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-variant whitespace-nowrap transition-colors" role="tab">
+                Laboratory
+              </button>
+<button aria-selected="false" class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-variant whitespace-nowrap transition-colors" role="tab">
+                Evidence Synthesis
+              </button>
+<button aria-selected="false" class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-variant whitespace-nowrap transition-colors" role="tab">
+                Quality &amp; Governance
+              </button>
+</div>
+</div>
+</div>
+<!-- Key Metrics Bar -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-3 px-4 bg-surface-container rounded-lg border border-outline-variant/40 text-on-surface-variant text-label-sm font-label-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="article">article</span>
+<span><strong class="text-primary font-bold">12+</strong> Published Articles</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="category">category</span>
+<span><strong class="text-primary font-bold">5</strong> Core Disciplines</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified">verified</span>
+<span>Peer-Reviewed Standards</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="update">update</span>
+<span>Updated Weekly</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. FEATURED / LEAD ARTICLE SPOTLIGHT -->
+<section class="max-w-[1200px] mx-auto px-margin py-space-xl">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden hover:border-primary/40 transition-colors">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+<!-- Image Column (16:9 responsive display) -->
+<div class="lg:col-span-6 relative aspect-[16/9] lg:aspect-auto overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" data-alt="Modern clinical research laboratory interior with a female biomedical scientist in a crisp white lab coat and safety goggles pipetting samples into a microplate next to automated diagnostic robotics and dual-screen analytical monitors under cool clinical overhead lighting in navy and cyan tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK-1-G8qiUCu38zKrMeV8fHChBpxRdkQJmGGEeMahhxlzQmDGQSjJ3qu7_71YVd2im10c2seUm1SoCxQZlz9Va7vJrel-D1L3hoZS6iVmmjmc-VEqhUPFS68g0CnolC8UKApIsCJ8ULWWOdArEz9Qw75UuPTThUTYEfscoNFeuaj3-80jOJb1QN7xtQWuUIWwMA--zImkxUnRsMLwXpXq0ifJdFJC_hHWCA8Z4BTfgtukXh8vSfwcIHw"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-secondary text-on-secondary rounded text-label-sm font-label-sm uppercase tracking-wider font-semibold shadow-sm">
+                Flagship Technical Note
+              </span>
+</div>
+</div>
+<!-- Content Column -->
+<div class="lg:col-span-6 p-6 sm:p-8 md:p-10 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2.5 mb-3">
+<span class="px-2.5 py-0.5 rounded bg-primary/10 text-primary font-label-sm text-label-sm font-semibold uppercase">
+                  Research Methods
+                </span>
+<span class="text-outline text-xs">·</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">October 2024</span>
+<span class="text-outline text-xs">·</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span> 7 min read
+                </span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary font-bold mb-4 leading-snug hover:text-primary-container transition-colors">
+<a href="/articles/metagenomic-submission-read-depth-controls">
+                  Planning a metagenomic submission: read depth, controls, and sample prep standards
+                </a>
+</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+                What to agree before sample transfer: optimal read depth for 16S vs shotgun sequencing, spike-in extraction controls, negative extraction blanks, comprehensive metadata fields, and how de-identified raw FASTQ files should be packaged for bioinformatics pipelines.
+              </p>
+<!-- Author Card Info -->
+<div class="flex items-center gap-3 pt-4 border-t border-outline-variant/60 mb-8">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-sm border border-outline-variant">
+                  SC
+                </div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-semibold">Dr. Sarah Chen</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lead Genomics Investigator · CERA Metagenomics Unit</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-wrap items-center gap-4">
+<a class="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-all flex items-center gap-2" href="/articles/metagenomic-submission-read-depth-controls">
+<span>Read Full Article</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="px-4 py-2.5 text-primary border border-outline-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-2" href="#download-checklist">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+<span>Download Submission Checklist (PDF)</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. ARTICLE GRID SECTION -->
+<section class="bg-surface-container-lowest py-space-2xl border-y border-outline-variant/60">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-outline-variant/40">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-primary font-bold">
+              Published Technical Guides &amp; Protocols
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+              Methodological transparency and peer-validated computational workflows from CERA study directors.
+            </p>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-2 text-label-md font-label-md text-secondary">
+<span>Showing 6 of 12 Articles</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+</div>
+</div>
+<!-- 3-Column Bento/Card Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Article 1: Data Analysis -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between group">
+<div>
+<div class="relative aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Bioinformatics computational terminal display showing multi-sample RNA-sequencing PCA plot clusters, variance filtering matrices, and differential expression volcano graphs in cool blue and dark navy tones on a high-resolution laboratory monitor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS2aAo0tbgQwcUuwHHHn_aSCsv41plUHT_sml2wJj4dMe5xx0oN4h5QtEGmkMY_6eAYhNeNOYeUxSwDOGvCzh9icjDsOcAS_K2KYGsNmyKUUfdikcTGxlI69Mnfom3uAUHy8o6dXsVMRE21FCRt0JOguzOkWNCgzq8tblAFjCZqyEbIctMjq0UwXyTwjLkCKtT69RkoiF1aZt9oLLWh1ZQ6MlgVPbkaAVZ0KHyOdAh5OJB8kNZwqk44w"/>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
+                    Data Analysis
+                  </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>September 2024</span>
+<span>·</span>
+<span>5 min read</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2 group-hover:text-secondary transition-colors">
+<a href="/articles/omics-quality-control-batch-correction">
+                    Omics quality control that reviewers expect: batch correction to variance filtering
+                  </a>
+</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Documented filtering thresholds, batch effect awareness, mitochondrial read filtration, and traceable PCA figures — the minimum bar for reproducible biomedical analysis and journal acceptance.
+                </p>
+</div>
+</div>
+<div class="px-6 pb-6 pt-0">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold hover:text-secondary group/link" href="/articles/omics-quality-control-batch-correction">
+<span>Read Technical Note</span>
+<span class="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Article 2: Laboratory (Preclinical Study) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between group">
+<div>
+<div class="relative aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Biomedical researcher working at a biological safety cabinet and liquid handling robotics workstation inside a cleanroom laboratory, carefully handling cryogenic specimen vials with precision pipetting under soft blue analytical lights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8YgpjSrbsQ6G199SWCJevrhKQgSacpxCvfuDSzVTI0C_PXdYOLHJyDyKE4_NOFf3puDEGjbOxnZ5mw4QHxCxlOMRgOE60zI_D3tI9dt5qKDr1K4QF9oAq6z35_l4YENlPpS-Cpx8aDwrkQgTJtku7m6kYHn7emeBfuAAmWeoQO69OU4YFOOV_bmghzF55Lj17-Sp-Q-6nKay4uaMlRnpWpV0WVhn45mEt-ora8Ar72y_NKpUt3bpPyA"/>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-0.5 rounded bg-secondary text-on-secondary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
+                    Laboratory
+                  </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>August 2024</span>
+<span>·</span>
+<span>6 min read</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2 group-hover:text-secondary transition-colors">
+<a href="/articles/handing-off-preclinical-study-cleanly">
+                    Handing off a preclinical study cleanly: ethics, protocols, and cold-chain compliance
+                  </a>
+</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Ethics committee approvals, compound safety data sheets (SDS), statistical sample power locking, and a signed written protocol before samples move — how CERA scopes animal and in-vitro work.
+                </p>
+</div>
+</div>
+<div class="px-6 pb-6 pt-0">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold hover:text-secondary group/link" href="/articles/handing-off-preclinical-study-cleanly">
+<span>Read Technical Note</span>
+<span class="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Article 3: Research Methods (Sanger Sequencing) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between group">
+<div>
+<div class="relative aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Capillary electrophoresis genetic sequencer machine with fluorescent chromatogram traces and electrophoretic DNA base peak plots rendered on an adjoining monitor in a modern molecular biology core facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdKKj2mvLeAhV4bC1BpHXJTq7pWuWcZWLkD3TiP3yjJ4Y4GV0kKLqT-lqjeNHKHQ22fEOnASX0RNTicRxyxiYSDyyabsaO9tAJvTHjK4M412R5MnzL37HRdJYAIqjCB0X9O_73jYs3Q-x3ilOzTDHc2sdLcilNZmE1RANCMm1m1108gTRy3GquEX5-2y0L21wmVgG3tI0FjUjuuqiiJTuwjr2xALPxtubflpChWkiTZ0UuHD9aKzmXEQ"/>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-0.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
+                    Research Methods
+                  </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>July 2024</span>
+<span>·</span>
+<span>4 min read</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2 group-hover:text-secondary transition-colors">
+<a href="/articles/high-throughput-sanger-sequencing-validation">
+                    High-throughput Sanger sequencing validation for synthetic plasmids and CRISPR edits
+                  </a>
+</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Best practices for capillary electrophoresis sample preparation, primer design rules for difficult GC-rich templates, and automated .ab1 trace quality scoring.
+                </p>
+</div>
+</div>
+<div class="px-6 pb-6 pt-0">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold hover:text-secondary group/link" href="/articles/high-throughput-sanger-sequencing-validation">
+<span>Read Technical Note</span>
+<span class="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Article 4: Evidence Synthesis (PRISMA 2020) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between group">
+<div>
+<div class="relative aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Systematic review documentation workstation with printed PRISMA 2020 flow diagrams, meta-analysis forest plots on tablet display, and medical journal indices in an institutional biomedical research library." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoYxma1DK69Q8HVwGfNLGLmvp80KuyAxHj4BR-uapSbTqXyEE7kTDMduYoKOio2A0NZdexYYys1n5EYFBmqiP6xGDhxrJM4Rrh4BAhH5JEtXwdMAqf2-zlQdEBKICEvoHG-p33ALk32UpktZ2zG4zbsh8oZTrjHnuuvcAYcXAN1iY7ZFCs2TDolDHB0ikM4sS1hx3D1llhHIMfT_0vBxOX0cWua9d67rg6teejaPP-WIZoK_79MzmvgQ"/>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-0.5 rounded bg-tertiary-container text-on-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
+                    Evidence Synthesis
+                  </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>June 2024</span>
+<span>·</span>
+<span>8 min read</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2 group-hover:text-secondary transition-colors">
+<a href="/articles/structuring-systematic-reviews-prisma-2020">
+                    Structuring systematic reviews under PRISMA 2020: from scoping to risk-of-bias audits
+                  </a>
+</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  A rigorous breakdown of protocol registration in PROSPERO, multi-database query syntax development, dual-reviewer blinding protocols, and GRADE certainty assessments.
+                </p>
+</div>
+</div>
+<div class="px-6 pb-6 pt-0">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold hover:text-secondary group/link" href="/articles/structuring-systematic-reviews-prisma-2020">
+<span>Read Technical Note</span>
+<span class="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Article 5: Quality & Governance (De-identification) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between group">
+<div>
+<div class="relative aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Liquid nitrogen cryogenic storage dewar in an accredited biobank, with a laboratory technician in thermal gloves scanning high-density 2D matrix data matrix barcodes on biospecimen vials." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDWu2KmWDSlcQb6Nbwe26Qo9_05IkNndviv3HvJ6YNpWNTmlu9J36RdxFXzCw5pSlw7SoTCsNa5SmhAdEa2KE2oyjRq_iDJ_gTREUvxax_DbE-sjNl5T9BAO4OwXaxB_xIplDk8goPpMlzvZ51yOcZMkem568frEXees6RhO7WPHDGKsokm-NrZzSbfgvwlYvjlDFOWX-OA5n8fpVdlLcysY53eOv7J1YPNE3zPp2aGtdAiPc56o4orA"/>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
+                    Quality &amp; Governance
+                  </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>May 2024</span>
+<span>·</span>
+<span>5 min read</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2 group-hover:text-secondary transition-colors">
+<a href="/articles/de-identification-standards-translational-research">
+                    De-identification standards in translational research: protecting biospecimens under IRB rules
+                  </a>
+</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Cryptographic 2D barcoding, zero direct participant identifiers (PII), and cryogenic sample tracking protocols enforced at CERA's Haripur research laboratory.
+                </p>
+</div>
+</div>
+<div class="px-6 pb-6 pt-0">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold hover:text-secondary group/link" href="/articles/de-identification-standards-translational-research">
+<span>Read Technical Note</span>
+<span class="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Article 6: Data Analysis (DESeq2 vs EdgeR) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between group">
+<div>
+<div class="relative aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Dual computer monitors displaying R computational bioconductor scripts, dispersion shrinkage curves, MA plots, and Benjamini-Hochberg adjusted p-value distributions in a bioinformatics office." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjorbuWC8BZau3NuvsrZ6icGSBRY9nrh9z0UUjfas2wOV_s9tp-rBssdMYQVQ2q3kfQl46C1tbHmtl0xi-aDuqcMm_-N2eLtJuAFtCvZcDepu-BF5l2pYebpcXKG0bvnPWH5WD9WLYdVqqdgRIpCg3wShV3yMOI78aTdbm0F9r-3DcUAG43E-ilVdHV7-y2LV6VgPbWClpfDyCTbd8x3qU6X2oQJZoQjl6PKkx6xdsHUG6rsV7QOquQw"/>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
+                    Data Analysis
+                  </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>April 2024</span>
+<span>·</span>
+<span>6 min read</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2 group-hover:text-secondary transition-colors">
+<a href="/articles/differential-gene-expression-deseq2-vs-edger">
+                    Differential gene expression benchmarking: DESeq2 vs EdgeR in low-replicate RNA-seq
+                  </a>
+</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Comparative performance metrics, dispersion estimations, and false-discovery rate control when dealing with challenging primary mammalian tissue replicates.
+                </p>
+</div>
+</div>
+<div class="px-6 pb-6 pt-0">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold hover:text-secondary group/link" href="/articles/differential-gene-expression-deseq2-vs-edger">
+<span>Read Technical Note</span>
+<span class="material-symbols-outlined text-[16px] group-hover/link:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+</div>
+<!-- Pagination Bar -->
+<div class="mt-12 pt-6 border-t border-outline-variant flex items-center justify-between">
+<button class="px-4 py-2 text-label-md font-label-md text-outline hover:text-primary rounded border border-outline-variant hover:border-primary disabled:opacity-50 transition-colors flex items-center gap-1" disabled="">
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_left">chevron_left</span>
+<span>Previous</span>
+</button>
+<div class="flex items-center gap-1">
+<span class="w-8 h-8 rounded bg-primary text-on-primary text-label-md font-label-md flex items-center justify-center font-bold">1</span>
+<button class="w-8 h-8 rounded text-on-surface-variant hover:bg-surface-container text-label-md font-label-md flex items-center justify-center transition-colors">2</button>
+</div>
+<button class="px-4 py-2 text-label-md font-label-md text-primary hover:bg-surface-container-low rounded border border-outline-variant hover:border-primary transition-colors flex items-center gap-1">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 5. RESEARCH DIGEST & NEWSLETTER SIGNUP BAND -->
+<section class="bg-[#E6F2FA] py-space-xl border-b border-outline-variant">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="bg-surface-container-lowest rounded-xl p-8 md:p-10 border border-outline-variant shadow-sm max-w-4xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-8">
+<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-secondary/10 text-secondary mb-3">
+<span class="material-symbols-outlined text-[24px]" data-icon="mark_email_read">mark_email_read</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight mb-3">
+              Subscribe to CERA Research Updates
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Receive quarterly methodological briefs, bioinformatics white papers, and preclinical protocol updates directly in your inbox. No marketing spam — strictly peer-level technical literature.
+            </p>
+</div>
+<!-- Newsletter Form -->
+<form class="max-w-xl mx-auto space-y-3" onsubmit="event.preventDefault();">
+<div class="flex flex-col sm:flex-row gap-2">
+<input class="flex-1 h-11 px-4 text-body-md font-body-md rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" placeholder="Institutional Email Address (e.g., investigator@univ.edu)" required="" type="email"/>
+<button class="h-11 px-6 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:bg-primary-container transition-colors font-semibold shadow-sm flex items-center justify-center gap-2" type="submit">
+<span>Subscribe</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+</button>
+</div>
+<p class="text-xs text-on-surface-variant/80 text-center">
+              By subscribing, you agree to our <a class="underline hover:text-primary" href="/privacy">Privacy Policy</a> and institutional data handling guidelines. You may unsubscribe anytime.
+            </p>
+</form>
+</div>
+</div>
+</section>
+<!-- 6. EDITORIAL STANDARDS & PUBLICATION GOVERNANCE PANEL -->
+<section class="max-w-[1200px] mx-auto px-margin py-space-2xl">
+<div class="border-t-4 border-secondary pt-8 mb-10">
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-secondary font-bold">Institutional Review Governance</span>
+<h3 class="font-headline-lg text-headline-lg text-primary font-bold mt-1">
+          Editorial &amp; Scientific Review Standards
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
+          All technical articles published under the CERA Medical imprimatur adhere to rigorous biomedical review processes prior to dissemination.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Standard 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant">
+<div class="w-10 h-10 rounded bg-surface-container text-primary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]" data-icon="policy">policy</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            Peer-Reviewed Rigor
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Every technical guide is authored or reviewed by PhD-level study directors and validated against international laboratory standards (ISO 15189 / GLP).
+          </p>
+</div>
+<!-- Standard 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant">
+<div class="w-10 h-10 rounded bg-surface-container text-primary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]" data-icon="terminal">terminal</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            Open Data &amp; Reproducibility
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Code snippets, Nextflow workflows, and statistical pipelines referenced in our articles are linked to public version-controlled repositories.
+          </p>
+</div>
+<!-- Standard 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant">
+<div class="w-10 h-10 rounded bg-surface-container text-primary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]" data-icon="shield">shield</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold mb-2">
+            Research Integrity
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Transparent declaration of facility capabilities, equipment models, and reagent specifications with zero commercial sponsor bias.
+          </p>
+</div>
+</div>
+</section>
+<!-- 7. CTA BAND (Dual-stop Linear Gradient #1B5882 to #005B7D) -->
+<section class="w-full bg-gradient-to-r from-[#1B5882] to-[#005B7D] text-on-primary py-space-2xl">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+<div class="max-w-2xl">
+<h3 class="font-headline-xl text-headline-xl text-on-primary font-bold mb-3 tracking-tight">
+              Have a specific research question or dataset to analyse?
+            </h3>
+<p class="font-body-lg text-body-lg text-surface-container-lowest/90 leading-relaxed">
+              Discuss your study protocol, sequencing run, or evidence synthesis needs with our study directors. We reply within three working days.
+            </p>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<a class="px-6 py-3 bg-secondary-fixed text-on-secondary-fixed rounded-lg font-label-md text-label-md font-bold hover:bg-secondary-fixed-dim transition-all shadow-md flex items-center gap-2" href="/enquiry">
+<span>Make an Enquiry</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="px-5 py-3 border border-on-primary/40 text-on-primary rounded-lg font-label-md text-label-md hover:bg-white/10 transition-colors" href="/services">
+              Browse All Services
+            </a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- 8. TIER A FOOTER (Shared Component Footer) -->
+<footer class="w-full bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline">
+<div class="w-full max-w-[1200px] mx-auto px-margin py-space-2xl">
+<!-- 4-Column Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-outline-variant/60">
+<!-- Column 1: Brand Lockup & Description -->
+<div class="space-y-4">
+<a class="font-display-brand text-headline-sm font-bold text-primary dark:text-inverse-primary flex items-center gap-2" href="/">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="biotechnology">chips</span>
+</div>
+<div class="flex items-baseline">
+<span class="text-primary font-extrabold text-xl tracking-tight">CERA</span>
+<span class="ml-1 text-secondary font-semibold text-xs tracking-[0.28em]">MEDICAL</span>
+</div>
+</a>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Biomedical Research and Development. Delivering rigorous preclinical trials, multi-omics computational pipelines, and evidence synthesis for global institutions.
+          </p>
+<div class="pt-2 flex items-center gap-3 text-primary">
+<a aria-label="LinkedIn" class="w-8 h-8 rounded bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors" href="https://linkedin.com">
+<span class="font-bold text-xs">in</span>
+</a>
+<a aria-label="Facebook" class="w-8 h-8 rounded bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors" href="https://facebook.com">
+<span class="font-bold text-xs">fb</span>
+</a>
+<a aria-label="Instagram" class="w-8 h-8 rounded bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors" href="https://instagram.com">
+<span class="font-bold text-xs">ig</span>
+</a>
+<a aria-label="YouTube" class="w-8 h-8 rounded bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors" href="https://youtube.com">
+<span class="font-bold text-xs">yt</span>
+</a>
+</div>
+</div>
+<!-- Column 2: Quick Links -->
+<div>
+<h4 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider mb-4">Quick Links</h4>
+<ul class="space-y-2.5 font-body-sm text-body-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="/">Home</a></li>
+<li><a class="hover:text-primary transition-colors" href="/services">Services</a></li>
+<li><a class="text-primary font-semibold" href="/articles">Research Updates</a></li>
+<li><a class="hover:text-primary transition-colors" href="/about">About</a></li>
+<li><a class="hover:text-primary transition-colors" href="/contact">Contact</a></li>
+</ul>
+</div>
+<!-- Column 3: Support & Governance -->
+<div>
+<h4 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider mb-4">Regulatory &amp; Legal</h4>
+<ul class="space-y-2.5 font-body-sm text-body-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="/enquiry">Make an Enquiry</a></li>
+<li><a class="hover:text-primary transition-colors" href="/login">Sign In</a></li>
+<li><a class="hover:text-primary transition-colors" href="/regulatory-compliance">Regulatory Compliance</a></li>
+<li><a class="hover:text-primary transition-colors" href="/standard-operating-procedures">Standard Operating Procedures</a></li>
+<li><a class="hover:text-primary transition-colors" href="/privacy">Privacy Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="/terms">Terms of Service</a></li>
+<li><a class="hover:text-primary transition-colors" href="/accreditations">Laboratory Accreditations</a></li>
+</ul>
+</div>
+<!-- Column 4: Contact & Facility -->
+<div>
+<h4 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider mb-4">Contact CERA Medical</h4>
+<div class="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5" data-icon="mail">mail</span>
+<a class="hover:text-primary" href="mailto:contact@ceramedical.org">contact@ceramedical.org</a>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5" data-icon="location_on">location_on</span>
+<span>Haripur Research Campus, Khyber Pakhtunkhwa, Pakistan</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5" data-icon="verified_user">verified_user</span>
+<span>ISO 15189 · GLP Certified Research Facility</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Bottom Bar -->
+<div class="pt-6 flex flex-col md:flex-row items-center justify-between text-on-surface-variant text-label-sm font-label-sm gap-4">
+<p>© 2025 CERA Medical R&amp;D Ltd. All rights reserved. Registered biomedical clinical trial facility.</p>
+<p class="text-xs opacity-75">Biomedical research and development in Haripur, Pakistan.</p>
+</div>
+</div>
+</footer>
+</body></html>

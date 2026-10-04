@@ -9,6 +9,7 @@ services:
       NODE_ENV: production
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?required}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?required}
+      NEXT_PUBLIC_CHECKOUT_ENABLED: ${NEXT_PUBLIC_CHECKOUT_ENABLED:-false}
       CMS_URL: ${CMS_URL:?required}
       PAYLOAD_PREVIEW_SECRET: ${PAYLOAD_PREVIEW_SECRET:?required}
       SESSION_SECRET: ${SESSION_SECRET:?required}
@@ -48,6 +49,8 @@ services:
       VENDURE_SHOP_API_URL: http://commerce:3002/shop-api
       CMS_API_URL: http://cms:3001/api
       CORS_ALLOWED_ORIGINS: ${NEXT_PUBLIC_SITE_URL:?required}
+      CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
     networks: [cera-private, cera-public]
     depends_on:
       postgres: { condition: service_healthy }
@@ -134,6 +137,9 @@ services:
       VALKEY_HOST: valkey
       VALKEY_PORT: 6379
       COMMERCE_PORT: 3002
+      CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
+      CERA_ENV: ${CERA_ENV:?required}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
     networks: [cera-private, cera-public]
     depends_on:
       postgres: { condition: service_healthy }

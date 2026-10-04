@@ -2,6 +2,7 @@ import { SkipLink } from '@cera/ui/skip-link';
 import { draftMode } from 'next/headers';
 
 import { LivePreview } from '../../components/live-preview.client.tsx';
+import { SiteAnnouncementBar } from '../../components/site-announcement-bar.tsx';
 import { SiteFooter } from '../../components/site-footer.tsx';
 import { SiteHeader } from '../../components/site-header.tsx';
 
@@ -51,6 +52,8 @@ export default async function PublicLayout({ children }: { readonly children: Re
       {draft.isEnabled ? <LivePreview serverURL={cmsUrl} /> : null}
 
       <SiteHeader />
+
+      <SiteAnnouncementBar />
 
       {/*
        * `id="main"` matches the skip link's target, and `tabIndex={-1}` is what makes the jump

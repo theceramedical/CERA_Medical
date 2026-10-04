@@ -7,6 +7,7 @@ import { createSessionReader } from './auth/read-session.ts';
 import { memoryCatalogueCache } from './catalogue/cache.ts';
 import { catalogueRoutes } from './catalogue/routes.ts';
 import { createVendureClient } from './catalogue/vendure-client.ts';
+import { checkoutRoutes } from './checkout/routes.ts';
 import { postgresEnquiryStore } from './enquiry/postgres-store.ts';
 import { enquiryRoutes } from './enquiry/routes.ts';
 import { createEnquiryService } from './enquiry/service.ts';
@@ -106,6 +107,12 @@ await app.register(
     cache: memoryCatalogueCache(),
   }),
 );
+
+if (process.env.CHECKOUT_ENABLED === 'true') {
+  await app.register(
+    checkoutRoutes(process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api'),
+  );
+}
 
 await app.register(searchRoutes({ catalogue: catalogueClient }));
 await app.register(

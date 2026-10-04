@@ -159,6 +159,8 @@ function buildService(seed: ServiceSeed): Fixture<Service> {
       displayPrice: seed.displayPrice,
       availabilityText: seed.availabilityText,
       enquiryEnabled: seed.enquiryEnabled,
+      listPriceMinor: null,
+      checkoutEnabled: false,
       mediaId: uuid(`service-media-${seed.key}`, SERVICE_CREATED_AT),
       status: seed.status,
       createdAt: SERVICE_CREATED_AT,

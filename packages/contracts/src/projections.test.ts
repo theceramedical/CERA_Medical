@@ -256,9 +256,11 @@ describe('public service projection', () => {
     expect(Object.keys(projection).sort()).toEqual([
       'availabilityText',
       'category',
+      'checkoutEnabled',
       'description',
       'displayPrice',
       'enquiryEnabled',
+      'listPriceMinor',
       'mediaId',
       'slug',
       'summary',

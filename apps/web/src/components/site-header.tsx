@@ -3,6 +3,7 @@ import { Wordmark } from '@cera/ui/wordmark';
 import { Search } from 'lucide-react';
 import NextLink from 'next/link';
 
+import { checkoutEnabled } from '../lib/checkout-enabled.ts';
 import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppButtonLink } from './link.tsx';
@@ -61,6 +62,14 @@ export async function SiteHeader() {
            * search route; a real page is reachable, linkable, and works without JavaScript, and it
            * does not need the combobox pattern that an inline widget would require.
            */}
+          {checkoutEnabled() ? (
+            <NextLink
+              href="/cart"
+              className="hidden rounded-md px-2 py-1 text-body-sm font-medium text-neutral-700 no-underline hover:bg-surface-subtle sm:inline-flex"
+            >
+              Cart
+            </NextLink>
+          ) : null}
           <NextLink
             href="/search"
             className="inline-flex size-11 items-center justify-center rounded-md text-neutral-700 transition-colors duration-base ease-standard hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"

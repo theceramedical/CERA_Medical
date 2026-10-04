@@ -1,7 +1,6 @@
 import { CtaScript } from '@cera/ui/script-art';
 import { Heading, Text } from '@cera/ui/typography';
 
-import { CTA_BAND } from '../../content/homepage.ts';
 import { AppButtonLink } from '../link.tsx';
 
 export interface CtaContent {
@@ -23,7 +22,8 @@ export interface CtaContent {
  * the sub-line are flat white on the gradient instead.
  */
 export function CtaBandSection({ content = {} }: { readonly content?: CtaContent }) {
-  const cta = { ...CTA_BAND, ...content };
+  const cta = content;
+  if (!cta.heading && !cta.body) return null;
   return (
     <section
       aria-labelledby="cta-heading"
@@ -32,7 +32,7 @@ export function CtaBandSection({ content = {} }: { readonly content?: CtaContent
       <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-10 md:px-10 lg:flex-row lg:items-center lg:justify-between lg:py-12">
         <div>
           <Heading level={2} size="h2" tone="on-dark" id="cta-heading">
-            {cta.heading}
+            {cta.heading ?? 'Ready to advance your research?'}
           </Heading>
 
           {/*

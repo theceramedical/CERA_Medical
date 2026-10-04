@@ -15,8 +15,17 @@ const PRODUCT_FIELDS = `
   customFields {
     availabilityText
     enquiryEnabled
+    checkoutEnabled
     displayPriceText
     shortSummary
+  }
+  variants {
+    items {
+      id
+      sku
+      price
+      priceWithTax
+    }
   }
 `;
 

@@ -36,6 +36,7 @@ export const valkeyEnvSchema = z.object({
 });
 
 export const webEnvSchema = commonEnvSchema.extend({
+  NEXT_PUBLIC_CHECKOUT_ENABLED: z.enum(['true', 'false']).default('false'),
   PORT: port.default(3000),
   NEXT_PUBLIC_SITE_URL: url,
   NEXT_PUBLIC_API_URL: url,
@@ -59,6 +60,8 @@ export const apiEnvSchema = commonEnvSchema
     OIDC_ISSUER: url,
     OIDC_JWKS_URI: url,
     VENDURE_SHOP_API_URL: url,
+    CHECKOUT_ENABLED: z.enum(['true', 'false']).default('false'),
+    STRIPE_SECRET_KEY: z.string().optional(),
     CMS_API_URL: url,
     RESEND_WEBHOOK_SECRET: nonEmpty.describe('Svix whsec_... signing secret'),
     RATE_LIMIT_ENQUIRY_PER_IP_HOUR: z.coerce.number().int().min(1).default(10),
@@ -175,6 +178,8 @@ export const cmsEnvSchema = commonEnvSchema
   });
 
 export const commerceEnvSchema = commonEnvSchema.extend({
+  CHECKOUT_ENABLED: z.enum(['true', 'false']).default('false'),
+  STRIPE_SECRET_KEY: z.string().optional(),
   PORT: port.default(3002),
   DB_HOST: nonEmpty,
   DB_PORT: port.default(5432),

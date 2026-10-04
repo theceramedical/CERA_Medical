@@ -1,15 +1,22 @@
 import { Alert } from '@cera/ui/alert';
 import { EmptyState } from '@cera/ui/empty-state';
+import { Icon } from '@cera/ui/icon';
 import { ServiceCard } from '@cera/ui/service-card';
 import { Text } from '@cera/ui/typography';
 
+import { CmsLayout } from '../../../components/cms-content-page.tsx';
+import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { AppLink } from '../../../components/link.tsx';
-import { PageHeader } from '../../../components/page-header.tsx';
-import { RichText } from '../../../components/rich-text.tsx';
-import { HOMEPAGE_SERVICES } from '../../../content/homepage.ts';
+import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
 import { listPublicServices } from '../../../lib/catalogue/client.ts';
 import { listPublishedDocuments, getCurrentDocument } from '../../../lib/cms/client.ts';
+import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
+import { serviceCardIcon } from '../../../lib/service-card-icon.ts';
+import {
+  layoutBlocksWithoutServicesChrome,
+  servicesCatalogueFromLayout,
+} from '../../../lib/services-page-layout.ts';
 
 import type { Metadata } from 'next';
 
@@ -33,7 +40,11 @@ export default async function ServicesPage({
     listPublishedDocuments('servicePresentation'),
     getCurrentDocument('page', 'services'),
   ]);
+  if (servicePage === null) return <CmsPageUnavailable slug="services" />;
+
   const presentationBySlug = new Map(presentations.map((item) => [item.slug, item]));
+  const catalogueLabels = servicesCatalogueFromLayout(servicePage.layout);
+  const bodyBlocks = layoutBlocksWithoutServicesChrome(servicePage.layout);
 
   const query = params.q?.trim().toLowerCase() ?? '';
   const category = params.category;
@@ -42,32 +53,34 @@ export default async function ServicesPage({
     if (category !== undefined && service.category?.slug !== category) return false;
     if (query.length === 0) return true;
     const copy = presentationBySlug.get(service.slug);
+    const title = copy?.title ?? service.title;
     return (
-      service.title.toLowerCase().includes(query) ||
+      title.toLowerCase().includes(query) ||
       (copy?.excerpt ?? service.summary).toLowerCase().includes(query)
     );
   });
 
+  const hero = sectionHeadingFromLayout(servicePage.layout);
+
   return (
     <>
-      <PageHeader
-        title={servicePage?.title ?? 'Complete Service Portfolio'}
-        lede={
-          servicePage?.excerpt ??
-          'CERA Medical provides biomedical research and development services.'
-        }
+      <MarketingPageHeader
+        title={hero?.title ?? servicePage.title}
+        lede={hero?.lede ?? servicePage.excerpt ?? ''}
+        eyebrow={hero?.eyebrow ?? 'Clinical research infrastructure'}
+        {...(hero?.badges !== undefined ? { badges: hero.badges } : {})}
       />
 
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         {degraded ? (
           <Alert className="mb-8" tone="info">
-            Live catalogue data is temporarily unavailable. Showing the last known services.
+            {catalogueLabels.degradedAlert}
           </Alert>
         ) : null}
 
         <form method="get" className="mb-10 flex flex-col gap-4 md:flex-row md:items-end">
           <label className="flex flex-1 flex-col gap-2">
-            <Text size="caption">Search services</Text>
+            <Text size="caption">{catalogueLabels.searchLabel}</Text>
             <input
               name="q"
               defaultValue={params.q ?? ''}
@@ -75,48 +88,41 @@ export default async function ServicesPage({
             />
           </label>
           <button type="submit" className="rounded-md bg-primary-700 px-4 py-2 text-on-primary">
-            Apply
+            {catalogueLabels.applyLabel}
           </button>
         </form>
 
         {filtered.length === 0 ? (
           <EmptyState
-            heading="No services match those filters"
-            description="Clear the search or browse the full list of research services."
+            heading={catalogueLabels.emptyHeading}
+            description={catalogueLabels.emptyDescription}
             action={<AppLink href="/services">View all services</AppLink>}
           />
         ) : (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((service) => {
-              const icon = HOMEPAGE_SERVICES.find((item) => item.slug === service.slug)?.icon;
-              const Icon = icon;
+              const copy = presentationBySlug.get(service.slug);
+              const LucideIcon = serviceCardIcon(copy?.cardIcon);
+              const highlights = copy?.cardHighlights;
               return (
                 <ServiceCard
                   headingLevel={2}
                   key={service.slug}
-                  title={service.title}
-                  description={presentationBySlug.get(service.slug)?.excerpt ?? service.summary}
+                  title={copy?.title ?? service.title}
+                  description={copy?.excerpt ?? service.summary}
                   href={`/services/${service.slug}`}
                   linkAs={AppLink}
-                  {...(Icon === undefined ? {} : { icon: <Icon aria-hidden /> })}
+                  {...(LucideIcon === undefined
+                    ? {}
+                    : { icon: <Icon icon={LucideIcon} size="lg" aria-hidden /> })}
+                  {...(highlights === undefined ? {} : { highlights })}
                 />
               );
             })}
           </ul>
         )}
       </div>
-      {servicePage?.body ? (
-        <section className="border-t border-border bg-surface-tint px-6 py-12 md:px-10 lg:py-16">
-          <div className="mx-auto max-w-site">
-            <Text size="eyebrow" tone="muted">
-              Facilities and approach
-            </Text>
-            <div className="mt-3">
-              <RichText body={servicePage.body} />
-            </div>
-          </div>
-        </section>
-      ) : null}
+      {bodyBlocks.length > 0 ? <CmsLayout blocks={bodyBlocks} /> : null}
     </>
   );
 }

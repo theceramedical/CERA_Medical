@@ -10,10 +10,12 @@ import {
   CollectionService,
   LanguageCode,
   JobQueueService,
+  PaymentMethodService,
   ProductService,
   ProductVariantService,
   Populator,
   RequestContextService,
+  ShippingMethodService,
 } from '@vendure/core';
 
 import { RETIRED_SERVICE_SLUGS, SEED_COLLECTIONS, SEED_SERVICES } from './seed-data.js';
@@ -83,6 +85,7 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
     const existing = await products.findOneBySlug(ctx, service.slug);
     const customFields = {
       enquiryEnabled: service.enquiryEnabled,
+      checkoutEnabled: service.checkoutEnabled,
       internalNotes: service.internalNotes ?? undefined,
     };
     const localizedFields = {
@@ -123,12 +126,26 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
         {
           productId,
           sku: service.slug,
-          price: 0,
-          stockOnHand: 0,
+          price: service.listPriceMinor,
+          stockOnHand: 999_999,
           translations: [{ languageCode: LanguageCode.en, name: service.name }],
         },
       ]);
+    } else if (seededVariants.items[0] !== undefined) {
+      const variant = seededVariants.items[0];
+      if (variant.price !== service.listPriceMinor) {
+        await variants.update(ctx, [
+          {
+            id: variant.id,
+            price: service.listPriceMinor,
+          },
+        ]);
+      }
     }
+  }
+
+  if (process.env.CHECKOUT_ENABLED === 'true') {
+    await ensureCheckoutMethods(ctx, app);
   }
 
   for (const slug of RETIRED_SERVICE_SLUGS) {
@@ -171,6 +188,55 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
     }
   }
   console.warn(`Catalogue seed complete. ${String(SEED_SERVICES.length)} services.`);
+}
+
+async function ensureCheckoutMethods(
+  ctx: Awaited<ReturnType<RequestContextService['create']>>,
+  app: Awaited<ReturnType<typeof bootstrap>>,
+): Promise<void> {
+  const shipping = app.get(ShippingMethodService);
+  const payments = app.get(PaymentMethodService);
+
+  const existingShipping = await shipping.findAll(ctx, { take: 5 });
+  if (existingShipping.totalItems === 0) {
+    await shipping.create(ctx, {
+      code: 'digital-delivery',
+      fulfillmentHandler: 'manual-fulfillment',
+      checker: { code: 'default-shipping-eligibility-checker', arguments: [] },
+      calculator: {
+        code: 'default-shipping-calculator',
+        arguments: [{ name: 'rate', value: '0' }],
+      },
+      translations: [{ languageCode: LanguageCode.en, name: 'Digital delivery', description: '' }],
+    });
+  }
+
+  const handlerCode =
+    (process.env.CERA_ENV ?? 'local') === 'production' && process.env.STRIPE_SECRET_KEY
+      ? 'cera-stripe'
+      : 'cera-test-payment';
+  const existingPayments = await payments.findAll(ctx, { take: 10 });
+  const hasHandler = existingPayments.items.some((method) => method.handler.code === handlerCode);
+  if (!hasHandler) {
+    await payments.create(ctx, {
+      code: handlerCode,
+      enabled: true,
+      handler: {
+        code: handlerCode,
+        arguments:
+          handlerCode === 'cera-stripe'
+            ? [{ name: 'apiKey', value: process.env.STRIPE_SECRET_KEY ?? '' }]
+            : [],
+      },
+      translations: [
+        {
+          languageCode: LanguageCode.en,
+          name: handlerCode === 'cera-stripe' ? 'Card payment' : 'Test payment',
+          description: '',
+        },
+      ],
+    });
+  }
 }
 
 await main();

@@ -1,3 +1,4 @@
+import { servicePresentationBlocks } from '../blocks/layout.ts';
 import { asString } from '../lib/as-string.ts';
 import {
   assertServiceExists,
@@ -55,6 +56,35 @@ export const ServicePresentations: CollectionConfig = publishable({
       },
     },
     { name: 'excerpt', type: 'textarea', maxLength: 400 },
+    {
+      name: 'cardHighlights',
+      type: 'array',
+      maxRows: 6,
+      admin: { description: 'Optional bullets on service catalogue and homepage cards.' },
+      fields: [{ name: 'text', type: 'text', required: true, maxLength: 160 }],
+    },
+    {
+      name: 'cardIcon',
+      type: 'select',
+      admin: { description: 'Icon on catalogue and homepage service cards.' },
+      options: [
+        { label: 'Microscope', value: 'microscope' },
+        { label: 'DNA', value: 'dna' },
+        { label: 'Database', value: 'database' },
+        { label: 'Chart', value: 'chart' },
+        { label: 'Document', value: 'fileText' },
+      ],
+    },
     { name: 'body', type: 'richText', required: true, editor: constrainedEditor() },
+    {
+      name: 'layout',
+      type: 'blocks',
+      maxRows: 24,
+      blocks: servicePresentationBlocks,
+      admin: {
+        description:
+          'Service (catalogue) page sections: hero, capability grids, lifecycle steps, sidebar enquiry card, and specifications. Vendure supplies price and availability.',
+      },
+    },
   ],
 });

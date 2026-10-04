@@ -1,29 +1,23 @@
-import { CmsLayout, type LayoutBlock } from '../../components/cms-content-page.tsx';
-import { ArticlesSection } from '../../components/home/articles-section.tsx';
-import { AudienceSection } from '../../components/home/audience-section.tsx';
-import { CapabilitiesSection } from '../../components/home/capabilities-section.tsx';
+import { type LayoutBlock } from '../../components/cms-content-page.tsx';
+import { CmsPageUnavailable } from '../../components/cms-page-unavailable.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
-import { DeliverablesSection } from '../../components/home/deliverables-section.tsx';
-import { ExploreSection } from '../../components/home/explore-section.tsx';
-import { FaqPreviewSection } from '../../components/home/faq-preview-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
+import { HomeMarketingBlocks } from '../../components/home/home-marketing-blocks.tsx';
 import { MetricsBand } from '../../components/home/metrics-band.tsx';
-import { PrinciplesSection } from '../../components/home/principles-section.tsx';
-import { ProcessSection } from '../../components/home/process-section.tsx';
-import { ServicesSection } from '../../components/home/services-section.tsx';
 import {
   JsonLd,
   medicalBusinessJsonLd,
   organizationJsonLd,
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
-import { HOMEPAGE_ARTICLES } from '../../content/homepage.ts';
-import { getCurrentDocument } from '../../lib/cms/client.ts';
+import { listPublicServices } from '../../lib/catalogue/client.ts';
+import { getCurrentDocument, listPublishedDocuments } from '../../lib/cms/client.ts';
 import { pageMetadata } from '../../lib/seo.ts';
 import { siteUrl } from '../../lib/site-url.ts';
 
 import type { CtaContent } from '../../components/home/cta-band-section.tsx';
 import type { HeroContent } from '../../components/home/hero-section.tsx';
+import type { MetricHighlight } from '../../content/homepage.ts';
 import type { Metadata } from 'next';
 
 function stringField(block: LayoutBlock | undefined, field: string): string | undefined {
@@ -41,11 +35,44 @@ function mediaField(block: LayoutBlock | undefined): { imageUrl?: string; imageA
   };
 }
 
+function trustLabelsFromHero(hero: LayoutBlock | undefined): readonly string[] | undefined {
+  const raw = hero?.trustItems;
+  if (!Array.isArray(raw)) return undefined;
+  const labels = raw
+    .map((item) => {
+      if (item === null || typeof item !== 'object') return null;
+      const label = (item as { label?: unknown }).label;
+      return typeof label === 'string' && label.length > 0 ? label : null;
+    })
+    .filter((item): item is string => item !== null);
+  return labels.length > 0 ? labels : undefined;
+}
+
+function metricsFromBlocks(blocks: readonly LayoutBlock[]): readonly MetricHighlight[] | undefined {
+  const stats = blocks.find((block) => block.blockType === 'statistics');
+  if (stats === undefined) return undefined;
+  const raw = stats.items;
+  if (!Array.isArray(raw)) return undefined;
+  const items = raw
+    .map((item) => {
+      if (item === null || typeof item !== 'object') return null;
+      const row = item as Record<string, unknown>;
+      const value = typeof row.value === 'string' ? row.value : '';
+      const label = typeof row.label === 'string' ? row.label : '';
+      const detail = typeof row.detail === 'string' ? row.detail : undefined;
+      if (value.length === 0 || label.length === 0) return null;
+      return { value, label, ...(detail !== undefined ? { detail } : {}) };
+    })
+    .filter((item): item is MetricHighlight => item !== null);
+  return items.length > 0 ? items : undefined;
+}
+
 function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
   const blocks = Array.isArray(document?.layout) ? (document.layout as LayoutBlock[]) : [];
   const hero = blocks.find((block) => block.blockType === 'hero');
   const cta = blocks.find((block) => block.blockType === 'ctaBand');
   return {
+    metrics: metricsFromBlocks(blocks),
     hero: {
       eyebrow: stringField(hero, 'eyebrow'),
       headlinePrimary: stringField(hero, 'headlinePrimary'),
@@ -55,6 +82,9 @@ function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
       primaryLabel: stringField(hero, 'primaryLabel'),
       secondaryHref: stringField(hero, 'secondaryHref'),
       secondaryLabel: stringField(hero, 'secondaryLabel'),
+      badgeTitle: stringField(hero, 'badgeTitle'),
+      badgeBody: stringField(hero, 'badgeBody'),
+      trustLabels: trustLabelsFromHero(hero),
       ...mediaField(hero),
     } satisfies HeroContent,
     cta: {
@@ -103,15 +133,23 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const HOME_SHELL_BLOCKS = new Set(['hero', 'statistics', 'ctaBand']);
+
 export default async function HomePage() {
   const origin = siteUrl().origin;
-  const document = await getCurrentDocument('page', 'home');
+  const [document, presentations, posts, catalogue] = await Promise.all([
+    getCurrentDocument('page', 'home'),
+    listPublishedDocuments('servicePresentation'),
+    listPublishedDocuments('post'),
+    listPublicServices(),
+  ]);
+  if (document === null) return <CmsPageUnavailable slug="home" />;
+
   const content = pageContent(document);
-  const editorialBlocks = Array.isArray(document?.layout)
-    ? (document.layout as LayoutBlock[]).filter(
-        (block) => block.blockType !== 'hero' && block.blockType !== 'ctaBand',
-      )
-    : [];
+  const layoutBlocks = Array.isArray(document.layout) ? (document.layout as LayoutBlock[]) : [];
+  const marketingBlocks = layoutBlocks.filter(
+    (block) => !HOME_SHELL_BLOCKS.has(block.blockType ?? ''),
+  );
 
   return (
     <>
@@ -119,17 +157,13 @@ export default async function HomePage() {
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
       <HeroSection content={content.hero} />
-      <MetricsBand />
-      <ServicesSection />
-      <AudienceSection />
-      <CapabilitiesSection />
-      <DeliverablesSection />
-      <ProcessSection />
-      <PrinciplesSection />
-      {HOMEPAGE_ARTICLES.length > 0 ? <ArticlesSection /> : null}
-      <FaqPreviewSection />
-      <ExploreSection />
-      {editorialBlocks.length > 0 ? <CmsLayout blocks={editorialBlocks} /> : null}
+      <MetricsBand metrics={content.metrics} />
+      <HomeMarketingBlocks
+        blocks={marketingBlocks}
+        presentations={presentations}
+        posts={posts}
+        catalogue={catalogue.items}
+      />
       <CtaBandSection content={content.cta} />
     </>
   );

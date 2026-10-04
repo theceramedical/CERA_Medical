@@ -72,6 +72,16 @@ export {
 } from './primitives.ts';
 
 export {
+  AddCartLineBodySchema,
+  type Cart,
+  type CartLine,
+  CartLineSchema,
+  CartSchema,
+  CheckoutCompleteBodySchema,
+  CheckoutCompleteResponseSchema,
+} from './cart.ts';
+
+export {
   type AuditEvent,
   AuditEventSchema,
   CLAIM_TOKEN_TTL_MINUTES,

@@ -48,6 +48,7 @@ export interface ServiceCardProps {
    * hardcoded level would skip a heading in one of them.
    */
   readonly headingLevel?: 2 | 3 | 4;
+  readonly highlights?: readonly string[];
   readonly className?: string;
 }
 
@@ -58,6 +59,7 @@ export function ServiceCard({
   icon,
   linkAs: Link = 'a',
   headingLevel = 3,
+  highlights,
   className,
 }: ServiceCardProps) {
   const HeadingTag = `h${String(headingLevel)}` as 'h2' | 'h3' | 'h4';
@@ -79,6 +81,19 @@ export function ServiceCard({
       </HeadingTag>
 
       <Text size="body-sm">{description}</Text>
+
+      {highlights !== undefined && highlights.length > 0 ? (
+        <ul className="mt-4 list-none space-y-2 p-0 text-caption text-muted">
+          {highlights.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span aria-hidden="true" className="mt-0.5 text-accent">
+                ✓
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       {/* Pushes the button to the card's foot so a row of cards with different copy lengths still
           has its buttons on one line. */}

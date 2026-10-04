@@ -23,6 +23,9 @@ export const ROUTE_POLICIES: readonly RouteDeclaration[] = [
   { method: 'GET', path: '/v1/services/:slug', policy: { kind: 'public' } },
   { method: 'GET', path: '/v1/search', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/enquiries', policy: { kind: 'public' } },
+  { method: 'GET', path: '/v1/cart', policy: { kind: 'public' } },
+  { method: 'POST', path: '/v1/cart/lines', policy: { kind: 'public' } },
+  { method: 'POST', path: '/v1/checkout/complete', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/webhooks/resend', policy: { kind: 'signature' } },
   {
     method: 'POST',

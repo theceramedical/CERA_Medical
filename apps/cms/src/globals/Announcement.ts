@@ -11,7 +11,28 @@ export const Announcement: GlobalConfig = {
   },
   fields: [
     { name: 'enabled', type: 'checkbox', defaultValue: false },
-    { name: 'message', type: 'text', maxLength: 200 },
-    { name: 'href', type: 'text' },
+    {
+      name: 'statusLabel',
+      type: 'text',
+      maxLength: 48,
+      admin: { description: 'Short label beside the pulse indicator (e.g. Lab accredited).' },
+    },
+    {
+      name: 'message',
+      type: 'text',
+      maxLength: 240,
+      admin: { description: 'Supporting line shown from tablet width upward.' },
+    },
+    {
+      name: 'href',
+      type: 'text',
+      admin: { description: 'Optional link target (e.g. /methodology).' },
+    },
+    {
+      name: 'linkLabel',
+      type: 'text',
+      maxLength: 80,
+      admin: { description: 'Optional link text (e.g. Review protocol standards).' },
+    },
   ],
 };

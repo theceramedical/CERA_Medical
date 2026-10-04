@@ -1,9 +1,17 @@
 export interface VendureCustomFields {
   readonly availabilityText?: string | null;
   readonly enquiryEnabled?: boolean | null;
+  readonly checkoutEnabled?: boolean | null;
   readonly displayPriceText?: string | null;
   readonly shortSummary?: string | null;
   readonly internalNotes?: string | null;
+}
+
+export interface VendureVariant {
+  readonly id: string;
+  readonly sku: string;
+  readonly price: number;
+  readonly priceWithTax: number;
 }
 
 export interface VendureProduct {
@@ -21,4 +29,5 @@ export interface VendureProduct {
     readonly name: string;
   }[];
   readonly customFields?: VendureCustomFields | null;
+  readonly variants?: { readonly items: readonly VendureVariant[] };
 }

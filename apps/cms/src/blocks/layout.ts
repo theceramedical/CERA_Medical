@@ -25,6 +25,12 @@ export const HeroBlock: Block = {
     { name: 'portrait', type: 'relationship', relationTo: 'media' },
     { name: 'badgeTitle', type: 'text', maxLength: 80 },
     { name: 'badgeBody', type: 'text', maxLength: 160 },
+    {
+      name: 'trustItems',
+      type: 'array',
+      maxRows: 6,
+      fields: [{ name: 'label', type: 'text', required: true, maxLength: 80 }],
+    },
   ],
 };
 
@@ -52,6 +58,52 @@ export const SectionHeadingBlock: Block = {
     { name: 'eyebrow', type: 'text', maxLength: 80 },
     { name: 'heading', type: 'text', required: true, maxLength: 160 },
     { name: 'body', type: 'textarea', maxLength: 400 },
+    {
+      name: 'badges',
+      type: 'array',
+      maxRows: 8,
+      fields: [{ name: 'label', type: 'text', required: true, maxLength: 120 }],
+    },
+  ],
+};
+
+export const ServicesCatalogueBlock: Block = {
+  slug: 'servicesCatalogue',
+  labels: { singular: 'Services catalogue', plural: 'Services catalogues' },
+  admin: { description: 'Labels for the service grid and search on /services.' },
+  fields: [
+    { name: 'searchLabel', type: 'text', defaultValue: 'Search services', maxLength: 80 },
+    { name: 'applyLabel', type: 'text', defaultValue: 'Apply', maxLength: 40 },
+    {
+      name: 'emptyHeading',
+      type: 'text',
+      defaultValue: 'No services match those filters',
+      maxLength: 120,
+    },
+    {
+      name: 'emptyDescription',
+      type: 'textarea',
+      defaultValue: 'Clear the search or browse the full list of research services.',
+      maxLength: 300,
+    },
+    {
+      name: 'degradedAlert',
+      type: 'textarea',
+      defaultValue:
+        'Live catalogue data is temporarily unavailable. Showing the last known services.',
+      maxLength: 300,
+    },
+  ],
+};
+
+const sectionToneField = {
+  name: 'tone',
+  type: 'select' as const,
+  defaultValue: 'surface',
+  options: [
+    { label: 'White', value: 'surface' },
+    { label: 'Light tint', value: 'surface-tint' },
+    { label: 'Secondary tint', value: 'surface-tint-2' },
   ],
 };
 
@@ -62,6 +114,13 @@ export const FeatureGridBlock: Block = {
     { name: 'eyebrow', type: 'text', maxLength: 80 },
     { name: 'heading', type: 'text', required: true, maxLength: 160 },
     { name: 'body', type: 'textarea', maxLength: 400 },
+    sectionToneField,
+    {
+      name: 'centered',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: 'Centre the section heading (audience-style bands).' },
+    },
     {
       name: 'features',
       type: 'array',
@@ -73,6 +132,12 @@ export const FeatureGridBlock: Block = {
         { name: 'description', type: 'textarea', required: true, maxLength: 600 },
         { name: 'href', type: 'text', maxLength: 300 },
         { name: 'linkLabel', type: 'text', maxLength: 80 },
+        {
+          name: 'highlights',
+          type: 'array',
+          maxRows: 8,
+          fields: [{ name: 'text', type: 'text', required: true, maxLength: 200 }],
+        },
       ],
     },
   ],
@@ -85,6 +150,17 @@ export const ProcessStepsBlock: Block = {
     { name: 'eyebrow', type: 'text', maxLength: 80 },
     { name: 'heading', type: 'text', required: true, maxLength: 160 },
     { name: 'body', type: 'textarea', maxLength: 400 },
+    sectionToneField,
+    {
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'grid',
+      options: [
+        { label: 'Two-column grid', value: 'grid' },
+        { label: 'Vertical timeline', value: 'timeline' },
+        { label: 'Numbered cards', value: 'numbered' },
+      ],
+    },
     {
       name: 'steps',
       type: 'array',
@@ -120,12 +196,171 @@ export const StatisticsBlock: Block = {
   ],
 };
 
+export const ServicesShowcaseBlock: Block = {
+  slug: 'servicesShowcase',
+  labels: { singular: 'Services showcase', plural: 'Services showcases' },
+  fields: [
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    { name: 'viewAllHref', type: 'text', defaultValue: '/services', maxLength: 300 },
+    { name: 'viewAllLabel', type: 'text', defaultValue: 'View All Services', maxLength: 80 },
+  ],
+};
+
+export const ArticlesPreviewBlock: Block = {
+  slug: 'articlesPreview',
+  labels: { singular: 'Articles preview', plural: 'Articles previews' },
+  fields: [
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    { name: 'viewAllHref', type: 'text', defaultValue: '/articles', maxLength: 300 },
+    { name: 'viewAllLabel', type: 'text', defaultValue: 'View All Articles', maxLength: 80 },
+    { name: 'maxPosts', type: 'number', defaultValue: 3, min: 1, max: 6 },
+  ],
+};
+
+export const FaqListBlock: Block = {
+  slug: 'faqList',
+  labels: { singular: 'FAQ list', plural: 'FAQ lists' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 80 },
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    { name: 'linkHref', type: 'text', defaultValue: '/faqs', maxLength: 300 },
+    { name: 'linkLabel', type: 'text', defaultValue: 'All FAQs', maxLength: 80 },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 12,
+      fields: [
+        { name: 'question', type: 'text', required: true, maxLength: 200 },
+        { name: 'answer', type: 'textarea', required: true, maxLength: 1200 },
+      ],
+    },
+  ],
+};
+
+export const CalloutBandBlock: Block = {
+  slug: 'calloutBand',
+  labels: { singular: 'Callout band', plural: 'Callout bands' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 120 },
+    { name: 'heading', type: 'text', required: true, maxLength: 200 },
+    { name: 'body', type: 'textarea', maxLength: 600 },
+  ],
+};
+
+/** Service detail hero metadata (Stitch service pages). */
+export const ServiceHeroBlock: Block = {
+  slug: 'serviceHero',
+  labels: { singular: 'Service hero', plural: 'Service heroes' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 120 },
+    {
+      name: 'badges',
+      type: 'array',
+      maxRows: 8,
+      fields: [{ name: 'label', type: 'text', required: true, maxLength: 120 }],
+    },
+    { name: 'noticeTitle', type: 'text', maxLength: 120 },
+    { name: 'noticeBody', type: 'textarea', maxLength: 500 },
+  ],
+};
+
+export const KeyValueListBlock: Block = {
+  slug: 'keyValueList',
+  labels: { singular: 'Specification list', plural: 'Specification lists' },
+  admin: { description: 'Instrument roster or labelled specifications (Stitch service detail).' },
+  fields: [
+    { name: 'heading', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 400 },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 20,
+      fields: [
+        { name: 'label', type: 'text', required: true, maxLength: 200 },
+        { name: 'detail', type: 'text', maxLength: 200 },
+      ],
+    },
+  ],
+};
+
+/** Sticky sidebar enquiry card on service (product) pages. */
+export const ServiceEnquiryAsideBlock: Block = {
+  slug: 'serviceEnquiryAside',
+  labels: { singular: 'Enquiry sidebar', plural: 'Enquiry sidebars' },
+  fields: [
+    { name: 'eyebrow', type: 'text', maxLength: 80, defaultValue: 'Project inquiry' },
+    { name: 'title', type: 'text', maxLength: 160, defaultValue: 'Start a project conversation' },
+    { name: 'body', type: 'textarea', maxLength: 600 },
+    { name: 'buttonLabel', type: 'text', maxLength: 80, defaultValue: 'Request this service' },
+    {
+      name: 'trustItems',
+      type: 'array',
+      maxRows: 8,
+      fields: [{ name: 'label', type: 'text', required: true, maxLength: 160 }],
+    },
+  ],
+};
+
+export const ServiceSidebarCardBlock: Block = {
+  slug: 'serviceSidebarCard',
+  labels: { singular: 'Sidebar card', plural: 'Sidebar cards' },
+  fields: [
+    { name: 'title', type: 'text', required: true, maxLength: 160 },
+    { name: 'body', type: 'textarea', maxLength: 800 },
+    {
+      name: 'items',
+      type: 'array',
+      maxRows: 12,
+      fields: [
+        { name: 'label', type: 'text', required: true, maxLength: 120 },
+        { name: 'detail', type: 'textarea', maxLength: 400 },
+      ],
+    },
+    {
+      name: 'bullets',
+      type: 'array',
+      maxRows: 12,
+      fields: [{ name: 'text', type: 'text', required: true, maxLength: 200 }],
+    },
+  ],
+};
+
+/** Blocks allowed on service presentations (Vendure catalogue product pages). */
+export const servicePresentationBlocks: Block[] = [
+  ServiceHeroBlock,
+  SectionHeadingBlock,
+  RichTextBlock,
+  FeatureGridBlock,
+  ProcessStepsBlock,
+  KeyValueListBlock,
+  CalloutBandBlock,
+  FaqListBlock,
+  ServiceEnquiryAsideBlock,
+  ServiceSidebarCardBlock,
+];
+
 export const layoutBlocks: Block[] = [
   HeroBlock,
   SectionHeadingBlock,
+  ServicesCatalogueBlock,
   FeatureGridBlock,
   ProcessStepsBlock,
   StatisticsBlock,
+  ServicesShowcaseBlock,
+  ArticlesPreviewBlock,
+  FaqListBlock,
+  CalloutBandBlock,
   RichTextBlock,
   CtaBandBlock,
+  ServiceHeroBlock,
+  KeyValueListBlock,
+  ServiceEnquiryAsideBlock,
+  ServiceSidebarCardBlock,
 ];

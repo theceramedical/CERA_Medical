@@ -17,6 +17,52 @@ export const SiteSettings: GlobalConfig = {
     { name: 'phone', type: 'text' },
     { name: 'address', type: 'textarea' },
     {
+      name: 'contactLocations',
+      type: 'array',
+      label: 'Contact locations',
+      maxRows: 8,
+      fields: [
+        { name: 'label', type: 'text', required: true, maxLength: 80 },
+        { name: 'value', type: 'textarea', required: true, maxLength: 500 },
+        { name: 'href', type: 'text', maxLength: 300 },
+        {
+          name: 'icon',
+          type: 'select',
+          defaultValue: 'mapPin',
+          options: [
+            { label: 'Email', value: 'mail' },
+            { label: 'Location', value: 'mapPin' },
+            { label: 'Phone', value: 'phone' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'contactEnquiry',
+      type: 'group',
+      label: 'Contact page enquiry panel',
+      fields: [
+        { name: 'heading', type: 'text', maxLength: 120 },
+        { name: 'body', type: 'textarea', maxLength: 600 },
+        { name: 'buttonLabel', type: 'text', maxLength: 80 },
+        { name: 'buttonHref', type: 'text', maxLength: 300 },
+        {
+          name: 'formSectionTitle',
+          type: 'text',
+          defaultValue: 'Service request form',
+          maxLength: 120,
+        },
+        {
+          name: 'showInlineForm',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'When enabled, the full enquiry form appears on the Contact page.',
+          },
+        },
+      ],
+    },
+    {
       name: 'social',
       type: 'array',
       fields: [
@@ -93,6 +139,61 @@ export const SiteSettings: GlobalConfig = {
           type: 'textarea',
           defaultValue:
             'Thank you. Your request has been received and we will reply within three working days.',
+        },
+        {
+          name: 'fieldLabels',
+          type: 'group',
+          fields: [
+            { name: 'name', type: 'text', defaultValue: 'Name', maxLength: 80 },
+            { name: 'email', type: 'text', defaultValue: 'Email address', maxLength: 80 },
+            { name: 'phone', type: 'text', defaultValue: 'Phone', maxLength: 80 },
+            { name: 'institution', type: 'text', defaultValue: 'Institution', maxLength: 80 },
+            { name: 'country', type: 'text', defaultValue: 'Country', maxLength: 80 },
+            { name: 'serviceId', type: 'text', defaultValue: 'Service required', maxLength: 80 },
+            { name: 'message', type: 'text', defaultValue: 'Project description', maxLength: 80 },
+            { name: 'submit', type: 'text', defaultValue: 'Submit enquiry', maxLength: 80 },
+          ],
+        },
+        {
+          name: 'fieldHints',
+          type: 'group',
+          fields: [
+            {
+              name: 'email',
+              type: 'text',
+              defaultValue: 'We use this address to reply to your request.',
+              maxLength: 200,
+            },
+            {
+              name: 'serviceLocked',
+              type: 'text',
+              defaultValue: 'This enquiry is for the service you were reading about.',
+              maxLength: 200,
+            },
+            {
+              name: 'message',
+              type: 'textarea',
+              defaultValue:
+                'Describe your samples, compounds or data, timeline and what you need. Do not include patient names or other identifying details.',
+              maxLength: 400,
+            },
+          ],
+        },
+        {
+          name: 'retentionFooter',
+          type: 'textarea',
+          defaultValue: 'See the Data Retention Policy for how long they are kept.',
+          maxLength: 300,
+        },
+        {
+          name: 'extraServices',
+          type: 'array',
+          admin: { description: 'Additional enquiry dropdown options (non-catalogue).' },
+          maxRows: 10,
+          fields: [
+            { name: 'slug', type: 'text', required: true, maxLength: 80 },
+            { name: 'title', type: 'text', required: true, maxLength: 160 },
+          ],
         },
       ],
     },

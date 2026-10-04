@@ -12,6 +12,8 @@ import type { VendureProduct } from './types.ts';
  */
 export function mapVendureProduct(product: VendureProduct): Service {
   const collection = product.collections?.[0];
+  const variant = product.variants?.items[0];
+  const listPriceMinor = variant !== undefined && variant.price > 0 ? variant.price : null;
 
   return ServiceSchema.parse({
     id: product.id,
@@ -26,6 +28,8 @@ export function mapVendureProduct(product: VendureProduct): Service {
     displayPrice: product.customFields?.displayPriceText ?? null,
     availabilityText: product.customFields?.availabilityText ?? null,
     enquiryEnabled: product.customFields?.enquiryEnabled ?? true,
+    checkoutEnabled: product.customFields?.checkoutEnabled ?? true,
+    listPriceMinor,
     mediaId: product.featuredAsset?.id ?? null,
     status: product.enabled === false ? 'inactive' : 'active',
     createdAt: product.createdAt,

@@ -1,9 +1,12 @@
 import { EmptyState } from '@cera/ui/empty-state';
 import { Text } from '@cera/ui/typography';
 
+import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { AppLink } from '../../../components/link.tsx';
-import { PageHeader } from '../../../components/page-header.tsx';
-import { HOMEPAGE_ARTICLES, HOMEPAGE_SERVICES } from '../../../content/homepage.ts';
+import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
+import { listPublicServices } from '../../../lib/catalogue/client.ts';
+import { getCurrentDocument, listPublishedDocuments } from '../../../lib/cms/client.ts';
+import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -23,26 +26,6 @@ interface Hit {
   readonly excerpt: string;
 }
 
-function rank(query: string): Hit[] {
-  const term = query.toLowerCase();
-  const services = HOMEPAGE_SERVICES.filter(
-    (item) =>
-      item.title.toLowerCase().includes(term) || item.description.toLowerCase().includes(term),
-  ).map((item) => ({
-    href: `/services/${item.slug}`,
-    title: item.title,
-    excerpt: item.description,
-  }));
-  const articles = HOMEPAGE_ARTICLES.filter(
-    (item) => item.title.toLowerCase().includes(term) || item.excerpt.toLowerCase().includes(term),
-  ).map((item) => ({
-    href: `/articles/${item.slug}`,
-    title: item.title,
-    excerpt: item.excerpt,
-  }));
-  return [...services, ...articles].sort((a, b) => a.href.localeCompare(b.href));
-}
-
 export default async function SearchPage({
   searchParams,
 }: {
@@ -50,11 +33,52 @@ export default async function SearchPage({
 }) {
   const { q } = await searchParams;
   const query = q?.trim() ?? '';
-  const hits = query.length >= 2 ? rank(query) : [];
+
+  const [page, { items: services }, posts] = await Promise.all([
+    getCurrentDocument('page', 'search'),
+    listPublicServices(),
+    listPublishedDocuments('post'),
+  ]);
+  if (page === null) return <CmsPageUnavailable slug="search" />;
+
+  const hero = sectionHeadingFromLayout(page.layout);
+  const presentations = await listPublishedDocuments('servicePresentation');
+  const presentationBySlug = new Map(presentations.map((item) => [item.slug, item]));
+
+  const hits: Hit[] =
+    query.length >= 2
+      ? [
+          ...services
+            .filter((item) => {
+              const copy = presentationBySlug.get(item.slug);
+              const text = `${item.title} ${copy?.excerpt ?? item.summary}`.toLowerCase();
+              return text.includes(query.toLowerCase());
+            })
+            .map((item) => ({
+              href: `/services/${item.slug}`,
+              title: presentationBySlug.get(item.slug)?.title ?? item.title,
+              excerpt: presentationBySlug.get(item.slug)?.excerpt ?? item.summary,
+            })),
+          ...posts
+            .filter((item) => {
+              const text = `${item.title} ${item.excerpt ?? ''}`.toLowerCase();
+              return text.includes(query.toLowerCase());
+            })
+            .map((item) => ({
+              href: `/articles/${item.slug}`,
+              title: item.title,
+              excerpt: item.excerpt ?? '',
+            })),
+        ].sort((a, b) => a.href.localeCompare(b.href))
+      : [];
 
   return (
     <>
-      <PageHeader title="Search" lede="Find a service or an article." />
+      <MarketingPageHeader
+        title={hero?.title ?? page.title}
+        lede={hero?.lede ?? page.excerpt ?? ''}
+        eyebrow={hero?.eyebrow ?? 'Site search'}
+      />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <form method="get" className="mb-8 flex flex-col gap-3 md:flex-row">
           <label className="flex flex-1 flex-col gap-2">

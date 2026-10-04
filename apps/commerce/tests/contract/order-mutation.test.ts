@@ -9,7 +9,8 @@ import { describe, expect, it } from 'vitest';
  */
 
 const shopUrl = process.env.VENDURE_SHOP_API_URL;
-const describeWithShop = shopUrl === undefined ? describe.skip : describe;
+const checkoutOn = process.env.CHECKOUT_ENABLED === 'true';
+const describeWithShop = shopUrl === undefined || checkoutOn ? describe.skip : describe;
 
 describeWithShop('Shop API checkout neutralisation', () => {
   it('rejects addItemToOrder', async () => {

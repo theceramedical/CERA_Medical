@@ -35,7 +35,7 @@ describe('bootstrapClientContent', () => {
 
     await bootstrapClientContent(payload);
 
-    expect(create).toHaveBeenCalledTimes(19);
+    expect(create).toHaveBeenCalledTimes(24);
     expect(create).toHaveBeenCalledWith({
       collection: 'users',
       data: { email: 'owner@example.org', password: 'a'.repeat(40), role: 'administrator' },
@@ -55,7 +55,21 @@ describe('bootstrapClientContent', () => {
     );
     expect(
       records.filter((record) => record.collection === 'pages').map((record) => record.data.slug),
-    ).toEqual(['home', 'services', 'about', 'methodology', 'contact']);
+    ).toEqual(
+      expect.arrayContaining([
+        'home',
+        'services',
+        'about',
+        'methodology',
+        'contact',
+        'articles',
+        'faqs',
+        'search',
+        'enquiry',
+        'sitemap',
+      ]),
+    );
+    expect(records.filter((record) => record.collection === 'pages').length).toBe(10);
     const home = records.find((record) => record.data.slug === 'home')?.data;
     expect(home?.layout).toEqual(
       expect.arrayContaining([
@@ -65,6 +79,7 @@ describe('bootstrapClientContent', () => {
           headlineAccent: 'From Study to Report.',
         }),
         expect.objectContaining({ blockType: 'ctaBand', href: '/enquiry' }),
+        expect.objectContaining({ blockType: 'servicesShowcase' }),
       ]),
     );
     expect(

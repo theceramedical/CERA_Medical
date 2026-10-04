@@ -4,59 +4,90 @@ import { ServiceCard } from '@cera/ui/service-card';
 import { ArrowRight } from 'lucide-react';
 import NextLink from 'next/link';
 
-import { HOMEPAGE_SERVICES } from '../../content/homepage.ts';
+import type { ContentDocument } from '@cera/contracts';
+import type { PublicService } from '@cera/contracts/projections';
+
+import { serviceCardIcon } from '../../lib/service-card-icon.ts';
 import { AppButtonLink } from '../link.tsx';
 
-/**
- * The service card row (design-language.md section 5.2 and 4.2).
- *
- * Five services use a three-column grid at desktop widths so the catalogue copy remains readable.
- */
-export function ServicesSection() {
+export interface ServicesSectionProps {
+  readonly heading?: string;
+  readonly subheading?: string;
+  readonly viewAllHref?: string;
+  readonly viewAllLabel?: string;
+  readonly presentations?: readonly ContentDocument[];
+  readonly catalogue?: readonly PublicService[];
+}
+
+export function ServicesSection({
+  heading = 'Research Services',
+  subheading = 'Five integrated service lines — each with enquiry enabled on the catalogue so you can request scoping without leaving the site.',
+  viewAllHref = '/services',
+  viewAllLabel = 'View All Services',
+  presentations = [],
+  catalogue = [],
+}: ServicesSectionProps) {
+  const presentationBySlug = new Map(presentations.map((item) => [item.slug, item]));
+  const cards =
+    catalogue.length > 0
+      ? catalogue.map((service) => {
+          const copy = presentationBySlug.get(service.slug);
+          return {
+            slug: service.slug,
+            title: copy?.title ?? service.title,
+            description: copy?.excerpt ?? service.summary,
+            highlights: copy?.cardHighlights,
+            iconKey: copy?.cardIcon,
+            wide: service.slug === 'evidence-synthesis-technical-reports',
+          };
+        })
+      : presentations.map((copy) => ({
+          slug: copy.slug,
+          title: copy.title,
+          description: copy.excerpt ?? '',
+          highlights: copy.cardHighlights,
+          iconKey: copy.cardIcon,
+          wide: copy.slug === 'evidence-synthesis-technical-reports',
+        }));
+
+  if (cards.length === 0) return null;
+
   return (
     <section aria-labelledby="services-heading" className="bg-surface">
       <div className="mx-auto max-w-site px-6 py-14 md:px-10 lg:py-20">
         <SectionHeader
           level={2}
-          heading={<span id="services-heading">Research Services</span>}
-          subheading="Five integrated service lines — each with enquiry enabled on the catalogue so you can request scoping without leaving the site."
+          heading={<span id="services-heading">{heading}</span>}
+          subheading={subheading}
           action={
             <AppButtonLink
-              href="/services"
+              href={viewAllHref}
               variant="ghost"
               iconEnd={<Icon icon={ArrowRight} size="sm" />}
             >
-              View All Services
+              {viewAllLabel}
             </AppButtonLink>
           }
         />
-
-        {/*
-         * A `<ul>`, and `ServiceCard` renders an `<li>`.
-         *
-         * Not a style choice: a `listitem` with no list ancestor is a serious accessibility violation,
-         * and it is exactly the defect the browser sweep found on the design preview page in Phase 03
-         * WP-03.8. The type system cannot enforce it, so the requirement is documented on
-         * `ServiceCardProps` and caught by the axe run.
-         */}
-        <ul className="mt-12 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
-          {HOMEPAGE_SERVICES.map((service) => (
-            <ServiceCard
-              key={service.slug}
-              title={service.title}
-              description={service.description}
-              href={`/services/${service.slug}`}
-              icon={<Icon icon={service.icon} size="lg" />}
-              // `next/link` for both links inside the card. One prop, so the title and the "Learn
-              // More" button cannot end up routed differently - which shows up as the title
-              // navigating instantly and the button doing a full page load.
-              linkAs={NextLink}
-              // `h3`, because the section's own heading is the `h2`. The card defaults to this, and it
-              // is stated to make the outline visible at the call site rather than only in the
-              // component.
-              headingLevel={3}
-            />
-          ))}
+        <ul className="mt-12 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+          {cards.map((service) => {
+            const LucideIcon = serviceCardIcon(service.iconKey);
+            return (
+              <ServiceCard
+                key={service.slug}
+                title={service.title}
+                description={service.description}
+                href={`/services/${service.slug}`}
+                {...(LucideIcon === undefined
+                  ? {}
+                  : { icon: <Icon icon={LucideIcon} size="lg" /> })}
+                {...(service.highlights === undefined ? {} : { highlights: service.highlights })}
+                {...(service.wide ? { className: 'md:col-span-2 lg:col-span-2' } : {})}
+                linkAs={NextLink}
+                headingLevel={3}
+              />
+            );
+          })}
         </ul>
       </div>
     </section>
