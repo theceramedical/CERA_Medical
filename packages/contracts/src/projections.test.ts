@@ -58,6 +58,8 @@ const service: Service = {
   displayPrice: 'From £250',
   availabilityText: 'Usually within 2 weeks',
   enquiryEnabled: true,
+  listPriceMinor: null,
+  checkoutEnabled: false,
   mediaId: 'media-1',
   status: 'active',
   createdAt: '2026-01-01T00:00:00.000Z',
