@@ -1,8 +1,38 @@
 import { LanguageCode, Logger, PaymentMethodHandler } from '@vendure/core';
 
-import { resolveSafepayEnvironment, safepayTrackerCompleted } from '../lib/safepay.ts';
-
 const logger = new Logger();
+
+type SafepayEnvironment = 'sandbox' | 'production';
+
+function safepayApiHost(environment: SafepayEnvironment): string {
+  return environment === 'production'
+    ? 'https://api.getsafepay.com'
+    : 'https://sandbox.api.getsafepay.com';
+}
+
+function resolveSafepayEnvironment(): SafepayEnvironment {
+  return process.env.SAFEPAY_ENVIRONMENT === 'production' ? 'production' : 'sandbox';
+}
+
+interface SafepayReporterResponse {
+  readonly data?: {
+    readonly tracker?: { readonly state?: string; readonly token?: string };
+  };
+}
+
+async function safepayTrackerCompleted(
+  trackerToken: string,
+  merchantSecret: string,
+  environment: SafepayEnvironment,
+): Promise<boolean> {
+  const host = safepayApiHost(environment);
+  const response = await fetch(`${host}/reporter/api/v1/payments/${trackerToken}`, {
+    headers: { 'X-SFPY-MERCHANT-SECRET': merchantSecret },
+  });
+  if (!response.ok) return false;
+  const body = (await response.json()) as SafepayReporterResponse;
+  return body.data?.tracker?.state === 'TRACKER_ENDED';
+}
 
 /**
  * Online payments via Safepay hosted checkout.
