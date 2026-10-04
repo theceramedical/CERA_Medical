@@ -1,6 +1,15 @@
 import clientCopy from '../content/client-website-content.json' with { type: 'json' };
 
-import type { Payload, RequiredDataFromCollectionSlug } from 'payload';
+import type { Payload, PayloadRequest, RequiredDataFromCollectionSlug } from 'payload';
+
+/** Publication hooks treat local, unauthenticated API calls as system bootstrap (see publication.ts). */
+function systemReq(payload: Payload): PayloadRequest {
+  return {
+    payload,
+    payloadAPI: 'local',
+    user: undefined,
+  } as unknown as PayloadRequest;
+}
 
 interface SourceParagraph {
   readonly style: string;
@@ -192,12 +201,14 @@ async function upsert(
   const existing = found.docs[0] as { id: number | string; fixture?: boolean } | undefined;
   if (existing !== undefined && existing.fixture !== true) return;
   const record = { ...data, fixture: false, _status: 'published' as const };
+  const req = systemReq(payload);
   if (existing === undefined) {
     await payload.create({
       collection,
       data: record,
       overrideAccess: true,
       draft: false,
+      req,
     });
   } else {
     await payload.update({
@@ -206,6 +217,7 @@ async function upsert(
       data: record,
       overrideAccess: true,
       draft: false,
+      req,
     });
   }
 }

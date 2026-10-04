@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { HOMEPAGE_ARTICLES, HOMEPAGE_SERVICES } from './homepage.ts';
+import {
+  HOMEPAGE_ARTICLES,
+  HOMEPAGE_DELIVERABLES,
+  HOMEPAGE_PRINCIPLES,
+  HOMEPAGE_SERVICES,
+} from './homepage.ts';
 
 describe('client-provided homepage content', () => {
   it('lists the five CERA research services with unique route slugs', () => {
@@ -24,5 +29,10 @@ describe('client-provided homepage content', () => {
 
   it('uses a distinct icon for every service card', () => {
     expect(new Set(HOMEPAGE_SERVICES.map(({ icon }) => icon)).size).toBe(5);
+  });
+
+  it('ships homepage bands with principles and deliverables', () => {
+    expect(HOMEPAGE_PRINCIPLES).toHaveLength(4);
+    expect(HOMEPAGE_DELIVERABLES).toHaveLength(4);
   });
 });

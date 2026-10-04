@@ -3,8 +3,12 @@ import { ArticlesSection } from '../../components/home/articles-section.tsx';
 import { AudienceSection } from '../../components/home/audience-section.tsx';
 import { CapabilitiesSection } from '../../components/home/capabilities-section.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
+import { DeliverablesSection } from '../../components/home/deliverables-section.tsx';
+import { ExploreSection } from '../../components/home/explore-section.tsx';
+import { FaqPreviewSection } from '../../components/home/faq-preview-section.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { MetricsBand } from '../../components/home/metrics-band.tsx';
+import { PrinciplesSection } from '../../components/home/principles-section.tsx';
 import { ProcessSection } from '../../components/home/process-section.tsx';
 import { ServicesSection } from '../../components/home/services-section.tsx';
 import {
@@ -119,8 +123,12 @@ export default async function HomePage() {
       <ServicesSection />
       <AudienceSection />
       <CapabilitiesSection />
+      <DeliverablesSection />
       <ProcessSection />
+      <PrinciplesSection />
       {HOMEPAGE_ARTICLES.length > 0 ? <ArticlesSection /> : null}
+      <FaqPreviewSection />
+      <ExploreSection />
       {editorialBlocks.length > 0 ? <CmsLayout blocks={editorialBlocks} /> : null}
       <CtaBandSection content={content.cta} />
     </>

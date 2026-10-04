@@ -18,7 +18,7 @@ export function ProcessSection() {
         <SectionHeader
           level={2}
           heading={<span id="process-heading">How CERA Works</span>}
-          subheading="Every project follows five agreed stages."
+          subheading="A consistent workflow from first conversation to delivered results, with quality checks at each stage."
         />
 
         <ProcessSteps className="mt-12">

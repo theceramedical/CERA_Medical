@@ -19,7 +19,7 @@ export function ServicesSection() {
         <SectionHeader
           level={2}
           heading={<span id="services-heading">Research Services</span>}
-          subheading="From preclinical work and laboratory analysis to microbiome research and evidence reports."
+          subheading="Five integrated service lines — each with enquiry enabled on the catalogue so you can request scoping without leaving the site."
           action={
             <AppButtonLink
               href="/services"

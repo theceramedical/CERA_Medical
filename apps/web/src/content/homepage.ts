@@ -13,6 +13,10 @@ import {
   Building2,
   GraduationCap,
   Hospital,
+  FileCheck2,
+  LineChart,
+  Lock,
+  MessagesSquare,
 } from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
@@ -44,7 +48,8 @@ export const HOMEPAGE_SERVICES: readonly ServiceSummary[] = [
   {
     slug: 'preclinical-studies',
     title: 'Preclinical Studies',
-    description: 'Safety and efficacy testing in animal models, cells and computer simulations.',
+    description:
+      'Safety and efficacy testing in animal models, cells and computer simulations — scoped with ethics approval before samples move.',
     icon: Microscope,
   },
   {
@@ -56,7 +61,8 @@ export const HOMEPAGE_SERVICES: readonly ServiceSummary[] = [
   {
     slug: 'metagenomic-data-analysis',
     title: 'Metagenomic Data Analysis',
-    description: 'Microbiome analysis from raw sequencing reads to publication-ready results.',
+    description:
+      'Microbiome analysis from raw sequencing reads through QC, annotation, and publication-ready figures.',
     icon: Database,
   },
   {
@@ -236,3 +242,112 @@ export const CTA_BAND = {
   heading: 'Ready to advance your research?',
   body: 'Share your research question, materials or datasets. We respond within three working days with next steps — no clinical records on this form.',
 } as const;
+
+export interface PrincipleItem {
+  readonly title: string;
+  readonly description: string;
+  readonly icon: LucideIcon;
+}
+
+export const HOMEPAGE_PRINCIPLES: readonly PrincipleItem[] = [
+  {
+    title: 'Written scope first',
+    description:
+      'Every engagement records the research question, materials, deliverables, timeline and cost before laboratory or analysis work begins.',
+    icon: FileCheck2,
+  },
+  {
+    title: 'Traceable methods',
+    description:
+      'Protocols, software versions and parameters are documented so results can be reviewed, reproduced, or extended in a follow-on study.',
+    icon: ClipboardCheck,
+  },
+  {
+    title: 'Confidential handling',
+    description:
+      'Project data and samples are handled under agreed retention and access rules. The public website never collects clinical records.',
+    icon: Lock,
+  },
+  {
+    title: 'Clear communication',
+    description:
+      'You receive a named reference for enquiries, status updates through your account when claimed, and a defined path for revisions.',
+    icon: MessagesSquare,
+  },
+];
+
+export interface DeliverableItem {
+  readonly title: string;
+  readonly description: string;
+}
+
+export const HOMEPAGE_DELIVERABLES: readonly DeliverableItem[] = [
+  {
+    title: 'Study or analysis plan',
+    description: 'Agreed endpoints, controls, and acceptance criteria before execution.',
+  },
+  {
+    title: 'Results package',
+    description: 'Figures, tables, and methods text suitable for internal review or publication.',
+  },
+  {
+    title: 'Data handover',
+    description: 'Processed outputs and metadata transferred through agreed secure channels.',
+  },
+  {
+    title: 'Revision round',
+    description: 'Included discussion and one structured revision cycle on delivered reporting.',
+  },
+];
+
+export interface FaqPreviewItem {
+  readonly question: string;
+  readonly answer: string;
+}
+
+export const HOMEPAGE_FAQ_PREVIEW: readonly FaqPreviewItem[] = [
+  {
+    question: 'How does a project begin?',
+    answer:
+      'We discuss your research question, available data or materials, required outputs, scope, timeline and cost. The agreed scope is recorded in writing before work begins.',
+  },
+  {
+    question: 'What should I include in an enquiry?',
+    answer:
+      'Describe the service you need, timeline, and outputs. Do not include participant names or other direct identifiers in the website form.',
+  },
+  {
+    question: 'How quickly will you reply?',
+    answer: 'We aim to respond within three working days with next steps or clarifying questions.',
+  },
+];
+
+export interface ExploreLink {
+  readonly title: string;
+  readonly description: string;
+  readonly href: string;
+  readonly icon: LucideIcon;
+}
+
+export const HOMEPAGE_EXPLORE: readonly ExploreLink[] = [
+  {
+    title: 'How we work',
+    description:
+      'Five project stages from scoping through follow-up, with quality checks at each step.',
+    href: '/methodology',
+    icon: Workflow,
+  },
+  {
+    title: 'About CERA Medical',
+    description:
+      'Laboratory, computational, and reporting capabilities for biomedical research partners.',
+    href: '/about',
+    icon: LineChart,
+  },
+  {
+    title: 'Get started',
+    description: 'Contact details, service request guidance, and what happens after you submit.',
+    href: '/contact',
+    icon: MessagesSquare,
+  },
+];
