@@ -1,11 +1,10 @@
-import { ButtonLink } from '@cera/ui/button';
 import { Heading, Text } from '@cera/ui/typography';
 import { CheckCircle2, Clock3, MessageSquare, ShieldCheck } from 'lucide-react';
 
 import { checkoutEnabled } from '../lib/checkout-enabled.ts';
 
 import { AddToCartButton } from './add-to-cart-button.tsx';
-import { AppLink } from './link.tsx';
+import { AppButtonLink } from './link.tsx';
 
 import type { LayoutBlock } from './cms-content-page.tsx';
 
@@ -91,13 +90,9 @@ export function ServiceEnquiryAside({
           </div>
         ) : null}
         {enquiryEnabled ? (
-          <ButtonLink
-            href={`/services/${slug}/enquiry`}
-            as={AppLink}
-            className="mt-6 w-full justify-center"
-          >
+          <AppButtonLink href={`/services/${slug}/enquiry`} className="mt-6 w-full justify-center">
             {buttonLabel}
-          </ButtonLink>
+          </AppButtonLink>
         ) : (
           <Text size="body-sm" tone="muted" className="mt-6">
             This service is available by referral only.
