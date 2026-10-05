@@ -884,4 +884,29 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
       },
     });
   }
+
+  const navigation = await payload.findGlobal({ slug: 'navigation', overrideAccess: true });
+  const header = navigation.header;
+  if (!Array.isArray(header) || header.length === 0) {
+    await payload.updateGlobal({
+      slug: 'navigation',
+      data: {
+        header: [
+          { label: 'Home', href: '/' },
+          { label: 'Services', href: '/services' },
+          { label: 'Products', href: '/products' },
+          { label: 'Research Updates', href: '/articles' },
+          { label: 'About', href: '/about' },
+          { label: 'Contact', href: '/contact' },
+        ],
+        footer: [
+          { label: 'Make an Enquiry', href: '/enquiry' },
+          { label: 'FAQs', href: '/faqs' },
+          { label: 'Privacy Terms', href: '/privacy' },
+          { label: 'Terms of Service', href: '/terms' },
+        ],
+      },
+      overrideAccess: true,
+    });
+  }
 }

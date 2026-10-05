@@ -53,7 +53,11 @@ export function toListablePublicService(service: Service): PublicService | null 
 export function mapVendurePublicProduct(product: VendureProduct): PublicProduct | null {
   const service = mapVendureProduct(product);
   if (service.status !== 'active') return null;
-  if (service.category?.slug !== PHYSICAL_PRODUCTS_COLLECTION_SLUG) return null;
+  const inPhysical =
+    product.collections?.some(
+      (collection) => collection.slug === PHYSICAL_PRODUCTS_COLLECTION_SLUG,
+    ) ?? false;
+  if (!inPhysical) return null;
   const sku = product.variants?.[0]?.sku ?? service.slug.toUpperCase();
   return PublicProductSchema.parse({
     sku,
