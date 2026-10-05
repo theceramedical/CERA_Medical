@@ -238,20 +238,49 @@ export function outboxDrainer(
             [to],
           );
           if (suppressed.rowCount) throw new Error('recipient_suppressed');
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.ceramedical.org';
           const link = job.payload.token
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/account/claim?token=${encodeURIComponent(job.payload.token)}`
+            ? `${siteUrl}/account/claim?token=${encodeURIComponent(job.payload.token)}`
             : null;
+          const mailFields = {
+            reference: r.reference,
+            name: r.name,
+            email: r.email,
+            phone: r.phone,
+            institution: r.institution,
+            country: r.country,
+            serviceId: r.service_id,
+            message: r.message,
+            createdAt: r.created_at.toISOString(),
+            staffPortalUrl: `${siteUrl}/staff`,
+          };
+          const {
+            enquiryClaimHtml,
+            enquiryCustomerReceiptHtml,
+            enquiryCustomerReceiptText,
+            enquiryStaffAlertHtml,
+            enquiryStaffAlertText,
+          } = await import('../email/enquiry-mail.ts');
           const text = link
             ? `Claim enquiry ${r.reference}: ${link}`
             : staff
-              ? `New enquiry ${r.reference}. Sign in to the staff portal to review it.`
-              : `We received your enquiry ${r.reference}. Our team will contact you shortly.`;
+              ? enquiryStaffAlertText(mailFields)
+              : enquiryCustomerReceiptText(mailFields);
+          const html = link
+            ? enquiryClaimHtml(r.reference, link)
+            : staff
+              ? enquiryStaffAlertHtml(mailFields)
+              : enquiryCustomerReceiptHtml(mailFields);
           externalId = (
             await email.send({
               to,
-              subject: link ? 'Claim your CERA enquiry' : `CERA enquiry ${r.reference}`,
+              subject: link
+                ? 'Claim your CERA enquiry'
+                : staff
+                  ? `New CERA enquiry ${r.reference}`
+                  : `We received your enquiry ${r.reference}`,
               text,
-              html: `<p>${text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</p>`,
+              html,
               idempotencyKey: key,
             })
           ).id;

@@ -64,6 +64,14 @@ export const SOCIAL_LINKS = [
   { platform: 'youtube', href: 'https://www.youtube.com/' },
 ] as const;
 
+/** Support column: signed-in visitors go to the portal instead of sign-in. */
+export function supportNavForSession(signedIn: boolean): readonly NavItem[] {
+  if (!signedIn) return SUPPORT_NAV;
+  return SUPPORT_NAV.map((item) =>
+    item.href === '/auth/sign-in' ? { href: '/account', label: 'Your account' } : item,
+  );
+}
+
 /**
  * Whether a nav item is the page currently being viewed.
  *

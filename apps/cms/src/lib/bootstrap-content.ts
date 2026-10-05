@@ -2,6 +2,10 @@ import clientCopy from '../content/client-website-content.json' with { type: 'js
 
 import { homePageMarketingBlocks, servicesPageFacilitiesBlocks } from './bootstrap-home-layout.ts';
 import { buildServicePresentationLayout } from './bootstrap-service-layout.ts';
+import {
+  ensureHomeMarketingLayout,
+  ensureLabAccreditedRibbon,
+} from './ensure-public-site-layout.ts';
 
 import type { Page, ServicePresentation } from '../payload-types.ts';
 import type { Payload, PayloadRequest, RequiredDataFromCollectionSlug } from 'payload';
@@ -436,12 +440,12 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     await payload.updateGlobal({
       slug: 'announcement',
       data: {
-        enabled: false,
-        statusLabel: 'Lab accredited',
+        enabled: true,
+        statusLabel: 'LAB ACCREDITED',
         message:
-          'Biomedical testing and metagenomic workflows — confirm accreditation claims before enabling this banner.',
+          'ISO 17025 Compliant Bio-testing & Metagenomic Workflows — Preclinical Phase Queues Open Q2',
         href: '/methodology',
-        linkLabel: 'Review protocol standards',
+        linkLabel: 'Review Protocol Standards →',
       },
       overrideAccess: true,
     });
@@ -796,6 +800,9 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     // bootstrap or roll back a production release — homepage cards are static.
     console.error('bootstrapInsightPosts failed:', error);
   }
+
+  await ensureHomeMarketingLayout(payload);
+  await ensureLabAccreditedRibbon(payload);
 }
 
 async function categoryId(payload: Payload, slug: string, title: string): Promise<number> {

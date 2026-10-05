@@ -27,7 +27,11 @@ export function ProductPurchaseActions({
     <div
       className={`flex flex-col gap-2 ${compact ? 'min-w-[9rem]' : 'sm:flex-row sm:items-center'}`}
     >
-      <AddToCartButton slug={sku} label={compact ? 'Add to cart' : 'Add to cart & checkout'} />
+      <AddToCartButton
+        slug={sku}
+        label={compact ? 'Add to cart' : 'Add to cart'}
+        redirectToCart={!compact}
+      />
       <ButtonLink
         href={enquiryHref}
         as={AppLink}

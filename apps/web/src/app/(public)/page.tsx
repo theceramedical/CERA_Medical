@@ -9,6 +9,7 @@ import {
   organizationJsonLd,
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
+import { defaultHomeMarketingBlocks } from '../../content/home-marketing-layout.ts';
 import { listPublicServices } from '../../lib/catalogue/client.ts';
 import { getCurrentDocument, listPublishedDocuments } from '../../lib/cms/client.ts';
 import { pageMetadata } from '../../lib/seo.ts';
@@ -151,7 +152,7 @@ export default async function HomePage() {
         <HeroSection />
         <MetricsBand />
         <HomeMarketingBlocks
-          blocks={[]}
+          blocks={defaultHomeMarketingBlocks()}
           presentations={presentations}
           posts={posts}
           catalogue={catalogue.items}
@@ -166,6 +167,8 @@ export default async function HomePage() {
   const marketingBlocks = layoutBlocks.filter(
     (block) => !HOME_SHELL_BLOCKS.has(block.blockType ?? ''),
   );
+  const blocksToRender =
+    marketingBlocks.length > 0 ? marketingBlocks : defaultHomeMarketingBlocks();
 
   return (
     <>
@@ -175,7 +178,7 @@ export default async function HomePage() {
       <HeroSection content={content.hero} />
       <MetricsBand metrics={content.metrics} />
       <HomeMarketingBlocks
-        blocks={marketingBlocks}
+        blocks={blocksToRender}
         presentations={presentations}
         posts={posts}
         catalogue={catalogue.items}

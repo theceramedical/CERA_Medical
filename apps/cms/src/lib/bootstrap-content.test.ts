@@ -113,7 +113,29 @@ describe('bootstrapClientContent', () => {
     const payload = {
       findGlobal: vi.fn().mockResolvedValue({ email: 'contact@ceramedical.org' }),
       updateGlobal: vi.fn(),
-      find: vi.fn().mockResolvedValue({ docs: [{ id: 'existing', fixture: false }], totalDocs: 1 }),
+      find: vi.fn().mockImplementation(({ collection, where }) => {
+        const slugEquals =
+          where !== undefined &&
+          typeof where === 'object' &&
+          'slug' in where &&
+          typeof where.slug === 'object' &&
+          where.slug !== null &&
+          'equals' in where.slug &&
+          where.slug.equals === 'home';
+        if (collection === 'pages' && slugEquals) {
+          return {
+            docs: [
+              {
+                id: 'existing',
+                fixture: false,
+                layout: [{ blockType: 'servicesShowcase' }],
+              },
+            ],
+            totalDocs: 1,
+          };
+        }
+        return { docs: [{ id: 'existing', fixture: false }], totalDocs: 1 };
+      }),
       create,
       update,
     } as unknown as Payload;

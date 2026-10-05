@@ -3,11 +3,14 @@ import { Wordmark } from '@cera/ui/wordmark';
 import { Search } from 'lucide-react';
 import NextLink from 'next/link';
 
+import { getSession } from '../lib/auth/session.ts';
 import { checkoutEnabled } from '../lib/checkout-enabled.ts';
 import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppButtonLink } from './link.tsx';
 import { MAIN_NAV, withProductsNav } from './navigation.ts';
+import { SiteHeaderAuthActions } from './site-header-auth-actions.tsx';
+import { SiteHeaderCartLink } from './site-header-cart-link.tsx';
 import { HeaderScrollShadow } from './site-header.client.tsx';
 import { DesktopNavLinks } from './site-nav-links.client.tsx';
 import { MobileNav } from './site-nav.client.tsx';
@@ -23,10 +26,12 @@ import { MobileNav } from './site-nav.client.tsx';
  * the two buttons, the landmark structure - renders on the server and ships no JavaScript.
  */
 export async function SiteHeader() {
-  const navigation = await getPublicGlobal<{ header?: readonly { label: string; href: string }[] }>(
-    'navigation',
-  );
+  const [navigation, session] = await Promise.all([
+    getPublicGlobal<{ header?: readonly { label: string; href: string }[] }>('navigation'),
+    getSession(),
+  ]);
   const navItems = withProductsNav(navigation?.header?.length ? navigation.header : MAIN_NAV);
+  const signedIn = session !== null;
   return (
     <HeaderScrollShadow>
       <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">
@@ -62,14 +67,7 @@ export async function SiteHeader() {
            * search route; a real page is reachable, linkable, and works without JavaScript, and it
            * does not need the combobox pattern that an inline widget would require.
            */}
-          {checkoutEnabled() ? (
-            <NextLink
-              href="/cart"
-              className="hidden rounded-md px-2 py-1 text-body-sm font-medium text-neutral-700 no-underline hover:bg-surface-subtle sm:inline-flex"
-            >
-              Cart
-            </NextLink>
-          ) : null}
+          {checkoutEnabled() ? <SiteHeaderCartLink className="hidden sm:inline-flex" /> : null}
           <NextLink
             href="/search"
             className="inline-flex size-11 items-center justify-center rounded-md text-neutral-700 transition-colors duration-base ease-standard hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
@@ -80,15 +78,13 @@ export async function SiteHeader() {
           {/* Hidden below `lg`, where the same destinations are inside the disclosure. Rendering
               them twice and hiding one copy would put two "Sign In" links in the tab order. */}
           <div className="hidden items-center gap-2 lg:flex">
-            <AppButtonLink href="/auth/sign-in" variant="outline" size="sm">
-              Sign In
-            </AppButtonLink>
+            <SiteHeaderAuthActions signedIn={signedIn} />
             <AppButtonLink href="/enquiry" variant="accent" size="sm">
               Make an Enquiry
             </AppButtonLink>
           </div>
 
-          <MobileNav items={navItems} />
+          <MobileNav items={navItems} signedIn={signedIn} />
         </div>
       </div>
     </HeaderScrollShadow>

@@ -17,6 +17,8 @@ services:
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?required}
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:?required}
       OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:?required}
+      OIDC_GOOGLE_SOURCE_SLUG: ${OIDC_GOOGLE_SOURCE_SLUG:-}
+      OIDC_MICROSOFT_SOURCE_SLUG: ${OIDC_MICROSOFT_SOURCE_SLUG:-}
       API_INTERNAL_URL: http://api:3003
       CMS_API_URL: http://cms:3001/api
     networks: [cera-public, cera-private]

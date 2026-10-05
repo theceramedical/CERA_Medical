@@ -1,6 +1,6 @@
-import { CmsContentPage } from '../../../components/cms-content-page.tsx';
 import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
+import { MethodologyProfile } from '../../../components/methodology/methodology-profile.tsx';
 import { getCurrentDocument } from '../../../lib/cms/client.ts';
 import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
@@ -21,20 +21,19 @@ export default async function MethodologyPage() {
   if (document === null) return <CmsPageUnavailable slug="methodology" />;
 
   const hero = sectionHeadingFromLayout(document.layout);
-  const blocks = Array.isArray(document.layout)
-    ? (document.layout as { blockType?: string }[]).filter(
-        (block) => block.blockType !== 'sectionHeading',
-      )
-    : [];
 
   return (
     <>
       <MarketingPageHeader
         title={hero?.title ?? document.title}
-        lede={hero?.lede ?? document.excerpt ?? ''}
+        lede={
+          hero?.lede ??
+          document.excerpt ??
+          'Every project follows five stages, with service-specific methods set out in a protocol or analysis plan.'
+        }
         eyebrow={hero?.eyebrow ?? 'Methodology'}
       />
-      <CmsContentPage document={{ ...document, layout: blocks }} skipPageHeader />
+      <MethodologyProfile />
     </>
   );
 }

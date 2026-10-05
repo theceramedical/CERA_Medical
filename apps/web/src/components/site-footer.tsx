@@ -2,10 +2,11 @@ import { Heading, Text } from '@cera/ui/typography';
 import { Wordmark } from '@cera/ui/wordmark';
 import NextLink from 'next/link';
 
+import { getSession } from '../lib/auth/session.ts';
 import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppLink } from './link.tsx';
-import { MAIN_NAV, SUPPORT_NAV, withProductsNav } from './navigation.ts';
+import { MAIN_NAV, supportNavForSession, withProductsNav } from './navigation.ts';
 
 import type { NavItem } from './navigation.ts';
 
@@ -15,9 +16,10 @@ import type { NavItem } from './navigation.ts';
  * Server-rendered contact details and navigation.
  */
 export async function SiteFooter() {
-  const [settings, navigation] = await Promise.all([
+  const [settings, navigation, session] = await Promise.all([
     getPublicGlobal<{ email?: string; tagline?: string }>('site-settings'),
     getPublicGlobal<{ footer?: readonly NavItem[] }>('navigation'),
+    getSession(),
   ]);
   const email = settings?.email ?? 'contact@ceramedical.org';
   const quickLinks = withProductsNav(navigation?.footer?.length ? navigation.footer : MAIN_NAV);
@@ -32,7 +34,7 @@ export async function SiteFooter() {
         </div>
 
         <FooterNav heading="Quick Links" items={quickLinks} />
-        <FooterNav heading="Support" items={SUPPORT_NAV} />
+        <FooterNav heading="Support" items={supportNavForSession(session !== null)} />
 
         <div>
           <FooterHeading>Contact CERA Medical</FooterHeading>

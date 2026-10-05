@@ -26,7 +26,13 @@ import type { NavItem } from './navigation.ts';
  * walks out of the visible panel and into content underneath it, and the focus ring disappears behind
  * an overlay. Escape closes it and focus returns to the trigger, both handled by `FocusTrap`.
  */
-export function MobileNav({ items }: { readonly items: readonly NavItem[] }) {
+export function MobileNav({
+  items,
+  signedIn,
+}: {
+  readonly items: readonly NavItem[];
+  readonly signedIn: boolean;
+}) {
   const pathname = usePathname();
 
   /**
@@ -135,9 +141,15 @@ export function MobileNav({ items }: { readonly items: readonly NavItem[] }) {
             {/* The two calls to action, which are hidden at this width in the header's right-hand
                 group. They are here rather than there so they exist exactly once in the document. */}
             <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-              <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
-                Sign In
-              </ButtonLink>
+              {signedIn ? (
+                <ButtonLink as={NextLink} href="/account" variant="outline" fullWidth>
+                  Your account
+                </ButtonLink>
+              ) : (
+                <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
+                  Sign In
+                </ButtonLink>
+              )}
               <ButtonLink as={NextLink} href="/enquiry" variant="accent" fullWidth>
                 Make an Enquiry
               </ButtonLink>

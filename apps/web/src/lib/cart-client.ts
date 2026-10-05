@@ -6,6 +6,16 @@ function apiUrl(): string {
 
 export type CheckoutPaymentMethod = 'cod' | 'safepay' | 'test';
 
+export function cartItemCount(cart: Cart): number {
+  return cart.lines.reduce((total, line) => total + line.quantity, 0);
+}
+
+export function notifyCartUpdated(): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('cera:cart-updated'));
+  }
+}
+
 export async function fetchCart(cookieHeader?: string | null): Promise<Cart> {
   const init: RequestInit = { credentials: 'include' };
   if (cookieHeader) init.headers = { cookie: cookieHeader };
