@@ -1,7 +1,6 @@
 import { ValidationError } from 'payload';
 
 import { servicePresentationBlocks } from '../blocks/layout.ts';
-import { slugField } from '../fields/slug.ts';
 import { asString } from '../lib/as-string.ts';
 import {
   assertServiceExists,
@@ -14,16 +13,7 @@ import { PREVIEW_BREAKPOINTS, previewUrl } from '../lib/preview.ts';
 
 import { publishable } from './publishable.ts';
 
-import type { CollectionBeforeChangeHook, CollectionConfig, Field } from 'payload';
-
-const serviceSlugField: Field = {
-  ...slugField,
-  admin: {
-    ...slugField.admin,
-    description:
-      'Lower-case, hyphenated URL segment. Must exactly match an enabled Vendure service product slug before you publish (e.g. molecular-research).',
-  },
-};
+import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload';
 
 function catalogueValidationError(message: string, path: 'slug' | 'serviceId'): ValidationError {
   return new ValidationError({
@@ -85,7 +75,6 @@ export const ServicePresentations: CollectionConfig = publishable({
     },
     preview: (data) => previewUrl(`/services/${asString(data.slug)}`),
   },
-  slugField: serviceSlugField,
   extraHooks: { beforeChange: [assertCatalogue] },
   extraFields: [
     {
