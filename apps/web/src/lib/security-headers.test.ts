@@ -112,6 +112,21 @@ describe('buildCsp', () => {
       expect(parsed.get('img-src')).toEqual(["'self'", 'data:', 'blob:']);
       expect(parsed.get('connect-src')).toEqual(["'self'"]);
     });
+
+    it('adds extra origins to form-action only', () => {
+      const parsed = directives(
+        buildCsp(NONCE, {
+          formActionOrigins: ['https://www.ceramedical.org', 'https://ceramedical.org'],
+        }),
+      );
+
+      expect(parsed.get('form-action')).toEqual([
+        "'self'",
+        'https://www.ceramedical.org',
+        'https://ceramedical.org',
+      ]);
+      expect(parsed.get('connect-src')).toEqual(["'self'"]);
+    });
   });
 });
 

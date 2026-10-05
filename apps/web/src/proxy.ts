@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { resolveRedirect } from './lib/cms/redirects.ts';
 import { isInternalProbe, resolvePublicOrigin } from './lib/public-origin.ts';
 import { buildCsp, STATIC_SECURITY_HEADERS } from './lib/security-headers.ts';
+import { pairedPublicSiteOrigin } from './lib/site-url.ts';
 
 import type { NextRequest } from 'next/server';
 
@@ -59,10 +60,25 @@ export function proxy(request: NextRequest): NextResponse {
    */
   const nonce = crypto.randomUUID();
 
+  const pairedOrigin = pairedPublicSiteOrigin();
+  const configuredSite = process.env.NEXT_PUBLIC_SITE_URL;
+  let formActionOrigins: string[] | undefined;
+  if (pairedOrigin !== undefined && configuredSite !== undefined && configuredSite.length > 0) {
+    try {
+      const canonicalOrigin = new URL(configuredSite).origin;
+      if (pairedOrigin !== canonicalOrigin) {
+        formActionOrigins = [canonicalOrigin, pairedOrigin];
+      }
+    } catch {
+      formActionOrigins = undefined;
+    }
+  }
+
   const csp = buildCsp(nonce, {
     mediaOrigin: originOf(process.env.S3_PUBLIC_URL),
     apiOrigin: originOf(process.env.NEXT_PUBLIC_API_URL),
     authOrigin: originOf(process.env.OIDC_ISSUER),
+    formActionOrigins,
   });
 
   const requestHeaders = new Headers(request.headers);

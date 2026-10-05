@@ -39,3 +39,33 @@ export function siteUrl(): URL {
     );
   }
 }
+
+/**
+ * The other public hostname for this site (apex vs `www`), when there is one.
+ *
+ * Visitors can still hit the non-canonical host before the edge or `proxy.ts` redirect runs, or when
+ * a bookmark points at apex. CSP `form-action 'self'` is document-origin only, so allowing the
+ * configured canonical origin as well avoids blocking sign-in when HTML and the address bar disagree.
+ */
+export function pairedPublicSiteOrigin(): string | undefined {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configured === undefined || configured.length === 0) return undefined;
+
+  let canonical: URL;
+  try {
+    canonical = new URL(configured);
+  } catch {
+    return undefined;
+  }
+
+  const { hostname, protocol } = canonical;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') return undefined;
+
+  const alternateHost = hostname.startsWith('www.')
+    ? hostname.slice('www.'.length)
+    : `www.${hostname}`;
+
+  if (alternateHost.length === 0) return undefined;
+
+  return `${protocol}//${alternateHost}`;
+}

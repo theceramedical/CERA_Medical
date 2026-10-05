@@ -7,12 +7,10 @@ async function setPortalSession(page: Page, variant: 'verified' | 'unverified'):
 }
 
 test.describe('customer portal', () => {
-  test('sign-in page starts OIDC with a full navigation form', async ({ page }) => {
+  test('sign-in page starts OIDC with a full navigation control', async ({ page }) => {
     await page.goto('/auth/sign-in?next=/account');
-    const form = page.locator('form[action="/auth/signin"]');
-    await expect(form).toBeVisible();
-    await expect(form.locator('input[name="next"]')).toHaveValue('/account');
-    await expect(form.getByRole('button', { name: 'Continue to secure sign in' })).toBeVisible();
+    await expect(page.getByTestId('oidc-sign-in-continue')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Continue to secure sign in' })).toBeVisible();
   });
 
   test('verified customer can open dashboard, profile, enquiries, and orders', async ({ page }) => {

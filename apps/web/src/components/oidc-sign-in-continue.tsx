@@ -1,11 +1,14 @@
+'use client';
+
 import { Button } from '@cera/ui/button';
 
 /**
- * Starts OIDC with a full document navigation.
+ * Starts OIDC with a full document navigation on the **current** origin.
  *
- * `next/link` (even with `prefetch={false}`) still issues an RSC fetch on click. `/auth/signin`
- * responds with a 302 to Authentik, and a cross-origin redirect on that preflight fails CORS in the
- * browser. A plain GET form performs a normal top-level navigation instead.
+ * A GET form with `action="/auth/signin"` can be resolved to `NEXT_PUBLIC_SITE_URL` (often `www`)
+ * while the visitor is still on the apex host, which `form-action 'self'` then blocks. Assigning a
+ * path on `window.location.origin` matches the address bar and avoids RSC fetches to `/auth/signin`
+ * (302 to Authentik → CORS on preflight).
  */
 export function OidcSignInContinue({
   next,
@@ -14,12 +17,21 @@ export function OidcSignInContinue({
   readonly next: string;
   readonly className?: string;
 }) {
+  function continueSignIn(): void {
+    const target = new URL('/auth/signin', window.location.origin);
+    if (next.length > 0 && next !== '/') target.searchParams.set('next', next);
+    window.location.assign(target);
+  }
+
   return (
-    <form method="GET" action="/auth/signin" className={className}>
-      {next.length > 0 && next !== '/' ? <input type="hidden" name="next" value={next} /> : null}
-      <Button type="submit" variant="primary">
-        Continue to secure sign in
-      </Button>
-    </form>
+    <Button
+      type="button"
+      variant="primary"
+      className={className}
+      data-testid="oidc-sign-in-continue"
+      onClick={continueSignIn}
+    >
+      Continue to secure sign in
+    </Button>
   );
 }

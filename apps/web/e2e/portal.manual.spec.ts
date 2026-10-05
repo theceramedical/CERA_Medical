@@ -15,7 +15,7 @@ test.describe('portal manual checklist @live', () => {
   test('sign in and reach account dashboard', async ({ page }) => {
     await page.goto('/auth/sign-in?next=/account');
     await expect(page.getByRole('heading', { name: 'Sign in', level: 1 })).toBeVisible();
-    await expect(page.locator('form[action="/auth/signin"]')).toBeVisible();
+    await expect(page.getByTestId('oidc-sign-in-continue')).toBeVisible();
 
     await page.pause();
 
