@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@cera/ui/button';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { addCartLine, notifyCartUpdated } from '../lib/cart-client.ts';
@@ -9,13 +8,10 @@ import { addCartLine, notifyCartUpdated } from '../lib/cart-client.ts';
 export function AddToCartButton({
   slug,
   label = 'Add to cart',
-  redirectToCart = false,
 }: {
   readonly slug: string;
   readonly label?: string;
-  readonly redirectToCart?: boolean;
 }) {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [added, setAdded] = useState(false);
 
@@ -29,16 +25,15 @@ export function AddToCartButton({
         setPending(true);
         setAdded(false);
         void addCartLine(slug, 1)
-          .then(() => {
-            notifyCartUpdated();
+          .then((cart) => {
+            notifyCartUpdated(cart);
             setAdded(true);
-            if (redirectToCart) router.push('/cart');
           })
           .catch(() => setPending(false))
           .finally(() => setPending(false));
       }}
     >
-      {pending ? 'Adding…' : added && !redirectToCart ? 'Added' : label}
+      {pending ? 'Adding…' : added ? 'Added' : label}
     </Button>
   );
 }

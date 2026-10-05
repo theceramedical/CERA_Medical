@@ -1,4 +1,5 @@
 import { EmptyState } from '@cera/ui/empty-state';
+import { InternalStatusBadge } from '@cera/ui/internal-status-badge';
 import { Text } from '@cera/ui/typography';
 import { ArrowRight, ClipboardList, Send } from 'lucide-react';
 
@@ -52,9 +53,7 @@ export default async function StaffQueuePage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Text size="body-sm" tone="muted">
-                        {e.internalStatus}
-                      </Text>
+                      <InternalStatusBadge status={e.internalStatus} />
                       <ArrowRight
                         aria-hidden
                         className="size-5 text-primary transition-transform group-hover:translate-x-1"

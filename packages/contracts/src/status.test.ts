@@ -8,7 +8,9 @@ import {
   CUSTOMER_STATUS_MAP,
   evaluateTransition,
   INITIAL_INTERNAL_STATUS,
+  INTERNAL_STATUS_LABELS,
   INTERNAL_TRANSITIONS,
+  internalStatusLabel,
   isTerminalStatus,
   toCustomerStatus,
 } from './status.ts';
@@ -263,5 +265,13 @@ describe('buildCustomerTimeline', () => {
 
     expect(JSON.stringify(timeline)).not.toContain('spam');
     expect(timeline[0]?.label).toBe('Closed');
+  });
+});
+
+describe('internal status labels', () => {
+  it('labels every internal status for staff views', () => {
+    for (const status of ALL_INTERNAL_STATUSES) {
+      expect(internalStatusLabel(status)).toBe(INTERNAL_STATUS_LABELS[status]);
+    }
   });
 });

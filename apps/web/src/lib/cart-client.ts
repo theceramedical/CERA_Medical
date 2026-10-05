@@ -10,9 +10,9 @@ export function cartItemCount(cart: Cart): number {
   return cart.lines.reduce((total, line) => total + line.quantity, 0);
 }
 
-export function notifyCartUpdated(): void {
+export function notifyCartUpdated(cart?: Cart): void {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event('cera:cart-updated'));
+    window.dispatchEvent(new CustomEvent('cera:cart-updated', { detail: cart }));
   }
 }
 

@@ -40,6 +40,7 @@
     "./skip-link": "./src/skip-link.tsx",
     "./spinner": "./src/spinner.tsx",
     "./status-badge": "./src/status-badge.tsx",
+    "./internal-status-badge": "./src/internal-status-badge.tsx",
     "./table": "./src/table.tsx",
     "./timeline": "./src/timeline.tsx",
     "./toast": "./src/toast.tsx",

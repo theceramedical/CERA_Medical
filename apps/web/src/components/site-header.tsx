@@ -11,7 +11,7 @@ import { getPublicGlobal } from '../lib/cms/client.ts';
 import { AppButtonLink } from './link.tsx';
 import { MAIN_NAV, withProductsNav } from './navigation.ts';
 import { SiteHeaderAuthActions } from './site-header-auth-actions.tsx';
-import { SiteHeaderCartLink } from './site-header-cart-link.tsx';
+import { SiteHeaderCartMenu } from './site-header-cart-menu.tsx';
 import { HeaderScrollShadow } from './site-header.client.tsx';
 import { DesktopNavLinks } from './site-nav-links.client.tsx';
 import { MobileNav } from './site-nav.client.tsx';
@@ -69,7 +69,7 @@ export async function SiteHeader() {
            * search route; a real page is reachable, linkable, and works without JavaScript, and it
            * does not need the combobox pattern that an inline widget would require.
            */}
-          {checkoutEnabled() ? <SiteHeaderCartLink className="hidden sm:inline-flex" /> : null}
+          {checkoutEnabled() ? <SiteHeaderCartMenu className="inline-flex" /> : null}
           <NextLink
             href="/search"
             className="inline-flex size-11 items-center justify-center rounded-md text-neutral-700 transition-colors duration-base ease-standard hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"

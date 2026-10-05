@@ -72,6 +72,23 @@ export function customerStatusLabel(status: CustomerStatus): string {
   return CUSTOMER_STATUS_LABELS[status];
 }
 
+/** Staff-queue labels — include internal closure and spam reasons customers never see. */
+export const INTERNAL_STATUS_LABELS = {
+  received: 'Received',
+  triaging: 'Triaging',
+  awaiting_customer: 'Awaiting customer',
+  in_progress: 'In progress',
+  referred: 'Referred externally',
+  completed: 'Completed',
+  closed_no_response: 'Closed — no response',
+  closed_withdrawn: 'Closed — withdrawn',
+  rejected_spam: 'Rejected as spam',
+} as const satisfies Record<InternalStatus, string>;
+
+export function internalStatusLabel(status: InternalStatus): string {
+  return INTERNAL_STATUS_LABELS[status];
+}
+
 export function isTerminalStatus(status: InternalStatus): boolean {
   return INTERNAL_TRANSITIONS[status].length === 0;
 }

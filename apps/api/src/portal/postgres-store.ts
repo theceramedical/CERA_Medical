@@ -213,11 +213,15 @@ export function postgresPortalStore(pool: Pool): PortalStore {
     async retryDelivery(id, actor) {
       return transaction(pool, async (client) => {
         const result = await client.query<{ aggregate_id: string }>(
-          `UPDATE outbox SET status='pending',attempts=0,available_at=now(),last_error=NULL WHERE id=$1 AND status='dead_letter' RETURNING aggregate_id`,
+          `UPDATE outbox SET status='pending',attempts=0,available_at=now(),last_error=NULL,locked_at=NULL,locked_by=NULL WHERE id=$1 AND status='dead_letter' RETURNING aggregate_id`,
           [id],
         );
         if (!result.rows[0]) return false;
-        await recordAudit(client, result.rows[0].aggregate_id, 'delivery.retried', actor);
+        await client.query(
+          `UPDATE integration_deliveries SET status='pending',error_class=NULL,updated_at=now() WHERE id=$1 AND status='dead_letter'`,
+          [id],
+        );
+        await recordAudit(client, result.rows[0].aggregate_id, 'delivery.retried', actor || null);
         return true;
       });
     },
