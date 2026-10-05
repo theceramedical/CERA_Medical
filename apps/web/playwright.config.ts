@@ -24,6 +24,7 @@ const E2E_APP_ENV = [
   `NEXT_PUBLIC_API_URL=${BACKEND_URL}`,
   `NEXT_PUBLIC_SITE_URL=${BASE_URL}`,
   'NEXT_PUBLIC_CHECKOUT_ENABLED=true',
+  'OIDC_GOOGLE_SOURCE_SLUG=google',
   `SESSION_SECRET=${E2E_SESSION_SECRET}`,
 ].join(' ');
 
@@ -61,6 +62,7 @@ export default defineConfig({
         NEXT_PUBLIC_API_URL: BACKEND_URL,
         NEXT_PUBLIC_SITE_URL: BASE_URL,
         NEXT_PUBLIC_CHECKOUT_ENABLED: 'true',
+        OIDC_GOOGLE_SOURCE_SLUG: 'google',
         SESSION_SECRET: E2E_SESSION_SECRET,
         PORT: String(PORT),
         HOSTNAME: 'localhost',

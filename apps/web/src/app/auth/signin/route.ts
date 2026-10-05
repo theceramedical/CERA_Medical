@@ -2,6 +2,7 @@ import { OIDC_STATE_COOKIE_NAME } from '@cera/contracts/session';
 import { NextResponse } from 'next/server';
 import { buildAuthorizationUrl } from 'openid-client';
 
+import { resolveOidcSocialProvider } from '../../../lib/auth/oidc-social.ts';
 import {
   createHandshakeSecrets,
   createPkce,
@@ -16,6 +17,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
   try {
     const next = safeReturnTo(url.searchParams.get('next'));
+    const social = resolveOidcSocialProvider(url.searchParams.get('provider'));
     const { state, nonce } = createHandshakeSecrets();
     const pkce = createPkce();
     const location = buildAuthorizationUrl(await oidcConfiguration(), {
@@ -27,6 +29,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       nonce,
       code_challenge: pkce.challenge,
       code_challenge_method: 'S256',
+      ...(social !== undefined ? { source: social.sourceSlug } : {}),
     });
     const response = NextResponse.redirect(location);
     response.cookies.set(

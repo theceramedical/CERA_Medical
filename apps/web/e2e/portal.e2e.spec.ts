@@ -10,7 +10,9 @@ test.describe('customer portal', () => {
   test('sign-in page starts OIDC with a full navigation control', async ({ page }) => {
     await page.goto('/auth/sign-in?next=/account');
     await expect(page.getByTestId('oidc-sign-in-continue')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Continue to secure sign in' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Continue with email or password' }),
+    ).toBeVisible();
   });
 
   test('verified customer can open dashboard, profile, enquiries, and orders', async ({ page }) => {

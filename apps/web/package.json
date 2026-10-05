@@ -20,6 +20,7 @@
     "test:ui": "playwright test --ui",
     "test:portal:ui": "playwright test e2e/portal.e2e.spec.ts --project e2e --ui",
     "test:portal:headed": "playwright test e2e/portal.e2e.spec.ts --project e2e --headed --workers=1",
+    "test:auth:headed": "playwright test e2e/auth-pages.e2e.spec.ts e2e/portal.e2e.spec.ts --project e2e --headed --workers=1",
     "test:live:ui": "playwright test --config playwright.live.config.ts --ui",
     "test:live:headed": "playwright test --config playwright.live.config.ts --headed",
     "test:checkout": "playwright test e2e/checkout.e2e.spec.ts --project e2e",

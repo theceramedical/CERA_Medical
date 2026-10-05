@@ -13,14 +13,14 @@ import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Sign In',
-    description: 'Sign in to your CERA Medical account to follow your enquiries.',
-    path: '/auth/sign-in',
+    title: 'Create account',
+    description: 'Create a CERA Medical account to follow your enquiries and manage your profile.',
+    path: '/auth/sign-up',
     noIndex: true,
   });
 }
 
-export default async function SignInPage({
+export default async function SignUpPage({
   searchParams,
 }: {
   readonly searchParams: Promise<{ next?: string }>;
@@ -36,36 +36,34 @@ export default async function SignInPage({
 
   return (
     <AuthPageShell
-      title="Sign in"
-      lede="Access your enquiries, orders, and profile. Authentication is handled by CERA's secure identity service."
+      title="Create account"
+      lede="Register once to track enquiries, claim secure links, and update your contact details."
       aside={
         <>
           <Heading level={2} size="h4">
-            New to CERA?
+            Already registered?
           </Heading>
           <Text size="body-sm" tone="muted" className="mt-3">
-            Create an account to follow enquiries online, or submit a research request without
-            signing up.
+            Use the same email you gave when you submitted an enquiry.
           </Text>
-          <div className="mt-6 flex flex-col gap-3">
-            <AppLink
-              href={`/auth/sign-up?next=${encodeURIComponent(safeNext)}`}
-              className="font-medium"
-            >
-              Create an account
-            </AppLink>
-            <AppLink href="/enquiry" className="text-body-sm text-muted">
-              Make an enquiry without an account
-            </AppLink>
-          </div>
+          <AppLink
+            href={`/auth/sign-in?next=${encodeURIComponent(safeNext)}`}
+            className="mt-6 inline-block font-medium"
+          >
+            Sign in instead
+          </AppLink>
         </>
       }
     >
       <AuthPanelIntro
-        heading="Welcome back"
-        body="Sign in with Google or your work email. Staff accounts may be asked for multi-factor authentication."
+        heading="Your CERA account"
+        body="Choose Google or email registration. After you verify your email, you can open enquiries and orders in the portal."
       />
-      <AuthSignInOptions next={safeNext} socialProviders={socialProviders} mode="sign-in" />
+      <AuthSignInOptions next={safeNext} socialProviders={socialProviders} mode="sign-up" />
+      <Text size="body-sm" tone="muted" className="mt-6">
+        By continuing you agree that CERA may contact you about your research requests. See our{' '}
+        <AppLink href="/privacy">privacy notice</AppLink>.
+      </Text>
     </AuthPageShell>
   );
 }
