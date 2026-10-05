@@ -46,7 +46,7 @@ export function HeaderScrollShadow({ children }: { readonly children: ReactNode 
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 border-b border-border bg-surface',
+        'sticky top-0 z-50 border-b border-border bg-surface',
         'transition-shadow duration-base ease-standard',
         scrolled ? 'shadow-sm' : 'shadow-none',
       )}

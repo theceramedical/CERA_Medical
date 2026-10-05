@@ -22,7 +22,7 @@ export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] 
   const pathname = usePathname();
 
   return (
-    <ul className="flex list-none items-center gap-1 p-0">
+    <ul className="flex list-none items-center gap-2 p-0">
       {items.map((item) => {
         const current = isCurrent(item.href, pathname);
 

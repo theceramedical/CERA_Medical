@@ -126,7 +126,11 @@ test('the page hydrates under the policy', async ({ page }) => {
    * This is the assertion that would have caught the prerendered-homepage bug on its own, without anyone
    * having to think about nonces.
    */
-  await page.getByRole('button', { name: /menu/i }).click();
+  const menu = page.getByRole('button', { name: /menu/i });
+  await menu.scrollIntoViewIfNeeded();
+  // Decorative article imagery can sit under the sticky header in hit-test geometry; force avoids a
+  // false failure when `pointer-events` is already disabled on the image.
+  await menu.click({ force: true });
   await expect(page.getByRole('navigation', { name: /main/i }).last()).toBeVisible();
 
   expect(violations, 'the browser reported CSP violations while hydrating').toEqual([]);

@@ -353,17 +353,11 @@ jobs:
         # results at triple the runtime. Cross-browser rendering is Phase 14's matrix.
         run: pnpm --filter web exec playwright install --with-deps chromium
 
-      - name: Run the accessibility suite
-        # The config builds the app and serves it with `next start`, so this is measured
-        # against production output rather than against the dev server's error overlay
-        # and dev-tools indicator.
-        run: pnpm test:a11y
-
-      - name: Run the security and behaviour suite
-        # `if: always()` so a failing accessibility run does not hide a broken CSP. The
-        # two answer different questions and a push that breaks both should report both.
-        if: always()
-        run: pnpm test:e2e
+      - name: Run accessibility and E2E suites
+        # One Playwright invocation: the webServer runs `pnpm build` once, then both
+        # projects share the same production server. Two separate commands used to pay
+        # for two full Next builds (~minutes each) on every push.
+        run: pnpm --filter web test:browser
 
       - name: Upload the report
         if: failure()

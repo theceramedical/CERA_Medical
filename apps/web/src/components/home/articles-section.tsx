@@ -68,7 +68,7 @@ export function ArticlesSection({
               className="flex flex-col justify-between overflow-hidden rounded-lg border border-border bg-surface shadow-card"
             >
               <div>
-                <div className="relative aspect-video w-full overflow-hidden bg-surface-tint">
+                <div className="pointer-events-none relative aspect-video w-full overflow-hidden bg-surface-tint">
                   <Image
                     src={article.coverSrc}
                     alt=""

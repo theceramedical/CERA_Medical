@@ -63,7 +63,7 @@ export async function SiteHeader() {
           <DesktopNavLinks items={navItems} />
         </nav>
 
-        <div className="flex flex-1 items-center justify-end gap-2 lg:flex-none">
+        <div className="relative z-50 flex flex-1 items-center justify-end gap-2 lg:flex-none">
           {/*
            * Search is a link to a page, not a button that opens a widget. Phase 07 builds the
            * search route; a real page is reachable, linkable, and works without JavaScript, and it

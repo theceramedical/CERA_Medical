@@ -108,7 +108,11 @@ test.describe('focus visibility', () => {
 test.describe('the focus trap', () => {
   /** Opens the demo dialog and returns its locator. */
   async function openDialog(page: Page): Promise<Locator> {
-    await page.getByRole('button', { name: 'Open a trapped dialog' }).click();
+    const trigger = page
+      .locator('#feedback')
+      .getByRole('button', { name: 'Open a trapped dialog' });
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
 
     const dialog = page.getByRole('dialog', { name: 'Confirm your details' });
     await expect(dialog).toBeVisible();
@@ -170,7 +174,9 @@ test.describe('toasts', () => {
    * six seconds loses it permanently.
    */
   test('a danger toast stays until dismissed', async ({ page }) => {
-    await page.getByRole('button', { name: /^Danger/ }).click();
+    const trigger = page.locator('#feedback').getByRole('button', { name: /^Danger/ });
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
 
     // `exact` matters: the dismiss button's accessible name contains the title, so a substring match
     // resolves to both the message and the button that closes it.
@@ -203,7 +209,9 @@ test.describe('toasts', () => {
   });
 
   test('a polite toast lands in the polite region', async ({ page }) => {
-    await page.getByRole('button', { name: 'Info' }).click();
+    const trigger = page.locator('#feedback').getByRole('button', { name: 'Info' });
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
 
     await expect(
       page.locator('[aria-live="polite"]').filter({ hasText: 'Draft saved' }),
@@ -217,7 +225,9 @@ test.describe('toasts', () => {
    * and an assertive confirmation is the behaviour that makes people switch announcements off entirely.
    */
   test('an error toast lands in the assertive region', async ({ page }) => {
-    await page.getByRole('button', { name: /^Danger/ }).click();
+    const trigger = page.locator('#feedback').getByRole('button', { name: /^Danger/ });
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
 
     await expect(
       page

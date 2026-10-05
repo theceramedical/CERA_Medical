@@ -94,12 +94,12 @@ function FooterNav({
     <nav aria-label={heading}>
       <FooterHeading>{heading}</FooterHeading>
 
-      <ul className="mt-4 flex list-none flex-col gap-2 p-0">
+      <ul className="mt-4 flex list-none flex-col gap-3 p-0">
         {items.map((item) => (
           <li key={item.href}>
             <NextLink
               href={item.href}
-              className="inline-flex min-h-8 items-center text-body-sm text-neutral-700 no-underline hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              className="inline-flex min-h-11 items-center py-1 text-body-sm text-neutral-700 no-underline hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             >
               {item.label}
             </NextLink>

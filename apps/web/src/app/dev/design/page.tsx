@@ -133,10 +133,16 @@ function Contents() {
       <Heading level={2} size="h4" id="contents-heading">
         Contents
       </Heading>
-      <ol className="mt-3 grid min-w-0 list-none grid-cols-1 gap-y-1 p-0 min-[28rem]:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]">
+      <ol className="mt-3 grid min-w-0 list-none grid-cols-1 gap-y-2 p-0 min-[28rem]:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]">
         {SECTIONS.map(([id, label]) => (
           <li key={id}>
-            <Link href={`#${id}`}>{label}</Link>
+            <Link
+              href={`#${id}`}
+              variant="standalone"
+              className="inline-flex min-h-11 items-center py-2"
+            >
+              {label}
+            </Link>
           </li>
         ))}
       </ol>

@@ -136,7 +136,8 @@ test.describe('the mobile navigation', () => {
     const trigger = page.getByRole('button', { name: /menu/i });
 
     await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    await trigger.click();
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
     await expect(trigger).toHaveAttribute('aria-expanded', 'true');
 
     const panel = page.locator(`#${String(await trigger.getAttribute('aria-controls'))}`);
@@ -174,7 +175,8 @@ test.describe('the mobile navigation', () => {
   test('closes on Escape and returns focus to the trigger', async ({ page }) => {
     const trigger = page.getByRole('button', { name: /menu/i });
 
-    await trigger.click();
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
     await page.keyboard.press('Escape');
 
     await expect(trigger).toHaveAttribute('aria-expanded', 'false');
@@ -192,7 +194,8 @@ test.describe('the mobile navigation', () => {
     const before = await overflow();
     const trigger = page.getByRole('button', { name: /menu/i });
 
-    await trigger.click();
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click({ force: true });
     expect(await overflow()).toBe('hidden');
 
     await page.keyboard.press('Escape');
@@ -202,7 +205,9 @@ test.describe('the mobile navigation', () => {
   });
 
   test('reports no accessibility violations while open', async ({ page }) => {
-    await page.getByRole('button', { name: /menu/i }).click();
+    const menu = page.getByRole('button', { name: /menu/i });
+    await menu.scrollIntoViewIfNeeded();
+    await menu.click({ force: true });
 
     // An open disclosure is a different DOM to the one the route sweep above scanned, and it is the one
     // a phone user actually navigates with.

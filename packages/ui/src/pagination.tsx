@@ -45,7 +45,7 @@ export function Pagination({
 
   return (
     <nav aria-label="Pagination" className={className}>
-      <ul className="flex flex-wrap items-center justify-center gap-1">
+      <ul className="flex flex-wrap items-center justify-center gap-2">
         <li>
           <Step
             direction="previous"
