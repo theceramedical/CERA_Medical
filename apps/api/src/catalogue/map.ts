@@ -1,7 +1,14 @@
 import { ServiceSchema, type Service } from '@cera/contracts';
-import { toPublicService, type PublicService } from '@cera/contracts/projections';
+import {
+  PublicProductSchema,
+  toPublicService,
+  type PublicProduct,
+  type PublicService,
+} from '@cera/contracts/projections';
 
 import type { VendureProduct } from './types.ts';
+
+export const PHYSICAL_PRODUCTS_COLLECTION_SLUG = 'physical-products';
 
 /**
  * Maps a Vendure Shop API product onto `ServiceSchema`.
@@ -39,5 +46,28 @@ export function mapVendureProduct(product: VendureProduct): Service {
 
 export function toListablePublicService(service: Service): PublicService | null {
   if (service.status !== 'active') return null;
+  if (service.category?.slug === PHYSICAL_PRODUCTS_COLLECTION_SLUG) return null;
   return toPublicService(service);
+}
+
+export function mapVendurePublicProduct(product: VendureProduct): PublicProduct | null {
+  const service = mapVendureProduct(product);
+  if (service.status !== 'active') return null;
+  if (service.category?.slug !== PHYSICAL_PRODUCTS_COLLECTION_SLUG) return null;
+  const sku = product.variants?.[0]?.sku ?? service.slug.toUpperCase();
+  return PublicProductSchema.parse({
+    sku,
+    title: service.title,
+    summary: service.summary,
+    description: service.description,
+    displayPrice: service.displayPrice,
+    availabilityText: service.availabilityText,
+    listPriceMinor: service.listPriceMinor,
+    checkoutEnabled: service.checkoutEnabled,
+    enquiryEnabled: service.enquiryEnabled,
+  });
+}
+
+export function productSlugForSku(sku: string): string {
+  return sku.trim().toLowerCase();
 }

@@ -101,12 +101,18 @@ export async function getCurrentDocument(
   return getDocument(type, slug, draft.isEnabled);
 }
 
+const DEFAULT_PUBLISHED_LIMIT = 50;
+const SITEMAP_PAGE_SIZE = 100;
+const SITEMAP_MAX_PAGES = 50;
+
 export async function listPublishedDocuments(
   type: ContentType,
+  options?: { readonly limit?: number; readonly page?: number },
 ): Promise<readonly ContentDocument[]> {
   const collection = COLLECTION[type];
   const url = new URL(`${cmsApiUrl().replace(/\/$/, '')}/${collection}`);
-  url.searchParams.set('limit', '50');
+  url.searchParams.set('limit', String(options?.limit ?? DEFAULT_PUBLISHED_LIMIT));
+  url.searchParams.set('page', String(options?.page ?? 1));
   url.searchParams.set('depth', '1');
   url.searchParams.set('sort', '-publishedAt');
   url.searchParams.set('where[fixture][not_equals]', 'true');
@@ -128,6 +134,19 @@ export async function listPublishedDocuments(
       }
     })
     .filter((doc): doc is ContentDocument => doc !== null && doc.status === 'published');
+}
+
+/** Published CMS rows for sitemap and HTML sitemap (paginated, up to 5k per type). */
+export async function listPublishedDocumentsForSitemap(
+  type: ContentType,
+): Promise<readonly ContentDocument[]> {
+  const all: ContentDocument[] = [];
+  for (let page = 1; page <= SITEMAP_MAX_PAGES; page += 1) {
+    const batch = await listPublishedDocuments(type, { limit: SITEMAP_PAGE_SIZE, page });
+    all.push(...batch);
+    if (batch.length < SITEMAP_PAGE_SIZE) break;
+  }
+  return all;
 }
 
 export async function getPublicGlobal<T extends Record<string, unknown>>(

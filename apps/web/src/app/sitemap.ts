@@ -3,6 +3,9 @@ import { siteUrl } from '../lib/site-url.ts';
 
 import type { MetadataRoute } from 'next';
 
+/** Refresh with catalogue reads and CMS cache tags (see `lib/indexable-sitemap.ts`). */
+export const revalidate = 30;
+
 /**
  * Indexable routes only. Search, preview, account, staff, and /dev stay out.
  * Drafts never appear because listPublishedDocuments filters them.

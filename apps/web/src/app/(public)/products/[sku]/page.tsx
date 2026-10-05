@@ -7,18 +7,24 @@ import { MarketingPageHeader } from '../../../../components/marketing-page-heade
 import { ProductPurchaseActions } from '../../../../components/products/product-purchase-actions.tsx';
 import {
   FEATURED_PRODUCT,
-  findCatalogEntry,
   listCatalogSlugs,
   productDetailPath,
   productEnquiryHref,
 } from '../../../../content/products-catalog.ts';
+import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
 import { checkoutEnabled } from '../../../../lib/checkout-enabled.ts';
+import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
 
-export function generateStaticParams(): { sku: string }[] {
-  return listCatalogSlugs().map((sku) => ({ sku }));
+export const dynamicParams = true;
+
+export async function generateStaticParams(): Promise<{ sku: string }[]> {
+  const staticSkus = listCatalogSlugs();
+  const { items } = await listPublicProducts().catch(() => ({ items: [] }));
+  const skus = [...new Set([...staticSkus, ...items.map((row) => row.sku.toLowerCase())])];
+  return skus.map((sku) => ({ sku }));
 }
 
 export async function generateMetadata({
@@ -27,13 +33,20 @@ export async function generateMetadata({
   readonly params: Promise<{ sku: string }>;
 }): Promise<Metadata> {
   const { sku } = await params;
-  const entry = findCatalogEntry(sku);
+  const entry = await resolveProductDetail(sku);
   if (entry === null) {
     return pageMetadata({
       title: 'Product not found',
       description: 'This catalogue SKU is not listed.',
       path: productDetailPath(sku),
       noIndex: true,
+    });
+  }
+  if (entry.kind === 'catalogue') {
+    return pageMetadata({
+      title: entry.product.title,
+      description: entry.product.summary || entry.product.description,
+      path: productDetailPath(sku),
     });
   }
   const title = entry.kind === 'featured' ? entry.title : entry.product.title;
@@ -51,8 +64,56 @@ export default async function ProductDetailPage({
   readonly params: Promise<{ sku: string }>;
 }) {
   const { sku } = await params;
-  const entry = findCatalogEntry(sku);
+  const entry = await resolveProductDetail(sku);
   if (entry === null) notFound();
+
+  if (entry.kind === 'catalogue') {
+    const { product } = entry;
+    return (
+      <>
+        <MarketingPageHeader
+          title={product.title}
+          lede={product.summary || product.description}
+          breadcrumbs={[
+            { label: 'Home', href: '/' },
+            { label: 'Products', href: '/products' },
+            { label: product.title },
+          ]}
+        />
+        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+          <Text size="caption" tone="muted" className="font-mono">
+            Cat #{product.sku}
+          </Text>
+          {product.displayPrice !== null ? (
+            <Text size="body-sm" className="mt-2 font-semibold">
+              {product.displayPrice}
+            </Text>
+          ) : null}
+          {product.availabilityText !== null ? (
+            <Text size="body-sm" tone="muted" className="mt-2">
+              {product.availabilityText}
+            </Text>
+          ) : null}
+          <div className="mt-8 flex flex-wrap gap-3">
+            {checkoutEnabled() && product.checkoutEnabled ? (
+              <ProductPurchaseActions
+                sku={product.sku}
+                enquiryHref={productEnquiryHref(product.sku)}
+                compact
+              />
+            ) : (
+              <ButtonLink href={productEnquiryHref(product.sku)} as={AppLink} variant="primary">
+                Request quote
+              </ButtonLink>
+            )}
+            <ButtonLink href="/products" as={AppLink} variant="outline">
+              Back to catalogue
+            </ButtonLink>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (entry.kind === 'featured') {
     return (

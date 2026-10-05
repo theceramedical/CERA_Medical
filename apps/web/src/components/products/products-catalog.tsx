@@ -12,14 +12,13 @@ import {
 import Image from 'next/image';
 
 import {
-  CATALOG_PRODUCT_COUNT,
-  CATALOG_PRODUCTS,
   FEATURED_PRODUCT,
   PRODUCT_CATEGORIES,
   filterCatalog,
   productCatalogAnchorId,
   productDetailPath,
   productEnquiryHref,
+  type CatalogProduct,
   type ProductCategory,
 } from '../../content/products-catalog.ts';
 import { AppButtonLink, AppLink } from '../link.tsx';
@@ -27,18 +26,20 @@ import { AppButtonLink, AppLink } from '../link.tsx';
 import { ProductPurchaseActions } from './product-purchase-actions.tsx';
 
 export function ProductsCatalog({
+  products,
   query,
   category,
   bsl,
   inStockOnly,
 }: {
+  readonly products: readonly CatalogProduct[];
   readonly query?: string;
   readonly category?: string;
   readonly bsl?: string;
   readonly inStockOnly?: boolean;
 }) {
   const activeCategory = (category ?? 'all') as 'all' | ProductCategory;
-  const filtered = filterCatalog(CATALOG_PRODUCTS, {
+  const filtered = filterCatalog(products, {
     ...(query === undefined ? {} : { q: query }),
     category: activeCategory,
     ...(bsl === undefined ? {} : { bsl }),
@@ -80,7 +81,7 @@ export function ProductsCatalog({
             </AppButtonLink>
             <AppButtonLink href="#catalog-grid" variant="outline">
               <Icon icon={LayoutList} size="sm" />
-              Browse Catalog Inventory ({CATALOG_PRODUCT_COUNT})
+              Browse Catalog Inventory ({products.length})
             </AppButtonLink>
           </div>
         </div>
@@ -165,6 +166,8 @@ export function ProductsCatalog({
               tab.id === 'all'
                 ? '/products'
                 : `/products?category=${tab.id}${query ? `&q=${encodeURIComponent(query)}` : ''}`;
+            const label =
+              tab.id === 'all' ? `All Products (${String(products.length)})` : tab.label;
             return (
               <AppLink
                 key={tab.id}
@@ -176,7 +179,7 @@ export function ProductsCatalog({
                     : 'whitespace-nowrap rounded-md bg-surface-tint px-4 py-1.5 text-caption font-medium text-muted no-underline hover:bg-surface-tint-2'
                 }
               >
-                {tab.label}
+                {label}
               </AppLink>
             );
           })}
@@ -280,7 +283,7 @@ export function ProductsCatalog({
           </Text>
         </div>
         <Text size="caption" tone="muted">
-          Showing {filtered.length} of {CATALOG_PRODUCT_COUNT} items
+          Showing {filtered.length} of {products.length} items
         </Text>
       </div>
 

@@ -45,6 +45,26 @@ const withdrawn: VendureProduct = {
   enabled: false,
 };
 
+const physicalKit: VendureProduct = {
+  id: '4',
+  slug: 'cr-reg-1180',
+  name: 'CERA-BUF-RNA',
+  description: 'RNase-free buffer.',
+  enabled: true,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-02T00:00:00.000Z',
+  collections: [{ id: 'p1', slug: 'physical-products', name: 'Physical Products' }],
+  variants: [{ id: 'v1', sku: 'CR-REG-1180', price: 238_000, priceWithTax: 238_000 }],
+  customFields: {
+    shortSummary: 'Sterile buffer.',
+    enquiryEnabled: true,
+    checkoutEnabled: true,
+    displayPriceText: 'PKR 2,380',
+    availabilityText: 'In stock',
+    internalNotes: null,
+  },
+};
+
 let app: FastifyInstance | undefined;
 
 afterEach(async () => {
@@ -75,6 +95,7 @@ describe('GET /v1/services', () => {
 
     const body: { items: { slug: string }[] } = response.json();
     expect(body.items.map((item) => item.slug)).toEqual(['cardiology', 'diagnostic-tests']);
+    expect(response.body).not.toContain('cr-reg-1180');
     expect(response.body).not.toContain('SECRET');
     expect(response.body).not.toContain('travel-vaccinations');
   });
@@ -84,6 +105,25 @@ describe('GET /v1/services', () => {
     const response = await app.inject({ method: 'GET', url: '/v1/services?enquiryEnabled=true' });
     const body: { items: { slug: string }[] } = response.json();
     expect(body.items.map((item) => item.slug)).toEqual(['cardiology']);
+  });
+});
+
+describe('GET /v1/products', () => {
+  it('lists physical products and excludes research services', async () => {
+    app = await build([cardiology, physicalKit]);
+    const response = await app.inject({ method: 'GET', url: '/v1/products' });
+    expect(response.statusCode).toBe(200);
+    const body: { items: { sku: string }[] } = response.json();
+    expect(body.items.map((item) => item.sku)).toEqual(['CR-REG-1180']);
+  });
+});
+
+describe('GET /v1/products/:sku', () => {
+  it('returns a physical product by SKU', async () => {
+    app = await build([physicalKit]);
+    const response = await app.inject({ method: 'GET', url: '/v1/products/CR-REG-1180' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ sku: 'CR-REG-1180', title: 'CERA-BUF-RNA' });
   });
 });
 

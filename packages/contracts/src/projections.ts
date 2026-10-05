@@ -333,3 +333,17 @@ export function toPublicService(service: Service): PublicService {
     mediaId: service.mediaId,
   };
 }
+
+/** Shippable / checkout catalogue row (Vendure `physical-products` collection). */
+export const PublicProductSchema = z.object({
+  sku: z.string().min(1).max(40),
+  title: z.string(),
+  summary: z.string(),
+  description: z.string(),
+  displayPrice: z.string().nullable(),
+  availabilityText: z.string().nullable(),
+  listPriceMinor: z.number().int().nonnegative().nullable(),
+  checkoutEnabled: z.boolean(),
+  enquiryEnabled: z.boolean(),
+});
+export type PublicProduct = z.infer<typeof PublicProductSchema>;

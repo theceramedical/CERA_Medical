@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 const COLLECTIONS = ['pages', 'posts', 'policies', 'service-presentations'] as const;
 
@@ -31,6 +31,7 @@ export async function POST(request: Request): Promise<Response> {
 
   if (collection === 'global:site-settings') {
     revalidateTag('cms:global:site-settings', 'max');
+    revalidatePath('/sitemap.xml');
     return Response.json({ revalidated: true });
   }
 
@@ -45,6 +46,7 @@ export async function POST(request: Request): Promise<Response> {
   if (typeof slug === 'string' && slug.length > 0) {
     revalidateTag(`cms:${collection}:${slug}`, 'max');
   }
+  revalidatePath('/sitemap.xml');
 
   return Response.json({ revalidated: true });
 }

@@ -15,10 +15,12 @@ import {
   InternalStatusSchema,
 } from './enums.ts';
 import { PageSchema, PaginationQuerySchema } from './pagination.ts';
+import { PhysicalProductSkuSchema } from './physical-catalog.ts';
 import { EnquiryReferenceSchema, SlugSchema, SubjectIdSchema, Uuidv7Schema } from './primitives.ts';
 import {
   CustomerEnquirySchema,
   CustomerOrderSchema,
+  PublicProductSchema,
   PublicServiceSchema,
   StaffEnquirySchema,
 } from './projections.ts';
@@ -49,7 +51,19 @@ export type ListServicesQuery = z.infer<typeof ListServicesQuerySchema>;
 
 export const ListServicesResponseSchema = PageSchema(PublicServiceSchema);
 
+export const ListProductsResponseSchema = PageSchema(PublicProductSchema);
+
 export const ServiceParamsSchema = z.object({ slug: SlugSchema });
+
+export const ProductSkuParamsSchema = z.object({
+  sku: z
+    .string()
+    .min(1)
+    .max(40)
+    .regex(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/)
+    .transform((value) => value.trim().toUpperCase())
+    .pipe(PhysicalProductSkuSchema),
+});
 export const ContentParamsSchema = z.object({ type: ContentTypeSchema, slug: SlugSchema });
 
 /**

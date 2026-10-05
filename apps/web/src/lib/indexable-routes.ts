@@ -1,39 +1,18 @@
-import {
-  CATALOG_PRODUCTS,
-  FEATURED_PRODUCT,
-  productDetailPath,
-} from '../content/products-catalog.ts';
+import { findCatalogEntry, productDetailPath } from '../content/products-catalog.ts';
 
-import { FIXTURE_SERVICE_SLUGS } from './catalogue-fixtures.ts';
-import { listPublishedDocuments } from './cms/client.ts';
+import { listPublicProducts, listPublicServicesForIndex } from './catalogue/client.ts';
+import { listPublishedDocumentsForSitemap } from './cms/client.ts';
+import { listIndexableProductSkus } from './indexable-products.ts';
+import {
+  indexableServiceSlugs,
+  policyPath,
+  STATIC_SITEMAP_ENTRIES,
+} from './indexable-sitemap-builders.ts';
 import { listSitemapEntries } from './indexable-sitemap.ts';
 
 export interface SitemapLink {
   readonly href: string;
   readonly label: string;
-}
-
-const STATIC_PATHS = [
-  '/',
-  '/services',
-  '/products',
-  '/articles',
-  '/about',
-  '/contact',
-  '/methodology',
-  '/data-retention',
-  '/privacy',
-  '/terms',
-  '/faqs',
-  '/enquiry',
-  '/sitemap',
-] as const;
-
-function policyPath(slug: string): string {
-  if (slug === 'privacy-policy' || slug === 'privacy') return '/privacy';
-  if (slug === 'terms-of-service' || slug === 'terms') return '/terms';
-  if (slug === 'data-retention-policy') return '/data-retention';
-  return `/${slug}`;
 }
 
 /** Paths for `sitemap.xml` and the HTML sitemap page — published, indexable routes only. */
@@ -43,16 +22,23 @@ export async function listIndexablePaths(): Promise<readonly string[]> {
 }
 
 export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
-  const [posts, pages, presentations, policies] = await Promise.all([
-    listPublishedDocuments('post').catch(() => []),
-    listPublishedDocuments('page').catch(() => []),
-    listPublishedDocuments('servicePresentation').catch(() => []),
-    listPublishedDocuments('policy').catch(() => []),
-  ]);
+  const [posts, pages, presentations, policies, catalogue, productSkus, catalogueProducts] =
+    await Promise.all([
+      listPublishedDocumentsForSitemap('post').catch(() => []),
+      listPublishedDocumentsForSitemap('page').catch(() => []),
+      listPublishedDocumentsForSitemap('servicePresentation').catch(() => []),
+      listPublishedDocumentsForSitemap('policy').catch(() => []),
+      listPublicServicesForIndex().catch(() => ({ items: [], degraded: true })),
+      listIndexableProductSkus().catch(() => []),
+      listPublicProducts({ revalidateSeconds: 30 }).catch(() => ({ items: [], degraded: true })),
+    ]);
+  const catalogueProductTitle = new Map(
+    catalogueProducts.items.map((row) => [row.sku.toLowerCase(), row.title]),
+  );
 
-  const staticLinks: SitemapLink[] = STATIC_PATHS.map((href) => ({
-    href,
-    label: staticLabel(href),
+  const staticLinks: SitemapLink[] = STATIC_SITEMAP_ENTRIES.map((entry) => ({
+    href: entry.path,
+    label: staticLabel(entry.path),
   }));
 
   const pageLinks: SitemapLink[] = pages
@@ -66,19 +52,13 @@ export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
       label: policy.title,
     }));
 
-  const serviceSlugs = [
-    ...new Set([...FIXTURE_SERVICE_SLUGS, ...presentations.map((service) => service.slug)]),
-  ];
+  const serviceSlugs = indexableServiceSlugs(catalogue.items, presentations);
   const presentationTitle = new Map(presentations.map((row) => [row.slug, row.title]));
-  const presentationNoIndex = new Map(
-    presentations.map((row) => [row.slug, row.seo.noIndex === true]),
-  );
-  const serviceLinks: SitemapLink[] = serviceSlugs
-    .filter((slug) => presentationNoIndex.get(slug) !== true)
-    .map((slug) => ({
-      href: `/services/${slug}`,
-      label: presentationTitle.get(slug) ?? titleFromSlug(slug),
-    }));
+  const catalogueTitle = new Map(catalogue.items.map((row) => [row.slug, row.title]));
+  const serviceLinks: SitemapLink[] = serviceSlugs.map((slug) => ({
+    href: `/services/${slug}`,
+    label: presentationTitle.get(slug) ?? catalogueTitle.get(slug) ?? titleFromSlug(slug),
+  }));
 
   const articleLinks: SitemapLink[] = posts
     .filter((post) => post.seo.noIndex !== true)
@@ -87,16 +67,15 @@ export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
       label: post.title,
     }));
 
-  const productRows = [
-    { sku: FEATURED_PRODUCT.sku, title: FEATURED_PRODUCT.title },
-    ...CATALOG_PRODUCTS.map((product) => ({ sku: product.sku, title: product.title })),
-  ];
-  const productLinks: SitemapLink[] = dedupeLinks(
-    productRows.map((row) => ({
-      href: productDetailPath(row.sku),
-      label: row.title,
-    })),
-  );
+  const productLinks: SitemapLink[] = productSkus.map((sku) => {
+    const entry = findCatalogEntry(sku);
+    if (entry !== null) {
+      const label = entry.kind === 'featured' ? entry.title : entry.product.title;
+      return { href: productDetailPath(sku), label };
+    }
+    const label = catalogueProductTitle.get(sku) ?? sku.toUpperCase();
+    return { href: productDetailPath(sku), label };
+  });
 
   return dedupeLinks([
     ...staticLinks,

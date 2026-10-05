@@ -21,6 +21,8 @@ export const ROUTE_POLICIES: readonly RouteDeclaration[] = [
   { method: 'GET', path: '/health/ready', policy: { kind: 'public' } },
   { method: 'GET', path: '/v1/services', policy: { kind: 'public' } },
   { method: 'GET', path: '/v1/services/:slug', policy: { kind: 'public' } },
+  { method: 'GET', path: '/v1/products', policy: { kind: 'public' } },
+  { method: 'GET', path: '/v1/products/:sku', policy: { kind: 'public' } },
   { method: 'GET', path: '/v1/search', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/enquiries', policy: { kind: 'public' } },
   { method: 'GET', path: '/v1/cart', policy: { kind: 'public' } },

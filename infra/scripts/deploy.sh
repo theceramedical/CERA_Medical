@@ -12,8 +12,10 @@ else
   rm -f "$ROOT_DIR/.release.previous.env"
 fi
 tmp="$(mktemp "$ROOT_DIR/.release.env.XXXXXX")"
+pull_dir=""
 cleanup() {
   local result=$?
+  [[ -n "$pull_dir" ]] && rm -rf "$pull_dir"
   rm -f "$tmp"
   if (( result != 0 )); then
     if [[ -f "$ROOT_DIR/.release.previous.env" ]]; then
@@ -22,27 +24,37 @@ cleanup() {
       rm -f "$RELEASE_FILE"
     fi
   fi
+  return "$result"
 }
 trap cleanup EXIT
 chmod 600 "$tmp"
-for app in web api worker cms commerce migrator; do
-  image="$image_prefix/$app:$image_tag"
-  digest=''
-  if [[ "${CERA_SKIP_IMAGE_PULL:-}" == 1 ]]; then
-    docker image inspect "$image" >/dev/null
-    id="$(docker image inspect --format '{{.Id}}' "$image")"
-    digest="${image_prefix}/${app}@${id}"
+# shellcheck source=deploy-resolve-images.sh
+source "$(dirname "$0")/deploy-resolve-images.sh"
+all_apps=(web api worker cms commerce migrator)
+pull_dir="$(mktemp -d)"
+pull_queue=()
+for app in "${all_apps[@]}"; do
+  if should_pull_app "$app"; then
+    pull_queue+=("$app")
   else
-    docker pull "$image"
-    while IFS= read -r reference; do
-      if [[ "$reference" == "$image_prefix/$app"@sha256:* ]]; then
-        digest="$reference"
-        break
-      fi
-    done < <(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$image")
+    [[ -f "$ROOT_DIR/.release.previous.env" ]] || {
+      echo "Missing prior release manifest; cannot reuse $app image. Run with all apps in CERA_PULL_APPS." >&2
+      exit 1
+    }
+    reuse_app_digest "$app" "$ROOT_DIR/.release.previous.env" "$pull_dir/$app.env"
   fi
-  [[ "$digest" == *@sha256:* ]] || { echo "No registry digest for $image" >&2; exit 1; }
-  printf '%s_IMAGE=%s\n' "${app^^}" "$digest" >> "$tmp"
+done
+parallel_max="${CERA_PULL_PARALLEL:-3}"
+for ((offset = 0; offset < ${#pull_queue[@]}; offset += parallel_max)); do
+  batch=( "${pull_queue[@]:offset:parallel_max}" )
+  for app in "${batch[@]}"; do
+    pull_one_app "$app" "$image_prefix" "$image_tag" "$pull_dir/$app.env" &
+  done
+  wait
+done
+for app in "${all_apps[@]}"; do
+  [[ -f "$pull_dir/$app.env" ]] || { echo "Missing resolved image for $app" >&2; exit 1; }
+  cat "$pull_dir/$app.env" >> "$tmp"
 done
 mv "$tmp" "$RELEASE_FILE"
 compose config -q
