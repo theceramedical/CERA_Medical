@@ -28,16 +28,17 @@ export async function SiteAnnouncementBar() {
 
   return (
     <div
-      className="bg-linear-to-r from-gradient-from to-gradient-to px-4 py-2 text-on-primary"
+      className="bg-linear-to-r from-gradient-from to-gradient-to px-4 py-2.5 text-on-primary"
       role="region"
       aria-label="Site announcement"
     >
-      <div className="mx-auto flex max-w-site flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-3 sm:text-left">
+      <div className="mx-auto flex max-w-site flex-col items-center justify-center gap-2 text-center sm:flex-row sm:flex-wrap sm:gap-x-3 sm:gap-y-1 sm:text-left">
         {statusLabel ? (
           <Text
             as="span"
             size="caption"
-            className="inline-flex items-center gap-2 font-semibold uppercase tracking-wide"
+            tone="on-dark"
+            className="inline-flex items-center gap-2 font-semibold tracking-wide"
           >
             <span
               aria-hidden="true"
@@ -47,9 +48,9 @@ export async function SiteAnnouncementBar() {
           </Text>
         ) : null}
         {message ? (
-          <Text as="span" size="caption" className="hidden text-on-primary md:inline opacity-90">
+          <Text as="span" size="caption" tone="on-dark" className="opacity-95">
             {statusLabel ? (
-              <span aria-hidden="true" className="mx-2 opacity-70">
+              <span aria-hidden="true" className="mx-2 hidden opacity-70 sm:inline">
                 |
               </span>
             ) : null}
@@ -59,7 +60,8 @@ export async function SiteAnnouncementBar() {
         {href && linkLabel ? (
           <AppLink
             href={href}
-            className="text-caption font-semibold text-on-primary underline underline-offset-2 hover:opacity-90"
+            variant="quiet"
+            className="text-caption font-semibold text-on-primary underline underline-offset-2 hover:text-on-primary hover:opacity-90"
           >
             {linkLabel}
           </AppLink>

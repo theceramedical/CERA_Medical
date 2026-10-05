@@ -1,9 +1,7 @@
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
-import { CheckoutForm } from '../../../components/checkout-form.client.tsx';
+import { CheckoutPageContent } from '../../../components/checkout-page-content.client.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
-import { fetchCart } from '../../../lib/cart-client.ts';
 import { checkoutEnabled } from '../../../lib/checkout-enabled.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
@@ -16,11 +14,8 @@ export const metadata: Metadata = pageMetadata({
   noIndex: true,
 });
 
-export default async function CheckoutPage() {
+export default function CheckoutPage() {
   if (!checkoutEnabled()) notFound();
-
-  const cart = await fetchCart((await headers()).get('cookie')).catch(() => null);
-  if (cart === null || cart.lines.length === 0) notFound();
 
   return (
     <>
@@ -34,10 +29,7 @@ export default async function CheckoutPage() {
         ]}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <CheckoutForm
-          cartTotalLabel={`${(cart.totalMinor / 100).toFixed(2)} ${cart.currencyCode}`}
-          showTestPayment={process.env.NODE_ENV !== 'production'}
-        />
+        <CheckoutPageContent />
       </div>
     </>
   );

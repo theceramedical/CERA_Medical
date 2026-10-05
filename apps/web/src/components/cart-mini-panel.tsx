@@ -1,11 +1,10 @@
 'use client';
 
-import { ButtonLink } from '@cera/ui/button';
 import { Text } from '@cera/ui/typography';
 
 import type { Cart } from '@cera/contracts';
 
-import { AppLink } from './link.tsx';
+import { AppButtonLink, AppLink } from './link.tsx';
 
 export function formatCartMoney(minor: number, currencyCode: string): string {
   const major = minor / 100;
@@ -70,16 +69,16 @@ export function CartMiniPanel({
         </Text>
       </div>
       <div className="flex flex-col gap-2">
-        <ButtonLink
+        <AppButtonLink
           href="/checkout"
-          as={AppLink}
           variant="primary"
           size="sm"
-          className="w-full justify-center"
+          fullWidth
+          className="justify-center"
           onClick={onCheckout}
         >
           Checkout
-        </ButtonLink>
+        </AppButtonLink>
         <AppLink href="/cart" className="text-center text-body-sm font-medium no-underline">
           View full cart
         </AppLink>

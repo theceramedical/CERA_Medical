@@ -1,24 +1,31 @@
 'use client';
 
-import { ButtonLink } from '@cera/ui/button';
 import { Heading, Text } from '@cera/ui/typography';
 import { useEffect, useState } from 'react';
 
 import type { Cart } from '@cera/contracts';
 
-import { fetchCart } from '../lib/cart-client.ts';
+import { fetchCart, mergeCartState } from '../lib/cart-client.ts';
 
 import { formatCartMoney } from './cart-mini-panel.tsx';
-import { AppLink } from './link.tsx';
+import { AppButtonLink, AppLink } from './link.tsx';
 
 export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
   const [cart, setCart] = useState(initialCart);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     void fetchCart()
-      .then(setCart)
-      .catch(() => undefined);
+      .then((next) => {
+        setCart((previous) => mergeCartState(previous, next));
+        setReady(true);
+      })
+      .catch(() => setReady(true));
   }, []);
+
+  if (!ready) {
+    return <Text tone="muted">Loading your cart…</Text>;
+  }
 
   if (cart.lines.length === 0) {
     return (
@@ -54,9 +61,9 @@ export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
           Total{' '}
           <span className="font-mono">{formatCartMoney(cart.totalMinor, cart.currencyCode)}</span>
         </Heading>
-        <ButtonLink href="/checkout" as={AppLink} variant="primary">
+        <AppButtonLink href="/checkout" variant="primary">
           Proceed to checkout
-        </ButtonLink>
+        </AppButtonLink>
       </div>
     </>
   );
