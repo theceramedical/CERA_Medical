@@ -45,22 +45,29 @@ set_env_kv AUTHENTIK_BOOTSTRAP_PASSWORD "$OPERATOR_PASSWORD"
 echo "ERPNext Administrator password..."
 docker exec frappe-backend-1 bench --site "$SITE" set-admin-password "$OPERATOR_PASSWORD"
 
-echo "Payload CMS user email + password..."
-docker exec cera-cms-1 node --input-type=module -e "
-import bcrypt from 'bcryptjs';
-const email = process.env.OPERATOR_EMAIL;
+echo "Payload CMS user email + password (Payload 3 pbkdf2-sha256-v1)..."
+cms_creds="$(
+  OPERATOR_PASSWORD="$OPERATOR_PASSWORD" docker exec -e OPERATOR_PASSWORD cera-cms-1 node --input-type=module -e "
+import crypto from 'crypto';
 const password = process.env.OPERATOR_PASSWORD;
-const hash = await bcrypt.hash(password, 10);
-const { Client } = await import('pg');
-const client = new Client({ connectionString: process.env.CMS_DATABASE_URL });
-await client.connect();
-await client.query(
-  'UPDATE users SET email = \$1, hash = \$2, salt = \$3, login_attempts = 0, lock_until = NULL WHERE id = 1',
-  [email, hash, ''],
+const salt = crypto.randomBytes(32).toString('hex');
+const prefix = 'pbkdf2-sha256-v1:';
+const hashRaw = await new Promise((resolve, reject) =>
+  crypto.pbkdf2(password, salt, 600000, 32, 'sha256', (e, b) => (e ? reject(e) : resolve(b))),
 );
-await client.end();
-console.log('CMS user id=1 updated to', email);
-" 2>/dev/null || echo 'CMS update skipped (run manually in Payload admin if this failed).'
+process.stdout.write(salt + '\n' + prefix + hashRaw.toString('hex'));
+" 2>/dev/null
+)" || cms_creds=""
+if [[ -n "$cms_creds" ]]; then
+  cms_salt="$(printf '%s\n' "$cms_creds" | head -1)"
+  cms_hash="$(printf '%s\n' "$cms_creds" | tail -1)"
+  docker exec cera-postgres-1 psql -U postgres -d cera_cms -v ON_ERROR_STOP=1 -c \
+    "UPDATE users SET email = '${OPERATOR_EMAIL}', hash = '${cms_hash}', salt = '${cms_salt}', login_attempts = 0, lock_until = NULL WHERE id = 1;" \
+    >/dev/null
+  echo "CMS user id=1 updated to ${OPERATOR_EMAIL}"
+else
+  echo 'CMS update skipped (run manually in Payload admin if this failed).'
+fi
 
 echo ""
 echo "Done. Next steps:"

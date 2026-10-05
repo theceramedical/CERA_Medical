@@ -13,7 +13,12 @@ import { publishable } from './publishable.ts';
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload';
 
 const assertCatalogue: CollectionBeforeChangeHook = async ({ data }) => {
-  const slug = typeof data.slug === 'string' ? data.slug : '';
+  const slug = typeof data.slug === 'string' ? data.slug.trim() : '';
+  // Draft autosave on "create" runs before an editor picks a catalogue slug; validating
+  // here would throw and blank the admin form.
+  if (slug.length === 0) {
+    return data;
+  }
   const shop = process.env.VENDURE_SHOP_API_URL;
   const lookup =
     shop === undefined || shop.length === 0
@@ -52,7 +57,7 @@ export const ServicePresentations: CollectionConfig = publishable({
       required: true,
       admin: {
         description:
-          'Vendure product id, or the slug until Phase 06. Validated against the live catalogue on save.',
+          'Must match an active Vendure catalogue product slug (create the product in the commerce dashboard first). Validated on save once the slug field is set.',
       },
     },
     { name: 'excerpt', type: 'textarea', maxLength: 400 },
