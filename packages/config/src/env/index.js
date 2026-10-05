@@ -47,6 +47,7 @@ export const webEnvSchema = commonEnvSchema.extend({
   OIDC_CLIENT_ID: nonEmpty,
   OIDC_CLIENT_SECRET: nonEmpty,
   OIDC_REDIRECT_URI: url,
+  OIDC_GOOGLE_SOURCE_SLUG: z.string().optional().describe('Authentik Google OAuth source slug'),
   GOOGLE_SITE_VERIFICATION: z.string().optional().describe('Search Console HTML tag token'),
   GLITCHTIP_DSN: z.string().optional(),
 });
