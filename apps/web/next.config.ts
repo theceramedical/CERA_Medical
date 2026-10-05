@@ -1,4 +1,10 @@
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import type { NextConfig } from 'next';
+
+const rootDir = fileURLToPath(new URL('.', import.meta.url));
+const monorepoRoot = join(rootDir, '../..');
 
 /**
  * The origin media is served from: SeaweedFS locally, Cloudflare R2 in staging and production.
@@ -43,6 +49,12 @@ function mediaPattern(): { protocol: 'http' | 'https'; hostname: string; port: s
  */
 const nextConfig: NextConfig = {
   output: 'standalone',
+
+  // `manifest.ts` and `/dev/design` read `packages/ui/src/styles/theme.css` at runtime.
+  outputFileTracingRoot: monorepoRoot,
+  outputFileTracingIncludes: {
+    '/*': ['./packages/ui/src/styles/theme.css'],
+  },
 
   images: {
     /**
