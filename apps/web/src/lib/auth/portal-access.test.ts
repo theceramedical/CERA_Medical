@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { apiPathRequiresVerifiedEmail } from './portal-access.ts';
+import { apiPathRequiresVerifiedEmail } from './portal-api-paths.ts';
 
 describe('apiPathRequiresVerifiedEmail', () => {
   it('requires verification for enquiries and orders', () => {
