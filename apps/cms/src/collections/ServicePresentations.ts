@@ -1,8 +1,11 @@
+import { ValidationError } from 'payload';
+
 import { servicePresentationBlocks } from '../blocks/layout.ts';
 import { asString } from '../lib/as-string.ts';
 import {
   assertServiceExists,
   CatalogueUnavailableError,
+  UnknownServiceError,
   vendureHasSlug,
 } from '../lib/catalogue.ts';
 import { constrainedEditor } from '../lib/editor.ts';
@@ -12,13 +15,27 @@ import { publishable } from './publishable.ts';
 
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload';
 
+function catalogueValidationError(message: string, path: 'slug' | 'serviceId'): ValidationError {
+  return new ValidationError({
+    collection: 'service-presentations',
+    errors: [{ message, path }],
+  });
+}
+
 const assertCatalogue: CollectionBeforeChangeHook = async ({ data }) => {
   const slug = typeof data.slug === 'string' ? data.slug.trim() : '';
-  // Draft autosave on "create" runs before an editor picks a catalogue slug; validating
-  // here would throw and blank the admin form.
+  // Autosave on "create" runs before an editor picks a catalogue slug.
   if (slug.length === 0) {
     return data;
   }
+  if (typeof data.serviceId !== 'string' || data.serviceId.length === 0) {
+    data.serviceId = slug;
+  }
+  // Drafts may use a slug before the Vendure product exists; block only on publish.
+  if (data._status !== 'published') {
+    return data;
+  }
+
   const shop = process.env.VENDURE_SHOP_API_URL;
   const lookup =
     shop === undefined || shop.length === 0
@@ -29,9 +46,16 @@ const assertCatalogue: CollectionBeforeChangeHook = async ({ data }) => {
           return live;
         };
 
-  await assertServiceExists(slug, lookup);
-  if (typeof data.serviceId !== 'string' || data.serviceId.length === 0) {
-    data.serviceId = slug;
+  try {
+    await assertServiceExists(slug, lookup);
+  } catch (error) {
+    if (error instanceof UnknownServiceError) {
+      throw catalogueValidationError(error.message, 'slug');
+    }
+    if (error instanceof CatalogueUnavailableError) {
+      throw catalogueValidationError(error.message, 'slug');
+    }
+    throw error;
   }
   return data;
 };
@@ -54,7 +78,7 @@ export const ServicePresentations: CollectionConfig = publishable({
     {
       name: 'serviceId',
       type: 'text',
-      required: true,
+      required: false,
       admin: {
         description:
           'Must match an active Vendure catalogue product slug (create the product in the commerce dashboard first). Validated on save once the slug field is set.',
