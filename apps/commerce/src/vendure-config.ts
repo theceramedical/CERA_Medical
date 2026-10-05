@@ -8,7 +8,13 @@ import {
   PresetOnlyStrategy,
   type AssetServerOptions,
 } from '@vendure/asset-server-plugin';
-import { DefaultLogger, LanguageCode, LogLevel, type VendureConfig } from '@vendure/core';
+import {
+  DefaultLogger,
+  DefaultSearchPlugin,
+  LanguageCode,
+  LogLevel,
+  type VendureConfig,
+} from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { HardenPlugin } from '@vendure/harden-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq/index.js';
@@ -171,6 +177,10 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
       HardenPlugin.init({
         maxQueryComplexity: 800,
         apiMode: local ? 'dev' : 'prod',
+      }),
+      DefaultSearchPlugin.init({
+        bufferUpdates: true,
+        indexStockStatus: true,
       }),
       ...(options.seed
         ? []

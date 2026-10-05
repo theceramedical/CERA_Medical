@@ -67,6 +67,8 @@ export const ServicePresentations: CollectionConfig = publishable({
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'serviceId', '_status', 'reviewRequested', 'updatedAt'],
     group: 'Content',
+    description:
+      'Marketing pages for research services at /services/{slug}. Create the Vendure catalogue product first (not Physical Products), use the same slug here, then publish.',
     livePreview: {
       url: ({ data }) => previewUrl(`/services/${asString(data.slug)}`),
       breakpoints: [...PREVIEW_BREAKPOINTS],

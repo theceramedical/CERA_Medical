@@ -29,16 +29,18 @@ Non-technical guide for day-to-day work on the live site. Hostnames below use pr
 | View CRM leads from enquiries               | **ERPNext**                      | Auto-created from website            |
 | Triage web enquiries                        | **Staff console**                | Not the customer `/account` area     |
 
-### What still needs a developer (today)
+### Physical products vs research services
 
-The **Physical products** page (`/products`) is built from a fixed product list in the application code, with matching SKUs in Vendure for cart/checkout. Your client can:
+| Kind                                            | Who edits marketing copy                         | Who edits price / cart / orders                                      | Public URL                          |
+| ----------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------- | ----------------------------------- |
+| **Research service**                            | **Payload → Service presentations**              | **Vendure** (not `physical-products`)                                | `/services/{slug}`                  |
+| **Shippable product (reagent, kit, cell line)** | Short text in **Vendure** (summary, description) | **Vendure** — must be in collection **Physical Products & Reagents** | `/products` (and `/products/{sku}`) |
 
-- Change **prices and stock** in Vendure for those existing SKUs.
-- Turn enquiry/checkout behaviour on or off per product in Vendure (when checkout is enabled).
+**Orders and checkout** always live in **Vendure** (Sales → Orders). Payload does not handle orders.
 
-Adding a **brand-new** product line to the public `/products` catalogue (new card, filters, sitemap entry) requires a **small software release** unless you later add a CMS “Products” collection. Plan handover accordingly: either freeze the SKU set at launch or budget occasional releases for new reagents.
+**Research services** are fully operator-controlled: add the catalogue row in Vendure, then the presentation in Payload with the **same slug** (no developer for a new service line).
 
-**Research services** are fully operator-controlled via **Vendure + CMS** (no code for new service lines, as long as slugs stay aligned).
+**New physical SKUs:** create in Vendure, assign to **Physical Products & Reagents**, enable the product. The website picks up new SKUs automatically within about a minute. Rich marketing cards for flagship SKUs may still come from the seeded design list until you add CMS product pages (future).
 
 ---
 
@@ -86,6 +88,29 @@ Adding a **brand-new** product line to the public `/products` catalogue (new car
 4. After changing Vendure, the public site refreshes within about a minute (cached catalogue).
 
 **Always pair Vendure with CMS:** create or update **Service presentations** with the **same slug** for hero copy and layout blocks.
+
+### New research service (step by step)
+
+Do **Vendure first**, then **Payload**. Use a lowercase hyphenated **slug** (e.g. `custom-metagenomics`).
+
+1. **Vendure → Catalog → Products → Create**
+   - Name, description, short summary, display price, availability.
+   - **Slug** = the URL segment (same value you will use in Payload).
+   - Assign a **service** collection (e.g. Laboratory Research, Bioinformatics) — **not** Physical Products & Reagents.
+   - Enable the product; set **Enquiry enabled** / **Checkout enabled** as needed; save variants (SKU can match the slug).
+2. **Payload → Content → Service presentations → Create**
+   - **Title**, **slug** (must match Vendure exactly), body, optional layout blocks.
+   - Save as **draft** while writing; **Publish** only when Vendure shows the product as enabled.
+   - If publish fails on slug, the Vendure product is missing or disabled — fix catalogue first.
+3. Public page: `https://www.ceramedical.org/services/{slug}`.
+
+### New shippable product (step by step)
+
+1. **Vendure → Products → Create** — variant **SKU** (e.g. `CR-REG-9999`), price, stock.
+2. **Collections → Physical Products & Reagents → add the product** (or assign that collection on the product).
+3. Check **https://www.ceramedical.org/products** after ~1 minute.
+
+If the collection product picker spins on “Loading…”, use **Catalog → Products → your product → Collections** to assign **Physical Products** from the product side until commerce search is deployed.
 
 ---
 
