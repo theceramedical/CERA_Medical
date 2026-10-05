@@ -3,6 +3,7 @@ import { Wordmark } from '@cera/ui/wordmark';
 import { Search } from 'lucide-react';
 import NextLink from 'next/link';
 
+import { sessionHasStaffRole } from '../lib/auth/portal-access.ts';
 import { getSession } from '../lib/auth/session.ts';
 import { checkoutEnabled } from '../lib/checkout-enabled.ts';
 import { getPublicGlobal } from '../lib/cms/client.ts';
@@ -32,6 +33,7 @@ export async function SiteHeader() {
   ]);
   const navItems = withProductsNav(navigation?.header?.length ? navigation.header : MAIN_NAV);
   const signedIn = session !== null;
+  const staff = session !== null && sessionHasStaffRole(session);
   return (
     <HeaderScrollShadow>
       <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">
@@ -78,13 +80,13 @@ export async function SiteHeader() {
           {/* Hidden below `lg`, where the same destinations are inside the disclosure. Rendering
               them twice and hiding one copy would put two "Sign In" links in the tab order. */}
           <div className="hidden items-center gap-2 lg:flex">
-            <SiteHeaderAuthActions signedIn={signedIn} />
+            <SiteHeaderAuthActions signedIn={signedIn} staff={staff} />
             <AppButtonLink href="/enquiry" variant="accent" size="sm">
               Make an Enquiry
             </AppButtonLink>
           </div>
 
-          <MobileNav items={navItems} signedIn={signedIn} />
+          <MobileNav items={navItems} signedIn={signedIn} staff={staff} />
         </div>
       </div>
     </HeaderScrollShadow>

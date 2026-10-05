@@ -11,7 +11,7 @@ const PRODUCT_FIELDS = `
   createdAt
   updatedAt
   featuredAsset { id }
-  collections { id slug name }
+  collections(options: { take: 1 }) { id slug name }
   customFields {
     availabilityText
     enquiryEnabled
@@ -19,7 +19,7 @@ const PRODUCT_FIELDS = `
     displayPriceText
     shortSummary
   }
-  variants {
+  variants(options: { take: 1 }) {
     id
     sku
     price

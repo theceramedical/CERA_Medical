@@ -4,6 +4,8 @@ import { PublicServiceSchema, type PublicService } from '@cera/contracts/project
 
 import { fixturePublicServices } from '../catalogue-fixtures.ts';
 
+import { resolveCatalogueApiBaseUrl } from './api-base-url.ts';
+
 /**
  * Server-side catalogue reads through `apps/api`, never Vendure.
  *
@@ -12,7 +14,7 @@ import { fixturePublicServices } from '../catalogue-fixtures.ts';
  */
 
 export function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+  return resolveCatalogueApiBaseUrl();
 }
 
 export async function listPublicServices(query = ''): Promise<{

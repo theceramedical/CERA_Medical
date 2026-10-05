@@ -29,9 +29,11 @@ import type { NavItem } from './navigation.ts';
 export function MobileNav({
   items,
   signedIn,
+  staff = false,
 }: {
   readonly items: readonly NavItem[];
   readonly signedIn: boolean;
+  readonly staff?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -142,9 +144,16 @@ export function MobileNav({
                 group. They are here rather than there so they exist exactly once in the document. */}
             <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
               {signedIn ? (
-                <ButtonLink as={NextLink} href="/account" variant="outline" fullWidth>
-                  Your account
-                </ButtonLink>
+                <>
+                  {staff ? (
+                    <ButtonLink as={NextLink} href="/staff" variant="primary" fullWidth>
+                      Staff console
+                    </ButtonLink>
+                  ) : null}
+                  <ButtonLink as={NextLink} href="/account" variant="outline" fullWidth>
+                    Your account
+                  </ButtonLink>
+                </>
               ) : (
                 <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
                   Sign In

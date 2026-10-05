@@ -11,6 +11,19 @@ CERA does not implement Google OAuth in the web app. Social buttons call `/auth/
 
 New users still need the **`cera-customers`** group (or verified email per CERA’s OIDC mapping) before the portal grants access.
 
+## Customers vs staff
+
+| Audience      | Google on website                                                   | Email / password | Authentik groups                                               |
+| ------------- | ------------------------------------------------------------------- | ---------------- | -------------------------------------------------------------- |
+| **Customers** | Yes (`/auth/sign-in`, `/auth/sign-up`)                              | Yes              | `cera-customers` (auto when email verified and no staff group) |
+| **Staff**     | **No** — use staff entry (`/auth/sign-in?next=/staff` hides Google) | Yes + **MFA**    | `cera-enquiry-handlers`, `cera-administrators`, etc.           |
+
+Operator account **`admin@ceramedical.org`** is staff only (no `cera-customers`). Re-apply after deploy:
+
+```bash
+CERA_OPERATOR_PASSWORD='…' bash /opt/cera/infra/scripts/ensure-authentik-cera-admin.sh
+```
+
 ## Microsoft
 
 Same pattern with slug `microsoft` and `OIDC_MICROSOFT_SOURCE_SLUG=microsoft`.

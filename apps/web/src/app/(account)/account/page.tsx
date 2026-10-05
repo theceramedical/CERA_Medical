@@ -1,10 +1,11 @@
 import { Alert } from '@cera/ui/alert';
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
-import { FileText, Link2, LogOut, Package, User } from 'lucide-react';
+import { ClipboardList, FileText, Link2, LogOut, Package, User } from 'lucide-react';
 
 import { AppButtonLink, AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
+import { sessionHasStaffRole } from '../../../lib/auth/portal-access.ts';
 import { getSession } from '../../../lib/auth/session.ts';
 import { checkoutEnabled } from '../../../lib/checkout-enabled.ts';
 
@@ -47,6 +48,7 @@ function DashboardCard({
 
 export default async function AccountDashboardPage() {
   const session = await getSession();
+  const staff = session !== null && sessionHasStaffRole(session);
 
   return (
     <>
@@ -67,6 +69,17 @@ export default async function AccountDashboardPage() {
                 <Text size="body-sm">
                   Your profile can be updated now. Enquiries, orders, and claim links need a
                   verified email in your sign-in service.
+                </Text>
+              </Alert>
+            ) : null}
+
+            {staff ? (
+              <Alert tone="info" title="You also have staff access">
+                <Text size="body-sm">
+                  This page is the customer portal (your own enquiries and orders). To triage
+                  incoming requests for the team, open the{' '}
+                  <AppLink href="/staff">staff console</AppLink>. Staff sign-in requires
+                  multi-factor authentication.
                 </Text>
               </Alert>
             ) : null}
@@ -132,9 +145,21 @@ export default async function AccountDashboardPage() {
                     />
                   </li>
                 ) : null}
+                {staff ? (
+                  <li>
+                    <DashboardCard
+                      href="/staff"
+                      title="Staff console"
+                      description="Team enquiry queue, assignments, and integration deliveries."
+                      icon={ClipboardList}
+                    />
+                  </li>
+                ) : null}
               </ul>
               <Text size="body-sm" tone="muted" className="mt-6">
-                Open enquiries appear in the list once they are claimed to this email address.
+                {staff
+                  ? 'Customer enquiries you submitted appear here after you claim them to this email. All new web enquiries are handled in the staff console.'
+                  : 'Open enquiries appear in the list once they are claimed to this email address.'}
               </Text>
             </section>
           </div>

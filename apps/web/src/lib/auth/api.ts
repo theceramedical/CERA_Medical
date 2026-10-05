@@ -4,9 +4,11 @@ import { SESSION_COOKIE_NAME } from '@cera/contracts/session';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import { jsonBodyForApiRequest } from './api-request-body.ts';
 import {
   apiPathRequiresVerifiedEmail,
   assertCustomerPortalSession,
+  assertStaffPortalSession,
   signInPath,
 } from './portal-access.ts';
 import { getSession } from './session.ts';
@@ -21,10 +23,15 @@ export async function authenticatedApi<T>(
   const signIn = signInPath(returnTo);
 
   const session = await getSession();
-  assertCustomerPortalSession(session, {
-    ...(returnTo === undefined ? {} : { returnTo }),
-    emailVerified: apiPathRequiresVerifiedEmail(path),
-  });
+  const portalOptions = returnTo === undefined ? {} : { returnTo };
+  if (path.startsWith('/v1/ops/')) {
+    assertStaffPortalSession(session, portalOptions);
+  } else {
+    assertCustomerPortalSession(session, {
+      ...portalOptions,
+      emailVerified: apiPathRequiresVerifiedEmail(path),
+    });
+  }
 
   const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
   if (!token) redirect(signIn);
@@ -32,10 +39,16 @@ export async function authenticatedApi<T>(
   const api = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL;
   if (!api) throw new Error('API is not configured');
 
+  const method = options.method ?? 'GET';
+  const jsonBody = jsonBodyForApiRequest(method, options.body);
+
   const response = await fetch(`${api.replace(/\/$/, '')}${path}`, {
-    method: options.method ?? 'GET',
-    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-    ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+    method,
+    headers: {
+      authorization: `Bearer ${token}`,
+      ...(jsonBody === undefined ? {} : { 'content-type': 'application/json' }),
+    },
+    ...(jsonBody === undefined ? {} : { body: jsonBody }),
     cache: 'no-store',
     signal: AbortSignal.timeout(10_000),
   });

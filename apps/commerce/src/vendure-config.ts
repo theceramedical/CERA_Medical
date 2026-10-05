@@ -169,7 +169,7 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
             }),
           ]),
       HardenPlugin.init({
-        maxQueryComplexity: 500,
+        maxQueryComplexity: 800,
         apiMode: local ? 'dev' : 'prod',
       }),
       ...(options.seed

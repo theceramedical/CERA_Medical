@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CERA_OPERATOR_EMAIL="${CERA_OPERATOR_EMAIL:-admin@ceramedical.org}"
+CERA_OPERATOR_PASSWORD="${CERA_OPERATOR_PASSWORD:?CERA_OPERATOR_PASSWORD required}"
+CERA_AKADMIN_PASSWORD="${CERA_AKADMIN_PASSWORD:-$CERA_OPERATOR_PASSWORD}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+docker exec \
+  -e CERA_OPERATOR_EMAIL="$CERA_OPERATOR_EMAIL" \
+  -e CERA_OPERATOR_PASSWORD="$CERA_OPERATOR_PASSWORD" \
+  -e CERA_AKADMIN_PASSWORD="$CERA_AKADMIN_PASSWORD" \
+  cera-authentik-server-1 ak shell <"$SCRIPT_DIR/ensure-authentik-cera-admin.py"

@@ -57,7 +57,7 @@ export default async function SignUpPage({
     >
       <AuthPanelIntro
         heading="Your CERA account"
-        body="Choose Google or email registration. After you verify your email, you can open enquiries and orders in the portal."
+        body="Customers can register with Google or email. Staff accounts are created by an administrator in Authentik, not via this page."
       />
       <AuthSignInOptions next={safeNext} socialProviders={socialProviders} mode="sign-up" />
       <Text size="body-sm" tone="muted" className="mt-6">

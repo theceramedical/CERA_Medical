@@ -23,16 +23,18 @@ export function generateMetadata(): Metadata {
 export default async function SignInPage({
   searchParams,
 }: {
-  readonly searchParams: Promise<{ next?: string }>;
+  readonly searchParams: Promise<{ next?: string; staff?: string }>;
 }) {
-  const { next } = await searchParams;
+  const { next, staff } = await searchParams;
   const safeNext = safeReturnTo(next ?? null);
   const session = await getSession();
   if (session !== null) {
     redirect(safeNext);
   }
 
-  const socialProviders = configuredOidcSocialProviders();
+  const staffPortal =
+    staff === '1' || staff === 'true' || safeNext === '/staff' || safeNext.startsWith('/staff/');
+  const socialProviders = staffPortal ? [] : configuredOidcSocialProviders();
 
   return (
     <AuthPageShell
@@ -63,7 +65,11 @@ export default async function SignInPage({
     >
       <AuthPanelIntro
         heading="Welcome back"
-        body="Sign in with Google or your work email. Staff accounts may be asked for multi-factor authentication."
+        body={
+          staffPortal
+            ? 'Staff sign-in uses your @ceramedical.org email and password. Multi-factor authentication is required.'
+            : 'Customers can use Google or email. Staff should use email and password (open sign-in from the staff console link).'
+        }
       />
       <AuthSignInOptions next={safeNext} socialProviders={socialProviders} mode="sign-in" />
     </AuthPageShell>
