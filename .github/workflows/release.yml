@@ -78,6 +78,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          ref: ${{ github.sha }}
       - id: diff_base
         name: Resolve diff base
         env:
@@ -106,7 +107,7 @@ jobs:
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         with:
           base: ${{ steps.diff_base.outputs.base }}
-          ref: HEAD
+          ref: ${{ github.sha }}
           filters: |
             shared:
               - 'infra/docker/**'
