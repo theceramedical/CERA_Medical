@@ -98,7 +98,7 @@ export default async function ServiceDetailPage({
         ]}
         availability={service.availabilityText}
         {...(() => {
-          const hero = serviceHeroFromLayout(slug, presentation?.layout);
+          const hero = serviceHeroFromLayout(slug, presentation?.layout, service.category?.slug);
           return {
             ...(hero.eyebrow !== undefined ? { eyebrow: hero.eyebrow } : {}),
             badges: hero.badges,

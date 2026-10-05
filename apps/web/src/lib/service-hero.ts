@@ -54,27 +54,73 @@ const DEFAULTS: Record<string, ServiceHeroContent> = {
   },
 };
 
+function seededHero(slug: keyof typeof DEFAULTS): ServiceHeroContent {
+  const hero = DEFAULTS[slug];
+  if (hero === undefined) {
+    throw new Error(`Missing service hero defaults for ${slug}`);
+  }
+  return hero;
+}
+
+const LABORATORY_HERO = seededHero('molecular-research');
+const BIOINFORMATICS_HERO = seededHero('metagenomic-data-analysis');
+const EVIDENCE_HERO = seededHero('evidence-synthesis-technical-reports');
+
+/** Vendure collection slug → flagship hero copy for new catalogue services. */
+const CATEGORY_DEFAULTS: Record<string, ServiceHeroContent> = {
+  'laboratory-research': LABORATORY_HERO,
+  bioinformatics: BIOINFORMATICS_HERO,
+  'evidence-reporting': EVIDENCE_HERO,
+};
+
+function fallbackHero(slug: string, categorySlug: string | undefined): ServiceHeroContent {
+  const bySlug = DEFAULTS[slug];
+  if (bySlug !== undefined) return bySlug;
+  if (categorySlug !== undefined) {
+    const byCategory = CATEGORY_DEFAULTS[categorySlug];
+    if (byCategory !== undefined) return byCategory;
+  }
+  // New catalogue rows often ship before a collection filter is set in Vendure.
+  return LABORATORY_HERO;
+}
+
 function blockField(block: LayoutBlock, key: string): string | undefined {
   const value = block[key];
   return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
 }
 
-export function serviceHeroFromLayout(slug: string, layout: unknown): ServiceHeroContent {
-  const defaults = DEFAULTS[slug] ?? { badges: [] };
+function badgeLabelsFromBlock(hero: LayoutBlock): readonly string[] {
+  const badgesRaw = hero.badges;
+  if (!Array.isArray(badgesRaw)) return [];
+  return badgesRaw
+    .map((row) => {
+      if (row === null || typeof row !== 'object') return null;
+      const label = (row as { label?: unknown }).label;
+      return typeof label === 'string' && label.length > 0 ? label : null;
+    })
+    .filter((item): item is string => item !== null);
+}
+
+function heroBlockIsEmpty(hero: LayoutBlock): boolean {
+  return (
+    blockField(hero, 'eyebrow') === undefined &&
+    blockField(hero, 'noticeTitle') === undefined &&
+    blockField(hero, 'noticeBody') === undefined &&
+    badgeLabelsFromBlock(hero).length === 0
+  );
+}
+
+export function serviceHeroFromLayout(
+  slug: string,
+  layout: unknown,
+  categorySlug?: string | null,
+): ServiceHeroContent {
+  const defaults = fallbackHero(slug, categorySlug ?? undefined);
   const blocks = Array.isArray(layout) ? (layout as LayoutBlock[]) : [];
   const hero = blocks.find((block) => block.blockType === 'serviceHero');
-  if (hero === undefined) return defaults;
+  if (hero === undefined || heroBlockIsEmpty(hero)) return defaults;
 
-  const badgesRaw = hero.badges;
-  const badges = Array.isArray(badgesRaw)
-    ? badgesRaw
-        .map((row) => {
-          if (row === null || typeof row !== 'object') return null;
-          const label = (row as { label?: unknown }).label;
-          return typeof label === 'string' && label.length > 0 ? label : null;
-        })
-        .filter((item): item is string => item !== null)
-    : defaults.badges;
+  const badges = badgeLabelsFromBlock(hero);
 
   const eyebrow = blockField(hero, 'eyebrow') ?? defaults.eyebrow;
   const noticeTitle = blockField(hero, 'noticeTitle') ?? defaults.noticeTitle;
