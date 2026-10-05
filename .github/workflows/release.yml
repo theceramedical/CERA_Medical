@@ -72,6 +72,7 @@ jobs:
     outputs:
       apps: ${{ steps.plan.outputs.apps }}
       pull_apps: ${{ steps.plan.outputs.pull_apps }}
+      build_matrix: ${{ steps.plan.outputs.build_matrix }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -168,6 +169,7 @@ jobs:
           fi
           json='{'
           pull=()
+          matrix_items=()
           first=true
           for app in web cms commerce api worker migrator; do
             [[ "$first" == true ]] || json+=','
@@ -175,26 +177,33 @@ jobs:
             if [[ "${build[$app]}" == true ]]; then
               json+="\"$app\":true"
               pull+=("$app")
+              matrix_items+=("$app")
             else
               json+="\"$app\":false"
             fi
           done
           json+='}'
+          build_matrix='['
+          mfirst=true
+          for app in "${matrix_items[@]}"; do
+            [[ "$mfirst" == true ]] || build_matrix+=','
+            mfirst=false
+            build_matrix+="\"$app\""
+          done
+          build_matrix+=']'
           {
             echo "apps<<EOF"
             echo "$json"
             echo "EOF"
             echo "pull_apps=$(IFS=,; echo "${pull[*]}")"
+            echo "build_matrix=$build_matrix"
           } >> "$GITHUB_OUTPUT"
           echo "Build plan: $json"
 
   build:
     name: Build production image ${{ matrix.app }}
     needs: [preflight, changes]
-    if: |
-      github.actor == github.repository_owner &&
-      github.ref == 'refs/heads/main' &&
-      fromJSON(needs.changes.outputs.apps)[matrix.app]
+    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     environment: production
     permissions:
@@ -203,7 +212,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [web, cms, commerce, api, worker, migrator]
+        app: ${{ fromJSON(needs.changes.outputs.build_matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -241,8 +250,7 @@ jobs:
     if: |
       always() &&
       !cancelled() &&
-      (needs.build.result == 'success' || needs.build.result == 'skipped') &&
-      fromJSON(needs.changes.outputs.apps)[matrix.app]
+      (needs.build.result == 'success' || needs.build.result == 'skipped')
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -251,7 +259,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        app: [web, cms, commerce, api, worker, migrator]
+        app: ${{ fromJSON(needs.changes.outputs.build_matrix) }}
     steps:
       - id: namespace
         name: Normalize image namespace
