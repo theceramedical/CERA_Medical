@@ -4,27 +4,22 @@ import { cn } from '@cera/ui/cn';
 import { Icon } from '@cera/ui/icon';
 import { Text } from '@cera/ui/typography';
 import { ShoppingCart } from 'lucide-react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 
 import type { Cart } from '@cera/contracts';
 
-import { cartItemCount, fetchCart } from '../lib/cart-client.ts';
+import { cartItemCount, emptyCart, fetchCart, mergeCartState } from '../lib/cart-client.ts';
 
 import { CartMiniPanel } from './cart-mini-panel.tsx';
 
 export const CART_UPDATED_EVENT = 'cera:cart-updated';
 
-const EMPTY_CART: Cart = {
-  currencyCode: 'PKR',
-  lines: [],
-  subtotalMinor: 0,
-  totalMinor: 0,
-};
-
-function loadCart(onLoaded: (cart: Cart) => void, onDone?: () => void): void {
+function refreshCart(setCart: Dispatch<SetStateAction<Cart>>, onDone?: () => void): void {
   void fetchCart()
-    .then(onLoaded)
-    .catch(() => onLoaded(EMPTY_CART))
+    .then((next) => {
+      setCart((previous) => mergeCartState(previous, next));
+    })
+    .catch(() => undefined)
     .finally(() => onDone?.());
 }
 
@@ -32,12 +27,12 @@ export function SiteHeaderCartMenu({ className }: { readonly className?: string 
   const panelId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [cart, setCart] = useState<Cart>(EMPTY_CART);
-  const [loading, setLoading] = useState(false);
+  const [cart, setCart] = useState<Cart>(emptyCart());
+  const [refreshing, setRefreshing] = useState(false);
   const count = cartItemCount(cart);
 
   useEffect(() => {
-    loadCart(setCart);
+    refreshCart(setCart);
     const onUpdate = (event: Event) => {
       if (event instanceof CustomEvent) {
         setCart(event.detail as Cart);
@@ -70,9 +65,11 @@ export function SiteHeaderCartMenu({ className }: { readonly className?: string 
       return;
     }
     setOpen(true);
-    setLoading(true);
-    loadCart(setCart, () => setLoading(false));
+    setRefreshing(true);
+    refreshCart(setCart, () => setRefreshing(false));
   };
+
+  const showEmptyWhileLoading = refreshing && cart.lines.length === 0;
 
   return (
     <div ref={rootRef} className={cn('relative', className)}>
@@ -87,7 +84,7 @@ export function SiteHeaderCartMenu({ className }: { readonly className?: string 
         <Icon icon={ShoppingCart} size="md" />
         {count > 0 ? (
           <span
-            className="absolute top-1.5 right-1.5 flex min-w-4 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold leading-4 text-on-secondary"
+            className="absolute -top-0.5 -right-0.5 flex size-5 min-w-5 items-center justify-center rounded-full border-2 border-surface bg-accent px-1 text-[11px] font-bold leading-none text-on-accent shadow-sm"
             aria-hidden
           >
             {count > 9 ? '9+' : count}
@@ -99,12 +96,19 @@ export function SiteHeaderCartMenu({ className }: { readonly className?: string 
           id={panelId}
           role="dialog"
           aria-label="Cart preview"
-          className="absolute top-full right-0 z-50 mt-2 w-[min(100vw-2rem,20rem)] rounded-lg border border-border bg-surface p-4 shadow-card"
+          className="absolute top-full right-0 z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-lg border border-border bg-surface p-4 shadow-card"
         >
-          <Text size="body-sm" className="mb-3 font-semibold text-copy">
-            Your cart
-          </Text>
-          {loading && cart.lines.length === 0 ? (
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <Text size="body-sm" className="font-semibold text-copy">
+              Your cart
+            </Text>
+            {refreshing && cart.lines.length > 0 ? (
+              <Text size="caption" tone="muted">
+                Updating…
+              </Text>
+            ) : null}
+          </div>
+          {showEmptyWhileLoading ? (
             <Text size="body-sm" tone="muted">
               Loading…
             </Text>

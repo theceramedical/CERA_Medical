@@ -10,6 +10,24 @@ export function cartItemCount(cart: Cart): number {
   return cart.lines.reduce((total, line) => total + line.quantity, 0);
 }
 
+const EMPTY_CART: Cart = {
+  currencyCode: 'PKR',
+  lines: [],
+  subtotalMinor: 0,
+  totalMinor: 0,
+};
+
+/** Prefer server cart when it has lines; keep local optimistic cart if the API is briefly empty. */
+export function mergeCartState(previous: Cart, next: Cart): Cart {
+  if (next.lines.length > 0) return next;
+  if (previous.lines.length > 0) return previous;
+  return next;
+}
+
+export function emptyCart(): Cart {
+  return EMPTY_CART;
+}
+
 export function notifyCartUpdated(cart?: Cart): void {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('cera:cart-updated', { detail: cart }));

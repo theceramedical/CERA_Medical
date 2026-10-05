@@ -8,7 +8,17 @@ import type { Cart } from '@cera/contracts';
 import { AppLink } from './link.tsx';
 
 export function formatCartMoney(minor: number, currencyCode: string): string {
-  return `${(minor / 100).toFixed(2)} ${currencyCode}`;
+  const major = minor / 100;
+  try {
+    return new Intl.NumberFormat('en-PK', {
+      style: 'currency',
+      currency: currencyCode,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(major);
+  } catch {
+    return `${major.toFixed(2)} ${currencyCode}`;
+  }
 }
 
 export function CartMiniPanel({
