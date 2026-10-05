@@ -87,9 +87,11 @@ Non-technical guide for day-to-day work on the live site. Hostnames below use pr
 3. Custom fields control enquiry-only vs purchasable, availability text, etc.
 4. After changing Vendure, the public site refreshes within about a minute (cached catalogue).
 
-**Always pair Vendure with CMS:** create or update **Service presentations** with the **same slug** for hero copy and layout blocks.
+**Vendure alone is enough** for a new service to appear on `/services` and `/services/{slug}` (copy comes from the product in Vendure). Add **Service presentations** in Payload only when you want richer marketing layout and SEO — same slug as Vendure when you do.
 
 ### New research service (step by step)
+
+Full playbook: [add-research-service.md](./add-research-service.md) (services only — **not** the `/products` workflow).
 
 Do **Vendure first**, then **Payload**. Use a lowercase hyphenated **slug** (e.g. `custom-metagenomics`).
 
@@ -110,7 +112,7 @@ Do **Vendure first**, then **Payload**. Use a lowercase hyphenated **slug** (e.g
 2. **Collections → Physical Products & Reagents → add the product** (or assign that collection on the product).
 3. Check **https://www.ceramedical.org/products** after ~1 minute.
 
-If the collection product picker spins on “Loading…”, use **Catalog → Products → your product → Collections** to assign **Physical Products** from the product side until commerce search is deployed.
+Vendure 3 does not show collections on the product edit screen. For **services**, open **Catalog → Collections → Laboratory Research** (or Bioinformatics / Evidence), edit the **product filter**, and add your product. For **physical** SKUs, do the same under **Physical Products & Reagents**. If a picker spins on “Loading…”, search by product name or use the product-ID filter after saving the product once.
 
 ---
 

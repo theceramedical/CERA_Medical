@@ -20,9 +20,11 @@ Set on the host (`/opt/cera/.env`):
 
 Local/dev uses `cera-test-payment` when Safepay is not configured.
 
-## Customer order history
+## Customer account required
 
-Signed-in customers with a **verified email** see checkout orders at `/account/orders` (API: `GET /v1/me/orders`). Orders match the account when the checkout email equals the verified OIDC email, or when the order was placed while signed in.
+Checkout (`/checkout`) requires a **signed-in customer** with a **verified email** (Google or email via Authentik). Guests cannot complete payment; the cart stays cookie-based until they sign in.
+
+Every completed order is stored with the customer’s **subject id** and appears under **Your account → Orders** (`GET /v1/me/orders`).
 
 ## ERPNext (CRM)
 

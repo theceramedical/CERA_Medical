@@ -11,7 +11,7 @@ import { formatCartMoney } from './cart-mini-panel.tsx';
 import { CheckoutForm } from './checkout-form.client.tsx';
 import { AppButtonLink } from './link.tsx';
 
-export function CheckoutPageContent() {
+export function CheckoutPageContent({ customerEmail }: { readonly customerEmail: string }) {
   const [cart, setCart] = useState<Cart | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -43,6 +43,7 @@ export function CheckoutPageContent() {
 
   return (
     <CheckoutForm
+      customerEmail={customerEmail}
       cartTotalLabel={formatCartMoney(cart.totalMinor, cart.currencyCode)}
       showTestPayment={process.env.NODE_ENV !== 'production'}
     />

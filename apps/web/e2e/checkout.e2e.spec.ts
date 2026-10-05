@@ -6,6 +6,7 @@ import { expect, test } from '@playwright/test';
  */
 test.describe('physical product checkout', () => {
   test('adds a SKU from the catalogue and completes COD checkout', async ({ page }) => {
+    await page.goto('/dev/e2e/session?variant=verified');
     await page.goto('/products');
     await page.locator('#catalog-grid').scrollIntoViewIfNeeded();
 
@@ -29,7 +30,7 @@ test.describe('physical product checkout', () => {
     await expect(page).toHaveURL(/\/checkout$/);
 
     await page.locator('input[name="fullName"]').fill('E2E Buyer');
-    await page.locator('input[name="email"]').fill('e2e-buyer@example.com');
+    await expect(page.locator('input[name="email"]')).toHaveValue('portal-customer@example.com');
     await page.locator('input[name="paymentMethod"][value="cod"]').check();
 
     await page.getByRole('button', { name: 'Confirm order', exact: true }).click();
@@ -40,6 +41,7 @@ test.describe('physical product checkout', () => {
   });
 
   test('full cart page loads lines after client refresh', async ({ page }) => {
+    await page.goto('/dev/e2e/session?variant=verified');
     await page.goto('/products');
     await page.locator('#catalog-grid').scrollIntoViewIfNeeded();
 

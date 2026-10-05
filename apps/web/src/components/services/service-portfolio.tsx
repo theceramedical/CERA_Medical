@@ -11,13 +11,13 @@ import {
   Send,
 } from 'lucide-react';
 
-import type { ContentDocument } from '@cera/contracts';
+import type { ContentDocument, PublicService } from '@cera/contracts';
 
+import { SERVICE_DOMAINS, type ServiceDomain } from '../../content/service-portfolio.ts';
 import {
-  SERVICE_DOMAINS,
-  SERVICE_PORTFOLIO,
-  type ServiceDomain,
-} from '../../content/service-portfolio.ts';
+  enrichPortfolioLine,
+  mergeServicePortfolioLines,
+} from '../../lib/merge-service-portfolio.ts';
 import { serviceCardIcon } from '../../lib/service-card-icon';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
@@ -48,6 +48,7 @@ export function ServicePortfolio({
   domain,
   degraded,
   presentations,
+  catalogueServices,
   hero,
   catalogueLabels,
 }: {
@@ -55,16 +56,26 @@ export function ServicePortfolio({
   readonly domain?: string;
   readonly degraded?: boolean;
   readonly presentations: readonly ContentDocument[];
+  readonly catalogueServices: readonly PublicService[];
   readonly hero?: ServicesPageHero;
   readonly catalogueLabels?: ServicesCatalogueLabels;
 }) {
   const pageHero = hero ?? DEFAULT_HERO;
   const labels = catalogueLabels;
   const presentationBySlug = new Map(presentations.map((item) => [item.slug, item]));
+  const catalogueBySlug = new Map(catalogueServices.map((item) => [item.slug, item]));
   const activeDomain = (domain ?? 'all') as 'all' | ServiceDomain;
   const q = query?.trim().toLowerCase() ?? '';
 
-  const lines = SERVICE_PORTFOLIO.filter((line) => {
+  const portfolioLines = mergeServicePortfolioLines(catalogueServices).map((line) =>
+    enrichPortfolioLine(line, presentationBySlug.get(line.slug), catalogueBySlug.get(line.slug)),
+  );
+
+  const domainTabs = SERVICE_DOMAINS.map((tab) =>
+    tab.id === 'all' ? { ...tab, label: `All Services (${String(portfolioLines.length)})` } : tab,
+  );
+
+  const lines = portfolioLines.filter((line) => {
     if (activeDomain !== 'all' && line.domain !== activeDomain) return false;
     const copy = presentationBySlug.get(line.slug);
     const title = copy?.title ?? line.title;
@@ -174,7 +185,7 @@ export function ServicePortfolio({
             className="mt-4 flex items-center gap-2 overflow-x-auto"
             aria-label="Research Domains"
           >
-            {SERVICE_DOMAINS.map((tab) => {
+            {domainTabs.map((tab) => {
               const selected = tab.id === activeDomain;
               const href =
                 tab.id === 'all'

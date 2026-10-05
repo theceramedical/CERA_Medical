@@ -6,7 +6,7 @@ import { auditAfterChange, auditAfterDelete } from '../hooks/audit.ts';
 import { publicationBeforeChange } from '../hooks/before-change.ts';
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate.ts';
 
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig, Field } from 'payload';
 
 /**
  * The versions, access, hooks, and fields every publishable collection shares.
@@ -21,6 +21,7 @@ export function publishable(options: {
   readonly labels: NonNullable<CollectionConfig['labels']>;
   readonly admin: NonNullable<CollectionConfig['admin']>;
   readonly extraFields?: CollectionConfig['fields'];
+  readonly slugField?: Field;
   readonly extraHooks?: Pick<
     NonNullable<CollectionConfig['hooks']>,
     'beforeChange' | 'afterChange' | 'afterDelete'
@@ -53,7 +54,7 @@ export function publishable(options: {
     },
     fields: [
       { name: 'title', type: 'text', required: true, maxLength: 200 },
-      slugField,
+      options.slugField ?? slugField,
       seoField,
       ...reviewFields,
       ...(options.extraFields ?? []),

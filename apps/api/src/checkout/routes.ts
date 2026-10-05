@@ -8,6 +8,7 @@ import {
 } from '@cera/contracts';
 import { ApiError } from '@cera/contracts/errors';
 
+import { authorize } from '../auth/authorize.ts';
 import { sendApiError, sendCode } from '../http.ts';
 
 import { createSafepayHostedCheckout } from './safepay.ts';
@@ -80,6 +81,16 @@ function setTokenCookie(
 
 export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCallback => {
   const shop = createVendureShopClient(options.shopApiUrl);
+
+  const requireVerifiedCustomer = async (request: FastifyRequest) => {
+    if (options.readSession === undefined) throw new ApiError('unauthenticated');
+    const session = await options.readSession(request);
+    const path = request.url.split('?')[0] ?? request.url;
+    const decision = authorize({ method: request.method, path, session });
+    if (!decision.ok) throw decision.error;
+    if (decision.session === null) throw new ApiError('unauthenticated');
+    return decision.session;
+  };
 
   return (app, _options, done) => {
     app.get('/v1/cart', async (request, reply) => {
@@ -154,6 +165,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         return;
       }
       try {
+        await requireVerifiedCustomer(request);
         const session = { token: tokenFromRequest(request) };
         const { cart, token } = await shop.getActiveCart(session);
         setTokenCookie(reply, token);
@@ -199,16 +211,22 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         return;
       }
       try {
+        const customer = await requireVerifiedCustomer(request);
         const vendureSession = { token: tokenFromRequest(request) };
         const { cart, token: cartToken } = await shop.getActiveCart(vendureSession);
         if (cart === null || cart.lines.length === 0) {
           sendCode(request, reply, 'validation_failed');
           return;
         }
+        const email = customer.email;
+        if (body.email.toLowerCase() !== email.toLowerCase()) {
+          sendCode(request, reply, 'validation_failed');
+          return;
+        }
         const result = await shop.completeCheckout(
           { token: cartToken },
           {
-            email: body.email,
+            email,
             fullName: body.fullName,
             countryCode: body.countryCode,
             paymentMethod: body.paymentMethod,
@@ -217,21 +235,13 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         );
         setTokenCookie(reply, result.token);
         if (options.recordOrder !== undefined) {
-          const auth =
-            options.readSession !== undefined ? await options.readSession(request) : null;
-          const subjectId =
-            auth !== null &&
-            auth.emailVerified &&
-            auth.email.toLowerCase() === body.email.toLowerCase()
-              ? auth.sub
-              : null;
           await options.recordOrder({
             orderCode: result.orderCode,
-            email: body.email,
+            email,
             fullName: body.fullName,
             paymentMethod: body.paymentMethod,
             cart,
-            customerSubjectId: subjectId,
+            customerSubjectId: customer.sub,
           });
         }
         return reply

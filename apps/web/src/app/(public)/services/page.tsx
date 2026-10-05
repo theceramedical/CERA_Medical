@@ -30,7 +30,7 @@ export default async function ServicesPage({
   readonly searchParams: Promise<{ domain?: string; category?: string; q?: string }>;
 }) {
   const params = await searchParams;
-  const [{ degraded }, presentations, servicePage] = await Promise.all([
+  const [{ degraded, items: catalogueServices }, presentations, servicePage] = await Promise.all([
     listPublicServices(),
     listPublishedDocuments('servicePresentation'),
     getCurrentDocument('page', 'services'),
@@ -46,6 +46,7 @@ export default async function ServicesPage({
     <>
       <ServicePortfolio
         presentations={presentations}
+        catalogueServices={catalogueServices}
         catalogueLabels={catalogueLabels}
         {...(cmsHero === null ? {} : { hero: cmsHero })}
         {...(params.q === undefined ? {} : { query: params.q })}

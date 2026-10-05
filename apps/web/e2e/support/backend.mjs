@@ -339,6 +339,12 @@ const server = createServer(async (request, response) => {
   }
 
   if (request.method === 'POST' && path === '/v1/checkout/complete') {
+    const claims = await portalClaims(request);
+    const authStatus = portalAuthStatus(claims, true);
+    if (authStatus !== null) {
+      apiError(response, authStatus, authStatus === 401 ? 'unauthenticated' : 'forbidden');
+      return;
+    }
     let raw = '';
     for await (const chunk of request) raw += chunk;
     try {
