@@ -43,8 +43,8 @@ const NEXT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '.next');
  */
 const BUDGETS_KB = {
   shared: 190,
-  // Checkout + /products/[sku] + auth sign-in client chunks; shared stayed within budget.
-  total: 473,
+  // Checkout + /products/[sku] + auth sign-in/sign-up client chunks; shared stayed within budget.
+  total: 480,
 };
 
 function gzippedKb(paths) {
