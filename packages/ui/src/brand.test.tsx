@@ -87,29 +87,13 @@ describe('Icon', () => {
 });
 
 describe('Wordmark', () => {
-  it('sets CERA MEDICAL as real text', () => {
-    /**
-     * Not traced into paths. Text scales with the user's font size, survives 200% zoom and 400%
-     * reflow without going blurry, can be selected and copied, and is read as words rather than as
-     * an `alt` string someone maintains separately.
-     */
+  it('exposes the lock-up with an accessible name', () => {
     render(<Wordmark />);
 
-    expect(screen.getByText('CERA')).toBeInTheDocument();
-    expect(screen.getByText('MEDICAL')).toBeInTheDocument();
-  });
-
-  it('hides the mark, which sits beside the words it stands for', () => {
-    const { container } = render(<Wordmark />);
-
-    expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByRole('img', { name: 'CERA Medical' })).toBeInTheDocument();
   });
 
   it('is not a heading', () => {
-    /**
-     * A logo is not a section title. Making it an `h1` gives every page the same first heading and
-     * pushes the real one to `h2`, which is both a broken outline and an axe failure.
-     */
     render(<Wordmark />);
 
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
@@ -118,24 +102,13 @@ describe('Wordmark', () => {
   it('renders as a supplied element so the header can wrap it in a link', () => {
     render(<Wordmark as="span" />);
 
-    expect(screen.getByText('CERA').closest('span')).not.toBeNull();
-  });
-
-  it('uses the wordmark type step rather than a size plus a tracking utility', () => {
-    /**
-     * `text-pill` plus `tracking-wordmark` would put a `font-size` utility and a `letter-spacing`
-     * utility in conflict, and which wins depends on their order in the generated stylesheet rather
-     * than the order they were written. One step keeps size, tracking, and weight together.
-     */
-    render(<Wordmark />);
-
-    expect(screen.getByText('MEDICAL')).toHaveClass('text-wordmark-sub');
+    expect(screen.getByRole('img', { name: 'CERA Medical' }).closest('span')).not.toBeNull();
   });
 
   it('inverts for a dark background', () => {
     render(<Wordmark onDark />);
 
-    expect(screen.getByText('CERA')).toHaveClass('text-on-primary');
+    expect(screen.getByRole('img', { name: 'CERA Medical' })).toHaveClass('invert');
   });
 
   it('draws the mark from currentColor', () => {

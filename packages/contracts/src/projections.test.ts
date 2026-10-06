@@ -263,6 +263,7 @@ describe('public service projection', () => {
       'description',
       'displayPrice',
       'enquiryEnabled',
+      'imageUrl',
       'listPriceMinor',
       'mediaId',
       'slug',
