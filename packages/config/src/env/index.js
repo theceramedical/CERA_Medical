@@ -50,6 +50,10 @@ export const webEnvSchema = commonEnvSchema.extend({
   OIDC_GOOGLE_SOURCE_SLUG: z.string().optional().describe('Authentik Google OAuth source slug'),
   GOOGLE_SITE_VERIFICATION: z.string().optional().describe('Search Console HTML tag token'),
   GLITCHTIP_DSN: z.string().optional(),
+  S3_PUBLIC_URL: url.optional().describe('CMS/media public origin for CSP img-src'),
+  VENDURE_PUBLIC_URL: url
+    .optional()
+    .describe('Vendure asset host for featured catalogue images (CSP img-src)'),
 });
 
 export const apiEnvSchema = commonEnvSchema
