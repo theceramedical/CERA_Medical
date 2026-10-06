@@ -635,6 +635,8 @@ export interface Policy {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Marketing pages for research services at /services/{slug}. Create the Vendure catalogue product first (not Physical Products), use the same slug here, then publish.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "service-presentations".
  */
@@ -664,9 +666,9 @@ export interface ServicePresentation {
   publishedAt?: string | null;
   fixture?: boolean | null;
   /**
-   * Vendure product id, or the slug until Phase 06. Validated against the live catalogue on save.
+   * Must match an active Vendure catalogue product slug (create the product in the commerce dashboard first). Validated on save once the slug field is set.
    */
-  serviceId: string;
+  serviceId?: string | null;
   excerpt?: string | null;
   /**
    * Optional bullets on service catalogue and homepage cards.

@@ -2,6 +2,11 @@ import { constrainedEditor } from '../lib/editor.ts';
 
 import type { Block } from 'payload';
 
+/** Same block shape as pages layout, but tables FK to service_presentations (not pages). */
+function servicePresentationBlock(block: Block, dbName: string): Block {
+  return { ...block, dbName };
+}
+
 /**
  * Blocks that map one-to-one onto Phase 03/04 components.
  *
@@ -341,17 +346,17 @@ export const ServiceSidebarCardBlock: Block = {
 
 /** Blocks allowed on service presentations (Vendure catalogue product pages). */
 export const servicePresentationBlocks: Block[] = [
-  ServiceHeroBlock,
+  servicePresentationBlock(ServiceHeroBlock, 'sp_hero'),
   SectionHeadingBlock,
   RichTextBlock,
-  FeatureGridBlock,
-  ProcessStepsBlock,
-  KeyValueListBlock,
+  servicePresentationBlock(FeatureGridBlock, 'sp_fgrid'),
+  servicePresentationBlock(ProcessStepsBlock, 'sp_steps'),
+  servicePresentationBlock(KeyValueListBlock, 'sp_kv'),
   CalloutBandBlock,
   CtaBandBlock,
   FaqListBlock,
-  ServiceEnquiryAsideBlock,
-  ServiceSidebarCardBlock,
+  servicePresentationBlock(ServiceEnquiryAsideBlock, 'sp_enq'),
+  servicePresentationBlock(ServiceSidebarCardBlock, 'sp_side'),
 ];
 
 export const layoutBlocks: Block[] = [
