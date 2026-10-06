@@ -11,6 +11,7 @@ import type { FastifyPluginCallback } from 'fastify';
 
 export interface SearchDependencies {
   readonly catalogue: VendureCatalogueClient;
+  readonly vendurePublicOrigin: string;
   readonly extra?: () => Promise<readonly Searchable[]>;
 }
 
@@ -26,7 +27,7 @@ export const searchRoutes = (deps: SearchDependencies): FastifyPluginCallback =>
       try {
         const products = await deps.catalogue.listProducts();
         const services: Searchable[] = products
-          .map(mapVendureProduct)
+          .map((product) => mapVendureProduct(product, deps.vendurePublicOrigin))
           .map(toListablePublicService)
           .filter((item): item is NonNullable<typeof item> => item !== null)
           .map((item) => ({

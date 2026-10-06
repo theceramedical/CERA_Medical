@@ -20,6 +20,8 @@ export interface CatalogProduct {
   /** Always physical goods: kits, cell lines, reagents, standards — not scoped services. */
   readonly fulfillment: 'physical';
   readonly shippingNote?: string;
+  /** Vendure featured asset when the row comes from the live catalogue API. */
+  readonly imageUrl?: string;
 }
 
 function catalogPrice(sku: string): { listPriceMinor: number; price: string } {

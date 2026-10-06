@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { mapVendureProduct, toListablePublicService } from './map.ts';
+import { mapVendureProduct, resolveVendureAssetPreview, toListablePublicService } from './map.ts';
 
 import type { VendureProduct } from './types.ts';
 
@@ -22,9 +22,19 @@ const product: VendureProduct = {
   },
 };
 
+const origin = 'http://localhost:3002';
+
+describe('resolveVendureAssetPreview', () => {
+  it('prefixes relative preview paths with the Vendure public origin', () => {
+    expect(resolveVendureAssetPreview('/assets/preview/abc', origin)).toBe(
+      'http://localhost:3002/assets/preview/abc',
+    );
+  });
+});
+
 describe('mapVendureProduct', () => {
   it('validates against ServiceSchema and drops internalNotes', () => {
-    const service = mapVendureProduct(product);
+    const service = mapVendureProduct(product, origin);
     expect(service.title).toBe('Cardiology');
     expect(service.displayPrice).toBe('From £250');
     expect(JSON.stringify(service)).not.toContain('SECRET');
@@ -32,17 +42,23 @@ describe('mapVendureProduct', () => {
   });
 
   it('treats enabled: false as inactive', () => {
-    const service = mapVendureProduct({ ...product, enabled: false, slug: 'travel-vaccinations' });
+    const service = mapVendureProduct(
+      { ...product, enabled: false, slug: 'travel-vaccinations' },
+      origin,
+    );
     expect(service.status).toBe('inactive');
     expect(toListablePublicService(service)).toBeNull();
   });
 
   it('keeps enquiryEnabled: false in the listing projection so the card can hide the CTA', () => {
-    const service = mapVendureProduct({
-      ...product,
-      slug: 'diagnostic-tests',
-      customFields: { ...product.customFields, enquiryEnabled: false },
-    });
+    const service = mapVendureProduct(
+      {
+        ...product,
+        slug: 'diagnostic-tests',
+        customFields: { ...product.customFields, enquiryEnabled: false },
+      },
+      origin,
+    );
     const listed = toListablePublicService(service);
     expect(listed?.enquiryEnabled).toBe(false);
   });

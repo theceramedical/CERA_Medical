@@ -312,6 +312,7 @@ export const PublicServiceSchema = z.object({
   listPriceMinor: z.number().int().nonnegative().nullable(),
   checkoutEnabled: z.boolean(),
   mediaId: z.string().nullable(),
+  imageUrl: z.url().nullable(),
 });
 export type PublicService = z.infer<typeof PublicServiceSchema>;
 
@@ -331,6 +332,7 @@ export function toPublicService(service: Service): PublicService {
     listPriceMinor: service.listPriceMinor,
     checkoutEnabled: service.checkoutEnabled,
     mediaId: service.mediaId,
+    imageUrl: service.imageUrl,
   };
 }
 
@@ -345,5 +347,6 @@ export const PublicProductSchema = z.object({
   listPriceMinor: z.number().int().nonnegative().nullable(),
   checkoutEnabled: z.boolean(),
   enquiryEnabled: z.boolean(),
+  imageUrl: z.url().nullable(),
 });
 export type PublicProduct = z.infer<typeof PublicProductSchema>;

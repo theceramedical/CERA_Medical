@@ -65,6 +65,8 @@ export const ServiceSchema = z.object({
   listPriceMinor: z.number().int().nonnegative().nullable(),
   checkoutEnabled: z.boolean(),
   mediaId: z.string().nullable(),
+  /** Absolute URL for the Vendure featured asset preview, when set in catalogue admin. */
+  imageUrl: z.url().nullable(),
   status: ServiceStatusSchema,
   createdAt: UtcTimestampSchema,
   updatedAt: UtcTimestampSchema,

@@ -5,6 +5,7 @@ import pg from 'pg';
 
 import { createSessionReader } from './auth/read-session.ts';
 import { memoryCatalogueCache } from './catalogue/cache.ts';
+import { vendureAssetPublicOrigin } from './catalogue/map.ts';
 import { catalogueRoutes } from './catalogue/routes.ts';
 import { createVendureClient } from './catalogue/vendure-client.ts';
 import { checkoutRoutes } from './checkout/routes.ts';
@@ -98,20 +99,25 @@ await app.register(cors, {
   maxAge: 600,
 });
 
-const catalogueClient = createVendureClient(
-  process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api',
-);
+const vendureShopApiUrl = process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api';
+const catalogueClient = createVendureClient(vendureShopApiUrl);
 
 await app.register(
   catalogueRoutes({
     client: catalogueClient,
     cache: memoryCatalogueCache(),
+    vendurePublicOrigin: vendureAssetPublicOrigin(vendureShopApiUrl),
   }),
 );
 
 const commerceOrderStore = postgresCommerceOrderStore(pool);
 
-await app.register(searchRoutes({ catalogue: catalogueClient }));
+await app.register(
+  searchRoutes({
+    catalogue: catalogueClient,
+    vendurePublicOrigin: vendureAssetPublicOrigin(vendureShopApiUrl),
+  }),
+);
 await app.register(
   enquiryRoutes(
     createEnquiryService({

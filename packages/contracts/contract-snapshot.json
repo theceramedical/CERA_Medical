@@ -1,6 +1,26 @@
 {
   "version": 1,
   "schemas": {
+    "AddCartLineBodySchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "quantity": {
+          "default": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        }
+      },
+      "required": ["slug", "quantity"],
+      "additionalProperties": false
+    },
     "AssignEnquiryRequestSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
@@ -141,6 +161,157 @@
       "type": "string",
       "enum": ["enquiry", "content", "customer", "service", "user", "release"]
     },
+    "CartLineSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "unitPriceMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lineTotalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": ["id", "slug", "title", "quantity", "unitPriceMinor", "lineTotalMinor"],
+      "additionalProperties": false
+    },
+    "CartSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "currencyCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40,
+                "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 99
+              },
+              "unitPriceMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lineTotalMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["id", "slug", "title", "quantity", "unitPriceMinor", "lineTotalMinor"],
+            "additionalProperties": false
+          }
+        },
+        "subtotalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "totalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": ["currencyCode", "lines", "subtotalMinor", "totalMinor"],
+      "additionalProperties": false
+    },
+    "CheckoutCompleteBodySchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 254,
+          "format": "email",
+          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "countryCode": {
+          "default": "PK",
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["cod", "safepay", "test"]
+        },
+        "safepayTracker": {
+          "type": "string",
+          "maxLength": 120
+        }
+      },
+      "required": ["email", "fullName", "countryCode", "paymentMethod"],
+      "additionalProperties": false
+    },
+    "CheckoutCompleteResponseSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "orderCode": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["orderCode"],
+      "additionalProperties": false
+    },
+    "CheckoutPaymentMethodSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "string",
+      "enum": ["cod", "safepay", "test"]
+    },
     "ClaimConsumeRequestSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
@@ -229,6 +400,18 @@
         },
         "body": {},
         "layout": {},
+        "cardHighlights": {
+          "maxItems": 6,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 160
+          }
+        },
+        "cardIcon": {
+          "type": "string",
+          "maxLength": 32
+        },
         "seo": {
           "type": "object",
           "properties": {
@@ -650,6 +833,109 @@
         }
       },
       "required": ["reference", "serviceTitle", "submittedAt", "status", "statusLabel", "updatedAt", "timeline"],
+      "additionalProperties": false
+    },
+    "CustomerOrderLineSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "lineTotalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": ["slug", "title", "quantity", "lineTotalMinor"],
+      "additionalProperties": false
+    },
+    "CustomerOrderPaymentMethodSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "string",
+      "enum": ["cod", "safepay", "test"]
+    },
+    "CustomerOrderSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "orderCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "placedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["cod", "safepay", "test"]
+        },
+        "paymentLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "currencyCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "totalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lines": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 99
+              },
+              "lineTotalMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["slug", "title", "quantity", "lineTotalMinor"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["orderCode", "placedAt", "paymentMethod", "paymentLabel", "currencyCode", "totalMinor", "lines"],
       "additionalProperties": false
     },
     "CustomerProfileSchema": {
@@ -1873,6 +2159,93 @@
       "required": ["items", "nextCursor"],
       "additionalProperties": false
     },
+    "ListMyOrdersResponseSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "orderCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 48
+              },
+              "placedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "paymentMethod": {
+                "type": "string",
+                "enum": ["cod", "safepay", "test"]
+              },
+              "paymentLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "currencyCode": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3
+              },
+              "totalMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lines": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "slug": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 99
+                    },
+                    "lineTotalMinor": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": ["slug", "title", "quantity", "lineTotalMinor"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "orderCode",
+              "placedAt",
+              "paymentMethod",
+              "paymentLabel",
+              "currencyCode",
+              "totalMinor",
+              "lines"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["items"],
+      "additionalProperties": false
+    },
     "ListNotesResponseSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
@@ -2187,6 +2560,87 @@
       "required": ["items", "nextCursor"],
       "additionalProperties": false
     },
+    "ListProductsResponseSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sku": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              "title": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "displayPrice": {
+                "type": ["string", "null"]
+              },
+              "availabilityText": {
+                "type": ["string", "null"]
+              },
+              "listPriceMinor": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "checkoutEnabled": {
+                "type": "boolean"
+              },
+              "enquiryEnabled": {
+                "type": "boolean"
+              },
+              "imageUrl": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "sku",
+              "title",
+              "summary",
+              "description",
+              "displayPrice",
+              "availabilityText",
+              "listPriceMinor",
+              "checkoutEnabled",
+              "enquiryEnabled",
+              "imageUrl"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "nextCursor": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": ["items", "nextCursor"],
+      "additionalProperties": false
+    },
     "ListServicesQuerySchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
@@ -2265,8 +2719,34 @@
               "enquiryEnabled": {
                 "type": "boolean"
               },
+              "listPriceMinor": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "checkoutEnabled": {
+                "type": "boolean"
+              },
               "mediaId": {
                 "type": ["string", "null"]
+              },
+              "imageUrl": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             },
             "required": [
@@ -2278,7 +2758,10 @@
               "displayPrice",
               "availabilityText",
               "enquiryEnabled",
-              "mediaId"
+              "listPriceMinor",
+              "checkoutEnabled",
+              "mediaId",
+              "imageUrl"
             ],
             "additionalProperties": false
           }
@@ -2407,6 +2890,19 @@
         }
       },
       "required": ["reference"],
+      "additionalProperties": false
+    },
+    "MyOrderParamsSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "orderCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        }
+      },
+      "required": ["orderCode"],
       "additionalProperties": false
     },
     "MyProfileResponseSchema": {
@@ -2582,6 +3078,95 @@
       "maxLength": 24,
       "pattern": "^[+0-9][0-9\\s()-]*$"
     },
+    "PhysicalProductSkuSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+    },
+    "ProductSkuParamsSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "sku": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        }
+      },
+      "required": ["sku"],
+      "additionalProperties": false
+    },
+    "PublicProductSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "sku": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "displayPrice": {
+          "type": ["string", "null"]
+        },
+        "availabilityText": {
+          "type": ["string", "null"]
+        },
+        "listPriceMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checkoutEnabled": {
+          "type": "boolean"
+        },
+        "enquiryEnabled": {
+          "type": "boolean"
+        },
+        "imageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sku",
+        "title",
+        "summary",
+        "description",
+        "displayPrice",
+        "availabilityText",
+        "listPriceMinor",
+        "checkoutEnabled",
+        "enquiryEnabled",
+        "imageUrl"
+      ],
+      "additionalProperties": false
+    },
     "PublicServiceSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
@@ -2627,8 +3212,34 @@
         "enquiryEnabled": {
           "type": "boolean"
         },
+        "listPriceMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checkoutEnabled": {
+          "type": "boolean"
+        },
         "mediaId": {
           "type": ["string", "null"]
+        },
+        "imageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -2640,7 +3251,10 @@
         "displayPrice",
         "availabilityText",
         "enquiryEnabled",
-        "mediaId"
+        "listPriceMinor",
+        "checkoutEnabled",
+        "mediaId",
+        "imageUrl"
       ],
       "additionalProperties": false
     },
@@ -2754,6 +3368,52 @@
           }
         ]
       }
+    },
+    "SafepayCheckoutStartBodySchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 254,
+          "format": "email",
+          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "redirectUrl": {
+          "type": "string",
+          "maxLength": 500,
+          "format": "uri"
+        },
+        "cancelUrl": {
+          "type": "string",
+          "maxLength": 500,
+          "format": "uri"
+        }
+      },
+      "required": ["email", "fullName", "redirectUrl", "cancelUrl"],
+      "additionalProperties": false
+    },
+    "SafepayCheckoutStartResponseSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "checkoutUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "tracker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      },
+      "required": ["checkoutUrl", "tracker"],
+      "additionalProperties": false
     },
     "SearchHitSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -3015,8 +3675,34 @@
         "enquiryEnabled": {
           "type": "boolean"
         },
+        "listPriceMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checkoutEnabled": {
+          "type": "boolean"
+        },
         "mediaId": {
           "type": ["string", "null"]
+        },
+        "imageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "status": {
           "type": "string",
@@ -3043,7 +3729,10 @@
         "displayPrice",
         "availabilityText",
         "enquiryEnabled",
+        "listPriceMinor",
+        "checkoutEnabled",
         "mediaId",
+        "imageUrl",
         "status",
         "createdAt",
         "updatedAt"

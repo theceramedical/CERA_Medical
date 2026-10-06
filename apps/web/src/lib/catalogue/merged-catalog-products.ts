@@ -20,6 +20,7 @@ function catalogRowFromApi(product: PublicProduct): CatalogProduct {
     price: product.displayPrice ?? 'Price on enquiry',
     inStock: true,
     fulfillment: 'physical',
+    ...(product.imageUrl === null ? {} : { imageUrl: product.imageUrl }),
   };
 }
 

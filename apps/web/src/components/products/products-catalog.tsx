@@ -298,6 +298,11 @@ export function ProductsCatalog({
             className="relative flex flex-col justify-between rounded-lg border border-border bg-surface p-5 shadow-card"
           >
             <div className="-mx-5 -mt-5 mb-4 rounded-t-lg border-t-4 border-accent" />
+            {product.imageUrl ? (
+              <div className="-mx-5 mb-4 overflow-hidden">
+                <img src={product.imageUrl} alt="" className="h-40 w-full object-cover" />
+              </div>
+            ) : null}
             <div>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className="rounded-sm bg-surface-tint px-2 py-0.5 font-mono text-xs font-bold text-accent">

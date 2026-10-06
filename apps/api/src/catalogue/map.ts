@@ -10,6 +10,24 @@ import type { VendureProduct } from './types.ts';
 
 export const PHYSICAL_PRODUCTS_COLLECTION_SLUG = 'physical-products';
 
+export function vendureAssetPublicOrigin(shopApiUrl: string): string {
+  return shopApiUrl.replace(/\/$/, '').replace(/\/shop-api$/, '');
+}
+
+export function resolveVendureAssetPreview(
+  preview: string | null | undefined,
+  publicOrigin: string,
+): string | null {
+  if (preview === undefined || preview === null || preview.length === 0) {
+    return null;
+  }
+  if (preview.startsWith('http://') || preview.startsWith('https://')) {
+    return preview;
+  }
+  const origin = publicOrigin.replace(/\/$/, '');
+  return preview.startsWith('/') ? `${origin}${preview}` : `${origin}/${preview}`;
+}
+
 /**
  * Maps a Vendure Shop API product onto `ServiceSchema`.
  *
@@ -17,7 +35,7 @@ export const PHYSICAL_PRODUCTS_COLLECTION_SLUG = 'physical-products';
  * the public projection must never carry staff context. `displayPrice` stays a
  * string. `enabled: false` becomes `inactive`.
  */
-export function mapVendureProduct(product: VendureProduct): Service {
+export function mapVendureProduct(product: VendureProduct, vendurePublicOrigin: string): Service {
   const collection = product.collections?.[0];
   const variant = product.variants?.[0];
   const listPriceMinor = variant !== undefined && variant.price > 0 ? variant.price : null;
@@ -38,6 +56,10 @@ export function mapVendureProduct(product: VendureProduct): Service {
     checkoutEnabled: product.customFields?.checkoutEnabled ?? true,
     listPriceMinor,
     mediaId: product.featuredAsset?.id ?? null,
+    imageUrl: resolveVendureAssetPreview(
+      product.featuredAsset?.preview ?? null,
+      vendurePublicOrigin,
+    ),
     status: product.enabled === false ? 'inactive' : 'active',
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
@@ -50,8 +72,11 @@ export function toListablePublicService(service: Service): PublicService | null 
   return toPublicService(service);
 }
 
-export function mapVendurePublicProduct(product: VendureProduct): PublicProduct | null {
-  const service = mapVendureProduct(product);
+export function mapVendurePublicProduct(
+  product: VendureProduct,
+  vendurePublicOrigin: string,
+): PublicProduct | null {
+  const service = mapVendureProduct(product, vendurePublicOrigin);
   if (service.status !== 'active') return null;
   const inPhysical =
     product.collections?.some(
@@ -69,6 +94,7 @@ export function mapVendurePublicProduct(product: VendureProduct): PublicProduct 
     listPriceMinor: service.listPriceMinor,
     checkoutEnabled: service.checkoutEnabled,
     enquiryEnabled: service.enquiryEnabled,
+    imageUrl: service.imageUrl,
   });
 }
 

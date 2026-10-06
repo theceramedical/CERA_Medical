@@ -82,7 +82,13 @@ async function build(products: readonly VendureProduct[]): Promise<FastifyInstan
   };
 
   const instance = Fastify({ logger: false });
-  await instance.register(catalogueRoutes({ client, cache: memoryCatalogueCache() }));
+  await instance.register(
+    catalogueRoutes({
+      client,
+      cache: memoryCatalogueCache(),
+      vendurePublicOrigin: 'http://localhost:3002',
+    }),
+  );
   await instance.ready();
   return instance;
 }

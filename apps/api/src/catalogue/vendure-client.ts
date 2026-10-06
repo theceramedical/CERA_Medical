@@ -10,7 +10,7 @@ const PRODUCT_FIELDS = `
   enabled
   createdAt
   updatedAt
-  featuredAsset { id }
+  featuredAsset { id preview }
   collections { id slug name }
   customFields {
     availabilityText

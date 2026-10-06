@@ -22,7 +22,7 @@ export interface VendureProduct {
   readonly enabled?: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
-  readonly featuredAsset?: { readonly id: string } | null;
+  readonly featuredAsset?: { readonly id: string; readonly preview?: string | null } | null;
   readonly collections?: readonly {
     readonly id: string;
     readonly slug: string;

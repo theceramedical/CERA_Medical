@@ -32,7 +32,9 @@ describe('GET /v1/search', () => {
     };
 
     app = Fastify({ logger: false });
-    await app.register(searchRoutes({ catalogue: client }));
+    await app.register(
+      searchRoutes({ catalogue: client, vendurePublicOrigin: 'http://localhost:3002' }),
+    );
     await app.ready();
 
     const response = await app.inject({ method: 'GET', url: '/v1/search?q=cardiology' });
@@ -47,7 +49,9 @@ describe('GET /v1/search', () => {
       getProduct: () => Promise.resolve(null),
     };
     app = Fastify({ logger: false });
-    await app.register(searchRoutes({ catalogue: client }));
+    await app.register(
+      searchRoutes({ catalogue: client, vendurePublicOrigin: 'http://localhost:3002' }),
+    );
     await app.ready();
 
     const response = await app.inject({ method: 'GET', url: '/v1/search?q=a' });

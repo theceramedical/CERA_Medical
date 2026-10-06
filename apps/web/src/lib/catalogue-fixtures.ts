@@ -48,6 +48,7 @@ export function fixturePublicServices(): PublicService[] {
       listPriceMinor: null,
       checkoutEnabled: false,
       mediaId: null,
+      imageUrl: null,
     }),
   );
 }

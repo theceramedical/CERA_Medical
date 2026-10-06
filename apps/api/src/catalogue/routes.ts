@@ -26,6 +26,8 @@ import type { FastifyPluginCallback } from 'fastify';
 export interface CatalogueDependencies {
   readonly client: VendureCatalogueClient;
   readonly cache: CatalogueCache;
+  /** Origin for resolving relative Vendure asset preview paths (no `/shop-api`). */
+  readonly vendurePublicOrigin: string;
 }
 
 const { LIST_KEY, itemKey, CATALOGUE_TTL_SECONDS } = catalogueKeys();
@@ -71,7 +73,7 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
       try {
         const products = await listRawCached(deps);
         const items = products
-          .map((product) => mapVendurePublicProduct(product))
+          .map((product) => mapVendurePublicProduct(product, deps.vendurePublicOrigin))
           .filter((item): item is NonNullable<typeof item> => item !== null)
           .sort((a, b) => a.sku.localeCompare(b.sku));
         const body = ListProductsResponseSchema.parse({ items, nextCursor: null });
@@ -98,7 +100,7 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
           sendCode(request, reply, 'not_found');
           return;
         }
-        const publicProduct = mapVendurePublicProduct(raw);
+        const publicProduct = mapVendurePublicProduct(raw, deps.vendurePublicOrigin);
         if (publicProduct?.sku !== parsed.data.sku) {
           sendCode(request, reply, 'not_found');
           return;
@@ -155,7 +157,9 @@ async function listRawCached(deps: CatalogueDependencies): Promise<readonly Vend
 }
 
 async function listCached(deps: CatalogueDependencies) {
-  return (await listRawCached(deps)).map(mapVendureProduct);
+  return (await listRawCached(deps)).map((product) =>
+    mapVendureProduct(product, deps.vendurePublicOrigin),
+  );
 }
 
 async function getRawCached(
@@ -176,5 +180,5 @@ async function getRawCached(
 
 async function getCached(deps: CatalogueDependencies, slug: string) {
   const product = await getRawCached(deps, slug);
-  return product === null ? null : mapVendureProduct(product);
+  return product === null ? null : mapVendureProduct(product, deps.vendurePublicOrigin);
 }

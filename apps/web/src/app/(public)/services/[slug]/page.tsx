@@ -111,6 +111,15 @@ export default async function ServiceDetailPage({
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <article className="min-w-0 space-y-12">
+            {service.imageUrl !== null ? (
+              <figure className="overflow-hidden rounded-lg border border-border bg-surface shadow-card">
+                <img
+                  src={service.imageUrl}
+                  alt=""
+                  className="h-auto max-h-[28rem] w-full object-cover"
+                />
+              </figure>
+            ) : null}
             {hasStructuredLayout ? (
               <>
                 {presentation?.body ? (

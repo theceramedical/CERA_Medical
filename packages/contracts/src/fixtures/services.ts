@@ -162,6 +162,7 @@ function buildService(seed: ServiceSeed): Fixture<Service> {
       listPriceMinor: null,
       checkoutEnabled: false,
       mediaId: uuid(`service-media-${seed.key}`, SERVICE_CREATED_AT),
+      imageUrl: null,
       status: seed.status,
       createdAt: SERVICE_CREATED_AT,
       updatedAt: at(-days(7)),
