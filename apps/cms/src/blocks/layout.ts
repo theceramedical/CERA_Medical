@@ -1,10 +1,17 @@
 import { constrainedEditor } from '../lib/editor.ts';
 
-import type { Block } from 'payload';
+import type { Block, Field } from 'payload';
 
 /** Same block shape as pages layout, but tables FK to service_presentations (not pages). */
 function servicePresentationBlock(block: Block, dbName: string): Block {
   return { ...block, dbName };
+}
+
+function remapArrayDbName(field: Field, name: string, dbName: string): Field {
+  if (field.type !== 'array' || field.name !== name) {
+    return field;
+  }
+  return { ...field, dbName };
 }
 
 /**
@@ -344,18 +351,47 @@ export const ServiceSidebarCardBlock: Block = {
   ],
 };
 
+/** Feature grid for service presentations — nested arrays must not reuse pages `feat` / `hl`. */
+const SpFeatureGridBlock: Block = {
+  ...FeatureGridBlock,
+  dbName: 'sp_fgrid',
+  fields: FeatureGridBlock.fields.map((field) => {
+    if (field.type === 'array' && field.name === 'features') {
+      return {
+        ...field,
+        dbName: 'sp_feat',
+        fields: field.fields.map((nested) =>
+          nested.type === 'array' && nested.name === 'highlights'
+            ? { ...nested, dbName: 'sp_hl' }
+            : nested,
+        ),
+      };
+    }
+    return field;
+  }),
+};
+
+/** Enquiry aside for service presentations — must not reuse pages `trust` table. */
+const SpServiceEnquiryAsideBlock: Block = {
+  ...ServiceEnquiryAsideBlock,
+  dbName: 'sp_enq',
+  fields: ServiceEnquiryAsideBlock.fields.map((field) =>
+    remapArrayDbName(field, 'trustItems', 'sp_trust'),
+  ),
+};
+
 /** Blocks allowed on service presentations (Vendure catalogue product pages). */
 export const servicePresentationBlocks: Block[] = [
   servicePresentationBlock(ServiceHeroBlock, 'sp_hero'),
   SectionHeadingBlock,
   RichTextBlock,
-  servicePresentationBlock(FeatureGridBlock, 'sp_fgrid'),
+  SpFeatureGridBlock,
   servicePresentationBlock(ProcessStepsBlock, 'sp_steps'),
   servicePresentationBlock(KeyValueListBlock, 'sp_kv'),
   CalloutBandBlock,
   CtaBandBlock,
   FaqListBlock,
-  servicePresentationBlock(ServiceEnquiryAsideBlock, 'sp_enq'),
+  SpServiceEnquiryAsideBlock,
   servicePresentationBlock(ServiceSidebarCardBlock, 'sp_side'),
 ];
 

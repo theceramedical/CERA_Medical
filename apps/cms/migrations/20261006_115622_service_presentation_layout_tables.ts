@@ -233,14 +233,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"block_name" varchar
   );
   
-  ALTER TABLE "feat" DROP CONSTRAINT "feat_parent_id_fk";
-  
-  ALTER TABLE "trust" DROP CONSTRAINT "trust_parent_id_fk";
-  
-  ALTER TABLE "_feat_v" DROP CONSTRAINT "_feat_v_parent_id_fk";
-  
-  ALTER TABLE "_trust_v" DROP CONSTRAINT "_trust_v_parent_id_fk";
-  
   ALTER TABLE "sp_hero_badges" ADD CONSTRAINT "sp_hero_badges_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."sp_hero"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "sp_hero" ADD CONSTRAINT "sp_hero_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."service_presentations"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "sp_fgrid" ADD CONSTRAINT "sp_fgrid_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."service_presentations"("id") ON DELETE cascade ON UPDATE no action;
@@ -318,11 +310,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_sp_side_v_bullets_parent_id_idx" ON "_sp_side_v_bullets" USING btree ("_parent_id");
   CREATE INDEX "_sp_side_v_order_idx" ON "_sp_side_v" USING btree ("_order");
   CREATE INDEX "_sp_side_v_parent_id_idx" ON "_sp_side_v" USING btree ("_parent_id");
-  CREATE INDEX "_sp_side_v_path_idx" ON "_sp_side_v" USING btree ("_path");
-  ALTER TABLE "feat" ADD CONSTRAINT "feat_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."sp_fgrid"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "trust" ADD CONSTRAINT "trust_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."sp_enq"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "_feat_v" ADD CONSTRAINT "_feat_v_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_sp_fgrid_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "_trust_v" ADD CONSTRAINT "_trust_v_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_sp_enq_v"("id") ON DELETE cascade ON UPDATE no action;`);
+  CREATE INDEX "_sp_side_v_path_idx" ON "_sp_side_v" USING btree ("_path");`);
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
@@ -371,18 +359,6 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_sp_side_v_items" CASCADE;
   DROP TABLE "_sp_side_v_bullets" CASCADE;
   DROP TABLE "_sp_side_v" CASCADE;
-  ALTER TABLE "feat" DROP CONSTRAINT "feat_parent_id_fk";
-  
-  ALTER TABLE "trust" DROP CONSTRAINT "trust_parent_id_fk";
-  
-  ALTER TABLE "_feat_v" DROP CONSTRAINT "_feat_v_parent_id_fk";
-  
-  ALTER TABLE "_trust_v" DROP CONSTRAINT "_trust_v_parent_id_fk";
-  
-  ALTER TABLE "feat" ADD CONSTRAINT "feat_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."feat_grid"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "trust" ADD CONSTRAINT "trust_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."enq_aside"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "_feat_v" ADD CONSTRAINT "_feat_v_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_feat_grid_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "_trust_v" ADD CONSTRAINT "_trust_v_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_enq_aside_v"("id") ON DELETE cascade ON UPDATE no action;
   DROP TYPE "public"."enum_sp_fgrid_tone";
   DROP TYPE "public"."enum_sp_steps_tone";
   DROP TYPE "public"."enum_sp_steps_variant";
