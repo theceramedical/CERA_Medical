@@ -43,10 +43,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          conclusion="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${GITHUB_SHA}&event=push&per_page=20" \
-            --jq '.workflow_runs[] | select(.name == "CI" and .head_branch == "main") | .conclusion' | head -1)"
-          if [[ "$conclusion" != success ]]; then
-            echo "::error::CI must succeed on ${GITHUB_SHA} before production release (latest CI conclusion: ${conclusion:-none}). Push to main and wait for CI, or fix failures."
+          conclusion="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${GITHUB_SHA}&per_page=30" \
+            --jq '[.workflow_runs[] | select(.name == "CI" and .head_branch == "main" and .conclusion == "success")] | length')"
+          if [[ "$conclusion" -lt 1 ]]; then
+            latest="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${GITHUB_SHA}&per_page=30" \
+              --jq '.workflow_runs[] | select(.name == "CI" and .head_branch == "main") | .conclusion' | head -1)"
+            echo "::error::CI must succeed on ${GITHUB_SHA} before production release (latest CI conclusion: ${latest:-none}). Run CI on main for this commit, or fix failures."
             exit 1
           fi
           echo "CI succeeded on ${GITHUB_SHA}"
