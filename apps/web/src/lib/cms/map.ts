@@ -1,5 +1,7 @@
 import { ContentDocumentSchema, type ContentDocument, type ContentType } from '@cera/contracts';
 
+import { publicizeCmsMediaUrl } from './media-url.ts';
+
 /**
  * Maps a Payload REST document onto `ContentDocumentSchema`.
  *
@@ -55,9 +57,11 @@ function mediaPickUrl(
 ): string | null {
   if (value === null || value === undefined || typeof value === 'string') return null;
   const sized = value.sizes?.[size]?.url;
-  if (typeof sized === 'string' && sized.length > 0) return sized;
+  if (typeof sized === 'string' && sized.length > 0) {
+    return publicizeCmsMediaUrl(sized);
+  }
   const url = value.url;
-  return typeof url === 'string' && url.length > 0 ? url : null;
+  return typeof url === 'string' && url.length > 0 ? publicizeCmsMediaUrl(url) : null;
 }
 
 function mediaAlt(value: string | PayloadMedia | null | undefined): string | null {

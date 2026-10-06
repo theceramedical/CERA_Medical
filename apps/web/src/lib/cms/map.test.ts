@@ -62,4 +62,22 @@ describe('mapCmsDocument', () => {
     expect(document.seo.ogImageUrl).toBe('https://media.example/og.jpg');
     expect(document.mediaIds).toEqual(['10', '11']);
   });
+
+  it('rewrites admin /api/media/file URLs to the public media origin', () => {
+    process.env.S3_PUBLIC_URL = 'https://media.example/bucket';
+    const document = mapCmsDocument('post', {
+      id: '4',
+      slug: 'test',
+      title: 'Test',
+      cover: {
+        id: '1',
+        url: 'https://admin.example/api/media/file/hero-card.jpg',
+        sizes: { card: { url: 'https://admin.example/api/media/file/hero-card.jpg' } },
+      },
+      createdAt: '2025-12-01T00:00:00.000Z',
+      updatedAt: '2025-12-01T00:00:00.000Z',
+    });
+
+    expect(document.coverImageUrl).toBe('https://media.example/bucket/hero-card.jpg');
+  });
 });

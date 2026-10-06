@@ -40,6 +40,36 @@ function mediaPattern(): { protocol: 'http' | 'https'; hostname: string; port: s
   };
 }
 
+/** CMS admin host when Payload still emits `/api/media/file/*` URLs (legacy rows). */
+function cmsMediaApiPattern(): {
+  protocol: 'http' | 'https';
+  hostname: string;
+  port: string;
+  pathname: string;
+} | null {
+  const raw =
+    process.env['PAYLOAD_PUBLIC_SERVER_URL'] ??
+    process.env['CMS_URL'] ??
+    process.env['BUILD_CMS_URL'];
+  if (raw === undefined || raw.length === 0) return null;
+
+  let url: URL;
+  try {
+    url = new URL(raw.replace(/\/api\/?$/, ''));
+  } catch {
+    return null;
+  }
+
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+
+  return {
+    protocol: url.protocol === 'https:' ? 'https' : 'http',
+    hostname: url.hostname,
+    port: url.port,
+    pathname: '/api/media/file/**',
+  };
+}
+
 /**
  * Next.js configuration for the public site.
  *
@@ -64,7 +94,9 @@ const nextConfig: NextConfig = {
      * re-serve any URL it permits, so a wildcard turns this app into an open image proxy that
      * anyone can point at any host and have the bandwidth billed here.
      */
-    remotePatterns: [mediaPattern()],
+    remotePatterns: [mediaPattern(), cmsMediaApiPattern()].filter(
+      (pattern): pattern is NonNullable<typeof pattern> => pattern !== null,
+    ),
 
     /**
      * Widths matched to the layout rather than left at the defaults.
