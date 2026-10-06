@@ -10,6 +10,7 @@ import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { HOMEPAGE_ARTICLES } from '../../../../content/homepage.ts';
 import { getDocument, listPublishedDocuments } from '../../../../lib/cms/client.ts';
+import { postCoverAlt, postCoverSrc } from '../../../../lib/cms/post-cover.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
 import { siteUrl } from '../../../../lib/site-url.ts';
 
@@ -32,19 +33,16 @@ export async function generateMetadata({
       noIndex: true,
     });
   }
+  const ogImage = document?.seo.ogImageUrl ?? document?.coverImageUrl ?? undefined;
   return pageMetadata({
     title,
     description: document?.excerpt ?? title,
     path: `/articles/${slug}`,
     noIndex: document?.seo.noIndex === true,
+    ...(ogImage !== undefined
+      ? { ogImagePath: ogImage, ogImageAlt: document?.coverImageAlt ?? title }
+      : {}),
   });
-}
-
-function coverForSlug(slug: string): string {
-  return (
-    HOMEPAGE_ARTICLES.find((item) => item.slug === slug)?.coverSrc ??
-    '/images/article-cover-data.svg'
-  );
 }
 
 export default async function ArticleDetailPage({
@@ -78,8 +76,8 @@ export default async function ArticleDetailPage({
         <div className="mx-auto max-w-site px-6 pb-8 md:px-10">
           <div className="relative aspect-[21/9] max-h-72 overflow-hidden rounded-lg border border-border shadow-card">
             <Image
-              src={coverForSlug(slug)}
-              alt=""
+              src={postCoverSrc(document, slug)}
+              alt={postCoverAlt(document)}
               fill
               className="object-cover"
               sizes="(max-width: 1200px) 100vw, 1200px"
@@ -113,8 +111,8 @@ export default async function ArticleDetailPage({
                     }
                     cover={
                       <Image
-                        src={coverForSlug(post.slug)}
-                        alt=""
+                        src={postCoverSrc(post, post.slug)}
+                        alt={postCoverAlt(post)}
                         width={640}
                         height={360}
                         className="aspect-video h-auto w-full object-cover"

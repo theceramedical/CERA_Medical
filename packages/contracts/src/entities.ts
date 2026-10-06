@@ -83,6 +83,8 @@ export const SeoSchema = z.object({
   description: z.string().max(180).nullable(),
   canonicalUrl: z.url().nullable(),
   ogImageId: z.string().nullable(),
+  /** Resolved public URL when Payload returns populated media (depth ≥ 1). */
+  ogImageUrl: z.url().nullable().optional(),
   noIndex: z.boolean().default(false),
 });
 
@@ -100,6 +102,9 @@ export const ContentDocumentSchema = z.object({
   cardHighlights: z.array(z.string().max(160)).max(6).optional(),
   /** Lucide key for catalogue/home cards (`microscope`, `dna`, …). */
   cardIcon: z.string().max(32).optional(),
+  /** Article cover from Payload `cover` (card size when available). */
+  coverImageUrl: z.url().nullable().optional(),
+  coverImageAlt: z.string().max(200).nullable().optional(),
   seo: SeoSchema,
   mediaIds: z.array(z.string()).max(50),
   status: PublicationStatusSchema,

@@ -34,4 +34,32 @@ describe('mapCmsDocument', () => {
     expect(document.status).toBe('draft');
     expect(document.publishedAt).toBeNull();
   });
+
+  it('maps populated cover and og image URLs from Payload media', () => {
+    const document = mapCmsDocument('post', {
+      id: '3',
+      slug: 'preclinical-study-handoff',
+      title: 'Handing off a preclinical study',
+      cover: {
+        id: '10',
+        alt: 'Lab bench',
+        url: 'https://media.example/original.jpg',
+        sizes: { card: { url: 'https://media.example/card.jpg' } },
+      },
+      seo: {
+        ogImage: {
+          id: '11',
+          url: 'https://media.example/og-source.jpg',
+          sizes: { og: { url: 'https://media.example/og.jpg' } },
+        },
+      },
+      createdAt: '2025-12-01T00:00:00.000Z',
+      updatedAt: '2025-12-01T00:00:00.000Z',
+    });
+
+    expect(document.coverImageUrl).toBe('https://media.example/card.jpg');
+    expect(document.coverImageAlt).toBe('Lab bench');
+    expect(document.seo.ogImageUrl).toBe('https://media.example/og.jpg');
+    expect(document.mediaIds).toEqual(['10', '11']);
+  });
 });

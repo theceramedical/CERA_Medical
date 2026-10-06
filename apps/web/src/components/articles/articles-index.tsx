@@ -5,13 +5,8 @@ import Image from 'next/image';
 
 import type { ContentDocument } from '@cera/contracts';
 
+import { postCoverAlt, postCoverSrc } from '../../lib/cms/post-cover.ts';
 import { AppButtonLink, AppLink } from '../link.tsx';
-
-const COVERS = [
-  '/images/article-cover-lab.svg',
-  '/images/article-cover-data.svg',
-  '/images/article-cover-research.svg',
-] as const;
 
 export const ARTICLE_TOPICS: readonly { id: string; label: string }[] = [
   { id: 'all', label: 'All Updates' },
@@ -146,8 +141,8 @@ export function ArticlesIndex({
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="relative aspect-video overflow-hidden bg-surface-tint lg:col-span-6 lg:aspect-auto">
                 <Image
-                  src={COVERS[0]}
-                  alt=""
+                  src={postCoverSrc(featured, featured.slug)}
+                  alt={postCoverAlt(featured)}
                   fill
                   className="object-cover"
                   sizes="(min-width: 1024px) 50vw, 100vw"
@@ -207,7 +202,7 @@ export function ArticlesIndex({
               </Text>
             </div>
             <ul className="grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
-              {rest.map((post, index) => (
+              {rest.map((post) => (
                 <ArticleCard
                   key={post.slug}
                   headingLevel={3}
@@ -220,8 +215,8 @@ export function ArticlesIndex({
                   linkAs={AppLink}
                   cover={
                     <Image
-                      src={COVERS[(index + 1) % COVERS.length] ?? COVERS[0]}
-                      alt=""
+                      src={postCoverSrc(post, post.slug)}
+                      alt={postCoverAlt(post)}
                       width={640}
                       height={360}
                       className="aspect-video h-auto w-full object-cover"
