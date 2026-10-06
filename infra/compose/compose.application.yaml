@@ -21,6 +21,8 @@ services:
       OIDC_MICROSOFT_SOURCE_SLUG: ${OIDC_MICROSOFT_SOURCE_SLUG:-}
       API_INTERNAL_URL: http://api:3003
       CMS_API_URL: http://cms:3001/api
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL:?required}
+      VENDURE_PUBLIC_URL: https://catalogue.${CERA_DOMAIN:?CERA_DOMAIN required}
     networks: [cera-public, cera-private]
     depends_on:
       api: { condition: service_healthy }

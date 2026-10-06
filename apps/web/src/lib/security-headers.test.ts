@@ -92,6 +92,13 @@ describe('buildCsp', () => {
       expect(parsed.get('connect-src')).not.toContain('https://media.example');
     });
 
+    it('adds the catalogue origin to img-src only', () => {
+      const parsed = directives(buildCsp(NONCE, { catalogueOrigin: 'https://catalogue.example' }));
+
+      expect(parsed.get('img-src')).toContain('https://catalogue.example');
+      expect(parsed.get('script-src')).not.toContain('https://catalogue.example');
+    });
+
     it('adds the api origin to connect-src only', () => {
       const parsed = directives(buildCsp(NONCE, { apiOrigin: 'https://api.example' }));
 
