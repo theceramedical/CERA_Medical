@@ -11,7 +11,7 @@ export function publicizeCmsMediaUrl(url: string | null): string | null {
   try {
     const parsed = new URL(url);
     const match = /^\/api\/media\/file\/(.+)$/.exec(parsed.pathname);
-    if (match === null) return url;
+    if (match?.[1] === undefined) return url;
     const filename = decodeURIComponent(match[1]);
     return `${publicBase}/${filename}`;
   } catch {
