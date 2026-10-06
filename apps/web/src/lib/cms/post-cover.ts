@@ -2,13 +2,21 @@ import type { ContentDocument } from '@cera/contracts';
 
 import { HOMEPAGE_ARTICLES } from '../../content/homepage.ts';
 
+function normalizeSrc(url: string): string {
+  try {
+    return new URL(url).href;
+  } catch {
+    return url;
+  }
+}
+
 /** Cover image for a post: Payload `cover`, else SEO og image, else marketing fallback. */
 export function postCoverSrc(post: ContentDocument, slug: string): string {
   if (post.coverImageUrl !== undefined && post.coverImageUrl !== null) {
-    return post.coverImageUrl;
+    return normalizeSrc(post.coverImageUrl);
   }
   if (post.seo.ogImageUrl !== undefined && post.seo.ogImageUrl !== null) {
-    return post.seo.ogImageUrl;
+    return normalizeSrc(post.seo.ogImageUrl);
   }
   return (
     HOMEPAGE_ARTICLES.find((item) => item.slug === slug)?.coverSrc ??

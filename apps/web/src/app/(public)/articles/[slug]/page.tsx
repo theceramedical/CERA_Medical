@@ -1,9 +1,9 @@
 import { ArticleCard } from '@cera/ui/article-card';
 import { Heading } from '@cera/ui/typography';
 import { draftMode } from 'next/headers';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
+import { ArticleCoverImage } from '../../../../components/articles/article-cover-image.tsx';
 import { ArticleDetailBody } from '../../../../components/articles/article-detail-body.tsx';
 import { articleJsonLd, JsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
@@ -75,7 +75,7 @@ export default async function ArticleDetailPage({
       <div className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 pb-8 md:px-10">
           <div className="relative aspect-[21/9] max-h-72 overflow-hidden rounded-lg border border-border shadow-card">
-            <Image
+            <ArticleCoverImage
               src={postCoverSrc(document, slug)}
               alt={postCoverAlt(document)}
               fill
@@ -110,7 +110,7 @@ export default async function ArticleDetailPage({
                       'Article'
                     }
                     cover={
-                      <Image
+                      <ArticleCoverImage
                         src={postCoverSrc(post, post.slug)}
                         alt={postCoverAlt(post)}
                         width={640}

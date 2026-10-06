@@ -1,12 +1,13 @@
 import { ArticleCard } from '@cera/ui/article-card';
 import { EmptyState } from '@cera/ui/empty-state';
 import { Heading, Text } from '@cera/ui/typography';
-import Image from 'next/image';
 
 import type { ContentDocument } from '@cera/contracts';
 
 import { postCoverAlt, postCoverSrc } from '../../lib/cms/post-cover.ts';
 import { AppButtonLink, AppLink } from '../link.tsx';
+
+import { ArticleCoverImage } from './article-cover-image.tsx';
 
 export const ARTICLE_TOPICS: readonly { id: string; label: string }[] = [
   { id: 'all', label: 'All Updates' },
@@ -140,7 +141,7 @@ export function ArticlesIndex({
           <article className="overflow-hidden rounded-lg border border-border bg-surface shadow-card">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="relative aspect-video overflow-hidden bg-surface-tint lg:col-span-6 lg:aspect-auto">
-                <Image
+                <ArticleCoverImage
                   src={postCoverSrc(featured, featured.slug)}
                   alt={postCoverAlt(featured)}
                   fill
@@ -214,7 +215,7 @@ export function ArticlesIndex({
                   }
                   linkAs={AppLink}
                   cover={
-                    <Image
+                    <ArticleCoverImage
                       src={postCoverSrc(post, post.slug)}
                       alt={postCoverAlt(post)}
                       width={640}
