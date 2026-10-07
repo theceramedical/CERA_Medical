@@ -42,7 +42,7 @@ export default async function PublicLayout({ children }: { readonly children: Re
      * which reads as a failed render. `dvh` rather than `vh` because mobile browsers shrink the
      * viewport as their toolbar appears, and `vh` is measured against the larger of the two.
      */
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col overflow-x-hidden">
       <SiteJsonLd />
       {/*
        * First in the DOM, so it is the first thing Tab reaches. That is the whole requirement of

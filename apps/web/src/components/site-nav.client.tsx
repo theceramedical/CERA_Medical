@@ -111,60 +111,69 @@ export function MobileNav({
        * That is a trap for anything that counts or queries links, including the accessibility sweep.
        */}
       {open && (
-        <div
-          id={panelId}
-          className="absolute inset-x-0 top-20 z-40 border-b border-border bg-surface shadow-md"
-        >
-          <nav aria-label="Main" className="mx-auto max-w-site px-6 py-4">
-            <ul className="flex list-none flex-col gap-1 p-0">
-              {items.map((item) => {
-                const current = isCurrent(item.href, pathname);
+        <>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden
+            className="fixed inset-0 top-20 z-30 bg-primary-900/25"
+            onClick={close}
+          />
+          <div
+            id={panelId}
+            className="fixed inset-x-0 top-20 z-40 max-h-[calc(100dvh-5rem)] overflow-y-auto border-b border-border bg-surface shadow-md"
+          >
+            <nav aria-label="Main" className="mx-auto max-w-site px-6 py-4">
+              <ul className="flex list-none flex-col gap-1 p-0">
+                {items.map((item) => {
+                  const current = isCurrent(item.href, pathname);
 
-                return (
-                  <li key={item.href}>
-                    <NextLink
-                      href={item.href}
-                      aria-current={current ? 'page' : undefined}
-                      className={cn(
-                        'flex min-h-11 items-center rounded-md px-3 text-button no-underline',
-                        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                        current
-                          ? 'bg-primary-50 text-foreground'
-                          : 'text-neutral-700 hover:bg-surface-subtle hover:text-foreground',
-                      )}
-                    >
-                      {item.label}
-                    </NextLink>
-                  </li>
-                );
-              })}
-            </ul>
+                  return (
+                    <li key={item.href}>
+                      <NextLink
+                        href={item.href}
+                        aria-current={current ? 'page' : undefined}
+                        className={cn(
+                          'flex min-h-11 items-center rounded-md px-3 text-button no-underline',
+                          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                          current
+                            ? 'bg-primary-50 text-foreground'
+                            : 'text-neutral-700 hover:bg-surface-subtle hover:text-foreground',
+                        )}
+                      >
+                        {item.label}
+                      </NextLink>
+                    </li>
+                  );
+                })}
+              </ul>
 
-            {/* The two calls to action, which are hidden at this width in the header's right-hand
+              {/* The two calls to action, which are hidden at this width in the header's right-hand
                 group. They are here rather than there so they exist exactly once in the document. */}
-            <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-              {signedIn ? (
-                <>
-                  {staff ? (
-                    <ButtonLink as={NextLink} href="/staff" variant="primary" fullWidth>
-                      Staff console
+              <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+                {signedIn ? (
+                  <>
+                    {staff ? (
+                      <ButtonLink as={NextLink} href="/staff" variant="primary" fullWidth>
+                        Staff console
+                      </ButtonLink>
+                    ) : null}
+                    <ButtonLink as={NextLink} href="/account" variant="outline" fullWidth>
+                      Your account
                     </ButtonLink>
-                  ) : null}
-                  <ButtonLink as={NextLink} href="/account" variant="outline" fullWidth>
-                    Your account
+                  </>
+                ) : (
+                  <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
+                    Sign In
                   </ButtonLink>
-                </>
-              ) : (
-                <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
-                  Sign In
+                )}
+                <ButtonLink as={NextLink} href="/enquiry" variant="accent" fullWidth>
+                  Make an Enquiry
                 </ButtonLink>
-              )}
-              <ButtonLink as={NextLink} href="/enquiry" variant="accent" fullWidth>
-                Make an Enquiry
-              </ButtonLink>
-            </div>
-          </nav>
-        </div>
+              </div>
+            </nav>
+          </div>
+        </>
       )}
     </FocusTrap>
   );

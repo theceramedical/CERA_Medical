@@ -36,7 +36,7 @@ export async function SiteHeader() {
   const staff = session !== null && sessionHasStaffRole(session);
   return (
     <HeaderScrollShadow>
-      <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">
+      <div className="mx-auto flex h-20 min-w-0 max-w-site items-center gap-2 px-4 sm:gap-4 sm:px-6 md:px-10">
         {/*
          * The wordmark links home, and the link wraps the lock-up rather than the lock-up
          * accepting an `href`. `Wordmark` renders a `div` by default and declares no anchor props;

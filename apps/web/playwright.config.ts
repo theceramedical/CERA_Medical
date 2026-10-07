@@ -132,6 +132,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'mobile',
+      testMatch: /.*\.mobile-(responsive|walkthrough)\.spec\.ts/,
+      use: { ...devices['Pixel 5'], viewport: { width: 390, height: 844 } },
+    },
+    {
       name: 'visual',
       testMatch: /.*\.visual\.spec\.ts/,
       use: {

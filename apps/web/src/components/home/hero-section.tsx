@@ -44,23 +44,27 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
   const headlineAccent = content.headlineAccent ?? HERO.headlineAccent;
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-surface-tint pt-12 pb-16 lg:pt-16 lg:pb-20">
+    <section className="relative overflow-hidden border-b border-border bg-surface-tint pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-20">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 -right-10 select-none font-wordmark text-[7rem] leading-none font-extrabold text-primary opacity-5"
+        className="pointer-events-none absolute top-0 -right-6 select-none font-wordmark text-[3.25rem] leading-none font-extrabold text-primary opacity-5 sm:-right-10 sm:text-[5rem] lg:text-[7rem]"
       >
         SCIENCE • RIGOR • DATA
       </div>
       <div className="relative z-10 mx-auto max-w-site px-6 md:px-10">
         <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
           <div className="flex flex-col items-start lg:col-span-7 lg:pr-4">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 shadow-sm">
+            <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 shadow-sm">
               <span className="size-2 rounded-full bg-accent" />
               <Text as="p" size="eyebrow" tone="muted" className="tracking-[0.14em]">
                 {content.eyebrow ?? HERO.eyebrow}
               </Text>
             </div>
-            <Heading level={1} size="display-1" className="mb-4 tracking-tight">
+            <Heading
+              level={1}
+              size="display-1"
+              className="mb-4 max-w-full tracking-tight break-words"
+            >
               <span className="block">{headlinePrimary}</span>
               <span className="block text-accent-hover">
                 {headlineAccent.startsWith(' ') ? headlineAccent : ` ${headlineAccent}`}
@@ -90,7 +94,7 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
           </div>
 
           <div className="relative mt-8 lg:col-span-5 lg:mt-0">
-            <div className="relative h-[460px] overflow-hidden rounded-lg border border-border bg-surface shadow-md">
+            <div className="relative h-64 overflow-hidden rounded-lg border border-border bg-surface shadow-md sm:h-80 lg:h-[460px]">
               <Image
                 src={content.imageUrl ?? '/images/hero-portrait.svg'}
                 alt={
@@ -104,7 +108,7 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
               />
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-primary-900/40 via-transparent to-transparent" />
             </div>
-            <div className="absolute -bottom-6 -left-6 hidden max-w-xs items-start gap-4 rounded-lg border border-border bg-surface p-5 shadow-lg sm:flex sm:max-w-sm">
+            <div className="relative mt-4 flex max-w-full items-start gap-4 rounded-lg border border-border bg-surface p-4 shadow-lg sm:absolute sm:-bottom-6 sm:-left-6 sm:mt-0 sm:max-w-sm sm:p-5">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-surface-tint text-accent">
                 <Icon icon={ClipboardCheck} size="md" />
               </div>

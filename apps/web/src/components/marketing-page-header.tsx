@@ -42,7 +42,7 @@ export function MarketingPageHeader({
         </nav>
       ) : null}
       <div className="border-b border-border bg-linear-to-b from-surface-tint to-surface">
-        <div className="mx-auto max-w-site px-6 py-10 md:px-10 lg:py-14">
+        <div className="mx-auto min-w-0 max-w-site px-4 py-8 sm:px-6 sm:py-10 md:px-10 lg:py-14">
           {children}
           {eyebrow ? (
             <Text
