@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "//build": "The budget runs as part of the build, not as a separate check, so exceeding it fails the build rather than producing a report nobody opens.",
-    "build": "next build && node scripts/copy-standalone-theme.mjs && node scripts/bundle-budget.mjs",
+    "build": "next build --webpack && node scripts/copy-standalone-theme.mjs && node scripts/bundle-budget.mjs",
     "start": "next start --port 3000",
     "//lint": "src and e2e both, or a spec can reach a commit with an unused import while `pnpm lint` reports clean.",
     "lint": "eslint src e2e --max-warnings 0",
