@@ -24,7 +24,7 @@ export function SiteHeaderAuthActions({
   }
 
   return (
-    <AppButtonLink href="/auth/sign-in" variant="outline" size="sm">
+    <AppButtonLink href="/auth/sign-in?next=/account" variant="outline" size="sm">
       Sign In
     </AppButtonLink>
   );

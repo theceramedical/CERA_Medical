@@ -13,3 +13,13 @@ export function safeReturnTo(value: string | null | undefined, fallback = '/acco
   }
   return value;
 }
+
+/** True when a return target belongs to the invitation-only staff workspace. */
+export function isStaffReturnTo(value: string): boolean {
+  return value === '/staff' || value.startsWith('/staff/');
+}
+
+/** Customer enrollment must never send a newly-created account into the staff workspace. */
+export function customerReturnTo(value: string): string {
+  return isStaffReturnTo(value) ? '/account' : value;
+}

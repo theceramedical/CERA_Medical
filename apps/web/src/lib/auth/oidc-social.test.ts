@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { configuredOidcSocialProviders, resolveOidcSocialProvider } from './oidc-social.ts';
+import {
+  configuredOidcSocialProviders,
+  resolveOidcSocialProvider,
+  resolveOidcSocialProviderForReturnTarget,
+} from './oidc-social.ts';
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -20,5 +24,12 @@ describe('oidc-social', () => {
     expect(resolveOidcSocialProvider('google')?.sourceSlug).toBe('google');
     expect(resolveOidcSocialProvider('microsoft')).toBeUndefined();
     expect(resolveOidcSocialProvider('evil')).toBeUndefined();
+  });
+
+  it('never resolves a customer social provider for a staff workspace target', () => {
+    vi.stubEnv('OIDC_GOOGLE_SOURCE_SLUG', 'google');
+
+    expect(resolveOidcSocialProviderForReturnTarget('google', true)).toBeUndefined();
+    expect(resolveOidcSocialProviderForReturnTarget('google', false)?.sourceSlug).toBe('google');
   });
 });

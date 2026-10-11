@@ -51,3 +51,16 @@ export function resolveOidcSocialProvider(
   if (provider === null || provider === undefined || provider.length === 0) return undefined;
   return configuredOidcSocialProviders().find((entry) => entry.id === provider);
 }
+
+/**
+ * Customer social login must never be selected for a staff workspace target.
+ *
+ * This check belongs next to the query-param allow-list so both rendering and the
+ * route handler can use the same server-enforced policy.
+ */
+export function resolveOidcSocialProviderForReturnTarget(
+  provider: string | null | undefined,
+  staffTarget: boolean,
+): OidcSocialProvider | undefined {
+  return staffTarget ? undefined : resolveOidcSocialProvider(provider);
+}

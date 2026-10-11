@@ -5,7 +5,7 @@ import { AuthPageShell, AuthPanelIntro } from '../../../../components/auth-page-
 import { AuthSignInOptions } from '../../../../components/auth-sign-in-options.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { configuredOidcSocialProviders } from '../../../../lib/auth/oidc-social.ts';
-import { safeReturnTo } from '../../../../lib/auth/return-to.ts';
+import { customerReturnTo, safeReturnTo } from '../../../../lib/auth/return-to.ts';
 import { getSession } from '../../../../lib/auth/session.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
@@ -26,7 +26,7 @@ export default async function SignUpPage({
   readonly searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
-  const safeNext = safeReturnTo(next ?? null);
+  const safeNext = customerReturnTo(safeReturnTo(next ?? null));
   const session = await getSession();
   if (session !== null) {
     redirect(safeNext);

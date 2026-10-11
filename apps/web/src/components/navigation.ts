@@ -42,7 +42,7 @@ export function withProductsNav(items: readonly NavItem[]): readonly NavItem[] {
 /** Footer "Support" column, per section 5.9. */
 export const SUPPORT_NAV: readonly NavItem[] = [
   { href: '/enquiry', label: 'Make an Enquiry' },
-  { href: '/auth/sign-in', label: 'Sign In' },
+  { href: '/auth/sign-in?next=/account', label: 'Sign In' },
   { href: '/faqs', label: 'FAQs' },
   { href: '/methodology', label: 'Methodology' },
   { href: '/data-retention', label: 'Data Retention Policy' },
@@ -68,7 +68,9 @@ export const SOCIAL_LINKS = [
 export function supportNavForSession(signedIn: boolean): readonly NavItem[] {
   if (!signedIn) return SUPPORT_NAV;
   return SUPPORT_NAV.map((item) =>
-    item.href === '/auth/sign-in' ? { href: '/account', label: 'Your account' } : item,
+    item.href === '/auth/sign-in?next=/account'
+      ? { href: '/account', label: 'Your account' }
+      : item,
   );
 }
 

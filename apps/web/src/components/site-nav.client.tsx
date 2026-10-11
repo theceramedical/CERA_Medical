@@ -163,7 +163,7 @@ export function MobileNav({
                     </ButtonLink>
                   </>
                 ) : (
-                  <ButtonLink href="/auth/sign-in" variant="outline" fullWidth>
+                  <ButtonLink href="/auth/sign-in?next=/account" variant="outline" fullWidth>
                     Sign In
                   </ButtonLink>
                 )}
