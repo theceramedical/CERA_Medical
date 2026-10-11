@@ -109,6 +109,12 @@ if ! compose exec -T -e "OIDC_REDIRECT_URI=$oidc_redirect_uri" authentik-server 
   echo 'Authentik CERA role setup failed' >&2
   exit 1
 fi
+if ! compose exec -T authentik-server ak shell \
+  -c 'exec(__import__("sys").stdin.read())' < "$ROOT_DIR/infra/scripts/configure-authentik-customer-experience.py"; then
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Authentik customer sign-in setup failed' >&2
+  exit 1
+fi
 if ! compose exec -T worker node -e '
   if (process.env.CRM_DRIVER !== "erpnext") process.exit(0);
   const {ERPNEXT_URL,ERPNEXT_API_KEY,ERPNEXT_API_SECRET}=process.env;

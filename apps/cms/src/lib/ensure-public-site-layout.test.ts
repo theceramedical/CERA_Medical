@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { ensureHomeMarketingLayout, ensureResearchRibbon } from './ensure-public-site-layout.ts';
+import {
+  ensureHomeMarketingLayout,
+  ensurePrivacyPolicyCopy,
+  ensureResearchRibbon,
+} from './ensure-public-site-layout.ts';
 
 import type { Payload } from 'payload';
 
@@ -81,5 +85,45 @@ describe('ensurePublicSiteLayout', () => {
     updateGlobal.mockClear();
     expect(await ensureResearchRibbon(payload)).toBe(false);
     expect(updateGlobal).not.toHaveBeenCalled();
+  });
+
+  it('removes published privacy drafting instructions and leaves the rest', async () => {
+    const update = vi.fn().mockResolvedValue({});
+    const payload = {
+      find: vi.fn().mockResolvedValue({
+        docs: [
+          {
+            id: 4,
+            body: {
+              root: {
+                children: [
+                  { children: [{ text: 'Full text for a page titled Privacy Terms.' }] },
+                  { children: [{ text: 'Page title: Privacy Terms' }] },
+                  { children: [{ text: 'CERA Medical is responsible for this information.' }] },
+                ],
+              },
+            },
+          },
+        ],
+      }),
+      update,
+    } as unknown as Payload;
+
+    expect(await ensurePrivacyPolicyCopy(payload)).toBe(true);
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'policies',
+        id: 4,
+        data: {
+          body: {
+            root: {
+              children: [
+                { children: [{ text: 'CERA Medical is responsible for this information.' }] },
+              ],
+            },
+          },
+        },
+      }),
+    );
   });
 });

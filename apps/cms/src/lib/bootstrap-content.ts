@@ -4,6 +4,7 @@ import { homePageMarketingBlocks, servicesPageFacilitiesBlocks } from './bootstr
 import { buildServicePresentationLayout } from './bootstrap-service-layout.ts';
 import {
   ensureHomeMarketingLayout,
+  ensurePrivacyPolicyCopy,
   ensureResearchRibbon,
   RESEARCH_RIBBON,
 } from './ensure-public-site-layout.ts';
@@ -108,7 +109,10 @@ function lexical(paragraphs: readonly SourceParagraph[]) {
         !pageHeading.test(item.text) &&
         !item.text.startsWith('CERA Medical website content') &&
         !item.text.startsWith('Text for a "How we work') &&
-        !/^(?:Label|Heading|Tag|Grid summary|Description|Button):/.test(item.text),
+        !/^(?:Label|Heading|Tag|Grid summary|Description|Button):/.test(item.text) &&
+        !item.text.startsWith('Full text for a page titled') &&
+        !item.text.startsWith('Page title:') &&
+        !item.text.startsWith('Effective date:'),
     )
     .map((item) => {
       const heading = item.style.startsWith('Heading');
@@ -799,6 +803,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
 
   await ensureHomeMarketingLayout(payload);
   await ensureResearchRibbon(payload);
+  await ensurePrivacyPolicyCopy(payload);
 }
 
 async function categoryId(payload: Payload, slug: string, title: string): Promise<number> {

@@ -106,6 +106,7 @@ describe('bootstrapClientContent', () => {
       /BSL-2|ISO 17025|ISO 15189|LAB ACCREDITED|Queues Open Q2/i,
     );
     expect(JSON.stringify(updateGlobal.mock.calls)).not.toMatch(/LAB ACCREDITED|Queues Open Q2/i);
+    expect(JSON.stringify(records)).not.toContain('Full text for a page titled');
     expect(JSON.stringify(records)).not.toContain('[Analytics data]');
     expect(JSON.stringify(records)).not.toContain('[30 days]');
     expect(JSON.stringify(records)).toContain('Germany');

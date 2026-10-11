@@ -99,3 +99,48 @@ export async function ensureResearchRibbon(payload: Payload): Promise<boolean> {
   });
   return true;
 }
+
+const EDITORIAL_INSTRUCTION =
+  /^(?:Full text for a page titled|Page title:|Effective date:|Buttons:)/;
+
+function lexicalNodeText(node: { children?: readonly { text?: string }[] }): string {
+  return (node.children ?? [])
+    .map((child) => child.text ?? '')
+    .join('')
+    .trim();
+}
+
+/**
+ * Removes client-draft instructions that were published into the privacy policy.
+ * Other paragraphs stay as stored in the CMS.
+ */
+export async function ensurePrivacyPolicyCopy(payload: Payload): Promise<boolean> {
+  const found = await payload.find({
+    collection: 'policies',
+    where: { slug: { equals: 'privacy-policy' } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  const policy = found.docs[0] as
+    | {
+        id: number | string;
+        body?: { root?: { children?: { children?: { text?: string }[] }[] } };
+      }
+    | undefined;
+  const children = policy?.body?.root?.children;
+  if (policy === undefined || children === undefined) return false;
+  const next = children.filter((node) => !EDITORIAL_INSTRUCTION.test(lexicalNodeText(node)));
+  if (next.length === children.length) return false;
+  await payload.update({
+    collection: 'policies',
+    id: policy.id,
+    data: {
+      body: {
+        ...policy.body,
+        root: { ...policy.body?.root, children: next },
+      },
+    },
+    overrideAccess: true,
+  });
+  return true;
+}
