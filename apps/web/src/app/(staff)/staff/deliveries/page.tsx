@@ -39,7 +39,7 @@ async function retryDelivery(form: FormData) {
   if (typeof id !== 'string') throw new Error('Missing delivery id');
 
   const session = await getSession();
-  if (session === null || !session.roles.includes('administrator') || !session.mfa) {
+  if (!session?.roles.includes('administrator')) {
     redirect('/staff/deliveries?error=retry_unauthorised');
   }
 
@@ -64,7 +64,7 @@ export default async function StaffDeliveriesPage({
 }) {
   const { error } = await searchParams;
   const session = await getSession();
-  const canRetry = session !== null && session.roles.includes('administrator') && session.mfa;
+  const canRetry = session?.roles.includes('administrator') ?? false;
 
   const { items } = await authenticatedApi<{ items: DeliveryRow[] }>('/v1/ops/deliveries');
 
@@ -85,8 +85,7 @@ export default async function StaffDeliveriesPage({
 
         {error === 'retry_unauthorised' && (
           <Alert tone="warning" title="Retry not available" className="mb-8">
-            Replaying a dead-letter delivery requires an administrator account with multi-factor
-            authentication enabled for this sign-in.
+            Replaying a dead-letter delivery requires an administrator account.
           </Alert>
         )}
         {error === 'retry_failed' && (
@@ -134,8 +133,8 @@ export default async function StaffDeliveriesPage({
                         </form>
                       ) : (
                         <Text size="body-sm" tone="muted">
-                          Dead-letter retries are limited to administrators who signed in with MFA.
-                          Ask an administrator to replay this delivery.
+                          Dead-letter retries are limited to administrators. Ask an administrator to
+                          replay this delivery.
                         </Text>
                       )}
                     </div>

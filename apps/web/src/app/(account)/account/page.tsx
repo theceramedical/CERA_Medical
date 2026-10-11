@@ -78,8 +78,8 @@ export default async function AccountDashboardPage() {
                 <Text size="body-sm">
                   This page is the customer portal (your own enquiries and orders). To triage
                   incoming requests for the team, open the{' '}
-                  <AppLink href="/staff">staff console</AppLink>. Staff sign-in requires
-                  multi-factor authentication.
+                  <AppLink href="/staff">staff console</AppLink>. Staff access is limited to
+                  approved work accounts.
                 </Text>
               </Alert>
             ) : null}
