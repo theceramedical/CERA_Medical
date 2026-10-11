@@ -271,7 +271,10 @@ async function ensureCheckoutMethods(
     await shipping.create(ctx, {
       code: 'laboratory-shipping',
       fulfillmentHandler: 'manual-fulfillment',
-      checker: { code: 'default-shipping-eligibility-checker', arguments: [] },
+      checker: {
+        code: 'default-shipping-eligibility-checker',
+        arguments: [{ name: 'orderMinimum', value: '0' }],
+      },
       calculator: {
         code: 'default-shipping-calculator',
         arguments: [{ name: 'rate', value: '0' }],
