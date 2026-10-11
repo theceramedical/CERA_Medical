@@ -33,6 +33,9 @@ export default async function SignInPage({
   }
 
   const staffPortal = staff === '1' || staff === 'true' || isStaffReturnTo(safeNext);
+  if (staffPortal) {
+    redirect(`/staff/sign-in?next=${encodeURIComponent(safeNext)}`);
+  }
   const socialProviders = staffPortal ? [] : configuredOidcSocialProviders();
 
   return (

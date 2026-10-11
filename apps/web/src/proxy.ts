@@ -131,7 +131,11 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 
-  if (needsSession && !request.cookies.has(SESSION_COOKIE_NAME)) {
+  // The staff sign-in screen is intentionally inside the staff route tree so it uses the
+  // console shell, but it must remain reachable before a session exists.
+  const isStaffSignIn = pathname === '/staff/sign-in';
+
+  if (needsSession && !isStaffSignIn && !request.cookies.has(SESSION_COOKIE_NAME)) {
     const target = new URL(SIGN_IN_PATH, request.nextUrl.origin);
     target.searchParams.set(RETURN_TO_PARAM, `${pathname}${request.nextUrl.search}`);
 

@@ -13,10 +13,12 @@ export function AuthSignInOptions({
   next,
   socialProviders,
   mode,
+  audience = 'customer',
 }: {
   readonly next: string;
   readonly socialProviders: readonly OidcSocialProvider[];
   readonly mode: 'sign-in' | 'sign-up';
+  readonly audience?: 'customer' | 'staff';
 }) {
   const emailLabel = mode === 'sign-up' ? 'Continue with email' : 'Continue with email or password';
 
@@ -53,12 +55,13 @@ export function AuthSignInOptions({
         data-testid="oidc-sign-in-continue"
         onClick={() => startOidcNavigation(next)}
       >
-        {emailLabel}
+        {audience === 'staff' && mode === 'sign-in' ? 'Continue to staff sign-in' : emailLabel}
       </Button>
 
       <Text size="body-sm" tone="muted" className="text-center">
-        You will be redirected to CERA&apos;s secure sign-in service. Passwords are never stored on
-        this site.
+        {audience === 'staff'
+          ? "You will be redirected to CERA's secure staff identity service. Staff accounts require multi-factor authentication."
+          : "You will be redirected to CERA's secure sign-in service. Passwords are never stored on this site."}
       </Text>
     </div>
   );
