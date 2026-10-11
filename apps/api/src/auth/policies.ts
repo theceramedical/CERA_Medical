@@ -93,7 +93,10 @@ export const ROUTE_POLICIES: readonly RouteDeclaration[] = [
   {
     method: 'POST',
     path: '/v1/ops/deliveries/:id/retry',
-    policy: { kind: 'staff', roles: ['administrator'], mfa: true },
+    // Production staff authentication is password-only; keep this operation
+    // administrator-only without requiring a second factor the live flow
+    // does not collect.
+    policy: { kind: 'staff', roles: ['administrator'] },
   },
 ];
 

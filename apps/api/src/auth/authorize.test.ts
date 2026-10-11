@@ -111,8 +111,8 @@ describe('authorization matrix', () => {
     expect(expectedStatus('anonymous', 'GET', '/v1/ops/enquiries')).toBe(401);
   });
 
-  it('requires MFA for administrative retry', () => {
-    expect(expectedStatus('admin_no_mfa', 'POST', '/v1/ops/deliveries/id-1/retry')).toBe(403);
+  it('allows administrator retry with password-only staff authentication', () => {
+    expect(expectedStatus('admin_no_mfa', 'POST', '/v1/ops/deliveries/id-1/retry')).toBe(200);
     expect(expectedStatus('admin', 'POST', '/v1/ops/deliveries/id-1/retry')).toBe(200);
     expect(expectedStatus('operations', 'POST', '/v1/ops/deliveries/id-1/retry')).toBe(404);
   });
