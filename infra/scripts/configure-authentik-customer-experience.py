@@ -5,8 +5,6 @@ A missing Google source is reported and skipped so a host that has not
 connected Google yet can still deploy.
 """
 
-from django.contrib.contenttypes.models import ContentType
-
 from authentik.brands.models import Brand
 from authentik.core.models import Application, Group
 from authentik.flows.models import Flow, FlowStageBinding
@@ -51,8 +49,13 @@ def application_for(provider):
 def identification_stage(flow):
     for binding in FlowStageBinding.objects.filter(target=flow).select_related("stage"):
         stage = binding.stage
-        if isinstance(stage, IdentificationStage):
-            return stage
+        # FlowStageBinding returns the polymorphic base Stage. Accessing the reverse
+        # one-to-one relation gives us the concrete IdentificationStage when present;
+        # `isinstance(stage, IdentificationStage)` is therefore always false here.
+        try:
+            return stage.identificationstage
+        except IdentificationStage.DoesNotExist:
+            continue
     return None
 
 
@@ -95,11 +98,9 @@ def ensure_customer_enrollment():
     )
     policy.expression = ASSIGN_CUSTOMER
     policy.save()
-    binding_type = ContentType.objects.get_for_model(FlowStageBinding)
     PolicyBinding.objects.get_or_create(
         policy=policy,
-        target_content_type=binding_type,
-        target_object_id=str(login_binding.pk),
+        target=login_binding,
         defaults={"order": 0, "enabled": True},
     )
     Group.objects.get_or_create(name=CUSTOMER_GROUP)
