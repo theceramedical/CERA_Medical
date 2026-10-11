@@ -60,19 +60,20 @@ export async function ensureHomeMarketingLayout(payload: Payload): Promise<boole
   return true;
 }
 
-const STITCH_RIBBON = {
+export const RESEARCH_RIBBON = {
   enabled: true,
-  statusLabel: 'LAB ACCREDITED',
+  statusLabel: 'RESEARCH SERVICES',
   message:
-    'ISO 17025 Compliant Bio-testing & Metagenomic Workflows — Preclinical Phase Queues Open Q2',
+    'Preclinical, molecular and data analysis projects scoped with documented methods and ethics review where required.',
   href: '/methodology',
-  linkLabel: 'Review Protocol Standards →',
+  linkLabel: 'See how we work',
 } as const;
 
 /**
- * Turns on the status ribbon with Stitch defaults when it was left disabled from early bootstrap.
+ * Replaces only the known unsafe legacy announcement or an empty bootstrap placeholder.
+ * Editorial announcements, including intentionally disabled ones, remain untouched.
  */
-export async function ensureLabAccreditedRibbon(payload: Payload): Promise<boolean> {
+export async function ensureResearchRibbon(payload: Payload): Promise<boolean> {
   const announcement = (await payload.findGlobal({
     slug: 'announcement',
     overrideAccess: true,
@@ -82,15 +83,18 @@ export async function ensureLabAccreditedRibbon(payload: Payload): Promise<boole
     message?: string;
   };
 
-  const placeholder =
-    announcement.message?.includes('confirm accreditation') === true ||
-    announcement.statusLabel?.toLowerCase() === 'lab accredited';
-
-  if (announcement.enabled === true && !placeholder) return false;
+  const label = announcement.statusLabel?.trim().toLowerCase() ?? '';
+  const message = announcement.message?.trim().toLowerCase() ?? '';
+  const legacy =
+    label === 'lab accredited' ||
+    message.includes('iso 17025 compliant bio-testing') ||
+    message.includes('confirm accreditation claims');
+  const empty = label === '' && message === '';
+  if (!legacy && !empty) return false;
 
   await payload.updateGlobal({
     slug: 'announcement',
-    data: STITCH_RIBBON,
+    data: RESEARCH_RIBBON,
     overrideAccess: true,
   });
   return true;

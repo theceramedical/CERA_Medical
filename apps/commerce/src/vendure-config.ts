@@ -128,7 +128,9 @@ export function getConfig(options: { seed?: boolean } = {}): VendureConfig {
       csrfPrevention: true,
     },
     authOptions: {
-      tokenMethod: ['cookie'],
+      // Dashboard keeps cookie auth; the API's server-to-server Shop client
+      // uses Vendure's bearer response header to persist anonymous carts.
+      tokenMethod: ['cookie', 'bearer'],
       requireVerification: true,
       cookieOptions: {
         secret: required('COOKIE_SECRET'),

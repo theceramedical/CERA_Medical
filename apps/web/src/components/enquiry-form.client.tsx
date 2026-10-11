@@ -44,34 +44,38 @@ function serviceConsent(
   if (name === null) return null;
 
   const configured = copy?.[name];
-  const statements = Array.isArray(configured)
+  const configuredStatements = Array.isArray(configured)
     ? configured
         .map((item: unknown) =>
           item !== null && typeof item === 'object' && 'statement' in item ? item.statement : null,
         )
-        .filter((item): item is string => typeof item === 'string')
-    : name === 'sequencingDataConsent'
-      ? [
-          'I am authorised to share these data with CERA Medical for analysis and, where I ask CERA Medical to download them from a server or repository, to give it access for that purpose.',
-          'Where the data derive from human participants, the study holds the necessary ethical approval and participant consent, and that consent permits analysis by an external service provider.',
-          'The files and metadata are de-identified and contain no names, contact details, national identity numbers, medical record numbers or other direct identifiers.',
-          'I understand that sequencing reads from human samples may contain human genetic material, which CERA Medical removes during quality control and does not analyse for any other purpose.',
-          'CERA Medical may store and process the data for this analysis and will delete them as set out in the Data Retention Policy.',
-        ]
-      : name === 'samplesCompoundsConsent'
+        .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    : [];
+  const statements =
+    configuredStatements.length > 0
+      ? configuredStatements
+      : name === 'sequencingDataConsent'
         ? [
-            'I own these materials or am authorised to send them to CERA Medical for the agreed study.',
-            'Where samples derive from human donors, the necessary ethical approval and donor consent are in place, and the samples are coded and carry no names or other direct identifiers.',
-            'I have disclosed every known hazard of the materials, including infectious, toxic and radioactive hazards, and will supply a safety data sheet for each test compound.',
-            'CERA Medical may use the materials only for the agreed study and will return or destroy any remainder as set out in the Data Retention Policy.',
-            'I understand that animal studies begin only after the protocol has been approved by the animal ethics committee.',
+            'I am authorised to share these data with CERA Medical for analysis and, where I ask CERA Medical to download them from a server or repository, to give it access for that purpose.',
+            'Where the data derive from human participants, the study holds the necessary ethical approval and participant consent, and that consent permits analysis by an external service provider.',
+            'The files and metadata are de-identified and contain no names, contact details, national identity numbers, medical record numbers or other direct identifiers.',
+            'I understand that sequencing reads from human samples may contain human genetic material, which CERA Medical removes during quality control and does not analyse for any other purpose.',
+            'CERA Medical may store and process the data for this analysis and will delete them as set out in the Data Retention Policy.',
           ]
-        : [
-            'My organisation owns these data or is authorised to share them with CERA Medical for analysis.',
-            'The data were collected with the consent and approvals required for their use in analysis and reporting.',
-            'The dataset has been de-identified and contains no names, national identity numbers, medical record numbers, telephone numbers, addresses or household coordinates, or, where identifiers are needed for the analysis, a data sharing agreement will be signed before any data are transferred.',
-            "CERA Medical may use the data only for the agreed analysis and report, will follow my organisation's data protection requirements, and will return or delete the data as set out in the Data Retention Policy or in the data sharing agreement.",
-          ];
+        : name === 'samplesCompoundsConsent'
+          ? [
+              'I own these materials or am authorised to send them to CERA Medical for the agreed study.',
+              'Where samples derive from human donors, the necessary ethical approval and donor consent are in place, and the samples are coded and carry no names or other direct identifiers.',
+              'I have disclosed every known hazard of the materials, including infectious, toxic and radioactive hazards, and will supply a safety data sheet for each test compound.',
+              'CERA Medical may use the materials only for the agreed study and will return or destroy any remainder as set out in the Data Retention Policy.',
+              'I understand that animal studies begin only after the protocol has been approved by the animal ethics committee.',
+            ]
+          : [
+              'My organisation owns these data or is authorised to share them with CERA Medical for analysis.',
+              'The data were collected with the consent and approvals required for their use in analysis and reporting.',
+              'The dataset has been de-identified and contains no names, national identity numbers, medical record numbers, telephone numbers, addresses or household coordinates, or, where identifiers are needed for the analysis, a data sharing agreement will be signed before any data are transferred.',
+              "CERA Medical may use the data only for the agreed analysis and report, will follow my organisation's data protection requirements, and will return or delete the data as set out in the Data Retention Policy or in the data sharing agreement.",
+            ];
 
   return (
     <div>
@@ -159,7 +163,7 @@ export function EnquiryForm({
   }
 
   const values = state.status === 'error' ? state.values : undefined;
-  const consentServiceId = values?.serviceId ?? selectedService;
+  const consentServiceId = selectedService;
   const errorFor = (path: string) =>
     state.status === 'error'
       ? state.fieldErrors.find((error) => error.path === path)?.message

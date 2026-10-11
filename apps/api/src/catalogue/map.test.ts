@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { mapVendureProduct, resolveVendureAssetPreview, toListablePublicService } from './map.ts';
+import {
+  mapVendureProduct,
+  mapVendurePublicProduct,
+  resolveVendureAssetPreview,
+  toListablePublicService,
+} from './map.ts';
 
 import type { VendureProduct } from './types.ts';
 
@@ -61,5 +66,34 @@ describe('mapVendureProduct', () => {
     );
     const listed = toListablePublicService(service);
     expect(listed?.enquiryEnabled).toBe(false);
+  });
+
+  it('keeps the production test service out of public listings', () => {
+    const service = mapVendureProduct({ ...product, slug: 'university-of-swabi' }, origin);
+    expect(toListablePublicService(service)).toBeNull();
+  });
+});
+
+describe('public physical products', () => {
+  const physical: VendureProduct = {
+    ...product,
+    collections: [{ id: 'c2', slug: 'physical-products', name: 'Physical products' }],
+    variants: [{ id: 'v1', sku: 'CR-CEL-8402', price: 134_400, priceWithTax: 134_400 }],
+  };
+
+  it('keeps the unapproved prototype SKU out of public listings', () => {
+    expect(mapVendurePublicProduct(physical, origin)).toBeNull();
+  });
+
+  it('allows a separately approved SKU entered by the catalogue editor', () => {
+    const approved = {
+      ...physical,
+      variants: [{ id: 'v2', sku: 'APPROVED-001', price: 0, priceWithTax: 0 }],
+    };
+    const publicProduct = mapVendurePublicProduct(approved, origin);
+    expect(publicProduct?.sku).toBe('APPROVED-001');
+    expect(publicProduct?.checkoutEnabled).toBe(false);
+    expect(publicProduct?.displayPrice).toBeNull();
+    expect(publicProduct?.listPriceMinor).toBeNull();
   });
 });

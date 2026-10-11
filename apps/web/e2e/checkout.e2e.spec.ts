@@ -24,6 +24,8 @@ test.describe('physical product checkout', () => {
     await expect(page.getByRole('button', { name: /Cart/ })).toBeVisible();
     await page.getByRole('button', { name: /Cart/ }).click();
     await expect(page.getByRole('dialog', { name: 'Cart preview' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Cart preview' })).toContainText('PKR');
+    await expect(page.getByRole('dialog', { name: 'Cart preview' })).not.toContainText('US$');
     await expect(page.getByRole('link', { name: 'Checkout' })).toBeVisible();
 
     await page.getByRole('link', { name: 'Checkout' }).click();
@@ -59,6 +61,7 @@ test.describe('physical product checkout', () => {
     await page.goto('/cart');
     await expect(page.getByRole('heading', { name: 'Your cart', level: 1 })).toBeVisible();
     await expect(page.getByText('CERA-GLIO-01')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('PKR', { exact: false }).first()).toBeVisible();
 
     await page.getByRole('link', { name: 'Proceed to checkout' }).click();
     await expect(page).toHaveURL(/\/checkout$/);

@@ -1,6 +1,6 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
-import { Building2, Clock3, Mail, MapPin, Microscope, Phone, ShieldCheck } from 'lucide-react';
+import { Building2, Clock3, Mail, MapPin, Microscope, ShieldCheck } from 'lucide-react';
 
 import { EnquiryForm } from '../enquiry-form.client.tsx';
 import { AppButtonLink } from '../link.tsx';
@@ -8,28 +8,28 @@ import { AppButtonLink } from '../link.tsx';
 import type { EnquiryFormProps } from '../enquiry-form.client.tsx';
 
 const TRUST = [
-  { title: 'Response Target', value: '< 3 Working Days' },
-  { title: 'Biosafety Intake', value: 'BSL-2 Validated' },
-  { title: 'Quality Alignment', value: 'ISO 15189 / GLP' },
-  { title: 'Ethics Pathway', value: 'IAEC Cleared Protocols' },
+  { title: 'Response Target', value: 'Within 3 Working Days' },
+  { title: 'Research Scope', value: 'Agreed in Writing' },
+  { title: 'Study Plan', value: 'Protocol Before Work' },
+  { title: 'Animal Studies', value: 'Ethics Approval Required' },
 ] as const;
 
 const FAQS = [
   {
     q: 'How does CERA Medical handle ethics and animal welfare?',
-    a: 'All in vivo studies strictly require Institutional Animal Ethics Committee (IAEC) approval prior to commencement. We operate in strict adherence to the internationally recognized 3Rs principles (Replacement, Reduction, and Refinement) and standard veterinary welfare parameters.',
+    a: 'Animal studies begin only after the protocol has been approved by the institutional animal ethics committee. We define the study design, controls and endpoints before work starts.',
   },
   {
     q: 'Can external research sponsors visit the laboratory?',
-    a: 'Yes. In-person facility audits, project oversight sessions, and physical specimen drop-offs are fully supported. In-person access requires protocol clearance and prior security notification for access to the PAF-IAST Haripur campus.',
+    a: 'Please contact us to discuss any proposed visit or transfer of samples. We will confirm practical arrangements for your specific project before you travel or send materials.',
   },
   {
     q: 'What is the sample de-identification requirement?',
-    a: 'We enforce a strict Zero Protected Health Information (Zero PII) policy. All human, clinical, or biological specimens must be pre-coded with alphanumeric 2D barcoded IDs before physical accession or digital database ingest.',
+    a: 'Provide de-identified files and coded samples without names, contact details, identity numbers or medical record numbers. If identifiers are necessary for an analysis, agree a data sharing arrangement before transfer.',
   },
   {
     q: 'Do you provide formal quotes for grant applications?',
-    a: 'Yes. We routinely generate institutional Letters of Support (LoS), formalized budgetary line-item schedules, and methodology descriptions for national and international grant submissions within 5 working days.',
+    a: 'We agree the scope, timeline, cost and expected outputs in writing before work starts. Describe your grant or procurement requirements in the enquiry form so we can discuss the appropriate documentation.',
   },
 ] as const;
 
@@ -45,9 +45,8 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
             Contact CERA Medical
           </Heading>
           <Text size="body-lg" tone="muted" className="mb-8 max-w-3xl">
-            Connect directly with our study directors, principal investigators, and laboratory
-            management at the Haripur Research Facility. We reply to all protocol and evidence
-            scoping inquiries within three working days.
+            Tell us about your research question, samples or data and the results you need. We aim
+            to reply to service requests within three working days.
           </Text>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {TRUST.map((item) => (
@@ -79,12 +78,12 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                     Project & Protocol Scoping Form
                   </Heading>
                   <Text size="caption" tone="muted" className="mt-1">
-                    Submit pre-trial specs, molecular requests, or bioinformatic datasets for
-                    scientific triage.
+                    Describe your project without including patient names or other identifying
+                    details. We will arrange any data or sample transfer separately.
                   </Text>
                 </div>
                 <span className="rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-[11px] font-semibold text-accent-fill">
-                  CRF-2025/SCOPING
+                  SERVICE REQUEST
                 </span>
               </div>
               <EnquiryForm {...enquiry} source="web_contact_page" />
@@ -96,11 +95,11 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                   <div className="flex items-center gap-2">
                     <Icon icon={Microscope} size="lg" className="text-primary" />
                     <Heading level={3} size="h4">
-                      Physical Laboratory & Specimen Reception
+                      Laboratory Location
                     </Heading>
                   </div>
                   <span className="shrink-0 rounded-sm border border-accent bg-surface-tint px-2 py-0.5 text-[11px] font-medium text-accent-fill">
-                    BSL-2 Validated Intake
+                    By Arrangement
                   </span>
                 </div>
                 <div className="flex items-start gap-2 text-caption text-muted">
@@ -113,16 +112,16 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                     Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology
                     (PAF-IAST)
                     <br />
-                    Khanpur Road, Mang, Haripur, Khyber Pakhtunkhwa, Pakistan.
+                    Mang, Haripur, Pakistan.
                   </p>
                 </div>
                 <div className="mt-3 rounded-md border border-border bg-surface-tint p-3.5">
                   <div className="mb-1 text-caption font-semibold text-heading">
-                    Specimen Delivery Protocol
+                    Before Sending Samples
                   </div>
                   <Text size="caption" tone="muted">
-                    Specimen intake hours: Monday–Friday 09:00–16:00 PKT. Prior cold-chain
-                    notification required 48 hours prior to dry ice/liquid nitrogen delivery.
+                    Please contact us first so we can confirm the materials, hazards, shipping
+                    arrangements and timing for your project.
                   </Text>
                 </div>
               </div>
@@ -132,23 +131,22 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                   <div className="flex items-center gap-2">
                     <Icon icon={Building2} size="lg" className="text-primary" />
                     <Heading level={3} size="h4">
-                      Administrative & Executive Directorate
+                      Office Location
                     </Heading>
                   </div>
                   <span className="rounded-sm border border-border bg-surface-tint px-2 py-0.5 text-[11px] text-muted">
-                    SECP Islamabad
+                    Haripur
                   </span>
                 </div>
                 <Text size="caption" tone="muted">
-                  2nd Floor, Business Incubation Center (BIC),
+                  2nd Floor, BIC,
                   <br />
                   C2 Building, PAF-IAST Campus,
                   <br />
                   Haripur, Pakistan.
                 </Text>
                 <Text size="caption" className="mt-3 border-t border-border pt-2">
-                  SECP Corporate Registration:{' '}
-                  <strong>CERA Medical R&D Ltd. (Sec. 42 / Non-Profit / Life Sciences)</strong>
+                  <strong>CERA Medical is registered with the SECP.</strong>
                 </Text>
               </div>
 
@@ -165,28 +163,22 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
                     label="Primary Institutional Email"
                     value="contact@ceramedical.org"
                     href="mailto:contact@ceramedical.org"
-                    note="Encrypted"
+                    note="Service enquiries"
                   />
                   <CommRow
                     icon={Mail}
-                    label="Secondary / Urgent Inquiries"
-                    value="theceramedica@gmail.com"
-                    href="mailto:theceramedica@gmail.com"
-                    note="Mirror Inbox"
-                  />
-                  <CommRow
-                    icon={Phone}
-                    label="Direct Lab Line / Study Desk"
-                    value="+92 (0) 995 645112"
-                    note="09:00 - 17:00 PKT"
+                    label="Alternative Email"
+                    value="theceramedical@gmail.com"
+                    href="mailto:theceramedical@gmail.com"
+                    note="Email"
                   />
                 </div>
                 <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-caption text-muted">
                   <span className="inline-flex items-center gap-1">
                     <Icon icon={ShieldCheck} size="sm" className="text-accent-fill" />
-                    Formal Scoping SLA:
+                    Response target:
                   </span>
-                  <span className="font-semibold text-heading">Written Document ≤ 72 Hours</span>
+                  <span className="font-semibold text-heading">Within 3 working days</span>
                 </div>
               </div>
             </div>
@@ -231,8 +223,7 @@ export function ContactScoping({ enquiry }: { readonly enquiry: EnquiryFormProps
               Need Immediate Technical Clarification with a Study Director?
             </Heading>
             <Text className="mt-1 max-w-xl text-on-primary/90">
-              Our principal investigators and laboratory specialists are available for direct
-              protocol feasibility assessments.
+              Send your research question and requirements to start a project discussion.
             </Text>
           </div>
           <AppButtonLink href="/enquiry" variant="accent">

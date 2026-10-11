@@ -4,7 +4,8 @@ import { homePageMarketingBlocks, servicesPageFacilitiesBlocks } from './bootstr
 import { buildServicePresentationLayout } from './bootstrap-service-layout.ts';
 import {
   ensureHomeMarketingLayout,
-  ensureLabAccreditedRibbon,
+  ensureResearchRibbon,
+  RESEARCH_RIBBON,
 } from './ensure-public-site-layout.ts';
 
 import type { Page, ServicePresentation } from '../payload-types.ts';
@@ -440,12 +441,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     await payload.updateGlobal({
       slug: 'announcement',
       data: {
-        enabled: true,
-        statusLabel: 'LAB ACCREDITED',
-        message:
-          'ISO 17025 Compliant Bio-testing & Metagenomic Workflows — Preclinical Phase Queues Open Q2',
-        href: '/methodology',
-        linkLabel: 'Review Protocol Standards →',
+        ...RESEARCH_RIBBON,
       },
       overrideAccess: true,
     });
@@ -585,12 +581,12 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     layout: [
       {
         blockType: 'sectionHeading',
-        eyebrow: 'Clinical research infrastructure',
+        eyebrow: 'Biomedical research services',
         heading: 'Complete Service Portfolio',
         body: 'CERA Medical provides biomedical research and development services. We support principal investigators, biotech developers, and academic institutions through validated analytical protocols and strict ethical frameworks.',
         badges: [
-          { label: 'Institutional Animal Ethics Board' },
-          { label: 'BSL-2 Validated Biosafety' },
+          { label: 'Animal ethics approval before studies' },
+          { label: 'Studies follow GLP principles' },
           { label: 'Reproducible Omics Pipelines' },
         ],
       },
@@ -802,7 +798,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   }
 
   await ensureHomeMarketingLayout(payload);
-  await ensureLabAccreditedRibbon(payload);
+  await ensureResearchRibbon(payload);
 }
 
 async function categoryId(payload: Payload, slug: string, title: string): Promise<number> {

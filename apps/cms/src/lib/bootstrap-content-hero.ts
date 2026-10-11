@@ -9,12 +9,11 @@ export function serviceHeroBootstrapBlock(slug: string) {
     }
   > = {
     'preclinical-studies': {
-      eyebrow: 'Research service line 01 · ethical scoping validated',
+      eyebrow: 'Research service line 01 · preclinical studies',
       badges: [
         { label: 'Institutional animal ethics approval required' },
-        { label: 'BSL-2 validated' },
-        { label: 'Rigorous quality directives' },
-        { label: 'GLP aligned' },
+        { label: 'Documented study protocols' },
+        { label: 'Designed in line with GLP principles' },
       ],
       noticeTitle: 'Research notice and scope',
       noticeBody:

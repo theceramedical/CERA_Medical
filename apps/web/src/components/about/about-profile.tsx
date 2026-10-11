@@ -18,9 +18,9 @@ import { AppButtonLink, AppLink } from '../link.tsx';
 
 const TRUST = [
   { title: 'SECP-Registered', detail: 'R&D Corporate Entity' },
-  { title: 'PhD-Led Team', detail: 'Principal Investigators' },
-  { title: 'ISO 15189 / GLP', detail: 'Standard Operating SOPs' },
-  { title: 'Client IP Ownership', detail: '100% Data Protection' },
+  { title: 'Expert Team', detail: 'PhD-level researchers' },
+  { title: 'Documented Methods', detail: 'Reproducible workflows' },
+  { title: 'Client Data Ownership', detail: 'Confidential handling' },
 ] as const;
 
 const PILLARS = [
@@ -29,11 +29,11 @@ const PILLARS = [
     title: 'Preclinical Evaluation',
     accent: 'border-t-primary-700',
     icon: PawPrint,
-    body: 'Rigorous physiological validation testing candidate therapeutics through specialized animal models (mice, rats, rabbits, guinea pigs), high-throughput in vitro cellular assays (glioblastoma, primary somatic cultures), and in silico ligand docking & molecular dynamics.',
+    body: 'Safety and efficacy testing in animal models, cell-based systems and computer simulations. Studies may combine in vivo, in vitro and in silico methods to investigate a candidate treatment.',
     items: [
-      'Rodent & Lagomorph Institutional Vivarium',
-      'IC50 Cytotoxicity, Apoptosis & Migration Assays',
-      'GROMACS & AutoDock Vina In Silico Simulations',
+      'Animal models of disease',
+      'Cell viability, proliferation and function assays',
+      'Molecular docking and dynamics simulations',
     ],
   },
   {
@@ -41,11 +41,11 @@ const PILLARS = [
     title: 'Molecular Biology & Wet-Lab',
     accent: 'border-t-accent',
     icon: FlaskConical,
-    body: 'Validated BSL-2 analytical testing facilities executing Sanger cycle sequencing, QuantStudio RT-qPCR, semi-quantitative Western blotting, high-sensitivity sandwich ELISA, tissue micro-sectioning, and high-fidelity nucleic acid extraction.',
+    body: 'Molecular, biochemical and histological analysis of research samples, including Sanger sequencing, PCR, RT-PCR, Western blot, ELISA, tissue staining and microscopy.',
     items: [
-      'Applied Biosystems 3500 Capillary Electrophoresis',
-      'TaqMan & SYBR Green Real-Time PCR Quantitation',
-      'Histological Cryosectioning & Immunofluorescence',
+      'Sequencing and genetic analysis',
+      'Gene and protein expression analysis',
+      'Histopathology and quantitative microscopy',
     ],
   },
   {
@@ -53,11 +53,11 @@ const PILLARS = [
     title: 'Bioinformatics & Omics Pipelines',
     accent: 'border-t-primary-700',
     icon: Dna,
-    body: 'Petabyte-scale Nextflow pipelines executing 16S/ITS and shotgun metagenomics profiling, differential RNA-seq expression analysis, whole-genome/exome variant calling, phylogenetic reconstruction, and statistically robust biostatistics.',
+    body: 'Analysis of shotgun metagenomic and 16S/ITS sequencing data, genomic variants, and other biological and clinical datasets, with documented methods and publication-ready results.',
     items: [
-      'nf-core Standardized Nextflow Workflows',
-      'DESeq2 / edgeR Normalized Differential Expression',
-      'GATK4 Germline & Somatic Variant Annotation',
+      'Read-based and genome-resolved metagenomics',
+      'Diversity and differential abundance analysis',
+      'Genomic variant annotation and biostatistics',
     ],
   },
   {
@@ -65,11 +65,11 @@ const PILLARS = [
     title: 'Evidence Synthesis & Reports',
     accent: 'border-t-accent',
     icon: BarChart3,
-    body: 'PRISMA-compliant systematic reviews, meta-analyses with Cochrane RoB 2 assessments, GRADE certainty grading, clinical guideline synthesis, and authoritative technical whitepapers for global universities and multilateral healthcare NGOs.',
+    body: 'Systematic reviews, meta-analyses, health-sector assessments and technical reports that turn published evidence and programme data into usable findings.',
     items: [
-      'PROSPERO Protocol Registration & PRISMA Flow',
-      'Random-Effects Meta-Analysis & Funnel Plot Audits',
-      'Publishable Manuscripts & Policy Brief Deliverables',
+      'Reviews reported to the PRISMA standard',
+      'Situation analyses and health-sector assessments',
+      'Technical reports and policy briefs',
     ],
   },
 ] as const;
@@ -77,60 +77,60 @@ const PILLARS = [
 const STAGES = [
   {
     n: '01',
-    title: 'Written Scoping & Specification',
-    body: 'Endpoints, statistical power targets, precise timeline, milestone billing, and explicit deliverables locked in a master services agreement.',
-    tag: 'Deliverable Contract',
+    title: 'Scoping',
+    body: 'We discuss your research question, available materials or data, and required output, then agree the scope, timeline and cost in writing.',
+    tag: 'Agreed scope',
   },
   {
     n: '02',
-    title: 'Protocol Clearance & Statistical Locking',
-    body: 'IAEC and IRB institutional ethics clearances obtained. Randomization schedules, blinded codes, and analytical workflows pre-registered.',
-    tag: 'Ethics Sanction',
+    title: 'Protocol',
+    body: 'We prepare the study protocol or analysis plan before work starts. Animal studies require institutional animal ethics committee approval first.',
+    tag: 'Written plan',
   },
   {
     n: '03',
-    title: 'Experimental & Computational Execution',
-    body: 'Execution with biological/technical replicates, calibrated instrument controls, and temperature-logged cryogenic chain of custody.',
-    tag: 'Standardized Run',
+    title: 'Execution',
+    body: 'The assigned scientist carries out the work with the controls, replicates and quality checks defined in the protocol.',
+    tag: 'Quality checks',
   },
   {
     n: '04',
-    title: 'Analysis & Technical Reporting',
-    body: 'Generation of publication-ready vector charts, statistical test logs, normalized raw tables, and comprehensive method monographs.',
-    tag: 'Formatted Data Pack',
+    title: 'Analysis & Reporting',
+    body: 'Results are analysed with documented methods and delivered with figures, tables and methods text suitable for a report or manuscript.',
+    tag: 'Research report',
   },
   {
     n: '05',
-    title: 'Client Consultation & Revision',
-    body: 'Live technical review with study directors and included structured revision rounds to calibrate peer-review or regulatory submission.',
-    tag: 'Director Debrief',
+    title: 'Follow-up',
+    body: 'A consultation call is available on delivery, and revision rounds are included.',
+    tag: 'Review & revisions',
   },
 ] as const;
 
 const WHY = [
   {
     title: 'PhD-Level Scientific Leadership',
-    body: 'Every study is planned, executed, and supervised directly by specialized principal investigators with extensive track records in peer-reviewed biomedical literature.',
+    body: 'PhD-level researchers and bioinformaticians bring active biomedical research experience to each project.',
   },
   {
     title: 'Traceable & Reproducible Workflows',
-    body: 'Every analysis includes explicit random seeds, container SHA tags, exact software version numbers, and documented parameter files to enable effortless external validation.',
+    body: 'Established tools are used in documented, reproducible analysis workflows. Methods state the tools, versions and parameters used.',
   },
   {
-    title: 'Absolute Client Ownership',
-    body: 'You own 100% of all generated experimental data, raw sequencing files, code scripts, and intellectual property. No royalty claims, no hidden encumbrances.',
+    title: 'Client Data Ownership',
+    body: 'Client files, samples and generated results remain the client’s property. Research collaborations may set separate ownership and authorship terms in writing.',
   },
   {
     title: 'Transparent Scoping & Pricing',
-    body: 'Detailed work orders define turnaround times, statistical parameters, and fixed pricing prior to sample accessioning. No surprise overrun invoices.',
+    body: 'The scope, timeline, cost and expected outputs are agreed in writing before work starts.',
   },
   {
     title: 'Included Revision Rounds',
-    body: 'Structured post-delivery consultation with study directors to adjust figure aesthetics, recalibrate colorways, or re-run statistical tests for journal submission.',
+    body: 'A consultation call is available on delivery, and revision rounds help bring the outputs in line with the agreed research requirements.',
   },
   {
-    title: 'Zero Clinical Data on Public Systems',
-    body: 'Patient biospecimens are strictly de-identified with 2D cryptographic barcode hashes before facility intake. We operate strictly isolated, air-gapped compute clusters.',
+    title: 'Confidential Data Handling',
+    body: 'Clients are asked to provide de-identified data and coded samples. A non-disclosure agreement is available on request before transfer.',
   },
 ] as const;
 
@@ -270,9 +270,9 @@ export function AboutProfile() {
           </div>
           <div className="mt-8 rounded-r-lg border border-l-4 border-l-accent border-border bg-surface p-4">
             <Text size="caption">
-              <strong className="text-heading">Zero Unapproved Protocol Deviations:</strong> Any
-              modification to sample preparation, primer concentrations, or animal dosing regimens
-              requires formal written study director and client addendum sign-off before proceeding.
+              <strong className="text-heading">Protocol-led studies:</strong> Controls, replicates
+              and quality checks are defined before work begins. Animal studies start only after the
+              institutional animal ethics committee approves the protocol.
             </Text>
           </div>
         </div>
@@ -287,65 +287,57 @@ export function AboutProfile() {
             Facilities & Laboratory Infrastructure
           </Heading>
           <Text tone="muted" className="mb-12 max-w-3xl">
-            Headquartered at the Pak-Austria Fachhochschule: Institute of Applied Sciences and
-            Technology (PAF-IAST) in Haripur, Pakistan, our physical laboratories and
-            high-performance computing clusters satisfy international GLP and BSL-2 biocontainment
-            requirements.
+            Our facilities at PAF-IAST in Haripur include an Animal House, Cell Culture Lab,
+            Genomics Lab with Sanger sequencing, Histopathology Lab and Microscopy Lab. Computing
+            resources support molecular simulations and sequencing analysis.
           </Text>
           <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
             <FacilityShowcase
               src="/images/article-cover-lab.svg"
-              caption="Robotic Pipetting & Digital Microscopy Suite (Haripur)"
-              title="Automated High-Throughput Screening Suite"
-              body="Multi-channel robotic liquid handling workstations paired with fluorescence imaging enable automated cell-based phenotyping, serial microplate dilutions, and real-time kinetic assay readings under continuous laminar air purification."
-              tags={['BSL-2 Laminar Flow', 'Tecan Automation', 'Sub-micron Optics']}
+              caption="Illustration of laboratory research"
+              title="Genomics & Microscopy Labs"
+              body="Molecular analysis and tissue imaging support studies through sequencing, gene and protein expression work, histopathology and quantitative microscopy."
+              tags={['Sanger Sequencing', 'Histopathology', 'Microscopy']}
             />
             <FacilityShowcase
               src="/images/article-cover-research.svg"
-              caption="Cellular Pharmacology & Inverted Phase Microscopy Lab"
-              title="Primary Somatic & Glioblastoma Culture Suite"
-              body="Controlled climate cell culture incubation facilities equipped for continuous primary cell maintenance, drug resistance screening, and live-cell morphological tracking with validated containment against cross-lineage mycoplasma contamination."
-              tags={[
-                'Mycoplasma-Certified',
-                'High-Density Plate Formats',
-                'Phase-Contrast Logging',
-              ]}
+              caption="Illustration of cell-based research"
+              title="Cell Culture Lab"
+              body="Cell-based disease models, including glioblastoma cell lines, support quantitative testing of viability, proliferation and treatment effects."
+              tags={['Cell-Based Models', 'Cellular Assays', 'Therapeutic Testing']}
             />
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <InfraCard
-              title="Controlled Animal Vivarium"
-              body="Institutional Animal Ethics Committee (IAEC) approved facility with HEPA-filtered individually ventilated cages (IVC), strict diurnal light cycling, and dedicated treatment/quarantine units for rodents and lagomorphs."
-              meta="Location: Haripur Research Campus"
+              title="Animal House"
+              body="Studies in animal models of disease use mice, rats, rabbits and guinea pigs. Each animal study requires an approved institutional animal ethics protocol before work begins."
+              meta="Location: Haripur, Pakistan"
             />
             <InfraCard
-              title="Cell Culture Cleanrooms"
-              body="Dedicated Class II Type A2 biosafety cabinets, CO₂ water-jacketed incubators, liquid nitrogen cryogenic cell banking, and inverted phase-contrast digital microscopy units."
-              meta="Specification: BSL-2 Registered"
+              title="Cell Culture Lab"
+              body="Cell-based models and assays measure viability, proliferation, function and molecular pathways relevant to a study."
+              meta="Capability: In vitro studies"
             />
             <InfraCard
-              title="Genomics & Molecular Suite"
-              body="Applied Biosystems 3500 Genetic Analyzer for Sanger sequencing, QuantStudio 5 Real-Time qPCR, Qubit 4 fluorometric quantitation, and bioanalyzer microfluidic RNA integrity verification."
-              meta="Capabilities: Capillary & Quantitative PCR"
+              title="Genomics Lab"
+              body="Sanger sequencing and PCR-based genetic analysis, with RT-PCR for gene expression and supporting molecular assays."
+              meta="Capabilities: Sequencing & PCR"
             />
             <InfraCard
               title="Histopathology Laboratory"
-              body="Rotary microtomes, cryostats, automated tissue infiltration processors, and multi-channel immunofluorescence slide preparation for rodent and human biopsies."
-              meta="Micro-sectioning: 2μm to 10μm Precision"
+              body="Tissue processing and staining, including H&E, Nissl and immunohistochemistry, followed by imaging and quantitative analysis."
+              meta="Capability: Tissue analysis"
             />
             <div className="rounded-lg border border-border bg-surface p-5 md:col-span-2">
               <Heading level={3} size="h4" className="mb-3">
-                Computational Research Cluster & Secure Data Vault
+                Computational Research Infrastructure
               </Heading>
               <Text size="caption" tone="muted" className="mb-3">
-                Enterprise server nodes provisioned with high-memory GPUs for Amber/GROMACS
-                atomistic simulations. Containerized Docker and Singularity runtimes executing
-                locked Nextflow workflows with cryptographic hashing of intermediate and primary raw
-                outputs.
+                GPU resources support molecular dynamics simulation, sequencing data analysis and
+                other compute-intensive research. The agreed analysis plan defines the tools and
+                outputs for each project.
               </Text>
-              <Text size="caption">
-                • Air-gapped Cold Archival · SHA-256 Checksum Data Integrity · Isolated Compute
-              </Text>
+              <Text size="caption">• Molecular dynamics · Metagenomics · Omics analysis</Text>
             </div>
           </div>
         </div>
@@ -361,8 +353,8 @@ export function AboutProfile() {
               Why Work with CERA Medical
             </Heading>
             <Text tone="muted">
-              Scientific rigor, total client intellectual property rights, and uncompromising
-              analytical reproducibility at every milestone.
+              Scientific expertise, documented workflows, confidential handling and
+              publication-ready outputs.
             </Text>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -409,7 +401,7 @@ export function AboutProfile() {
                   </a>
                 </p>
                 <Text size="caption" tone="muted">
-                  Secondary: <a href="mailto:theceramedica@gmail.com">theceramedica@gmail.com</a>
+                  Secondary: <a href="mailto:theceramedical@gmail.com">theceramedical@gmail.com</a>
                 </Text>
               </div>
               <AppButtonLink href="/enquiry" variant="primary">
@@ -439,7 +431,7 @@ export function AboutProfile() {
                       (PAF-IAST), Khanpur Road, Mang, Haripur, Khyber Pakhtunkhwa, Pakistan.
                     </Text>
                     <span className="mt-2 inline-block rounded-sm bg-surface-tint px-2 py-0.5 text-xs font-semibold text-primary">
-                      Specimen Receiving: Mon–Fri (09:00 - 16:00 PKT)
+                      Contact us before sending samples
                     </span>
                   </div>
                 </div>
@@ -459,7 +451,7 @@ export function AboutProfile() {
                       (PAF-IAST), Mang, Haripur, Pakistan.
                     </Text>
                     <span className="mt-2 inline-block rounded-sm bg-surface-tint px-2 py-0.5 text-xs font-semibold text-accent-fill">
-                      Corporate Reg: SECP Islamabad Jurisdiction
+                      SECP-registered company
                     </span>
                   </div>
                 </div>

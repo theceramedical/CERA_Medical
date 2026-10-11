@@ -4,15 +4,8 @@ import { notFound } from 'next/navigation';
 
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
-import { ProductPurchaseActions } from '../../../../components/products/product-purchase-actions.tsx';
-import {
-  FEATURED_PRODUCT,
-  listCatalogSlugs,
-  productDetailPath,
-  productEnquiryHref,
-} from '../../../../content/products-catalog.ts';
+import { productDetailPath, productEnquiryHref } from '../../../../content/products-catalog.ts';
 import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
-import { checkoutEnabled } from '../../../../lib/checkout-enabled.ts';
 import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
@@ -21,9 +14,8 @@ import type { Metadata } from 'next';
 export const dynamicParams = true;
 
 export async function generateStaticParams(): Promise<{ sku: string }[]> {
-  const staticSkus = listCatalogSlugs();
   const { items } = await listPublicProducts().catch(() => ({ items: [] }));
-  const skus = [...new Set([...staticSkus, ...items.map((row) => row.sku.toLowerCase())])];
+  const skus = [...new Set(items.map((row) => row.sku.toLowerCase()))];
   return skus.map((sku) => ({ sku }));
 }
 
@@ -42,18 +34,9 @@ export async function generateMetadata({
       noIndex: true,
     });
   }
-  if (entry.kind === 'catalogue') {
-    return pageMetadata({
-      title: entry.product.title,
-      description: entry.product.summary || entry.product.description,
-      path: productDetailPath(sku),
-    });
-  }
-  const title = entry.kind === 'featured' ? entry.title : entry.product.title;
-  const description = entry.kind === 'featured' ? entry.description : entry.product.description;
   return pageMetadata({
-    title,
-    description,
+    title: entry.product.title,
+    description: entry.product.summary || entry.product.description,
     path: productDetailPath(sku),
   });
 }
@@ -66,106 +49,12 @@ export default async function ProductDetailPage({
   const { sku } = await params;
   const entry = await resolveProductDetail(sku);
   if (entry === null) notFound();
-
-  if (entry.kind === 'catalogue') {
-    const { product } = entry;
-    return (
-      <>
-        <MarketingPageHeader
-          title={product.title}
-          lede={product.summary || product.description}
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Products', href: '/products' },
-            { label: product.title },
-          ]}
-        />
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <Text size="caption" tone="muted" className="font-mono">
-            Cat #{product.sku}
-          </Text>
-          {product.displayPrice !== null ? (
-            <Text size="body-sm" className="mt-2 font-semibold">
-              {product.displayPrice}
-            </Text>
-          ) : null}
-          {product.availabilityText !== null ? (
-            <Text size="body-sm" tone="muted" className="mt-2">
-              {product.availabilityText}
-            </Text>
-          ) : null}
-          <div className="mt-8 flex flex-wrap gap-3">
-            {checkoutEnabled() && product.checkoutEnabled ? (
-              <ProductPurchaseActions
-                sku={product.sku}
-                enquiryHref={productEnquiryHref(product.sku)}
-                compact
-              />
-            ) : (
-              <ButtonLink href={productEnquiryHref(product.sku)} as={AppLink} variant="primary">
-                Request quote
-              </ButtonLink>
-            )}
-            <ButtonLink href="/products" as={AppLink} variant="outline">
-              Back to catalogue
-            </ButtonLink>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (entry.kind === 'featured') {
-    return (
-      <>
-        <MarketingPageHeader
-          title={entry.title}
-          lede={entry.description}
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Products', href: '/products' },
-            { label: entry.title },
-          ]}
-        />
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <Text size="caption" tone="muted" className="font-mono">
-            Cat #{entry.sku}
-          </Text>
-          <Text size="body-sm" className="mt-2 font-semibold">
-            {FEATURED_PRODUCT.price} {FEATURED_PRODUCT.priceNote}
-          </Text>
-          <ul className="mt-6 list-disc space-y-1 pl-5">
-            {FEATURED_PRODUCT.specs.map((spec) => (
-              <li key={spec.label}>
-                <Text size="body-sm">
-                  {spec.label}: {spec.value}
-                </Text>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-3">
-            {checkoutEnabled() ? (
-              <ProductPurchaseActions sku={entry.sku} enquiryHref={productEnquiryHref(entry.sku)} />
-            ) : (
-              <ButtonLink href={productEnquiryHref(entry.sku)} as={AppLink} variant="primary">
-                Request quote
-              </ButtonLink>
-            )}
-            <ButtonLink href="/products" as={AppLink} variant="outline">
-              Back to catalogue
-            </ButtonLink>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   const { product } = entry;
   return (
     <>
       <MarketingPageHeader
         title={product.title}
-        lede={product.description}
+        lede={product.summary || product.description}
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Products', href: '/products' },
@@ -176,28 +65,15 @@ export default async function ProductDetailPage({
         <Text size="caption" tone="muted" className="font-mono">
           Cat #{product.sku}
         </Text>
-        <Text size="body-sm" tone="muted" className="mt-2">
-          {product.packLabel} · {product.price}
-        </Text>
-        <ul className="mt-6 list-disc space-y-1 pl-5">
-          {product.specs.map((spec) => (
-            <li key={spec}>
-              <Text size="body-sm">{spec}</Text>
-            </li>
-          ))}
-        </ul>
+        {product.availabilityText !== null ? (
+          <Text size="body-sm" tone="muted" className="mt-2">
+            {product.availabilityText}
+          </Text>
+        ) : null}
         <div className="mt-8 flex flex-wrap gap-3">
-          {checkoutEnabled() ? (
-            <ProductPurchaseActions
-              sku={product.sku}
-              enquiryHref={productEnquiryHref(product.sku)}
-              compact
-            />
-          ) : (
-            <ButtonLink href={productEnquiryHref(product.sku)} as={AppLink} variant="primary">
-              Request quote
-            </ButtonLink>
-          )}
+          <ButtonLink href={productEnquiryHref(product.sku)} as={AppLink} variant="primary">
+            Request quote
+          </ButtonLink>
           <ButtonLink href="/products" as={AppLink} variant="outline">
             Back to catalogue
           </ButtonLink>

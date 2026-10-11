@@ -4,21 +4,10 @@ import { Text } from '@cera/ui/typography';
 
 import type { Cart } from '@cera/contracts';
 
-import { AppButtonLink, AppLink } from './link.tsx';
+import { isCheckoutCurrency } from '../lib/cart-client.ts';
+import { formatCartMoney } from '../lib/cart-money.ts';
 
-export function formatCartMoney(minor: number, currencyCode: string): string {
-  const major = minor / 100;
-  try {
-    return new Intl.NumberFormat('en-PK', {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(major);
-  } catch {
-    return `${major.toFixed(2)} ${currencyCode}`;
-  }
-}
+import { AppButtonLink, AppLink } from './link.tsx';
 
 export function CartMiniPanel({
   cart,
@@ -69,16 +58,23 @@ export function CartMiniPanel({
         </Text>
       </div>
       <div className="flex flex-col gap-2">
-        <AppButtonLink
-          href="/checkout"
-          variant="primary"
-          size="sm"
-          fullWidth
-          className="justify-center"
-          onClick={onCheckout}
-        >
-          Checkout
-        </AppButtonLink>
+        {isCheckoutCurrency(cart) ? (
+          <AppButtonLink
+            href="/checkout"
+            variant="primary"
+            size="sm"
+            fullWidth
+            className="justify-center"
+            onClick={onCheckout}
+          >
+            Checkout
+          </AppButtonLink>
+        ) : (
+          <Text size="body-sm" className="text-danger-600" role="alert">
+            Checkout is unavailable because this cart is priced in {cart.currencyCode}, while
+            catalogue prices are in PKR.
+          </Text>
+        )}
         <AppLink href="/cart" className="text-center text-body-sm font-medium no-underline">
           View full cart
         </AppLink>

@@ -252,6 +252,13 @@ interface VendureOrder {
 }
 
 function mapOrder(order: VendureOrder): Cart {
+  // The storefront and payment contract quote in PKR. A Vendure channel left
+  // on its USD default must never reach Safepay with an unchanged numeric total.
+  if (order.currencyCode !== 'PKR') {
+    throw new ApiError('upstream_unavailable', {
+      internalDetail: `Vendure cart currency ${order.currencyCode} is not PKR`,
+    });
+  }
   const lines: CartLine[] = order.lines.map((line) => ({
     id: line.id,
     slug: line.productVariant.sku,

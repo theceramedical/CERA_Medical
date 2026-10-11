@@ -8,9 +8,9 @@ export const revalidate = 30;
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Physical Products & Laboratory Reagents',
+    title: 'Research Product Catalogue',
     description:
-      'Shippable research-use-only reagents, cell lines, assay kits, and standards from CERA Medical — distinct from scoped research services.',
+      'Browse published catalogue entries and enquire about product availability, documentation and terms.',
     path: '/products',
   });
 }
@@ -21,8 +21,6 @@ export default async function ProductsPage({
   readonly searchParams: Promise<{
     q?: string;
     category?: string;
-    bsl?: string;
-    inStock?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -32,8 +30,6 @@ export default async function ProductsPage({
       products={products}
       {...(params.q === undefined ? {} : { query: params.q })}
       {...(params.category === undefined ? {} : { category: params.category })}
-      {...(params.bsl === undefined ? {} : { bsl: params.bsl })}
-      {...(params.inStock === '1' ? { inStockOnly: true } : {})}
     />
   );
 }

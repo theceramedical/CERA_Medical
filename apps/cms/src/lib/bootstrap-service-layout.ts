@@ -58,11 +58,11 @@ const MOLECULAR_LAYOUT: readonly LayoutBlock[] = [
   {
     blockType: 'sectionHeading',
     heading: 'Wet-lab infrastructure and analytical rigor',
-    body: 'CERA Medical provides molecular, biochemical, and histological analysis for academic, biotech, and pharmaceutical programmes in validated BSL-2 suites.',
+    body: 'CERA Medical provides molecular, biochemical and histological analysis through its Genomics, Histopathology and Microscopy Labs. Methods and handling requirements are agreed for each project.',
   },
   featureGrid(
     'Core laboratory assay capabilities',
-    'Validated assay methodologies conducted in accordance with international GLP and ISO 15189 analytical standards.',
+    'Sequencing, gene and protein expression, biochemical assays, microscopy and method development for research projects.',
     [
       {
         title: 'Sanger sequencing and fragment analysis',
@@ -117,9 +117,9 @@ const MOLECULAR_LAYOUT: readonly LayoutBlock[] = [
           'Fluorometric quantification, purity ratios, RNA integrity scores, and protein validation prior to assay allocation.',
       },
       {
-        title: 'Post-study specimen archival or certified destruction',
+        title: 'Post-study sample return or destruction',
         description:
-          'Standard retention post dossier transmission, followed by certified destruction or secure return shipment.',
+          'Remaining samples are returned at the client’s request or destroyed under the Data Retention Policy and applicable laboratory procedures.',
       },
     ],
   ),
@@ -157,28 +157,11 @@ const MOLECULAR_LAYOUT: readonly LayoutBlock[] = [
   ),
   {
     blockType: 'keyValueList',
-    heading: 'Laboratory instrumentation roster',
+    heading: 'Research laboratory facilities',
     items: [
-      {
-        label: 'Applied Biosystems Genetic Analyzer 3500 Series',
-        detail: 'Capillary Sanger and fragment',
-      },
-      {
-        label: 'Applied Biosystems QuantStudio 5 Real-Time PCR System',
-        detail: '96-well fluorescent block',
-      },
-      {
-        label: 'Esco Airstream Class II Type A2 biosafety cabinets',
-        detail: 'BSL-2 sterile extraction',
-      },
-      {
-        label: 'Leica RM2235 rotary microtome and cryostat',
-        detail: 'FFPE and frozen sectioning',
-      },
-      {
-        label: 'Bio-Rad ChemiDoc MP imaging system',
-        detail: 'Chemiluminescent and multiplex IF',
-      },
+      { label: 'Genomics Lab', detail: 'Sanger sequencing and PCR-based characterisation' },
+      { label: 'Histopathology Lab', detail: 'Tissue processing and staining' },
+      { label: 'Microscopy Lab', detail: 'Imaging and quantitative analysis' },
     ],
   },
   DEFAULT_ENQUIRY_ASIDE,
@@ -203,11 +186,11 @@ const MOLECULAR_LAYOUT: readonly LayoutBlock[] = [
   },
   {
     blockType: 'serviceSidebarCard',
-    title: 'Laboratory accreditations',
+    title: 'Study standards and consent',
     bullets: [
-      { text: 'ISO 15189 aligned quality architecture' },
-      { text: 'OECD principles of Good Laboratory Practice (GLP)' },
-      { text: 'IAEC/IRB coordinated protocol compliance' },
+      { text: 'Documented, reproducible methods' },
+      { text: 'Coded human samples with required donor consent and ethical approval' },
+      { text: 'Project-specific handling and retention agreed in writing' },
     ],
   },
 ];
@@ -226,22 +209,22 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
       {
         title: 'In vivo models',
         description:
-          'Standardized, ethically documented whole-organism testing with dedicated vivarium housing and behavioral telemetry suites.',
+          'Animal models of disease with safety, efficacy, toxicology and behavioural endpoints under ethics-approved protocols.',
         highlights: [
-          { text: 'Mice and rats (Sprague Dawley, Wistar)' },
+          { text: 'Mice and rats' },
           { text: 'Rabbits and guinea pigs' },
           { text: 'Behavioral assays and neurotoxicity' },
-          { text: 'Toxicology and pharmacokinetics' },
+          { text: 'Toxicology and dose-response studies' },
         ],
       },
       {
         title: 'In vitro assays',
         description:
-          'Cellular-level viability, cytotoxicity, and mechanistic pathway verification inside our dedicated clean cell culture suite.',
+          'Cell-based disease models, viability and proliferation assays, and pathway analysis in the Cell Culture Lab.',
         highlights: [
-          { text: 'Glioblastoma lines (U87, LN229)' },
-          { text: 'Primary neurological and somatic cultures' },
-          { text: 'MTT, LDH, flow cytometry, ELISA' },
+          { text: 'Glioblastoma and other cell lines' },
+          { text: 'Cellular viability and proliferation assays' },
+          { text: 'Gene and protein expression analysis' },
           { text: 'Western blot and RT-qPCR profiling' },
         ],
       },
@@ -250,17 +233,17 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
         description:
           'Computational screening and molecular dynamics simulations to test drug-receptor affinity prior to wet-lab synthesis.',
         highlights: [
-          { text: 'High-throughput molecular docking' },
+          { text: 'Molecular docking against selected targets' },
           { text: 'Molecular dynamics (MD) trajectories' },
-          { text: 'Binding-energy calculation (MM-GBSA)' },
-          { text: 'ADMET profiling and target prediction' },
+          { text: 'Binding free-energy analysis' },
+          { text: 'Pose inspection and trajectory analysis' },
         ],
       },
     ],
   ),
   featureGrid(
     'Active research focus areas',
-    'Specialized preclinical models currently maintained with validated baseline data.',
+    'Current work centres on neuroscience and oncology, with projects selected according to the compound or product under test.',
     [
       {
         title: 'Methamphetamine neurotoxicity',
@@ -270,7 +253,7 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
       {
         title: 'Social isolation stress',
         description:
-          'Quantifying neurochemical adaptations, anhedonia-like manifestations, and HPA-axis endocrine dysregulation in controlled cohorts.',
+          'Studying the effect of early-life social isolation on the brain and behaviour, including later vulnerability to drug dependence.',
       },
       {
         title: 'Morphine and nicotine dependence',
@@ -307,12 +290,12 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
       {
         title: 'Protocol clearance and statistical locking',
         description:
-          'Formal submission to the Institutional Animal Ethics Committee (IAEC) or Biosafety Committee. Protocol versioning and statistical power calculations permanently locked.',
+          'A written protocol defines controls, doses, endpoints and analysis. Animal studies begin only after approval by the institutional animal ethics committee.',
       },
       {
         title: 'Experimental execution and chain-of-custody',
         description:
-          'Assay execution using defined positive and negative controls, blinded investigator replicates, authenticated cell passage logs, and continuous environmental telemetry.',
+          'The assigned scientist carries out the study with the controls, replicates and quality checks defined in the approved protocol.',
       },
       {
         title: 'Data curation, histology and biostatistics',
@@ -322,7 +305,7 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
       {
         title: 'Technical reporting and scientific review',
         description:
-          'Delivery of full signed study dossier, comprehensive raw dataset repository, formal video conference briefing with study director, and one included technical revision cycle.',
+          'Delivery of results as a documented report with figures, tables and methods text. A consultation call and revision rounds are available.',
       },
     ],
   ),
@@ -360,7 +343,7 @@ const PRECLINICAL_LAYOUT: readonly LayoutBlock[] = [
   {
     blockType: 'serviceSidebarCard',
     title: 'Animal welfare governance',
-    body: 'Institutional animal ethics committee (IAEC/IRB) approval protocol is mandatory prior to animal acquisition, housing allocation, or experiment initiation. CERA operates strictly under 3Rs principles (Replacement, Reduction, Refinement).',
+    body: 'Animal studies begin only after the written protocol is approved by the institutional animal ethics committee. Study design, conduct and records follow the principles of Good Laboratory Practice.',
   },
 ];
 

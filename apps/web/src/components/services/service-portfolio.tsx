@@ -33,13 +33,13 @@ const FALLBACK_ICONS: Record<string, LucideIcon> = {
 };
 
 const DEFAULT_HERO: ServicesPageHero = {
-  eyebrow: 'CLINICAL RESEARCH INFRASTRUCTURE',
+  eyebrow: 'BIOMEDICAL RESEARCH & DEVELOPMENT',
   heading: 'Complete Service Portfolio',
-  body: 'CERA Medical provides biomedical research and development services. We support principal investigators, biopharma developers, and academic institutions through validated analytical protocols and strict ethical frameworks.',
+  body: 'CERA Medical supports biomedical research with preclinical studies, molecular laboratory work, data analysis and evidence synthesis. We agree the scope and study plan before work starts.',
   badges: [
-    'Institutional Animal Ethics Board',
-    'BSL-2 Validated Biosafety',
-    'Reproducible Omics Pipelines',
+    'Animal ethics approval before animal studies',
+    'Documented research methods',
+    'Publication-ready outputs',
   ],
 };
 
@@ -122,17 +122,17 @@ export function ServicePortfolio({
             </div>
             <div className="rounded-lg border border-border bg-surface-tint p-5 shadow-card lg:col-span-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-caption tracking-wide text-heading">LAB ACCREDITATION</span>
+                <span className="text-caption tracking-wide text-heading">HOW WE WORK</span>
                 <span className="rounded-sm border border-accent/30 bg-surface px-2 py-0.5 text-[11px] font-semibold text-accent-fill">
-                  VALIDATED
+                  PROJECT-LED
                 </span>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-4">
                 {[
-                  ['5', 'Core Disciplines'],
-                  ['100%', 'Pre-scoped SLAs'],
-                  ['<72h', 'Scoping Turnaround'],
-                  ['GLP', 'Quality Directives'],
+                  ['5', 'Service Areas'],
+                  ['01', 'Written Scope'],
+                  ['02', 'Study Protocol'],
+                  ['03', 'Results & Follow-up'],
                 ].map(([value, label]) => (
                   <div key={label}>
                     <div className="text-h3 font-bold tabular-nums text-heading">{value}</div>
@@ -141,7 +141,7 @@ export function ServicePortfolio({
                 ))}
               </div>
               <Text size="caption" tone="muted" className="mt-4 border-t border-border pt-3">
-                Batch records & code preserved per project
+                Methods and expected deliverables are defined for each project.
               </Text>
             </div>
           </div>
@@ -288,11 +288,11 @@ export function ServicePortfolio({
                 Looking for a custom laboratory or bioinformatics assay?
               </Heading>
               <Text tone="muted" className="mx-auto mb-4 max-w-xl">
-                Can&apos;t find the specific protocol? Contact our study directors directly for
-                custom bioinformatics workflows or specialized in-vitro assays.
+                Can&apos;t find the specific protocol? Tell us about your research question so we
+                can discuss an analysis workflow or cell-based study that fits.
               </Text>
               <AppLink href="/contact" className="inline-flex items-center gap-1 font-semibold">
-                Direct consultation with Study Directors
+                Start a project conversation
                 <Icon icon={ArrowRight} size="sm" />
               </AppLink>
             </div>
@@ -346,11 +346,11 @@ export function ServicePortfolio({
             </div>
             <div className="rounded-lg border border-border bg-surface-tint p-5">
               <Heading level={4} size="h4" className="mb-2">
-                Chain of Custody
+                Data & Sample Handling
               </Heading>
               <Text size="caption" tone="muted">
-                All biological specimens and sequencing libraries logged with digital cryogenic
-                tracking systems and immutable checksum verification.
+                Please send de-identified data and coded samples only after we confirm the transfer
+                arrangements for your project. Client materials remain the client&apos;s property.
               </Text>
             </div>
           </aside>

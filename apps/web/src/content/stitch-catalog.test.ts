@@ -1,33 +1,31 @@
-import { physicalProductListPriceMinor } from '@cera/contracts';
 import { describe, expect, it } from 'vitest';
 
-import { SEED_PHYSICAL_PRODUCTS } from '../../../commerce/src/seed-data.ts';
-
-import { CATALOG_PRODUCTS, filterCatalog, PHYSICAL_PRODUCT_SKUS } from './products-catalog.ts';
+import { filterCatalog, type CatalogProduct } from './products-catalog.ts';
 import { SERVICE_PORTFOLIO } from './service-portfolio.ts';
 
 describe('product catalog filters', () => {
-  it('filters by category and query', () => {
-    const molecular = filterCatalog(CATALOG_PRODUCTS, { category: 'molecular' });
-    expect(molecular.every((item) => item.category === 'molecular')).toBe(true);
-    const hit = filterCatalog(CATALOG_PRODUCTS, { q: 'CR-MOL-3012' });
+  const product: CatalogProduct = {
+    sku: 'REAL-001',
+    category: 'catalogue',
+    categoryLabel: 'Catalogue product',
+    title: 'Published product',
+    description: 'Public catalogue description',
+    specs: [],
+    packLabel: '',
+    listPriceMinor: null,
+    price: 'Price on enquiry',
+    inStock: null,
+    fulfillment: 'physical',
+  };
+
+  it('filters supplied public catalogue rows by query', () => {
+    const hit = filterCatalog([product], { q: 'real-001' });
     expect(hit).toHaveLength(1);
-    expect(hit[0]?.sku).toBe('CR-MOL-3012');
-    expect(CATALOG_PRODUCTS.every((item) => item.fulfillment === 'physical')).toBe(true);
+    expect(filterCatalog([product], { q: 'missing' })).toEqual([]);
   });
 
-  it('matches Vendure physical product SKUs for checkout', () => {
-    expect([...PHYSICAL_PRODUCT_SKUS].sort()).toEqual(
-      SEED_PHYSICAL_PRODUCTS.map((product) => product.sku).sort(),
-    );
-  });
-
-  it('uses the same PKR list prices as commerce seed', () => {
-    for (const product of CATALOG_PRODUCTS) {
-      expect(product.listPriceMinor).toBe(physicalProductListPriceMinor(product.sku));
-      const seeded = SEED_PHYSICAL_PRODUCTS.find((row) => row.sku === product.sku);
-      expect(seeded?.listPriceMinor).toBe(product.listPriceMinor);
-    }
+  it('does not infer stock availability from a missing status', () => {
+    expect(filterCatalog([product], { inStock: true })).toEqual([]);
   });
 });
 

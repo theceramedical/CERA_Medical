@@ -6,6 +6,9 @@ import {
   type PublicService,
 } from '@cera/contracts/projections';
 
+import { isUnapprovedPrototypeServiceSlug } from './unapproved-prototype-services.ts';
+import { isUnapprovedSeedProductSku } from './unapproved-seed-products.ts';
+
 import type { VendureProduct } from './types.ts';
 
 export const PHYSICAL_PRODUCTS_COLLECTION_SLUG = 'physical-products';
@@ -68,8 +71,16 @@ export function mapVendureProduct(product: VendureProduct, vendurePublicOrigin: 
 
 export function toListablePublicService(service: Service): PublicService | null {
   if (service.status !== 'active') return null;
+  if (isUnapprovedPrototypeServiceSlug(service.slug)) return null;
   if (service.category?.slug === PHYSICAL_PRODUCTS_COLLECTION_SLUG) return null;
-  return toPublicService(service);
+  // The approved research brief scopes cost for each project in writing. Seeded
+  // numeric prices are prototypes and must not open a fixed-price checkout.
+  return {
+    ...toPublicService(service),
+    displayPrice: null,
+    listPriceMinor: null,
+    checkoutEnabled: false,
+  };
 }
 
 export function mapVendurePublicProduct(
@@ -84,15 +95,18 @@ export function mapVendurePublicProduct(
     ) ?? false;
   if (!inPhysical) return null;
   const sku = product.variants?.[0]?.sku ?? service.slug.toUpperCase();
+  if (isUnapprovedSeedProductSku(sku)) return null;
   return PublicProductSchema.parse({
     sku,
     title: service.title,
     summary: service.summary,
     description: service.description,
-    displayPrice: service.displayPrice,
+    // Product pricing is not approved while the Vendure channel still uses
+    // USD; public physical products remain enquiry-only until reconciliation.
+    displayPrice: null,
     availabilityText: service.availabilityText,
-    listPriceMinor: service.listPriceMinor,
-    checkoutEnabled: service.checkoutEnabled,
+    listPriceMinor: null,
+    checkoutEnabled: false,
     enquiryEnabled: service.enquiryEnabled,
     imageUrl: service.imageUrl,
   });

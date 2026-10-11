@@ -9,6 +9,7 @@ import {
 import { ApiError } from '@cera/contracts/errors';
 
 import { authorize } from '../auth/authorize.ts';
+import { isUnapprovedSeedProductSku } from '../catalogue/unapproved-seed-products.ts';
 import { sendApiError, sendCode } from '../http.ts';
 
 import { createSafepayHostedCheckout } from './safepay.ts';
@@ -132,6 +133,10 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         sendCode(request, reply, 'validation_failed');
         return;
       }
+      if (isUnapprovedSeedProductSku(parsed.data.slug)) {
+        sendCode(request, reply, 'not_found');
+        return;
+      }
       try {
         const session = { token: tokenFromRequest(request) };
         const variantId = await shop.getVariantIdBySku(session, parsed.data.slug);
@@ -169,7 +174,12 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         const session = { token: tokenFromRequest(request) };
         const { cart, token } = await shop.getActiveCart(session);
         setTokenCookie(reply, token);
-        if (cart === null || cart.lines.length === 0 || cart.totalMinor <= 0) {
+        if (
+          cart === null ||
+          cart.lines.length === 0 ||
+          cart.totalMinor <= 0 ||
+          cart.lines.some((line) => isUnapprovedSeedProductSku(line.slug))
+        ) {
           sendCode(request, reply, 'validation_failed');
           return;
         }
@@ -214,7 +224,11 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         const customer = await requireVerifiedCustomer(request);
         const vendureSession = { token: tokenFromRequest(request) };
         const { cart, token: cartToken } = await shop.getActiveCart(vendureSession);
-        if (cart === null || cart.lines.length === 0) {
+        if (
+          cart === null ||
+          cart.lines.length === 0 ||
+          cart.lines.some((line) => isUnapprovedSeedProductSku(line.slug))
+        ) {
           sendCode(request, reply, 'validation_failed');
           return;
         }

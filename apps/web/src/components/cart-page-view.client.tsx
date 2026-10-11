@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 
 import type { Cart } from '@cera/contracts';
 
-import { fetchCart, mergeCartState } from '../lib/cart-client.ts';
+import { fetchCart, isCheckoutCurrency, mergeCartState } from '../lib/cart-client.ts';
+import { formatCartMoney } from '../lib/cart-money.ts';
 
-import { formatCartMoney } from './cart-mini-panel.tsx';
 import { AppButtonLink, AppLink } from './link.tsx';
 
 export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
@@ -61,9 +61,16 @@ export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
           Total{' '}
           <span className="font-mono">{formatCartMoney(cart.totalMinor, cart.currencyCode)}</span>
         </Heading>
-        <AppButtonLink href="/checkout" variant="primary">
-          Proceed to checkout
-        </AppButtonLink>
+        {isCheckoutCurrency(cart) ? (
+          <AppButtonLink href="/checkout" variant="primary">
+            Proceed to checkout
+          </AppButtonLink>
+        ) : (
+          <Text className="text-danger-600" role="alert">
+            Checkout is unavailable because this cart is priced in {cart.currencyCode}, while
+            catalogue prices are in PKR.
+          </Text>
+        )}
       </div>
     </>
   );

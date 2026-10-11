@@ -17,11 +17,14 @@ const EMPTY_CART: Cart = {
   totalMinor: 0,
 };
 
-/** Prefer server cart when it has lines; keep local optimistic cart if the API is briefly empty. */
-export function mergeCartState(previous: Cart, next: Cart): Cart {
-  if (next.lines.length > 0) return next;
-  if (previous.lines.length > 0) return previous;
+/** A fresh cart response is authoritative, including when the cart is empty. */
+export function mergeCartState(_previous: Cart, next: Cart): Cart {
   return next;
+}
+
+/** Public catalogue prices and checkout are denominated in PKR. */
+export function isCheckoutCurrency(cart: Cart): boolean {
+  return cart.currencyCode === 'PKR';
 }
 
 export function emptyCart(): Cart {
@@ -51,6 +54,24 @@ export async function addCartLine(slug: string, quantity = 1): Promise<Cart> {
   });
   if (!response.ok) throw new Error('add_failed');
   return CartSchema.parse(await response.json());
+}
+
+/** Confirm the new line survives a fresh read before reporting that it was added. */
+export async function addVerifiedCartLine(slug: string, quantity = 1): Promise<Cart> {
+  const added = await addCartLine(slug, quantity);
+  if (!isCheckoutCurrency(added)) throw new Error('cart_currency_mismatch');
+  const persisted = await fetchCart();
+  if (!isCheckoutCurrency(persisted)) throw new Error('cart_currency_mismatch');
+  const addedQuantity = added.lines
+    .filter((line) => line.slug === slug)
+    .reduce((total, line) => total + line.quantity, 0);
+  const persistedQuantity = persisted.lines
+    .filter((line) => line.slug === slug)
+    .reduce((total, line) => total + line.quantity, 0);
+  if (persistedQuantity < addedQuantity) {
+    throw new Error('cart_not_saved');
+  }
+  return persisted;
 }
 
 export async function completeCheckout(body: {

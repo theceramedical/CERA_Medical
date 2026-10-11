@@ -6,7 +6,6 @@ import {
   ServiceParamsSchema,
 } from '@cera/contracts';
 import { ApiError } from '@cera/contracts/errors';
-import { toPublicService } from '@cera/contracts/projections';
 
 import { sendApiError, sendCode, sendZodError } from '../http.ts';
 
@@ -14,7 +13,6 @@ import { catalogueKeys, type CatalogueCache } from './cache.ts';
 import {
   mapVendureProduct,
   mapVendurePublicProduct,
-  PHYSICAL_PRODUCTS_COLLECTION_SLUG,
   productSlugForSku,
   toListablePublicService,
 } from './map.ts';
@@ -124,14 +122,12 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
 
       try {
         const service = await getCached(deps, parsed.data.slug);
-        if (
-          service?.status !== 'active' ||
-          service.category?.slug === PHYSICAL_PRODUCTS_COLLECTION_SLUG
-        ) {
+        const publicService = service === null ? null : toListablePublicService(service);
+        if (publicService === null) {
           sendCode(request, reply, 'not_found');
           return;
         }
-        return reply.code(200).send(toPublicService(service));
+        return reply.code(200).send(publicService);
       } catch (error) {
         if (error instanceof ApiError) {
           sendApiError(request, reply, error);

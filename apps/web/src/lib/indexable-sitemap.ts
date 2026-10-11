@@ -23,7 +23,7 @@ export type { IndexableSitemapEntry } from './indexable-sitemap-builders.ts';
  *   when published and not marked no index.
  * - Service detail URLs follow the live catalogue API plus any CMS-only
  *   presentations (new Vendure services appear after the catalogue cache TTL).
- * - Product detail URLs merge the marketing catalog with `GET /v1/products`
+ * - Product detail URLs come from `GET /v1/products`
  *   (Vendure `physical-products` collection).
  */
 export async function listSitemapEntries(): Promise<readonly IndexableSitemapEntry[]> {

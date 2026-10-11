@@ -1,4 +1,4 @@
-import { findCatalogEntry, productDetailPath } from '../content/products-catalog.ts';
+import { productDetailPath } from '../content/products-catalog.ts';
 
 import { listPublicProducts, listPublicServicesForIndex } from './catalogue/client.ts';
 import { listPublishedDocumentsForSitemap } from './cms/client.ts';
@@ -68,11 +68,6 @@ export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
     }));
 
   const productLinks: SitemapLink[] = productSkus.map((sku) => {
-    const entry = findCatalogEntry(sku);
-    if (entry !== null) {
-      const label = entry.kind === 'featured' ? entry.title : entry.product.title;
-      return { href: productDetailPath(sku), label };
-    }
     const label = catalogueProductTitle.get(sku) ?? sku.toUpperCase();
     return { href: productDetailPath(sku), label };
   });
@@ -99,7 +94,7 @@ function staticLabel(href: string): string {
   const labels: Record<string, string> = {
     '/': 'Home',
     '/services': 'Research services',
-    '/products': 'Physical products & reagents',
+    '/products': 'Research product catalogue',
     '/articles': 'Research updates',
     '/about': 'About',
     '/contact': 'Contact',
