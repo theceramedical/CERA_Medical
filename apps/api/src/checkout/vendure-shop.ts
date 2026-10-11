@@ -114,6 +114,17 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       const slugVariants = bySlug.data.products.items.flatMap((item) => item.variants);
       const slugVariant = slugVariants.find((row) => row.sku === sku) ?? slugVariants[0];
       if (slugVariant !== undefined) return slugVariant.id;
+
+      // The SKU can also belong to a product with a descriptive slug. A small
+      // bounded catalogue scan keeps this path deterministic while the search
+      // index catches up after a newly-created product.
+      const catalogue = await post<{
+        products: { items: { variants: { id: string; sku: string }[] }[] };
+      }>(session, `query { products(options: { take: 50 }) { items { variants { id sku } } } }`);
+      const catalogueVariant = catalogue.data.products.items
+        .flatMap((item) => item.variants)
+        .find((row) => row.sku === sku);
+      if (catalogueVariant !== undefined) return catalogueVariant.id;
       throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
     },
 
