@@ -93,10 +93,28 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         { term: sku },
       );
       const searchVariant = searched.data.search.items[0];
-      if (searchVariant === undefined) {
-        throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
-      }
-      return searchVariant.productVariantId;
+      if (searchVariant !== undefined) return searchVariant.productVariantId;
+
+      // A product created moments ago may not be present in Vendure's search
+      // index yet. Query the product table by its conventional SKU slug as a
+      // final fallback so checkout does not depend on index refresh timing.
+      const bySlug = await post<{
+        products: {
+          items: { variants: { id: string; sku: string }[] }[];
+        };
+      }>(
+        session,
+        `query ($slug: String!) {
+          products(options: { filter: { slug: { eq: $slug } }, take: 1 }) {
+            items { variants { id sku } }
+          }
+        }`,
+        { slug: sku.toLowerCase() },
+      );
+      const slugVariants = bySlug.data.products.items.flatMap((item) => item.variants);
+      const slugVariant = slugVariants.find((row) => row.sku === sku) ?? slugVariants[0];
+      if (slugVariant !== undefined) return slugVariant.id;
+      throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
     },
 
     async getActiveCart(
