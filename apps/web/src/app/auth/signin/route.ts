@@ -29,7 +29,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       response_type: 'code',
       client_id: process.env.OIDC_CLIENT_ID ?? '',
       redirect_uri: registeredOidcRedirectUri().toString(),
-      scope: 'openid email profile cera_mfa',
+      scope: 'openid email profile',
       state,
       nonce,
       code_challenge: pkce.challenge,

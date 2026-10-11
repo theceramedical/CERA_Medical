@@ -73,10 +73,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       throw new Error('No platform role');
     }
     const staff = identity.roles.some((role) => role !== 'customer');
-    if (staff && !identity.mfa) {
-      errorReason = 'mfa';
-      throw new Error('Staff MFA required');
-    }
     const now = Math.floor(Date.now() / 1000);
     const exp = now + (staff ? 30 * 60 : 12 * 60 * 60);
     const claims = {

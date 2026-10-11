@@ -90,7 +90,7 @@ export default async function SignInPage({
         heading={staffPortal ? 'CERA staff workspace' : 'Welcome back'}
         body={
           staffPortal
-            ? 'Use the work account an administrator created for you. Multi-factor authentication is required. Customer accounts cannot open staff records.'
+            ? 'Use the work account an administrator created for you. Customer accounts cannot open staff records.'
             : 'Customers can use Google or email. CERA never stores your password on this website.'
         }
       />
