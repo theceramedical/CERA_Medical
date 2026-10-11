@@ -13,6 +13,8 @@ import {
 } from '../../content/products-catalog.ts';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
+import { ProductPurchaseActions } from './product-purchase-actions.tsx';
+
 export function ProductsCatalog({
   products,
   query,
@@ -237,9 +239,12 @@ export function ProductsCatalog({
                   {product.price}
                 </span>
               </div>
-              <AppButtonLink href={productEnquiryHref(product.sku)} variant="primary" size="sm">
-                Request quote
-              </AppButtonLink>
+              <ProductPurchaseActions
+                sku={product.sku}
+                enquiryHref={productEnquiryHref(product.sku)}
+                compact
+                enabled={product.checkoutEnabled === true}
+              />
             </div>
           </article>
         ))}

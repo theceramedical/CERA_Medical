@@ -96,17 +96,18 @@ export function mapVendurePublicProduct(
   if (!inPhysical) return null;
   const sku = product.variants?.[0]?.sku ?? service.slug.toUpperCase();
   if (isUnapprovedSeedProductSku(sku)) return null;
+  const checkoutEnabled = product.customFields?.checkoutEnabled === true;
   return PublicProductSchema.parse({
     sku,
     title: service.title,
     summary: service.summary,
     description: service.description,
-    // Product pricing is not approved while the Vendure channel still uses
-    // USD; public physical products remain enquiry-only until reconciliation.
-    displayPrice: null,
+    // Physical products are enquiry-only by default, but an approved product
+    // may explicitly opt into the PKR checkout channel through its custom field.
+    displayPrice: checkoutEnabled ? service.displayPrice : null,
     availabilityText: service.availabilityText,
-    listPriceMinor: null,
-    checkoutEnabled: false,
+    listPriceMinor: checkoutEnabled ? service.listPriceMinor : null,
+    checkoutEnabled,
     enquiryEnabled: service.enquiryEnabled,
     imageUrl: service.imageUrl,
   });

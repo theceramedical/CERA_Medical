@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
+import { ProductPurchaseActions } from '../../../../components/products/product-purchase-actions.tsx';
 import { productDetailPath, productEnquiryHref } from '../../../../content/products-catalog.ts';
 import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
 import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
@@ -71,9 +72,11 @@ export default async function ProductDetailPage({
           </Text>
         ) : null}
         <div className="mt-8 flex flex-wrap gap-3">
-          <ButtonLink href={productEnquiryHref(product.sku)} as={AppLink} variant="primary">
-            Request quote
-          </ButtonLink>
+          <ProductPurchaseActions
+            sku={product.sku}
+            enquiryHref={productEnquiryHref(product.sku)}
+            enabled={product.checkoutEnabled}
+          />
           <ButtonLink href="/products" as={AppLink} variant="outline">
             Back to catalogue
           </ButtonLink>

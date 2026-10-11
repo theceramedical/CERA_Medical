@@ -127,7 +127,10 @@ describe('GET /v1/products', () => {
     expect(response.statusCode).toBe(200);
     const body: { items: { sku: string }[] } = response.json();
     expect(body.items.map((item) => item.sku)).toEqual(['APPROVED-BUFFER-001']);
-    expect(body.items[0]).toMatchObject({ checkoutEnabled: false, displayPrice: null });
+    expect(body.items[0]).toMatchObject({
+      checkoutEnabled: true,
+      displayPrice: 'Unverified price',
+    });
   });
 
   it('hides the unapproved prototype catalogue record', async () => {

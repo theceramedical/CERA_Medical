@@ -8,12 +8,14 @@ export function ProductPurchaseActions({
   sku,
   enquiryHref,
   compact = false,
+  enabled = false,
 }: {
   readonly sku: string;
   readonly enquiryHref: string;
   readonly compact?: boolean;
+  readonly enabled?: boolean;
 }) {
-  if (!checkoutEnabled()) {
+  if (!checkoutEnabled() || enabled !== true) {
     return (
       <AppButtonLink href={enquiryHref} variant="primary" size={compact ? 'sm' : 'md'}>
         Request

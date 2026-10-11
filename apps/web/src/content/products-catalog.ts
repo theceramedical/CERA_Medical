@@ -10,6 +10,7 @@ export interface CatalogProduct {
   readonly specs: readonly string[];
   readonly packLabel: string;
   readonly listPriceMinor: number | null;
+  readonly checkoutEnabled?: boolean;
   readonly price: string;
   readonly bsl?: '1' | '2';
   /** Null means the catalogue has not supplied a stock status. */

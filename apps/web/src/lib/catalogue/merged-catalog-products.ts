@@ -16,9 +16,13 @@ function catalogRowFromApi(product: PublicProduct): CatalogProduct {
     specs: product.availabilityText === null ? [] : [product.availabilityText],
     packLabel: '',
     listPriceMinor: product.listPriceMinor,
-    // Vendure's public projection carries no currency code. A custom display
-    // price may disagree with the channel currency, so do not publish it here.
-    price: 'Price on enquiry',
+    checkoutEnabled: product.checkoutEnabled,
+    price:
+      product.checkoutEnabled && product.listPriceMinor !== null
+        ? new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(
+            product.listPriceMinor / 100,
+          )
+        : 'Price on enquiry',
     inStock: null,
     fulfillment: 'physical',
     ...(product.imageUrl === null ? {} : { imageUrl: product.imageUrl }),
