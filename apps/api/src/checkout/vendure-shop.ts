@@ -64,7 +64,8 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
   return {
     async getVariantIdBySku(session: ShopSession, sku: string): Promise<string> {
       // Shop API exposes `product(slug)` + `variants[]`, not admin `productVariants`.
-      // Physical catalogue slugs are the lower-case SKU (see commerce seed).
+      // Seeded physical products use the lower-case SKU as their slug. CMS-created
+      // products may have a descriptive slug, so fall back to the search index.
       const { data } = await post<{
         product: { variants: { id: string; sku: string }[] } | null;
       }>(
@@ -78,10 +79,24 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       );
       const variants = data.product?.variants ?? [];
       const variant = variants.find((row) => row.sku === sku) ?? variants[0];
-      if (variant === undefined) {
+      if (variant !== undefined) return variant.id;
+
+      const searched = await post<{
+        search: { items: { productVariantId: string; productVariantName: string }[] };
+      }>(
+        session,
+        `query ($term: String!) {
+          search(input: { term: $term }) {
+            items { productVariantId productVariantName }
+          }
+        }`,
+        { term: sku },
+      );
+      const searchVariant = searched.data.search.items[0];
+      if (searchVariant === undefined) {
         throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
       }
-      return variant.id;
+      return searchVariant.productVariantId;
     },
 
     async getActiveCart(
@@ -194,10 +209,10 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
 
       await post(
         { token },
-        `mutation ($id: ID!) {
-          setOrderShippingMethod(shippingMethodId: $id) { __typename }
+        `mutation ($ids: [ID!]!) {
+          setOrderShippingMethod(shippingMethodId: $ids) { __typename }
         }`,
-        { id: methodId },
+        { ids: [methodId] },
       );
 
       const paymentCode =
