@@ -229,9 +229,17 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       );
 
       const methods = await post<{
-        eligibleShippingMethods: { id: string; name: string }[];
-      }>({ token }, `query { eligibleShippingMethods { id name } }`);
-      const methodId = methods.data.eligibleShippingMethods[0]?.id;
+        eligibleShippingMethods: { id: string; name: string; code: string }[];
+      }>({ token }, `query { eligibleShippingMethods { id name code } }`);
+      // The catalogue seeds both a zero-cost digital method and the physical
+      // laboratory method. Digital delivery can expose an invalid quote for a
+      // physical order, so prefer the explicitly configured laboratory method
+      // and only fall back to the first eligible method for installations that
+      // do not have it.
+      const eligibleMethods = methods.data.eligibleShippingMethods;
+      const methodId =
+        eligibleMethods.find((method) => method.code === 'laboratory-shipping')?.id ??
+        eligibleMethods[0]?.id;
       if (methodId === undefined) {
         throw new ApiError('upstream_unavailable', { internalDetail: 'no shipping method' });
       }
@@ -242,6 +250,22 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
           setOrderShippingMethod(shippingMethodId: $ids) { __typename }
         }`,
         { ids: [methodId] },
+      );
+
+      // Vendure can leave an order in AddingItems after the shipping method is
+      // applied (notably when a zero-cost shipping quote is used). Move it to
+      // the payment state explicitly so COD and other payment handlers can
+      // authorize the order deterministically.
+      await post(
+        { token },
+        `mutation ($state: String!) {
+          transitionOrderToState(state: $state) {
+            __typename
+            ... on Order { state }
+            ... on ErrorResult { errorCode message }
+          }
+        }`,
+        { state: 'ArrangingPayment' },
       );
 
       const paymentCode =
