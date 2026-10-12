@@ -121,6 +121,7 @@ jobs:
               - 'infra/compose/**'
             web:
               - 'apps/web/**'
+              - 'infra/scripts/configure-authentik-customer-experience.py'
             cms:
               - 'apps/cms/**'
             commerce:
