@@ -53,6 +53,21 @@ describe('bootstrapClientContent', () => {
     expect(records.filter((record) => record.collection === 'service-presentations')).toHaveLength(
       5,
     );
+    const servicePresentations = records.filter(
+      (record) => record.collection === 'service-presentations',
+    );
+    expect(servicePresentations.every((record) => Array.isArray(record.data.layout))).toBe(true);
+    expect(
+      servicePresentations.every((record) => {
+        const layout = record.data.layout;
+        return (
+          Array.isArray(layout) &&
+          layout.length > 0 &&
+          layout[0]?.blockType === 'serviceHero' &&
+          layout.some((block) => block?.blockType === 'serviceEnquiryAside')
+        );
+      }),
+    ).toBe(true);
     expect(
       records.filter((record) => record.collection === 'pages').map((record) => record.data.slug),
     ).toEqual(
