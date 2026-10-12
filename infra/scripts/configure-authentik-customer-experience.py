@@ -35,10 +35,24 @@ if names.isdisjoint(staff):
     request.user.ak_groups.add(group)
 return True
 """
+BRAND_DOMAIN = "auth.ceramedical.org"
+BRAND_LOGO_URL = "https://www.ceramedical.org/images/cera-logo-lockup.png"
 BRAND_CSS = """
-img[alt="authentik Logo"] { display: none; }
-.pf-c-login__main { border-top: 4px solid #1f4d3a; }
-.pf-c-button.pf-m-primary { background-color: #1f4d3a; }
+:root {
+  --ak-accent: #0f5f78;
+  --ak-accent-strong: #084c63;
+  --ak-ink: #102f55;
+  --ak-surface: #ffffff;
+  --ak-page: #edf7fb;
+}
+body {
+  background: linear-gradient(135deg, #edf7fb 0%, #f8fbfd 52%, #e3f1f5 100%) !important;
+}
+/* Authentik 2026 renders the form inside web components, so the brand asset is
+   configured on the Brand model; these rules style the surrounding shell and
+   remove the remaining vendor footer language. */
+ak-flow-executor { --ak-global--background-image: none !important; }
+ak-brand-links { display: none !important; }
 """
 
 
@@ -117,13 +131,26 @@ def main():
         application.name = "CERA Medical"
         application.save(update_fields=["name"])
 
-    brand = Brand.objects.filter(domain="auth.ceramedical.org").first()
+    brand = Brand.objects.filter(domain=BRAND_DOMAIN).first()
     if brand is None:
         brand = Brand.objects.filter(default=True).first()
     if brand is not None:
+        # The default brand is initially named ``authentik-default``. Leaving
+        # that domain in place means requests for auth.ceramedical.org keep
+        # matching the fallback brand, which is why the old Authentik logo and
+        # background were still visible in production.
+        brand.domain = BRAND_DOMAIN
+        brand.default = True
         brand.branding_title = "CERA Medical"
         brand.branding_custom_css = BRAND_CSS
         brand.save()
+        # Authentik's branding file fields are serialized as paths/URLs in the
+        # flow payload. A public CERA asset keeps the identity service image in
+        # sync with the website without bundling a second copy into the auth
+        # container.
+        brand.branding_logo = BRAND_LOGO_URL
+        brand.branding_default_flow_background = ""
+        brand.save(update_fields=["branding_logo", "branding_default_flow_background"])
 
     flow = provider.authentication_flow
     if flow is not None and flow.title != "Sign in to CERA Medical":

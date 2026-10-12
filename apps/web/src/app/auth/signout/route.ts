@@ -10,10 +10,12 @@ export function GET(request?: Request): NextResponse {
     request === undefined ? null : new URL(request.url).searchParams.get('audience');
   const audience: OidcAudience = requested === 'staff' ? 'staff' : 'customer';
   const issuer = oidcIssuer(audience);
+  const signedOutUrl = new URL('/auth/signed-out', url.origin);
+  signedOutUrl.searchParams.set('audience', audience);
   const endSession =
     issuer === undefined
-      ? '/'
-      : `${issuer.replace(/\/$/, '')}/end-session/?post_logout_redirect_uri=${encodeURIComponent(`${url.origin}/`)}`;
+      ? signedOutUrl.pathname + signedOutUrl.search
+      : `${issuer.replace(/\/$/, '')}/end-session/?post_logout_redirect_uri=${encodeURIComponent(signedOutUrl.toString())}`;
   const response = NextResponse.redirect(new URL(endSession, url.origin));
   for (const name of ALL_SESSION_COOKIE_NAMES) {
     response.cookies.set(name, '', {

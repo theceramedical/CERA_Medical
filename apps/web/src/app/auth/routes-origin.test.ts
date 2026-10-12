@@ -37,7 +37,7 @@ describe('auth routes use the configured public origin', () => {
     const response = signout();
 
     expect(response.headers.get('location')).toBe(
-      'https://auth.ceramedical.org/application/o/cera-production/end-session/?post_logout_redirect_uri=https%3A%2F%2Fwww.ceramedical.org%2F',
+      'https://auth.ceramedical.org/application/o/cera-production/end-session/?post_logout_redirect_uri=https%3A%2F%2Fwww.ceramedical.org%2Fauth%2Fsigned-out%3Faudience%3Dcustomer',
     );
   });
 });
