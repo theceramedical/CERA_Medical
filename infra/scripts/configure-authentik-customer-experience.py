@@ -95,6 +95,45 @@ button:hover, .pf-c-button:hover {
 }
 a { color: #005b7a !important; font-weight: 700 !important; }
 h1, h2, h3, p, label { color: #111111 !important; }
+/* The authenticated user portal is an Authentik interface rather than a flow
+   executor. Keep it on the same light CERA canvas after login as well. */
+html, body, ak-interface, ak-interface main, ak-interface header,
+ak-interface nav, ak-interface section, ak-interface footer,
+ak-interface [class*="pf-c-"], ak-interface [class*="pf-l-"] {
+  background: #ffffff !important;
+  color: #111111 !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+ak-interface a, ak-interface button, ak-interface h1, ak-interface h2,
+ak-interface h3, ak-interface p, ak-interface label, ak-interface span,
+ak-interface strong { color: #111111 !important; }
+ak-interface header, ak-interface nav {
+  border-bottom: 3px solid #111111 !important;
+}
+ak-interface a:hover, ak-interface button:hover {
+  background: #ffb52e !important;
+  color: #111111 !important;
+}
+ak-interface input, ak-interface textarea, ak-interface select,
+ak-interface [role="combobox"] {
+  border: 3px solid #111111 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  border-radius: 0 !important;
+}
+ak-interface button, ak-interface [role="button"] {
+  border: 3px solid #111111 !important;
+  background: #005b7a !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+  font-weight: 800 !important;
+}
+ak-interface [role="main"], ak-interface .pf-c-page__main,
+ak-interface .pf-c-page__main-section, ak-interface .pf-c-card {
+  border: 3px solid #111111 !important;
+}
 """
 
 
