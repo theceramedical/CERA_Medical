@@ -5,7 +5,7 @@ The profile scope is already requested by the CERA OIDC client, so placing the
 groups claim on that scope avoids an extra client scope configuration step.
 """
 
-from authentik.core.models import Group, User
+from authentik.core.models import Application, Group, User
 from authentik.providers.oauth2.models import OAuth2Provider, ScopeMapping
 
 
@@ -61,6 +61,10 @@ if staff_client_id and staff_client_secret:
             "client_type": provider.client_type,
             "authorization_flow": provider.authorization_flow,
             "authentication_flow": provider.authentication_flow,
+            "invalidation_flow": provider.invalidation_flow,
+            "signing_key": provider.signing_key,
+            "include_claims_in_id_token": True,
+            "grant_types": ["authorization_code"],
         },
     )
     staff_provider.client_id = staff_client_id
@@ -72,6 +76,10 @@ if staff_client_id and staff_client_secret:
         staff_provider.authentication_flow = provider.authentication_flow
     staff_provider.save()
     staff_provider.property_mappings.add(mapping)
+    Application.objects.update_or_create(
+        slug="cera-staff",
+        defaults={"name": "CERA Medical Staff", "provider": staff_provider},
+    )
     print("CERA staff OIDC client configured.")
 else:
     print("CERA staff OIDC skipped: OIDC_STAFF_CLIENT_ID/SECRET not set.")
