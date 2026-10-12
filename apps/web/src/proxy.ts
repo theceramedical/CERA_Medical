@@ -78,7 +78,10 @@ export function proxy(request: NextRequest): NextResponse {
     mediaOrigin: originOf(process.env.S3_PUBLIC_URL),
     catalogueOrigin: originOf(process.env.VENDURE_PUBLIC_URL),
     apiOrigin: originOf(process.env.NEXT_PUBLIC_API_URL),
-    authOrigin: originOf(process.env.OIDC_ISSUER),
+    authOrigins: [
+      originOf(process.env.OIDC_CUSTOMER_ISSUER ?? process.env.OIDC_ISSUER),
+      originOf(process.env.OIDC_STAFF_ISSUER ?? process.env.OIDC_ISSUER),
+    ].filter((origin): origin is string => origin !== undefined),
     formActionOrigins,
   });
 

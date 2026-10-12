@@ -1,6 +1,9 @@
 import { SkipLink } from '@cera/ui/skip-link';
 import { Text } from '@cera/ui/typography';
 import { Wordmark } from '@cera/ui/wordmark';
+import { LogOut } from 'lucide-react';
+
+import { AppLink } from '../../components/link.tsx';
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
@@ -38,6 +41,12 @@ export default function StaffLayout({ children }: { readonly children: ReactNode
           <Text size="eyebrow" tone="muted">
             Staff console
           </Text>
+          <AppLink
+            href="/auth/signout?audience=staff"
+            className="ml-auto inline-flex items-center gap-2 text-sm"
+          >
+            <LogOut aria-hidden className="size-4" /> Sign out
+          </AppLink>
         </div>
       </header>
 

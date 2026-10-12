@@ -14,9 +14,21 @@ export function createHandshakeSecrets() {
   return { state: randomBytes(16).toString('hex'), nonce: randomBytes(16).toString('hex') };
 }
 
+export type OidcAudience = 'customer' | 'staff';
+
+function audienceEnv(
+  audience: OidcAudience,
+  key: 'ISSUER' | 'CLIENT_ID' | 'CLIENT_SECRET' | 'REDIRECT_URI',
+) {
+  const value = process.env[`OIDC_${audience.toUpperCase()}_${key}`];
+  return value?.length ? value : process.env[`OIDC_${key}`];
+}
+
 /** Registered redirect URI (no query) — must match Authentik and the authorize request. */
-export function registeredOidcRedirectUri(): URL {
-  return new URL(process.env.OIDC_REDIRECT_URI ?? new URL('/auth/callback', siteUrl()).toString());
+export function registeredOidcRedirectUri(audience: OidcAudience = 'customer'): URL {
+  return new URL(
+    audienceEnv(audience, 'REDIRECT_URI') ?? new URL('/auth/callback', siteUrl()).toString(),
+  );
 }
 
 /**
@@ -24,8 +36,8 @@ export function registeredOidcRedirectUri(): URL {
  * `state` query intact. Stripping `search` breaks token exchange behind reverse proxies that
  * rewrite the request host to an internal address.
  */
-export function configuredCallbackUrl(requestUrl: URL): URL {
-  const registered = registeredOidcRedirectUri();
+export function configuredCallbackUrl(requestUrl: URL, audience: OidcAudience = 'customer'): URL {
+  const registered = registeredOidcRedirectUri(audience);
   const callback = new URL(registered.href);
   callback.search = requestUrl.search;
   callback.hash = requestUrl.hash;
@@ -65,27 +77,38 @@ export async function openHandshake(token: string): Promise<Handshake> {
     throw new Error('Invalid handshake');
   return value;
 }
-let configuration: Promise<oidc.Configuration> | undefined;
-export function oidcConfiguration(): Promise<oidc.Configuration> {
-  if (configuration) return configuration;
-  const issuer = new URL(process.env.OIDC_ISSUER ?? '');
+const configurations = new Map<OidcAudience, Promise<oidc.Configuration>>();
+export function oidcIssuer(audience: OidcAudience = 'customer'): string | undefined {
+  return audienceEnv(audience, 'ISSUER');
+}
+export function oidcClientId(audience: OidcAudience = 'customer'): string | undefined {
+  return audienceEnv(audience, 'CLIENT_ID');
+}
+export function oidcConfiguration(
+  audience: OidcAudience = 'customer',
+): Promise<oidc.Configuration> {
+  const existing = configurations.get(audience);
+  if (existing) return existing;
+  const issuer = new URL(audienceEnv(audience, 'ISSUER') ?? '');
   const local =
     process.env.CERA_ENV === 'local' && ['localhost', '127.0.0.1'].includes(issuer.hostname);
   if (issuer.protocol !== 'https:' && !local) throw new Error('OIDC requires HTTPS');
-  if (!process.env.OIDC_CLIENT_ID || !process.env.OIDC_CLIENT_SECRET)
-    throw new Error('OIDC credentials missing');
-  configuration = oidc
+  const clientId = audienceEnv(audience, 'CLIENT_ID');
+  const clientSecret = audienceEnv(audience, 'CLIENT_SECRET');
+  if (!clientId || !clientSecret) throw new Error('OIDC credentials missing');
+  const configuration = oidc
     .discovery(
       issuer,
-      process.env.OIDC_CLIENT_ID,
-      process.env.OIDC_CLIENT_SECRET,
-      oidc.ClientSecretPost(process.env.OIDC_CLIENT_SECRET),
+      clientId,
+      clientSecret,
+      oidc.ClientSecretPost(clientSecret),
       local ? { execute: [oidc.allowInsecureRequests] } : undefined,
     )
     .catch((error) => {
-      configuration = undefined;
+      configurations.delete(audience);
       throw error;
     });
+  configurations.set(audience, configuration);
   return configuration;
 }
 const groups: Record<string, Role> = {

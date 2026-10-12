@@ -6,6 +6,7 @@ import { resolveOidcSocialProviderForReturnTarget } from '../../../lib/auth/oidc
 import {
   createHandshakeSecrets,
   createPkce,
+  oidcClientId,
   oidcConfiguration,
   registeredOidcRedirectUri,
   sealHandshake,
@@ -26,10 +27,10 @@ export async function GET(request: Request): Promise<NextResponse> {
     );
     const { state, nonce } = createHandshakeSecrets();
     const pkce = createPkce();
-    const location = buildAuthorizationUrl(await oidcConfiguration(), {
+    const location = buildAuthorizationUrl(await oidcConfiguration(audience), {
       response_type: 'code',
-      client_id: process.env.OIDC_CLIENT_ID ?? '',
-      redirect_uri: registeredOidcRedirectUri().toString(),
+      client_id: oidcClientId(audience) ?? '',
+      redirect_uri: registeredOidcRedirectUri(audience).toString(),
       scope: 'openid email profile',
       state,
       nonce,

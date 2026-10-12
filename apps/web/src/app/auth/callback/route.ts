@@ -36,12 +36,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
     let tokens;
     try {
-      tokens = await authorizationCodeGrant(await oidcConfiguration(), configuredCallbackUrl(url), {
-        pkceCodeVerifier: handshake.verifier,
-        expectedState: handshake.state,
-        expectedNonce: handshake.nonce,
-        idTokenExpected: true,
-      });
+      const audience =
+        handshake.audience === 'staff' || isStaffReturnTo(handshake.next) ? 'staff' : 'customer';
+      tokens = await authorizationCodeGrant(
+        await oidcConfiguration(audience),
+        configuredCallbackUrl(url, audience),
+        {
+          pkceCodeVerifier: handshake.verifier,
+          expectedState: handshake.state,
+          expectedNonce: handshake.nonce,
+          idTokenExpected: true,
+        },
+      );
     } catch (error) {
       errorReason = 'provider';
       throw error;
@@ -58,7 +64,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         typeof claimSet.sub === 'string'
       ) {
         const userinfo = await fetchUserInfo(
-          await oidcConfiguration(),
+          await oidcConfiguration(handshake.audience === 'staff' ? 'staff' : 'customer'),
           tokens.access_token,
           claimSet.sub,
         );

@@ -19,6 +19,7 @@ ROLE_GROUPS = (
     "cera-auditors",
 )
 PROVIDER_NAME = "CERA production OIDC"
+STAFF_PROVIDER_NAME = "CERA staff OIDC"
 ADMIN_USERNAME = "akadmin"
 MAPPING_NAME = "CERA production role groups"
 GROUPS_EXPRESSION = (
@@ -43,6 +44,37 @@ mapping.scope_name = "profile"
 mapping.expression = GROUPS_EXPRESSION
 mapping.save()
 provider.property_mappings.add(mapping)
+
+# Keep customer and staff as separate OAuth clients. The application binds the
+# audience into its encrypted state, while the staff client gives Authentik a
+# distinct redirectable trust boundary and a credential that can be rotated
+# independently. Staff credentials are supplied through the host env and are
+# never printed by this script.
+staff_client_id = os.environ.get("OIDC_STAFF_CLIENT_ID", "").strip()
+staff_client_secret = os.environ.get("OIDC_STAFF_CLIENT_SECRET", "").strip()
+if staff_client_id and staff_client_secret:
+    staff_provider, _ = OAuth2Provider.objects.get_or_create(
+        name=STAFF_PROVIDER_NAME,
+        defaults={
+            "client_id": staff_client_id,
+            "client_secret": staff_client_secret,
+            "client_type": provider.client_type,
+            "authorization_flow": provider.authorization_flow,
+            "authentication_flow": provider.authentication_flow,
+        },
+    )
+    staff_provider.client_id = staff_client_id
+    staff_provider.client_secret = staff_client_secret
+    staff_provider._redirect_uris = [{"matching_mode": "strict", "url": REDIRECT_URI}]
+    if hasattr(staff_provider, "authorization_flow"):
+        staff_provider.authorization_flow = provider.authorization_flow
+    if hasattr(staff_provider, "authentication_flow"):
+        staff_provider.authentication_flow = provider.authentication_flow
+    staff_provider.save()
+    staff_provider.property_mappings.add(mapping)
+    print("CERA staff OIDC client configured.")
+else:
+    print("CERA staff OIDC skipped: OIDC_STAFF_CLIENT_ID/SECRET not set.")
 
 for group_name in ROLE_GROUPS:
     Group.objects.get_or_create(name=group_name)
