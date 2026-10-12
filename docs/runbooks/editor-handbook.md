@@ -1,6 +1,10 @@
-# CERA editor & operator handbook
+# CERA Medical client operations handbook
 
 Non-technical guide for day-to-day work on the live site. Hostnames below use production URLs; staging uses the same pattern on your staging domain.
+
+**Client operator:** Habab Ali Ahmed  
+**System:** CERA Medical production website  
+**Document purpose:** Daily operations and safe content/order management
 
 ## Single-operator handover
 
