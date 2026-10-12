@@ -57,6 +57,132 @@ The Authentik page may appear briefly during sign-in. That is the secure identit
 service; after authentication, return to the CERA staff console or the requested
 admin console. Do not use the customer `/account` page to process company enquiries.
 
+## Click-by-click screen guide
+
+### 1. Work a new enquiry
+
+1. Open `https://www.ceramedical.org/staff` and sign in.
+2. In the **left sidebar**, click **Enquiries** or **Queue**.
+3. Click the newest row, identified by its reference and received time.
+4. In the enquiry panel, click **Claim** or **Assign to me**.
+5. Read the service, timeline, organisation, and project description.
+6. In **Status**, choose the next stage, such as **In review**, **Awaiting client**,
+   or **Quoted**.
+7. In **Internal note**, write the next action. Do not put the note in the customer
+   reply box.
+8. Click **Save**.
+9. Click **Reply** or open the linked email, write the response, and send it from the
+   approved CERA address.
+10. Return to the enquiry and click **Save** again so the latest status is recorded.
+
+### 2. Edit a page or the homepage
+
+1. Open `https://admin.ceramedical.org`.
+2. In the **left sidebar**, click **Pages**.
+3. Search for `home`, `about`, `contact`, `terms`, or the page you need.
+4. Click the page title, then click **Edit**.
+5. Change the requested heading, paragraph, button, or section. Keep the existing
+   slug unless you intentionally want a new URL.
+6. Click **Save draft**.
+7. Click **Preview** and check desktop and mobile widths.
+8. If the copy is approved, click **Request review**. An approver then opens the
+   same page, checks it, and clicks **Publish**.
+9. Open the public URL in a private browser window and confirm the change.
+
+### 3. Publish a research article
+
+1. In the CMS left sidebar, click **Posts**.
+2. Click **Create new**.
+3. Enter the **Title**, **Slug**, **Excerpt**, and **Category**.
+4. Click **Choose media** beside the cover field and select or upload the image.
+5. Enter the article in **Body** and add the SEO title and description.
+6. Click **Save draft**, then **Preview**.
+7. Check headings, links, image captions, and the article URL.
+8. Click **Request review**; the approver clicks **Publish** after checking it.
+9. Verify the article under `/articles` and copy its public URL for sharing.
+
+### 4. Change a service
+
+1. Open the catalogue dashboard and use the **left sidebar → Catalog → Products**.
+2. Search for the service and click its product name.
+3. Click **Edit**, change the service name, summary, description, price, or
+   enquiry/checkout setting, then click **Save**.
+4. Copy the service **slug** exactly.
+5. Open the CMS, click **Service presentations** in the left sidebar, and open the
+   presentation with the same slug.
+6. Click **Edit**, update the hero, capabilities, process steps, or enquiry panel,
+   then click **Save draft → Preview**.
+7. Request review and publish after approval.
+8. Open `/services/<slug>` in a private window and verify the title, buttons, price,
+   and enquiry form.
+
+### 5. Add a physical product
+
+1. In Vendure, click **Catalog → Products → Create product** in the left sidebar.
+2. Enter the product name, description, slug, and an internal SKU.
+3. Open **Variants**, click **Add variant**, then enter the PKR price, stock, and
+   availability.
+4. Open **Collections**, select **Physical Products & Reagents**, and click
+   **Add product**.
+5. Check **Enquiry enabled** or **Checkout enabled** according to the product’s
+   purpose, then click **Save**.
+6. Open the public `/products` page in a private window.
+7. Click the new product, add it to the cart, and check that the price, quantity,
+   and COD option are correct.
+
+### 6. Process a COD order
+
+1. In Vendure, click **Sales → Orders** in the left sidebar.
+2. Click the newest order and confirm the customer name, phone, delivery address,
+   items, quantity, and total.
+3. Click **Add note** if you need to record a customer call.
+4. Contact the customer before dispatch and confirm the COD amount.
+5. Choose the appropriate order status, then click **Save**.
+6. Dispatch through the courier and record the tracking number in the order note.
+7. When the courier reports delivery, update the order to **Delivered**. If it is
+   returned, choose **Cancelled/Returned** and record the reason.
+
+### 7. Review a CRM lead
+
+1. Open `https://crm.ceramedical.org`.
+2. In the **left sidebar**, click **Leads**.
+3. Search by the CERA enquiry reference or email address.
+4. Click the lead to view the enquiry details and communication history.
+5. Use **Add comment** for internal follow-up and **Next action** for a reminder.
+6. Do not delete the lead when it is finished; set the appropriate status and keep
+   the reference for reporting.
+
+### 8. Change a logo, image, or contact detail
+
+1. In the CMS left sidebar, click **Media** and upload a web-ready image, or click
+   **Globals → Site settings** for contact details.
+2. Click **Edit** on the page or global record that uses the value.
+3. Click **Choose media** or edit the requested text field.
+4. Click **Save draft → Preview**, then request review and publish.
+5. Open the public page and test the header, footer, contact link, and image on a
+   phone-sized browser window.
+
+### 9. Manage staff access
+
+1. Open `https://auth.ceramedical.org` and sign in as the administrator.
+2. In the **left sidebar**, click **Directory → Users**.
+3. Search for the person and click their username.
+4. Open **Groups**, add the required CERA group, and click **Save**.
+5. Open **MFA devices** and confirm an authenticator device is enrolled.
+6. To remove access, return to **Groups**, remove the staff groups, and save; then
+   disable the user if the person should not sign in at all.
+
+### 10. Verify any important change
+
+After every publish, product edit, or order change:
+
+1. Open a private browser window.
+2. Visit the affected public URL.
+3. Use the same path a customer would use: navigation, search, button, form, cart,
+   or checkout.
+4. Confirm the visible text, links, price, status, and mobile layout.
+5. Record the date and what changed in the internal operations note.
+
 ### Common daily tasks
 
 **Handle an enquiry:** open `/staff`, open the newest item, verify the reference,
