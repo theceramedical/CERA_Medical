@@ -39,20 +39,62 @@ BRAND_DOMAIN = "auth.ceramedical.org"
 BRAND_LOGO_URL = "https://www.ceramedical.org/images/cera-logo-lockup.png"
 BRAND_CSS = """
 :root {
-  --ak-accent: #0f5f78;
-  --ak-accent-strong: #084c63;
-  --ak-ink: #102f55;
+  --ak-accent: #005b7a;
+  --ak-accent-strong: #003b50;
+  --ak-ink: #111111;
   --ak-surface: #ffffff;
-  --ak-page: #edf7fb;
+  --ak-page: #ffffff;
 }
 body {
-  background: linear-gradient(135deg, #edf7fb 0%, #f8fbfd 52%, #e3f1f5 100%) !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
-/* Authentik 2026 renders the form inside web components, so the brand asset is
-   configured on the Brand model; these rules style the surrounding shell and
-   remove the remaining vendor footer language. */
-ak-flow-executor { --ak-global--background-image: none !important; }
+/* CERA brutalist identity treatment: white canvas, hard 3px rules, square
+   controls, and a compact blue/orange identity mark. Authentik still owns the
+   credential and MFA steps; these rules only control the presentation. */
+ak-flow-executor {
+  --ak-global--background-image: none !important;
+  --ak-global--background: #ffffff !important;
+  --ak-global--foreground: #111111 !important;
+}
 ak-brand-links { display: none !important; }
+ak-flow-executor::part(container),
+ak-flow-executor > * {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+form, .pf-c-card, .pf-c-login__main, .pf-c-login__main-header,
+.pf-c-login__main-footer-band, .pf-c-login__footer {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.pf-c-card, .pf-c-login__main {
+  border: 3px solid #111111 !important;
+  background: #ffffff !important;
+}
+input, select, textarea, button, .pf-c-button {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+input, select, textarea {
+  border: 3px solid #111111 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+button, .pf-c-button {
+  border: 3px solid #111111 !important;
+  background: #005b7a !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: .02em;
+}
+button:hover, .pf-c-button:hover {
+  background: #ffb52e !important;
+  color: #111111 !important;
+}
+a { color: #005b7a !important; font-weight: 700 !important; }
+h1, h2, h3, p, label { color: #111111 !important; }
 """
 
 
