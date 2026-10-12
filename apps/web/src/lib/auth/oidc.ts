@@ -47,6 +47,8 @@ export interface Handshake {
   nonce: string;
   verifier: string;
   next: string;
+  /** The workspace the user explicitly entered; prevents cross-portal redirects. */
+  audience?: 'customer' | 'staff';
   createdAt: number;
 }
 export async function openHandshake(token: string): Promise<Handshake> {

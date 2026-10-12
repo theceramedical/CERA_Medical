@@ -17,6 +17,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
   try {
     const next = safeReturnTo(url.searchParams.get('next'));
+    const audience = isStaffReturnTo(next) ? 'staff' : 'customer';
     // The customer page hides social providers on a staff return path. Enforce the same rule
     // here, because query strings are an API surface and can be typed or linked directly.
     const social = resolveOidcSocialProviderForReturnTarget(
@@ -39,7 +40,14 @@ export async function GET(request: Request): Promise<NextResponse> {
     const response = NextResponse.redirect(location);
     response.cookies.set(
       OIDC_STATE_COOKIE_NAME,
-      await sealHandshake({ state, nonce, verifier: pkce.verifier, next, createdAt: Date.now() }),
+      await sealHandshake({
+        state,
+        nonce,
+        verifier: pkce.verifier,
+        next,
+        audience,
+        createdAt: Date.now(),
+      }),
       {
         httpOnly: true,
         sameSite: 'lax',

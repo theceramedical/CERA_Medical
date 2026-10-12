@@ -5,6 +5,7 @@ import { AuthPageShell, AuthPanelIntro } from '../../../../components/auth-page-
 import { AuthSignInOptions } from '../../../../components/auth-sign-in-options.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { configuredOidcSocialProviders } from '../../../../lib/auth/oidc-social.ts';
+import { sessionHasStaffRole } from '../../../../lib/auth/portal-access.ts';
 import { isStaffReturnTo, safeReturnTo } from '../../../../lib/auth/return-to.ts';
 import { getSession } from '../../../../lib/auth/session.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
@@ -29,7 +30,9 @@ export default async function SignInPage({
   const safeNext = safeReturnTo(next ?? null);
   const session = await getSession();
   if (session !== null) {
-    redirect(safeNext);
+    redirect(
+      sessionHasStaffRole(session) && !session.roles.includes('customer') ? '/staff' : safeNext,
+    );
   }
 
   const staffPortal = staff === '1' || staff === 'true' || isStaffReturnTo(safeNext);

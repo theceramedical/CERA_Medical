@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { AuthSignInOptions } from '../../../../components/auth-sign-in-options.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
+import { sessionHasStaffRole } from '../../../../lib/auth/portal-access.ts';
 import { safeReturnTo, isStaffReturnTo } from '../../../../lib/auth/return-to.ts';
 import { getSession } from '../../../../lib/auth/session.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
@@ -28,7 +29,10 @@ export default async function StaffSignInPage({
   const requestedNext = safeReturnTo(next ?? null, '/staff');
   const safeNext = isStaffReturnTo(requestedNext) ? requestedNext : '/staff';
   const session = await getSession();
-  if (session !== null) redirect(safeNext);
+  if (session !== null) {
+    if (sessionHasStaffRole(session)) redirect(safeNext);
+    redirect('/auth/error?reason=access');
+  }
 
   return (
     <>

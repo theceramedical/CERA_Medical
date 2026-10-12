@@ -13,7 +13,8 @@ import {
   openHandshake,
   sealHandshake,
 } from '../../../lib/auth/oidc.ts';
-import { safeReturnTo } from '../../../lib/auth/return-to.ts';
+import { isStaffReturnTo, safeReturnTo } from '../../../lib/auth/return-to.ts';
+import { rolesIncludeStaff } from '../../../lib/auth/staff-roles.ts';
 import { siteUrl } from '../../../lib/site-url.ts';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -72,7 +73,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       errorReason = 'access';
       throw new Error('No platform role');
     }
-    const staff = identity.roles.some((role) => role !== 'customer');
+    const staff = rolesIncludeStaff(identity.roles);
+    const staffTarget = handshake.audience === 'staff' || isStaffReturnTo(handshake.next);
+    if (staffTarget && !staff) {
+      errorReason = 'access';
+      throw new Error('Customer identity cannot enter the staff workspace');
+    }
+    if (!staffTarget && staff && !identity.roles.includes('customer')) {
+      handshake.next = '/staff';
+    }
     const now = Math.floor(Date.now() / 1000);
     const exp = now + (staff ? 30 * 60 : 12 * 60 * 60);
     const claims = {
