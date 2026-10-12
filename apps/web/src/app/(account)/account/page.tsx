@@ -2,6 +2,7 @@ import { Alert } from '@cera/ui/alert';
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
 import { ClipboardList, FileText, Link2, LogOut, Package, User } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 import { AppButtonLink, AppLink } from '../../../components/link.tsx';
 import { PageHeader } from '../../../components/page-header.tsx';
@@ -49,6 +50,12 @@ function DashboardCard({
 export default async function AccountDashboardPage() {
   const session = await getSession();
   const staff = session !== null && sessionHasStaffRole(session);
+
+  // A staff-only identity belongs in the staff workspace. Users who have both
+  // roles may still use the customer portal for their own enquiries and orders.
+  if (session !== null && staff && !session.roles.includes('customer')) {
+    redirect('/staff');
+  }
 
   return (
     <>
