@@ -75,7 +75,11 @@ if staff_client_id and staff_client_secret:
     if hasattr(staff_provider, "authentication_flow"):
         staff_provider.authentication_flow = provider.authentication_flow
     staff_provider.save()
-    staff_provider.property_mappings.add(mapping)
+    # The staff client must emit the same identity claims as the customer
+    # client (openid/profile/email plus CERA's role and assurance claims).
+    # Adding only the role mapping authenticates successfully in Authentik but
+    # leaves CERA without `sub`/`email`, so the callback rejects the session.
+    staff_provider.property_mappings.set(provider.property_mappings.all())
     Application.objects.update_or_create(
         slug="cera-staff",
         defaults={"name": "CERA Medical Staff", "provider": staff_provider},
