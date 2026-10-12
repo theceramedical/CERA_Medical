@@ -2,6 +2,112 @@
 
 Non-technical guide for day-to-day work on the live site. Hostnames below use production URLs; staging uses the same pattern on your staging domain.
 
+## Single-operator handover
+
+This handbook assumes one person runs CERA Medical. You do not need daily SSH,
+Docker, GitHub, database, or Authentik administration. Use the public site and the
+three operator consoles below; keep the administrator credentials in a password
+manager and never paste them into email or WhatsApp.
+
+### Your daily order of work
+
+1. **Start with the staff console** at `https://www.ceramedical.org/staff`.
+   Review new enquiries, claim each one, set the next action, and reply within the
+   promised three working days.
+2. **Check email and ERPNext** at `https://crm.ceramedical.org` for delivery failures,
+   duplicate leads, or requests that need a quotation.
+3. **Check commerce orders** in Vendure. Confirm COD orders, contact the customer
+   if an address or phone number is incomplete, and update the order status after
+   dispatch or cancellation.
+4. **Publish planned content** in Payload CMS. Save drafts first, proofread the
+   public preview, then publish only after checking links, images, and mobile layout.
+5. **Open the public website in a private window** and test any important change:
+   homepage, services, enquiry form, product page, and checkout.
+
+### Weekly routine
+
+- Review every open enquiry and order; close or reschedule stale work.
+- Check `/services`, `/products`, research updates, privacy pages, and contact details.
+- Confirm the latest Hetzner backup exists and that the server has free disk space.
+- Review UptimeRobot and Resend delivery alerts.
+- Remove temporary drafts, unused media, and test products.
+- Export or download any business records that must be retained for accounting.
+
+### Monthly routine
+
+- Review staff access in Authentik and remove anyone who no longer works with CERA.
+- Confirm MFA is enabled on the staff account.
+- Place a small test enquiry and verify the customer receipt, staff alert, and CRM lead.
+- Review COD orders and catalogue prices for accuracy.
+- Ask the technical administrator to perform a backup-restore rehearsal and apply
+  operating-system/security updates.
+
+### The only URLs you need
+
+| Purpose                                   | URL                                           |
+| ----------------------------------------- | --------------------------------------------- |
+| Public website                            | `https://www.ceramedical.org`                 |
+| Enquiries and staff queue                 | `https://www.ceramedical.org/staff`           |
+| Content, pages, articles, media           | `https://admin.ceramedical.org`               |
+| Products, variants, prices, stock, orders | `https://catalogue.ceramedical.org/dashboard` |
+| CRM leads and customer records            | `https://crm.ceramedical.org`                 |
+| Identity and MFA administration           | `https://auth.ceramedical.org`                |
+
+The Authentik page may appear briefly during sign-in. That is the secure identity
+service; after authentication, return to the CERA staff console or the requested
+admin console. Do not use the customer `/account` page to process company enquiries.
+
+### Common daily tasks
+
+**Handle an enquiry:** open `/staff`, open the newest item, verify the reference,
+read the service and timeline, claim it, add an internal note, reply by email, and
+move it to the next status. Never put private clinical data or patient identifiers
+into an enquiry note.
+
+**Publish an article:** CMS → Posts → Create, add title, slug, excerpt, cover image,
+body, and SEO description; save as draft; preview the public URL; publish. Use a
+new slug for a new article and do not silently change an existing published slug.
+
+**Update a service:** update the matching Vendure service first, then update the
+Payload service presentation using the exact same slug. Check the public `/services`
+page after publishing.
+
+**Add a physical product:** create the product and variant in Vendure, set PKR price,
+SKU, availability, and stock, assign **Physical Products & Reagents**, enable it,
+then test the public product page and COD checkout. Do not create real test orders
+with a customer’s details.
+
+**Process COD:** confirm the order and phone/address, contact the customer, update
+the status when accepted, dispatch through the chosen courier, record the tracking
+reference, and mark delivered or cancelled. COD is not payment confirmation until
+the courier has collected the amount.
+
+**Change an image or logo:** upload a compressed web-ready image in CMS → Media,
+give it a descriptive filename/alt text, replace the reference in the page, publish,
+and verify desktop and mobile views. Keep original high-resolution files outside the
+production CMS.
+
+### What not to change
+
+Do not edit DNS, production `.env`, database credentials, OIDC client secrets,
+Resend keys, Docker Compose files, or server containers from the admin consoles.
+Do not delete products or enquiries to correct a mistake; use an unpublished/draft
+state or ask the technical administrator to restore the record. Never share the
+root/SSH password with ordinary operators.
+
+### If something looks broken
+
+1. Open the public page in a private window and retry once.
+2. Check UptimeRobot and the Resend delivery log.
+3. Record the URL, approximate time, browser, screenshot, and enquiry/order
+   reference; do not include passwords or API tokens.
+4. Contact the technical administrator. Do not restart containers or edit `.env`
+   unless they explicitly instruct you.
+
+If the site is unavailable, use the last known email/CRM record to avoid losing a
+customer request, then report the incident. If a credential may have leaked, revoke
+it immediately in the relevant provider and tell the technical administrator.
+
 | System                      | URL                                         | Who uses it                        |
 | --------------------------- | ------------------------------------------- | ---------------------------------- |
 | Public website              | https://www.ceramedical.org                 | Everyone                           |
