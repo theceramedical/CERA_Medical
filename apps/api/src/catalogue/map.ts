@@ -13,6 +13,18 @@ import type { VendureProduct } from './types.ts';
 
 export const PHYSICAL_PRODUCTS_COLLECTION_SLUG = 'physical-products';
 
+export function isPhysicalCatalogueProduct(product: VendureProduct): boolean {
+  if (
+    product.collections?.some((collection) => collection.slug === PHYSICAL_PRODUCTS_COLLECTION_SLUG)
+  ) {
+    return true;
+  }
+  // Vendure's product editor does not assign a new product to a collection.
+  // An enabled, unassigned record with a variant is a catalogue product;
+  // unassigned service records have no variant.
+  return (product.collections?.length ?? 0) === 0 && (product.variants?.length ?? 0) > 0;
+}
+
 export function vendureAssetPublicOrigin(shopApiUrl: string): string {
   return shopApiUrl.replace(/\/$/, '').replace(/\/shop-api$/, '');
 }
@@ -89,11 +101,7 @@ export function mapVendurePublicProduct(
 ): PublicProduct | null {
   const service = mapVendureProduct(product, vendurePublicOrigin);
   if (service.status !== 'active') return null;
-  const inPhysical =
-    product.collections?.some(
-      (collection) => collection.slug === PHYSICAL_PRODUCTS_COLLECTION_SLUG,
-    ) ?? false;
-  if (!inPhysical) return null;
+  if (!isPhysicalCatalogueProduct(product)) return null;
   const sku = product.variants?.[0]?.sku ?? service.slug.toUpperCase();
   if (isUnapprovedSeedProductSku(sku)) return null;
   const checkoutEnabled = product.customFields?.checkoutEnabled === true;

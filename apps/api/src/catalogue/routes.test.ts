@@ -71,6 +71,14 @@ const prototypeKit: VendureProduct = {
   variants: [{ id: 'v2', sku: 'CR-REG-1180', price: 238_000, priceWithTax: 238_000 }],
 };
 
+const newlyCreatedKit: VendureProduct = {
+  ...physicalKit,
+  id: '29',
+  slug: 'new-lab-kit',
+  collections: [],
+  variants: [{ id: 'v29', sku: 'LAB-NEW-001', price: 3400, priceWithTax: 3400 }],
+};
+
 let app: FastifyInstance | undefined;
 
 afterEach(async () => {
@@ -139,6 +147,15 @@ describe('GET /v1/products', () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({ items: [] });
   });
+
+  it('lists an enabled Vendure product with a variant before a collection is assigned', async () => {
+    app = await build([cardiology, newlyCreatedKit]);
+    const response = await app.inject({ method: 'GET', url: '/v1/products' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json().items).toEqual([expect.objectContaining({ sku: 'LAB-NEW-001' })]);
+    const services = await app.inject({ method: 'GET', url: '/v1/services' });
+    expect(services.body).not.toContain('new-lab-kit');
+  });
 });
 
 describe('GET /v1/products/:sku', () => {
@@ -153,6 +170,13 @@ describe('GET /v1/products/:sku', () => {
     app = await build([prototypeKit]);
     const response = await app.inject({ method: 'GET', url: '/v1/products/CR-REG-1180' });
     expect(response.statusCode).toBe(404);
+  });
+
+  it('resolves a new product by variant SKU even when its slug differs', async () => {
+    app = await build([newlyCreatedKit]);
+    const response = await app.inject({ method: 'GET', url: '/v1/products/LAB-NEW-001' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ sku: 'LAB-NEW-001', title: 'Approved Buffer' });
   });
 });
 

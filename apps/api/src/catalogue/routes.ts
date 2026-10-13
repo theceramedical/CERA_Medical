@@ -11,9 +11,9 @@ import { sendApiError, sendCode, sendZodError } from '../http.ts';
 
 import { catalogueKeys, type CatalogueCache } from './cache.ts';
 import {
+  isPhysicalCatalogueProduct,
   mapVendureProduct,
   mapVendurePublicProduct,
-  productSlugForSku,
   toListablePublicService,
 } from './map.ts';
 
@@ -40,7 +40,9 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
       }
 
       try {
-        const services = await listCached(deps);
+        const services = (await listRawCached(deps))
+          .filter((product) => !isPhysicalCatalogueProduct(product))
+          .map((product) => mapVendureProduct(product, deps.vendurePublicOrigin));
         let items = services
           .map(toListablePublicService)
           .filter((item): item is NonNullable<typeof item> => item !== null);
@@ -93,7 +95,10 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
       }
 
       try {
-        const raw = await getRawCached(deps, productSlugForSku(parsed.data.sku));
+        const raw =
+          (await listRawCached(deps)).find((product) =>
+            product.variants?.some((variant) => variant.sku === parsed.data.sku),
+          ) ?? null;
         if (raw === null) {
           sendCode(request, reply, 'not_found');
           return;
@@ -121,8 +126,11 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
       }
 
       try {
-        const service = await getCached(deps, parsed.data.slug);
-        const publicService = service === null ? null : toListablePublicService(service);
+        const product = await getRawCached(deps, parsed.data.slug);
+        const publicService =
+          product === null || isPhysicalCatalogueProduct(product)
+            ? null
+            : toListablePublicService(mapVendureProduct(product, deps.vendurePublicOrigin));
         if (publicService === null) {
           sendCode(request, reply, 'not_found');
           return;
@@ -152,12 +160,6 @@ async function listRawCached(deps: CatalogueDependencies): Promise<readonly Vend
   return products;
 }
 
-async function listCached(deps: CatalogueDependencies) {
-  return (await listRawCached(deps)).map((product) =>
-    mapVendureProduct(product, deps.vendurePublicOrigin),
-  );
-}
-
 async function getRawCached(
   deps: CatalogueDependencies,
   slug: string,
@@ -172,9 +174,4 @@ async function getRawCached(
   const product = await deps.client.getProduct(slug);
   await deps.cache.set(key, JSON.stringify(product), CATALOGUE_TTL_SECONDS);
   return product;
-}
-
-async function getCached(deps: CatalogueDependencies, slug: string) {
-  const product = await getRawCached(deps, slug);
-  return product === null ? null : mapVendureProduct(product, deps.vendurePublicOrigin);
 }
