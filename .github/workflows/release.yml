@@ -166,10 +166,7 @@ jobs:
             [[ "${build[$app]}" == true ]] && any=true
           done
           if [[ "$any" != true ]]; then
-            echo "No path changes in HEAD; building all images for this release."
-            for app in web cms commerce api worker migrator; do
-              build[$app]=true
-            done
+            echo "No application image changes; reusing the previous release images."
           fi
           json='{'
           pull=()
@@ -199,7 +196,11 @@ jobs:
             echo "apps<<EOF"
             echo "$json"
             echo "EOF"
-            echo "pull_apps=$(IFS=,; echo "${pull[*]}")"
+            if (( ${#pull[@]} == 0 )); then
+              echo "pull_apps=none"
+            else
+              echo "pull_apps=$(IFS=,; echo "${pull[*]}")"
+            fi
             echo "build_matrix=$build_matrix"
           } >> "$GITHUB_OUTPUT"
           echo "Build plan: $json"
@@ -207,7 +208,7 @@ jobs:
   build:
     name: Build production image ${{ matrix.app }}
     needs: [preflight, changes]
-    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
+    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main' && needs.changes.outputs.pull_apps != 'none'
     runs-on: ubuntu-24.04
     environment: production
     permissions:
@@ -268,7 +269,8 @@ jobs:
       always() &&
       !cancelled() &&
       needs.preflight.result == 'success' &&
-      needs.build.result == 'success'
+      needs.changes.result == 'success' &&
+      (needs.build.result == 'success' || (needs.build.result == 'skipped' && needs.changes.outputs.pull_apps == 'none'))
     runs-on: ubuntu-24.04
     environment:
       name: production

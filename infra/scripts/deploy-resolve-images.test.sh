@@ -14,6 +14,10 @@ export CERA_PULL_APPS=web
 should_pull_app web || exit 1
 should_pull_app api && exit 1
 
+export CERA_PULL_APPS=none
+should_pull_app web && exit 1
+should_pull_app api && exit 1
+
 out="$fixture/web.env"
 reuse_app_digest web "$previous" "$out"
 grep -q '^WEB_IMAGE=ghcr.io/example/web@sha256:abc$' "$out"

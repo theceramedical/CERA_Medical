@@ -27,6 +27,8 @@ www.{$CERA_DOMAIN:localhost} {
 	reverse_proxy web:3000 {
 		header_up X-Forwarded-Proto {scheme}
 		header_up X-Forwarded-Host {host}
+		# Keep Cloudflare from rewriting HTML email addresses and breaking React hydration.
+		header_down +Cache-Control "no-transform"
 	}
 }
 
