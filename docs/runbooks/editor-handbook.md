@@ -26,7 +26,7 @@ Each numbered list is one task. Follow the steps in order, then read the CHECK R
 
 ### Scope and accuracy
 
-Edition 2 · 13 October 2026. CERA-specific buttons and fields were checked against the project source and runbooks. Third-party dashboards may change labels after updates; this is not a claim that every screen was re-tested live. Passwords and API keys are deliberately excluded.
+Edition 3 · 13 October 2026. CERA-specific buttons and fields were checked against the project source and runbooks. Third-party dashboards may change labels after updates; this is not a claim that every screen was re-tested live. Live passwords and API keys are deliberately excluded.
 
 ## Your workspace
 
@@ -85,7 +85,7 @@ Staff portal → open a request → assign → act → record.
 2. Read the **Request** section and the customer’s project description. Review **Consent evidence** before arranging files or samples.
 3. Find **Workflow**. Click **Assign to me**. If another person is assigned, **Take over assignment** is a deliberate reassignment, not a routine step.
 4. Under **Internal note**, type a short next action, such as “Need sample count and preferred delivery date.” Click **Add note**. This note is visible to staff only.
-5. After the reply-button release is deployed, in **Contact** click **Reply to enquiry**. Your email app opens a draft addressed to the customer with the reference and service in the subject. Write and send the reply there, then record the follow-up as an internal note.
+5. In **Contact** click **Reply to enquiry**. Your email app opens a draft addressed to the customer with the reference and service in the subject. Write and send the reply there, then record the follow-up as an internal note.
 6. When the work genuinely progresses, choose an available value from **Move to** and click **Update status**. Use only the transitions offered by the application.
 
 ### CHECK RESULT
@@ -207,7 +207,7 @@ R2 is deferred. Treat uploaded media as dependent on the production server’s l
 
 ### Logo changes
 
-After the logo-settings release is deployed: open **Site → Site settings → Website logo**. Upload or select a Media image, then save. Check the public header/footer and both portals. Clear the field to restore the default logo. Authentik branding remains a separate administrator task.
+Open **Site → Site settings → Website logo**. Upload or select a Media image, then save. Check the public header/footer and both portals. Clear the field to restore the default logo. Authentik branding remains a separate administrator task.
 
 ## Add a research service
 
@@ -395,7 +395,7 @@ Make one deliberate change, save it, and verify the result where the customer se
 
 ## Bulk uploads and galleries
 
-Available after the gallery release and database migration.
+CMS → Content → Media. Available in the production release.
 
 ### Upload a batch once
 
@@ -415,7 +415,7 @@ Each gallery accepts up to 40 images. Media accepts PNG, JPEG, WebP and AVIF fil
 
 ## Manage the About page and team
 
-CMS → Content → Pages → about. Available after the team release.
+CMS → Content → Pages → about. Available in the production release.
 
 ### Edit the organisation and its people
 
@@ -430,3 +430,24 @@ CMS → Content → Pages → about. Available after the team release.
 ### CHECK RESULT
 
 Verify names, roles, biographies, photo crops and link destinations. Empty team lists are hidden. Up to 60 members and eight links per member are supported. Add only approved real staff information; sample data is not a finished company profile.
+
+## Account credentials and recovery
+
+A private access register for Habab to complete in the company password manager.
+
+### Application access
+
+- **Staff portal:** https://www.ceramedical.org/staff · Habab’s named staff identity; Authentik sign-in and staff role required.
+- **Payload CMS:** https://admin.ceramedical.org/admin · CMS administrator. Initial values: CMS_BOOTSTRAP_ADMIN_EMAIL / CMS_BOOTSTRAP_ADMIN_PASSWORD.
+- **Vendure:** https://catalogue.ceramedical.org/dashboard · catalogue/order administrator. Initial values: SUPERADMIN_USERNAME / SUPERADMIN_PASSWORD.
+- **Authentik:** https://auth.ceramedical.org/if/admin/ · identity administrator. Initial values: AUTHENTIK_BOOTSTRAP_EMAIL / AUTHENTIK_BOOTSTRAP_PASSWORD.
+- **ERPNext CRM:** https://crm.ceramedical.org · provisioned administrator; initial password may be /opt/frappe_docker/.admin-initial on VPS.
+- **Cloudflare, Resend, Hetzner, UptimeRobot:** Use owner login and recovery stored in the company password manager. API tokens are integration credentials.
+
+### Provision and protect access
+
+Have the technical administrator create Habab’s named staff, CMS, Vendure and CRM accounts, then transfer current credentials directly into the company password manager. Production config is /opt/cera/.env; the protected VPS helper is /opt/cera/infra/scripts/export-operator-credentials.sh. Bootstrap values may be stale after password changes. Change temporary passwords at first sign-in and record each account’s URL, recovery method and owner. Do not share Saad’s personal login or a generic root account.
+
+### Keep secrets out of this PDF
+
+This handbook contains no live passwords, API tokens, database credentials, OIDC secrets or signing keys. Never commit or email the export-helper output, .env file or recovery codes.

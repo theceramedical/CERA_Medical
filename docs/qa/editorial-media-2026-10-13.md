@@ -1,4 +1,4 @@
-# CMS galleries and About team — local verification
+# CMS galleries, About team and production release
 
 ## Implemented
 
@@ -18,14 +18,16 @@
 - Local Next.js browser preview using a mock CMS: About content, two gallery images, team profiles with/without photos, and profile link rendered.
 - In-app browser desktop/mobile viewport checks: no horizontal overflow; all image resources loaded.
 - The development React debugging warning about eval under the existing CSP was observed. The security policy was not weakened for development tooling.
+- Commit `07414a07765230f704832c99b6be244c2841b05e` passed CI, the security workflow, all six production image builds, deployment over SSH, and the release smoke test: https://github.com/theceramedical/CERA_Medical/actions/runs/38367549791
+- Post-release checks: `https://www.ceramedical.org` returned HTTP 200; the CMS admin endpoint redirected to sign-in (HTTP 307); all Compose application services reported running and healthy on CERA-Production.
 
 ## Release and owner use
 
-Not deployed as part of this change. Deploy CMS/web and run migrations in order: site_logo, then galleries_and_team. Shared contracts must be built before web.
+The production release deployed the CMS/web images and ran migrations in order: site_logo, then galleries_and_team. Shared contracts were included in the image builds.
 
 1. CMS → Content → Media: upload multiple images; complete required alt text.
 2. Content → Posts or Service presentations → open record → Image gallery: select/reorder images, save draft, preview and publish.
 3. Content → Pages → about: edit content and team fields; add/reorder/remove member rows, save draft, preview and publish.
-4. Verify the public article/service gallery and About page after release. Actual owner bulk-upload/create/publish flows remain a release smoke check; local browser preview used fixture data, not a signed-in live CMS session.
+4. Verify the public article/service gallery and About page. The local browser preview used fixture data; Habab’s signed-in CMS upload/create/publish workflow has not yet been exercised with owner content.
 
 No production team profiles or synthetic public articles were created. Photos and identities must be supplied/approved by the owner.
