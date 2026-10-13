@@ -184,7 +184,6 @@ export interface Media {
    * Required. Describe the image for someone who cannot see it. Decorative images still need a short honest label, not an empty string.
    */
   alt: string;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -252,6 +251,35 @@ export interface Page {
   approverId?: string | null;
   publishedAt?: string | null;
   fixture?: boolean | null;
+  galleryHeading?: string | null;
+  /**
+   * Select multiple images and drag to reorder. For bulk uploads, open Content → Media and select or drop several files, complete their Alt text, then select them here. Removing a selection does not delete the original file.
+   */
+  gallery?: (number | Media)[] | null;
+  teamHeading?: string | null;
+  teamIntroduction?: string | null;
+  /**
+   * Add, edit, reorder or remove team profiles. Publish the page to show changes.
+   */
+  teamMembers?:
+    | {
+        name: string;
+        role: string;
+        photo?: (number | null) | Media;
+        biography?: string | null;
+        links?:
+          | {
+              label: string;
+              /**
+               * Full https:// profile URL, such as LinkedIn, ORCID or a university page.
+               */
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   excerpt?: string | null;
   /**
    * Build pages from approved, accessible sections. Every available block is rendered on the public site.
@@ -540,6 +568,11 @@ export interface Post {
   approverId?: string | null;
   publishedAt?: string | null;
   fixture?: boolean | null;
+  galleryHeading?: string | null;
+  /**
+   * Select multiple images and drag to reorder. For bulk uploads, open Content → Media and select or drop several files, complete their Alt text, then select them here. Removing a selection does not delete the original file.
+   */
+  gallery?: (number | Media)[] | null;
   excerpt: string;
   cover?: (number | null) | Media;
   category: number | Category;
@@ -665,6 +698,11 @@ export interface ServicePresentation {
   approverId?: string | null;
   publishedAt?: string | null;
   fixture?: boolean | null;
+  galleryHeading?: string | null;
+  /**
+   * Select multiple images and drag to reorder. For bulk uploads, open Content → Media and select or drop several files, complete their Alt text, then select them here. Removing a selection does not delete the original file.
+   */
+  gallery?: (number | Media)[] | null;
   /**
    * Must match an active Vendure catalogue product slug (create the product in the commerce dashboard first). Validated on save once the slug field is set.
    */
@@ -1136,7 +1174,6 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1204,6 +1241,26 @@ export interface PagesSelect<T extends boolean = true> {
   approverId?: T;
   publishedAt?: T;
   fixture?: T;
+  galleryHeading?: T;
+  gallery?: T;
+  teamHeading?: T;
+  teamIntroduction?: T;
+  teamMembers?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        photo?: T;
+        biography?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   excerpt?: T;
   layout?:
     | T
@@ -1476,6 +1533,8 @@ export interface PostsSelect<T extends boolean = true> {
   approverId?: T;
   publishedAt?: T;
   fixture?: T;
+  galleryHeading?: T;
+  gallery?: T;
   excerpt?: T;
   cover?: T;
   category?: T;
@@ -1545,6 +1604,8 @@ export interface ServicePresentationsSelect<T extends boolean = true> {
   approverId?: T;
   publishedAt?: T;
   fixture?: T;
+  galleryHeading?: T;
+  gallery?: T;
   serviceId?: T;
   excerpt?: T;
   cardHighlights?:
@@ -1858,6 +1919,10 @@ export interface Navigation {
  */
 export interface SiteSetting {
   id: number;
+  /**
+   * Upload or select a PNG, JPEG, WebP or AVIF logo. Used in the website header, footer, customer portal and staff console. Clear this field to restore the default logo. Authentik branding is managed separately.
+   */
+  logo?: (number | null) | Media;
   tagline?: string | null;
   email?: string | null;
   phone?: string | null;
@@ -2006,6 +2071,7 @@ export interface NavigationSelect<T extends boolean = true> {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  logo?: T;
   tagline?: T;
   email?: T;
   phone?: T;

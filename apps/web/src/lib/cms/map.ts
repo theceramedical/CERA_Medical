@@ -22,6 +22,20 @@ interface PayloadDocument {
   readonly slug?: string | null;
   readonly title?: string | null;
   readonly excerpt?: string | null;
+  readonly galleryHeading?: string | null;
+  readonly gallery?: readonly (number | string | PayloadMedia)[] | null;
+  readonly teamHeading?: string | null;
+  readonly teamIntroduction?: string | null;
+  readonly teamMembers?:
+    | readonly {
+        id?: string;
+        name: string;
+        role: string;
+        biography?: string | null;
+        photo?: number | string | PayloadMedia | null;
+        links?: readonly { label: string; url: string }[] | null;
+      }[]
+    | null;
   readonly body?: unknown;
   readonly layout?: unknown;
   readonly seo?: {
@@ -89,6 +103,26 @@ function cardHighlightsFromDoc(doc: PayloadDocument): readonly string[] | undefi
   return items.length > 0 ? items : undefined;
 }
 
+function galleryImage(value: number | string | PayloadMedia | null | undefined) {
+  if (!value || typeof value !== 'object' || !value.url) return null;
+  try {
+    const url = new URL(value.url, process.env.CMS_URL ?? 'http://localhost:3001');
+    if (!['http:', 'https:'].includes(url.protocol)) return null;
+    return { url: publicizeCmsMediaUrl(url.href) ?? url.href, alt: value.alt ?? '' };
+  } catch {
+    return null;
+  }
+}
+
+function safeProfileUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
+
 export function mapCmsDocument(type: ContentType, doc: PayloadDocument): ContentDocument {
   const coverId = relationId(doc.cover);
   const ogImageId = relationId(doc.seo?.ogImage ?? null);
@@ -108,6 +142,18 @@ export function mapCmsDocument(type: ContentType, doc: PayloadDocument): Content
     excerpt: doc.excerpt ?? null,
     body: doc.body ?? null,
     layout: doc.layout,
+    galleryHeading: doc.galleryHeading ?? undefined,
+    gallery: (doc.gallery ?? []).map(galleryImage).filter((image) => image !== null),
+    teamHeading: doc.teamHeading ?? undefined,
+    teamIntroduction: doc.teamIntroduction ?? undefined,
+    teamMembers: (doc.teamMembers ?? []).map((member) => ({
+      id: member.id ?? `${member.name}-${member.role}`,
+      name: member.name,
+      role: member.role,
+      biography: member.biography ?? undefined,
+      photo: galleryImage(member.photo) ?? undefined,
+      links: (member.links ?? []).filter((link) => safeProfileUrl(link.url)),
+    })),
     ...(cardHighlights !== undefined ? { cardHighlights } : {}),
     ...(cardIcon !== undefined ? { cardIcon } : {}),
     seo: {

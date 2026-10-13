@@ -1,6 +1,7 @@
 import { ValidationError } from 'payload';
 
 import { servicePresentationBlocks } from '../blocks/layout.ts';
+import { galleryFields } from '../fields/gallery.ts';
 import { asString } from '../lib/as-string.ts';
 import {
   assertServiceExists,
@@ -77,6 +78,7 @@ export const ServicePresentations: CollectionConfig = publishable({
   },
   extraHooks: { beforeChange: [assertCatalogue] },
   extraFields: [
+    ...galleryFields,
     {
       name: 'serviceId',
       type: 'text',

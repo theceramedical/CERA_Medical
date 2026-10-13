@@ -4,6 +4,7 @@ import { draftMode } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 import { CmsLayout } from '../../../../components/cms-content-page.tsx';
+import { ContentGallery } from '../../../../components/content-gallery.tsx';
 import { JsonLd, serviceJsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
@@ -143,6 +144,7 @@ export default async function ServiceDetailPage({
                 </div>
               </>
             )}
+            <ContentGallery images={presentation?.gallery} heading={presentation?.galleryHeading} />
           </article>
 
           <ServiceEnquiryAside

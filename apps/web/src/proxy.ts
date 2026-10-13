@@ -75,6 +75,7 @@ export function proxy(request: NextRequest): NextResponse {
   }
 
   const csp = buildCsp(nonce, {
+    cmsOrigin: originOf(process.env.CMS_URL),
     mediaOrigin: originOf(process.env.S3_PUBLIC_URL),
     catalogueOrigin: originOf(process.env.VENDURE_PUBLIC_URL),
     apiOrigin: originOf(process.env.NEXT_PUBLIC_API_URL),

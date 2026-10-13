@@ -82,6 +82,13 @@ describe('buildCsp', () => {
   });
 
   describe('configured origins', () => {
+    it('allows local CMS uploads as images without trusting the CMS for scripts', () => {
+      const parsed = directives(buildCsp(NONCE, { cmsOrigin: 'https://admin.ceramedical.org' }));
+      expect(parsed.get('img-src')).toContain('https://admin.ceramedical.org');
+      expect(parsed.get('script-src')).not.toContain('https://admin.ceramedical.org');
+      expect(parsed.get('connect-src')).not.toContain('https://admin.ceramedical.org');
+    });
+
     it('adds the media origin to img-src only', () => {
       const parsed = directives(buildCsp(NONCE, { mediaOrigin: 'https://media.example' }));
 

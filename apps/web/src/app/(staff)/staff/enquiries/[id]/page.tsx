@@ -9,10 +9,10 @@ import { Button } from '@cera/ui/button';
 import { Card } from '@cera/ui/card';
 import { InternalStatusBadge } from '@cera/ui/internal-status-badge';
 import { Text } from '@cera/ui/typography';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
 
-import { AppLink } from '../../../../../components/link.tsx';
+import { AppButtonLink, AppLink } from '../../../../../components/link.tsx';
 import { PageHeader } from '../../../../../components/page-header.tsx';
 import { authenticatedApi } from '../../../../../lib/auth/api.ts';
 import { getSession } from '../../../../../lib/auth/session.ts';
@@ -120,6 +120,18 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
                   </div>
                 ) : null}
               </dl>
+              <AppButtonLink
+                href={`mailto:${encodeURIComponent(e.email)}?subject=${encodeURIComponent(`Re: ${e.reference} — ${e.serviceTitle}`)}`}
+                variant="primary"
+                className="self-start"
+              >
+                <Mail aria-hidden className="size-4" />
+                Reply to enquiry
+              </AppButtonLink>
+              <Text size="body-sm" tone="muted">
+                Opens a draft in your email app. Send your reply there, then record the follow-up in
+                Internal note below. Opening the draft does not send an email.
+              </Text>
             </Card>
 
             <Card as="section" className="gap-4 p-6" aria-labelledby="message-heading">

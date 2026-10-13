@@ -1,5 +1,4 @@
 import { Icon } from '@cera/ui/icon';
-import { Wordmark } from '@cera/ui/wordmark';
 import { Search } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -15,6 +14,7 @@ import { SiteHeaderCartMenu } from './site-header-cart-menu.tsx';
 import { HeaderScrollShadow } from './site-header.client.tsx';
 import { DesktopNavLinks } from './site-nav-links.client.tsx';
 import { MobileNav } from './site-nav.client.tsx';
+import { SiteWordmark } from './site-wordmark.tsx';
 
 /**
  * The site header (design-language.md section 5.5): 80px tall, wordmark left, five nav items centred,
@@ -50,7 +50,7 @@ export async function SiteHeader() {
           // whatever text we chose and hide the real words. The link's purpose - going home - is
           // conventional enough that a logo link needs no further explanation.
         >
-          <Wordmark as="span" />
+          <SiteWordmark as="span" />
         </NextLink>
 
         {/*

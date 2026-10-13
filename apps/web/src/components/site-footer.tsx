@@ -1,5 +1,4 @@
 import { Heading, Text } from '@cera/ui/typography';
-import { Wordmark } from '@cera/ui/wordmark';
 import NextLink from 'next/link';
 
 import { getSession } from '../lib/auth/session.ts';
@@ -7,6 +6,7 @@ import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppLink } from './link.tsx';
 import { MAIN_NAV, supportNavForSession, withProductsNav } from './navigation.ts';
+import { SiteWordmark } from './site-wordmark.tsx';
 
 import type { NavItem } from './navigation.ts';
 
@@ -27,7 +27,7 @@ export async function SiteFooter() {
     <footer className="bg-surface-footer">
       <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-6 pt-12 pb-12 sm:grid-cols-2 md:px-10 lg:grid-cols-4">
         <div>
-          <Wordmark />
+          <SiteWordmark />
           <Text size="body-sm" tone="muted" className="mt-4">
             {settings?.tagline ?? 'Biomedical Research and Development.'}
           </Text>

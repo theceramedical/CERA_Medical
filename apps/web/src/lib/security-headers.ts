@@ -26,6 +26,7 @@ export interface CspResult {
  */
 export interface CspOrigins {
   /** Where `next/image` is pointed: SeaweedFS locally, R2 in staging and production. */
+  readonly cmsOrigin?: string | undefined;
   readonly mediaOrigin?: string | undefined;
   /** Vendure asset host (featured product previews on services/products). */
   readonly catalogueOrigin?: string | undefined;
@@ -60,6 +61,8 @@ export function buildCsp(nonce: string, origins: CspOrigins = {}): string {
   const imageSources = ["'self'", 'data:', 'blob:'];
   if (origins.mediaOrigin !== undefined) imageSources.push(origins.mediaOrigin);
   if (origins.catalogueOrigin !== undefined) imageSources.push(origins.catalogueOrigin);
+
+  if (origins.cmsOrigin !== undefined) imageSources.push(origins.cmsOrigin);
 
   const connectSources = ["'self'"];
   if (origins.apiOrigin !== undefined) connectSources.push(origins.apiOrigin);

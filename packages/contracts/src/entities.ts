@@ -98,6 +98,26 @@ export const ContentDocumentSchema = z.object({
   body: z.unknown(),
   /** Payload page layout blocks, rendered by the web app's constrained block renderer. */
   layout: z.unknown().optional(),
+  galleryHeading: z.string().max(160).optional(),
+  gallery: z
+    .array(z.object({ url: z.url(), alt: z.string().max(200) }))
+    .max(40)
+    .optional(),
+  teamHeading: z.string().max(160).optional(),
+  teamIntroduction: z.string().max(800).optional(),
+  teamMembers: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string().max(160),
+        role: z.string().max(160),
+        biography: z.string().max(2000).optional(),
+        photo: z.object({ url: z.url(), alt: z.string().max(200) }).optional(),
+        links: z.array(z.object({ label: z.string().max(80), url: z.url() })).max(8),
+      }),
+    )
+    .max(60)
+    .optional(),
   /** Service presentation catalogue card bullets (optional). */
   cardHighlights: z.array(z.string().max(160)).max(6).optional(),
   /** Lucide key for catalogue/home cards (`microscope`, `dna`, …). */

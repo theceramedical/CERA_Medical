@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 
 import { ArticleCoverImage } from '../../../../components/articles/article-cover-image.tsx';
 import { ArticleDetailBody } from '../../../../components/articles/article-detail-body.tsx';
+import { ContentGallery } from '../../../../components/content-gallery.tsx';
 import { articleJsonLd, JsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
@@ -87,6 +88,7 @@ export default async function ArticleDetailPage({
         </div>
       </div>
       <ArticleDetailBody slug={slug} title={title} excerpt={excerpt} body={document.body} />
+      <ContentGallery images={document.gallery} heading={document.galleryHeading} />
 
       {related.length > 0 ? (
         <section

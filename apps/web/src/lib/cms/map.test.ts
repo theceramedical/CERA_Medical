@@ -81,3 +81,46 @@ describe('mapCmsDocument', () => {
     expect(document.coverImageUrl).toBe('https://media.example/bucket/hero-card.jpg');
   });
 });
+
+describe('gallery and team content', () => {
+  it('preserves gallery order and removes deleted or unpopulated media', () => {
+    const doc = mapCmsDocument('post', {
+      id: 1,
+      slug: 'gallery-test',
+      title: 'Gallery test',
+      gallery: [
+        { url: 'https://media.example/second.png', alt: 'Second image' },
+        42,
+        { url: 'https://media.example/first.png', alt: 'First image' },
+        { url: null },
+      ],
+    });
+    expect(doc.gallery?.map((image) => image.alt)).toEqual(['Second image', 'First image']);
+  });
+
+  it('maps editable team profiles while filtering unsafe profile links', () => {
+    const doc = mapCmsDocument('page', {
+      id: 2,
+      slug: 'about',
+      title: 'About',
+      teamHeading: 'Meet our researchers',
+      teamMembers: [
+        {
+          name: 'Example researcher',
+          role: 'Research lead',
+          biography: 'A short biography.',
+          photo: { url: 'https://media.example/person.png', alt: 'Researcher portrait' },
+          links: [
+            { label: 'Profile', url: 'https://university.example/person' },
+            { label: 'Invalid', url: 'data:text/html,unsafe' },
+          ],
+        },
+      ],
+    });
+    expect(doc.teamHeading).toBe('Meet our researchers');
+    expect(doc.teamMembers?.[0]?.photo?.alt).toBe('Researcher portrait');
+    expect(doc.teamMembers?.[0]?.links).toEqual([
+      { label: 'Profile', url: 'https://university.example/person' },
+    ]);
+  });
+});

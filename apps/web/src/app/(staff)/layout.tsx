@@ -1,9 +1,9 @@
 import { SkipLink } from '@cera/ui/skip-link';
 import { Text } from '@cera/ui/typography';
-import { Wordmark } from '@cera/ui/wordmark';
 import { LogOut } from 'lucide-react';
 
 import { AppLink } from '../../components/link.tsx';
+import { SiteWordmark } from '../../components/site-wordmark.tsx';
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
@@ -31,7 +31,7 @@ export default function StaffLayout({ children }: { readonly children: ReactNode
 
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">
-          <Wordmark />
+          <SiteWordmark />
 
           {/*
            * Labelling the console visibly, so someone with both this and the public site open knows

@@ -12,6 +12,16 @@ export const SiteSettings: GlobalConfig = {
     update: ({ req }) => canAuthor(req.user),
   },
   fields: [
+    {
+      name: 'logo',
+      label: 'Website logo',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description:
+          'Upload or select a PNG, JPEG, WebP or AVIF logo. Used in the website header, footer, customer portal and staff console. Clear this field to restore the default logo. Authentik branding is managed separately.',
+      },
+    },
     { name: 'tagline', type: 'text', defaultValue: 'Biomedical Research and Development' },
     { name: 'email', type: 'email' },
     { name: 'phone', type: 'text' },

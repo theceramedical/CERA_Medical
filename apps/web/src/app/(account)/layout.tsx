@@ -1,6 +1,7 @@
 import { SkipLink } from '@cera/ui/skip-link';
-import { Wordmark } from '@cera/ui/wordmark';
 import NextLink from 'next/link';
+
+import { SiteWordmark } from '../../components/site-wordmark.tsx';
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
@@ -38,7 +39,7 @@ export default function AccountLayout({ children }: { readonly children: ReactNo
             href="/"
             className="inline-block rounded-md no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           >
-            <Wordmark as="span" />
+            <SiteWordmark as="span" />
           </NextLink>
         </div>
       </header>

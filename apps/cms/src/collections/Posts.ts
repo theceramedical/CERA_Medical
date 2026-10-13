@@ -1,3 +1,4 @@
+import { galleryFields } from '../fields/gallery.ts';
 import { asString } from '../lib/as-string.ts';
 import { constrainedEditor } from '../lib/editor.ts';
 import { PREVIEW_BREAKPOINTS, previewUrl } from '../lib/preview.ts';
@@ -20,6 +21,7 @@ export const Posts: CollectionConfig = publishable({
     preview: (data) => previewUrl(`/articles/${asString(data.slug)}`),
   },
   extraFields: [
+    ...galleryFields,
     { name: 'excerpt', type: 'textarea', required: true, maxLength: 400 },
     { name: 'cover', type: 'relationship', relationTo: 'media' },
     {

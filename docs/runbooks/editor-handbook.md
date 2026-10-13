@@ -1,459 +1,432 @@
-# CERA Medical client operations handbook
-
-Non-technical guide for day-to-day work on the live site. Hostnames below use production URLs; staging uses the same pattern on your staging domain.
-
-**Client operator:** Habab Ali Ahmed  
-**System:** CERA Medical production website  
-**Document purpose:** Daily operations and safe content/order management
-
-## Single-operator handover
-
-This handbook assumes one person runs CERA Medical. You do not need daily SSH,
-Docker, GitHub, database, or Authentik administration. Use the public site and the
-three operator consoles below; keep the administrator credentials in a password
-manager and never paste them into email or WhatsApp.
-
-### Your daily order of work
-
-1. **Start with the staff console** at `https://www.ceramedical.org/staff`.
-   Review new enquiries, claim each one, set the next action, and reply within the
-   promised three working days.
-2. **Check email and ERPNext** at `https://crm.ceramedical.org` for delivery failures,
-   duplicate leads, or requests that need a quotation.
-3. **Check commerce orders** in Vendure. Confirm COD orders, contact the customer
-   if an address or phone number is incomplete, and update the order status after
-   dispatch or cancellation.
-4. **Publish planned content** in Payload CMS. Save drafts first, proofread the
-   public preview, then publish only after checking links, images, and mobile layout.
-5. **Open the public website in a private window** and test any important change:
-   homepage, services, enquiry form, product page, and checkout.
-
-### Weekly routine
-
-- Review every open enquiry and order; close or reschedule stale work.
-- Check `/services`, `/products`, research updates, privacy pages, and contact details.
-- Confirm the latest Hetzner backup exists and that the server has free disk space.
-- Review UptimeRobot and Resend delivery alerts.
-- Remove temporary drafts, unused media, and test products.
-- Export or download any business records that must be retained for accounting.
-
-### Monthly routine
-
-- Review staff access in Authentik and remove anyone who no longer works with CERA.
-- Confirm MFA is enabled on the staff account.
-- Place a small test enquiry and verify the customer receipt, staff alert, and CRM lead.
-- Review COD orders and catalogue prices for accuracy.
-- Ask the technical administrator to perform a backup-restore rehearsal and apply
-  operating-system/security updates.
-
-### The only URLs you need
-
-| Purpose                                   | URL                                           |
-| ----------------------------------------- | --------------------------------------------- |
-| Public website                            | `https://www.ceramedical.org`                 |
-| Enquiries and staff queue                 | `https://www.ceramedical.org/staff`           |
-| Content, pages, articles, media           | `https://admin.ceramedical.org`               |
-| Products, variants, prices, stock, orders | `https://catalogue.ceramedical.org/dashboard` |
-| CRM leads and customer records            | `https://crm.ceramedical.org`                 |
-| Identity and MFA administration           | `https://auth.ceramedical.org`                |
-
-The Authentik page may appear briefly during sign-in. That is the secure identity
-service; after authentication, return to the CERA staff console or the requested
-admin console. Do not use the customer `/account` page to process company enquiries.
-
-## Click-by-click screen guide
-
-### 1. Work a new enquiry
-
-1. Open `https://www.ceramedical.org/staff` and sign in.
-2. In the **left sidebar**, click **Enquiries** or **Queue**.
-3. Click the newest row, identified by its reference and received time.
-4. In the enquiry panel, click **Claim** or **Assign to me**.
-5. Read the service, timeline, organisation, and project description.
-6. In **Status**, choose the next stage, such as **In review**, **Awaiting client**,
-   or **Quoted**.
-7. In **Internal note**, write the next action. Do not put the note in the customer
-   reply box.
-8. Click **Save**.
-9. Click **Reply** or open the linked email, write the response, and send it from the
-   approved CERA address.
-10. Return to the enquiry and click **Save** again so the latest status is recorded.
-
-### 2. Edit a page or the homepage
-
-1. Open `https://admin.ceramedical.org`.
-2. In the **left sidebar**, click **Pages**.
-3. Search for `home`, `about`, `contact`, `terms`, or the page you need.
-4. Click the page title, then click **Edit**.
-5. Change the requested heading, paragraph, button, or section. Keep the existing
-   slug unless you intentionally want a new URL.
-6. Click **Save draft**.
-7. Click **Preview** and check desktop and mobile widths.
-8. If the copy is approved, click **Request review**. An approver then opens the
-   same page, checks it, and clicks **Publish**.
-9. Open the public URL in a private browser window and confirm the change.
-
-### 3. Publish a research article
-
-1. In the CMS left sidebar, click **Posts**.
-2. Click **Create new**.
-3. Enter the **Title**, **Slug**, **Excerpt**, and **Category**.
-4. Click **Choose media** beside the cover field and select or upload the image.
-5. Enter the article in **Body** and add the SEO title and description.
-6. Click **Save draft**, then **Preview**.
-7. Check headings, links, image captions, and the article URL.
-8. Click **Request review**; the approver clicks **Publish** after checking it.
-9. Verify the article under `/articles` and copy its public URL for sharing.
-
-### 4. Change a service
-
-1. Open the catalogue dashboard and use the **left sidebar → Catalog → Products**.
-2. Search for the service and click its product name.
-3. Click **Edit**, change the service name, summary, description, price, or
-   enquiry/checkout setting, then click **Save**.
-4. Copy the service **slug** exactly.
-5. Open the CMS, click **Service presentations** in the left sidebar, and open the
-   presentation with the same slug.
-6. Click **Edit**, update the hero, capabilities, process steps, or enquiry panel,
-   then click **Save draft → Preview**.
-7. Request review and publish after approval.
-8. Open `/services/<slug>` in a private window and verify the title, buttons, price,
-   and enquiry form.
-
-### 5. Add a physical product
-
-1. In Vendure, click **Catalog → Products → Create product** in the left sidebar.
-2. Enter the product name, description, slug, and an internal SKU.
-3. Open **Variants**, click **Add variant**, then enter the PKR price, stock, and
-   availability.
-4. Open **Collections**, select **Physical Products & Reagents**, and click
-   **Add product**.
-5. Check **Enquiry enabled** or **Checkout enabled** according to the product’s
-   purpose, then click **Save**.
-6. Open the public `/products` page in a private window.
-7. Click the new product, add it to the cart, and check that the price, quantity,
-   and COD option are correct.
-
-### 6. Process a COD order
-
-1. In Vendure, click **Sales → Orders** in the left sidebar.
-2. Click the newest order and confirm the customer name, phone, delivery address,
-   items, quantity, and total.
-3. Click **Add note** if you need to record a customer call.
-4. Contact the customer before dispatch and confirm the COD amount.
-5. Choose the appropriate order status, then click **Save**.
-6. Dispatch through the courier and record the tracking number in the order note.
-7. When the courier reports delivery, update the order to **Delivered**. If it is
-   returned, choose **Cancelled/Returned** and record the reason.
-
-### 7. Review a CRM lead
-
-1. Open `https://crm.ceramedical.org`.
-2. In the **left sidebar**, click **Leads**.
-3. Search by the CERA enquiry reference or email address.
-4. Click the lead to view the enquiry details and communication history.
-5. Use **Add comment** for internal follow-up and **Next action** for a reminder.
-6. Do not delete the lead when it is finished; set the appropriate status and keep
-   the reference for reporting.
-
-### 8. Change a logo, image, or contact detail
-
-1. In the CMS left sidebar, click **Media** and upload a web-ready image, or click
-   **Globals → Site settings** for contact details.
-2. Click **Edit** on the page or global record that uses the value.
-3. Click **Choose media** or edit the requested text field.
-4. Click **Save draft → Preview**, then request review and publish.
-5. Open the public page and test the header, footer, contact link, and image on a
-   phone-sized browser window.
-
-### 9. Manage staff access
-
-1. Open `https://auth.ceramedical.org` and sign in as the administrator.
-2. In the **left sidebar**, click **Directory → Users**.
-3. Search for the person and click their username.
-4. Open **Groups**, add the required CERA group, and click **Save**.
-5. Open **MFA devices** and confirm an authenticator device is enrolled.
-6. To remove access, return to **Groups**, remove the staff groups, and save; then
-   disable the user if the person should not sign in at all.
-
-### 10. Verify any important change
-
-After every publish, product edit, or order change:
-
-1. Open a private browser window.
-2. Visit the affected public URL.
-3. Use the same path a customer would use: navigation, search, button, form, cart,
-   or checkout.
-4. Confirm the visible text, links, price, status, and mobile layout.
-5. Record the date and what changed in the internal operations note.
-
-### Common daily tasks
-
-**Handle an enquiry:** open `/staff`, open the newest item, verify the reference,
-read the service and timeline, claim it, add an internal note, reply by email, and
-move it to the next status. Never put private clinical data or patient identifiers
-into an enquiry note.
-
-**Publish an article:** CMS → Posts → Create, add title, slug, excerpt, cover image,
-body, and SEO description; save as draft; preview the public URL; publish. Use a
-new slug for a new article and do not silently change an existing published slug.
-
-**Update a service:** update the matching Vendure service first, then update the
-Payload service presentation using the exact same slug. Check the public `/services`
-page after publishing.
-
-**Add a physical product:** create the product and variant in Vendure, set PKR price,
-SKU, availability, and stock, assign **Physical Products & Reagents**, enable it,
-then test the public product page and COD checkout. Do not create real test orders
-with a customer’s details.
-
-**Process COD:** confirm the order and phone/address, contact the customer, update
-the status when accepted, dispatch through the chosen courier, record the tracking
-reference, and mark delivered or cancelled. COD is not payment confirmation until
-the courier has collected the amount.
-
-**Change an image or logo:** upload a compressed web-ready image in CMS → Media,
-give it a descriptive filename/alt text, replace the reference in the page, publish,
-and verify desktop and mobile views. Keep original high-resolution files outside the
-production CMS.
-
-### What not to change
-
-Do not edit DNS, production `.env`, database credentials, OIDC client secrets,
-Resend keys, Docker Compose files, or server containers from the admin consoles.
-Do not delete products or enquiries to correct a mistake; use an unpublished/draft
-state or ask the technical administrator to restore the record. Never share the
-root/SSH password with ordinary operators.
-
-### If something looks broken
-
-1. Open the public page in a private window and retry once.
-2. Check UptimeRobot and the Resend delivery log.
-3. Record the URL, approximate time, browser, screenshot, and enquiry/order
-   reference; do not include passwords or API tokens.
-4. Contact the technical administrator. Do not restart containers or edit `.env`
-   unless they explicitly instruct you.
-
-If the site is unavailable, use the last known email/CRM record to avoid losing a
-customer request, then report the incident. If a credential may have leaked, revoke
-it immediately in the relevant provider and tell the technical administrator.
-
-| System                      | URL                                         | Who uses it                        |
-| --------------------------- | ------------------------------------------- | ---------------------------------- |
-| Public website              | https://www.ceramedical.org                 | Everyone                           |
-| Content (Payload CMS)       | https://admin.ceramedical.org               | Editors & approvers                |
-| Service catalogue (Vendure) | https://catalogue.ceramedical.org/dashboard | Operations / catalogue managers    |
-| CRM (ERPNext)               | https://crm.ceramedical.org                 | Sales / ops (leads from the site)  |
-| Customer portal             | https://www.ceramedical.org/account         | Customers (own enquiries & orders) |
-| Staff console               | https://www.ceramedical.org/staff           | CERA team (enquiry queue)          |
-| Sign-in admin (Authentik)   | https://auth.ceramedical.org                | IT / administrators only           |
-
-> **Screenshot placeholders:** Add screenshots under `docs/runbooks/images/editor-handbook/` (e.g. `cms-pages-list.png`, `vendure-product-edit.png`) and embed them here when you capture them from production.
-
----
-
-## What your client can change without a developer
-
-| Task                                        | Tool                             | Notes                                |
-| ------------------------------------------- | -------------------------------- | ------------------------------------ |
-| Homepage, About, Contact, FAQs, legal pages | **CMS → Pages**                  | Publish workflow (see below)         |
-| Research articles                           | **CMS → Posts**                  | Appear under `/articles/...`         |
-| Service marketing pages                     | **CMS → Service presentations**  | Slug must match Vendure service slug |
-| Site ribbon (e.g. LAB ACCREDITED)           | **CMS → Globals → Announcement** | On/off, message, link                |
-| Header/footer links (optional)              | **CMS → Globals → Navigation**   | If empty, site defaults apply        |
-| Service names, prices, enquiry flags        | **Vendure admin**                | Drives `/services` grid and API      |
-| View CRM leads from enquiries               | **ERPNext**                      | Auto-created from website            |
-| Triage web enquiries                        | **Staff console**                | Not the customer `/account` area     |
-
-### Physical products vs research services
-
-| Kind                                            | Who edits marketing copy                         | Who edits price / cart / orders                                      | Public URL                          |
-| ----------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------- | ----------------------------------- |
-| **Research service**                            | **Payload → Service presentations**              | **Vendure** (not `physical-products`)                                | `/services/{slug}`                  |
-| **Shippable product (reagent, kit, cell line)** | Short text in **Vendure** (summary, description) | **Vendure** — must be in collection **Physical Products & Reagents** | `/products` (and `/products/{sku}`) |
-
-**Orders and checkout** always live in **Vendure** (Sales → Orders). Payload does not handle orders.
-
-**Research services** are fully operator-controlled: add the catalogue row in Vendure, then the presentation in Payload with the **same slug** (no developer for a new service line).
-
-**New physical SKUs:** create in Vendure, assign to **Physical Products & Reagents**, enable the product. The website picks up new SKUs automatically within about a minute. Rich marketing cards for flagship SKUs may still come from the seeded design list until you add CMS product pages (future).
-
----
-
-## CMS (Payload) — sign in and publish
-
-1. Open https://admin.ceramedical.org and sign in with your CMS user (not Google customer sign-in).
-2. Most collections use **Draft → Request review → Publish**:
-   - **Editor:** edit drafts; set **Review requested** when ready.
-   - **Approver / Administrator:** **Publish** to go live.
-3. Unpublished content does not appear on the public site.
-
-### Collections cheat sheet
-
-| Collection                                 | Public URL                              |
-| ------------------------------------------ | --------------------------------------- |
-| **Pages** (`home`, `services`, `about`, …) | `/{slug}`                               |
-| **Posts**                                  | `/articles/{slug}`                      |
-| **Service presentations**                  | `/services/{slug}`                      |
-| **Policies**                               | `/privacy`, `/terms`, `/data-retention` |
-| **Media**                                  | Used inside posts/pages                 |
-| **Categories**                             | Article groupings                       |
-| **Redirects**                              | Old URL → new URL                       |
-
-### Globals
+# CERA Medical — Owner’s Operating Handbook
 
-- **Announcement** — top ribbon on all public pages.
-- **Site settings** — contact details, enquiry form labels, FAQ snippets.
-- **Navigation** — optional header/footer overrides.
+Prepared for Habab Ali Ahmed · Edition 2 · 13 October 2026
 
-### New article (step by step)
+## Start here
 
-1. **Posts → Create**.
-2. Title, **slug** (URL), **excerpt**, **category**, optional **cover** (from Media).
-3. **Body** (rich text).
-4. SEO tab: title/description; leave **no index** off for public posts.
-5. Request review → approver publishes.
+A practical operating guide for one person.
 
----
+### Habab, this is your working manual
 
-## Vendure — services and SKUs
+Use the staff portal for requests, Payload CMS for website content, and Vendure for catalogue records and orders. You do not need the server terminal for ordinary daily work.
 
-1. Open https://catalogue.ceramedical.org/dashboard (Vendure v3 dashboard; `/admin` is not used). Superadmin credentials are on the server (`SUPERADMIN_USERNAME` / `SUPERADMIN_PASSWORD` in `/opt/cera/.env`).
-2. **Catalog → Products** — each research service line has a **slug** (e.g. `molecular-research`).
-3. Custom fields control enquiry-only vs purchasable, availability text, etc.
-4. After changing Vendure, the public site refreshes within about a minute (cached catalogue).
+### Choose the job, then open the right system
 
-**Vendure alone is enough** for a new service to appear on `/services` and `/services/{slug}` (copy comes from the product in Vendure). Add **Service presentations** in Payload only when you want richer marketing layout and SEO — same slug as Vendure when you do.
+- **Reply to a research request:** Staff portal + email · pages 6–7
+- **Change the homepage or publish an article:** Payload CMS · pages 8–11
+- **Add a research service:** Vendure + CMS · page 12
+- **Change products, prices or stock:** Vendure · page 13
+- **Process a cash-on-delivery order:** Vendure · page 14
+- **Change contact details or menus:** Payload CMS · page 15
+- **Fix a login or investigate downtime:** Pages 16–18
 
-### New research service (step by step)
+### How to read a procedure
 
-Full playbook: [add-research-service.md](./add-research-service.md) (services only — **not** the `/products` workflow).
+Each numbered list is one task. Follow the steps in order, then read the CHECK RESULT box. A saved draft is not a published page. A submitted COD order is not proof of cash received.
 
-Do **Vendure first**, then **Payload**. Use a lowercase hyphenated **slug** (e.g. `custom-metagenomics`).
+### Scope and accuracy
 
-1. **Vendure → Catalog → Products → Create**
-   - Name, description, short summary, display price, availability.
-   - **Slug** = the URL segment (same value you will use in Payload).
-   - Assign a **service** collection (e.g. Laboratory Research, Bioinformatics) — **not** Physical Products & Reagents.
-   - Enable the product; set **Enquiry enabled** / **Checkout enabled** as needed; save variants (SKU can match the slug).
-2. **Payload → Content → Service presentations → Create**
-   - **Title**, **slug** (must match Vendure exactly), body, optional layout blocks.
-   - Save as **draft** while writing; **Publish** only when Vendure shows the product as enabled.
-   - If publish fails on slug, the Vendure product is missing or disabled — fix catalogue first.
-3. Public page: `https://www.ceramedical.org/services/{slug}`.
+Edition 2 · 13 October 2026. CERA-specific buttons and fields were checked against the project source and runbooks. Third-party dashboards may change labels after updates; this is not a claim that every screen was re-tested live. Passwords and API keys are deliberately excluded.
 
-### New shippable product (step by step)
+## Your workspace
 
-1. **Vendure → Products → Create** — variant **SKU** (e.g. `CR-REG-9999`), price, stock.
-2. **Collections → Physical Products & Reagents → add the product** (or assign that collection on the product).
-3. Check **https://www.ceramedical.org/products** after ~1 minute.
+Keep these bookmarks in a browser folder named CERA Operations.
 
-Vendure 3 does not show collections on the product edit screen. For **services**, open **Catalog → Collections → Laboratory Research** (or Bioinformatics / Evidence), edit the **product filter**, and add your product. For **physical** SKUs, do the same under **Physical Products & Reagents**. If a picker spins on “Loading…”, search by product name or use the product-ID filter after saving the product once.
+### System directory
 
----
+- **Public website:** [https://www.ceramedical.org](https://www.ceramedical.org)
+- **Staff requests:** [https://www.ceramedical.org/staff](https://www.ceramedical.org/staff)
+- **Website CMS:** [https://admin.ceramedical.org/admin](https://admin.ceramedical.org/admin)
+- **Catalogue and orders:** [https://catalogue.ceramedical.org/dashboard](https://catalogue.ceramedical.org/dashboard)
+- **CRM records:** [https://crm.ceramedical.org](https://crm.ceramedical.org)
+- **Identity administration:** [https://auth.ceramedical.org/if/admin/](https://auth.ceramedical.org/if/admin/)
+- **Customer account:** [https://www.ceramedical.org/account](https://www.ceramedical.org/account)
 
-## CRM (ERPNext)
+### Set up your browser
 
-1. Open https://crm.ceramedical.org.
-2. Website enquiries create **Leads** with `custom_cera_reference` and the customer message.
-3. Staff alert email goes to `EMAIL_STAFF_ALERT_TO` (e.g. `theceramedical@gmail.com`).
-4. Internal notes and workflow status for the team live in the **staff console**, not in the customer-visible CRM message field.
+1. Create the CERA Operations bookmark folder and add the links above. Keep a separate folder for Hetzner, Cloudflare, Resend and UptimeRobot.
+2. Store the correct login for each system in your password manager. An Authentik password is not automatically a Payload or Vendure password.
+3. Use your owner/staff account for administration. Use a separate customer account or private browser window when checking the customer journey.
 
-See [erpnext.md](./erpnext.md) for field names and API setup.
+### Account readiness
 
----
+The handover must include working CMS publishing access, Vendure catalogue/order access, staff administrator access and recovery access. If one is missing, ask the technical administrator to provision that specific system; do not reuse or guess secrets.
 
-## Customer portal vs staff console (important)
+## The daily routine
 
-Signing in on the public site (Google or email via Authentik) gives a **customer** session by default:
+A short opening check, followed by the work that needs attention.
 
-- **https://www.ceramedical.org/account** — _your_ enquiries, profile, orders (customer view).
-- This is correct for `theceramedical@gmail.com` if that user is only in the **customer** group.
+### At the start of the day
 
-**Team triage** uses a different area:
+1. Open the public website. Check the homepage, Services and Contact links. On your phone, open the menu and check that it closes and navigates correctly.
+2. Open the staff portal. Read new enquiries, assign work to yourself and identify requests awaiting a reply. Follow page 6.
+3. Check the shared Gmail inbox and spam folder. Match replies to the enquiry reference. Follow page 7.
+4. Open Vendure and review new orders, pending dispatches and courier updates. Follow page 14.
+5. Review monitoring alerts. If an integration or page is failing, use pages 17–18 before changing content.
 
-- **https://www.ceramedical.org/staff** — enquiry queue, assignments, delivery retries.
-- Requires an Authentik **staff** group and **multi-factor authentication (MFA)** on sign-in.
+### Before you finish
 
-### Grant staff access (Authentik admin)
+- **Requests:** Every active request has an owner and a next action.
+- **Orders:** Dispatch information and money actually received are recorded separately.
+- **Content:** Any changes made today were checked on the public URL.
+- **Follow-up:** Keep a short list: reference, next action, due date and waiting on whom.
 
-1. Open https://auth.ceramedical.org (admin).
-2. Find the user (e.g. `theceramedical@gmail.com`).
-3. Add one or more groups (names must match exactly):
+### Weekly and monthly
 
-| Authentik group            | Role                                           |
-| -------------------------- | ---------------------------------------------- |
-| `cera-enquiry-handlers`    | Handle enquiries                               |
-| `cera-operations-managers` | Operations                                     |
-| `cera-administrators`      | Full staff + sensitive actions                 |
-| `cera-auditors`            | Read-only staff views                          |
-| `cera-content-editors`     | CMS editor (separate CMS login still required) |
-| `cera-content-approvers`   | CMS publish                                    |
+Weekly: review old enquiries, stock, failed integrations and backup history. Monthly: review account access, broken links, contact information, storage capacity and policy accuracy. Schedule a restore check with the technical administrator; a backup list alone does not prove recovery works.
 
-4. Ensure **MFA** is enrolled for that user.
-5. User signs out and signs in again, then opens **/staff** (header shows **Staff** when staff groups are present).
+## Handle a research enquiry
 
-Optional: keep `cera-customers` if they should also use `/account` as a customer.
+Staff portal → open a request → assign → act → record.
 
-See [authentik-social-login.md](./authentik-social-login.md) for Google button setup.
+### Read and take ownership
 
----
+1. Open the staff portal from page 4. In the enquiry queue, click the request you want to handle.
+2. Read the **Request** section and the customer’s project description. Review **Consent evidence** before arranging files or samples.
+3. Find **Workflow**. Click **Assign to me**. If another person is assigned, **Take over assignment** is a deliberate reassignment, not a routine step.
+4. Under **Internal note**, type a short next action, such as “Need sample count and preferred delivery date.” Click **Add note**. This note is visible to staff only.
+5. After the reply-button release is deployed, in **Contact** click **Reply to enquiry**. Your email app opens a draft addressed to the customer with the reference and service in the subject. Write and send the reply there, then record the follow-up as an internal note.
+6. When the work genuinely progresses, choose an available value from **Move to** and click **Update status**. Use only the transitions offered by the application.
 
-## Enquiry emails
+### CHECK RESULT
 
-See [enquiry-email.md](./enquiry-email.md). After each enquiry: customer receipt + staff alert to `EMAIL_STAFF_ALERT_TO`.
+Reload the request. Confirm the assignment, status and note. Read **Internal notes** and **Audit history** to confirm the change was recorded.
 
----
+### Closed requests
 
-## “Live catalogue data temporarily unavailable” on `/services`
+A closed request cannot be reassigned or moved through workflow on this screen, but internal notes remain available. Do not invent a replacement record to bypass a closed state; ask for help if reopening is required.
 
-This banner means the **website could not load live services from the API** (not a CMS typo). The page still shows a fallback list.
+## Email, CRM and delivery activity
 
-**Operators:** note it and tell technical support.
+Keep the conversation and its reference connected.
 
-If the API is healthy but services still fail, Vendure may be rejecting an oversized catalogue query (`Query is too complex` in API logs). Redeploy **api** and **commerce** after a fix, or restart commerce after raising query limits.
+### Reply to the customer
 
-**Technical check (on the server):**
+1. Open Gmail at theceramedical@gmail.com. Find the enquiry email or use the address shown on the request.
+2. Reply with the enquiry reference in the subject. Confirm the requested service, missing information and next step. Do not request patient identifiers in ordinary email.
+3. Return to the staff enquiry. Under **Internal note**, record when you replied and what you are waiting for; click **Add note**.
+4. If you use CRM, open ERPNext and search **Lead**. Find the record using the CERA reference. Website orders also create Lead records; they are not automatically ERPNext sales invoices.
 
-```bash
-cd /opt/cera
-export CERA_ENV_FILE=/opt/cera/.env
-docker compose -f infra/compose/compose.application.yaml ps api commerce web
-docker compose -f infra/compose/compose.application.yaml exec web printenv API_INTERNAL_URL
-curl -sS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3003/health/ready  # from api container or host if exposed
-```
+### Check an email or CRM integration failure
 
-Expect `API_INTERNAL_URL=http://api:3003` inside **web**, **api** healthy, **commerce** running. After a fix, reload `/services` — the banner should clear within about a minute.
+1. In the staff portal, click **Review delivery activity** to open **Integration deliveries**.
+2. Read the provider, event type, status, attempt count and error. Here “delivery” means an integration job, not a courier parcel.
+3. For a **dead letter** job, an administrator can use **Retry delivery** after the underlying issue is corrected. Check the destination first to avoid duplicate manual work.
+4. Refresh and confirm the job succeeds. If it fails again, record its reference and error for the technical administrator.
 
----
+### Sending and receiving are different
 
-## Sitemap and SEO
+contact@, info@, support@ and help@ceramedical.org were configured to forward to Gmail. Resend handles application sending. A verified Resend domain does not by itself configure Gmail’s “Send mail as” feature.
 
-- https://www.ceramedical.org/sitemap.xml — published CMS content + services + product URLs + static routes.
-- https://www.ceramedical.org/robots.txt — blocks `/account`, `/staff`, `/auth`.
+## CMS: edit, preview, publish
 
----
+Learn this once; use it for pages, posts and service presentations.
 
-## Quick daily map
+### Make a controlled content change
 
-| I want to…                     | Go to…                      |
-| ------------------------------ | --------------------------- |
-| Fix homepage copy              | CMS → Pages → `home`        |
-| Post news                      | CMS → Posts                 |
-| Change service price / enquiry | Vendure admin               |
-| Change service page design     | CMS → Service presentations |
-| See a new web lead             | Email, CRM, or **/staff**   |
-| Work the queue                 | **/staff** (not `/account`) |
-| Update ribbon                  | CMS → Announcement          |
+1. Open the CMS link on page 4 and sign in with your CMS account. On narrow screens, open the navigation menu to reveal the left sidebar.
+2. In the left sidebar, find **Content**. Choose **Pages**, **Posts** or **Service presentations**, then open the record by its title.
+3. Read the title and slug before editing. The slug identifies the public address; keep an established slug unless a redirect is planned.
+4. Edit the relevant fields. Use **Save draft** while the change is unfinished. Autosave is a convenience, not your public verification.
+5. Use the available preview control. Check headings, paragraph spacing, images, links and the mobile view.
+6. When ready, use the publish control. As the single operator, you need a CMS administrator or approver role to publish your own work.
+7. Open the public URL in a separate tab and reload. Confirm that the exact change is visible.
 
----
+### CHECK RESULT
 
-## Handover checklist for a non-technical client
+Verify the record is published, then check the public page while signed out. If it is unchanged, check the record and slug first; use the troubleshooting page instead of repeatedly creating duplicates.
 
-1. CMS editor + approver accounts created; short demo of publish workflow.
-2. Vendure admin login documented in a password manager (server ops only).
-3. Staff users in Authentik with MFA; bookmark **/staff**.
-4. `EMAIL_STAFF_ALERT_TO` set to shared inbox.
-5. ERPNext login for CRM.
-6. Agree who to contact for **new** `/products` SKUs vs Vendure price edits only.
-7. This handbook + screenshot folder shared.
+### Review and history
+
+**Review requested** is a checkbox field for an approval workflow; it does not publish. Draft versions are retained for supported collections. Use the record’s version history to compare an earlier version before restoring it, then verify its publication state.
+
+## Update the homepage
+
+CMS → Content → Pages → the homepage record.
+
+### Change an existing section
+
+1. Open **Pages** in the CMS sidebar. Open the record used for the homepage and confirm it with Preview.
+2. Find **Layout**. Expand the block for the section you want to change. Match its heading to the public homepage so you edit the right section.
+3. Edit the headline, supporting text and button label or destination inside that block. Keep one clear purpose per section.
+4. For an image field, choose an existing Media item or upload a prepared image. Add useful alternative text in Media.
+5. To add a section, use the Layout add-block control and choose a suitable block, such as a feature grid, process steps, article preview or call to action. Fill its required fields.
+6. Use the block reorder controls to position it. Save a draft, preview the whole page, then publish when the order is correct.
+
+### A clear homepage sequence
+
+- **Introduce:** What CERA does and who it serves.
+- **Explain:** Services and the process for starting a project.
+- **Support:** Approved facilities, research updates and useful evidence.
+- **Invite:** A clear enquiry action and contact information.
+
+### CHECK RESULT
+
+On desktop and mobile, verify section order, no repeated heading, readable text and working buttons. An article-preview block draws from published posts; add the article in Posts rather than pasting the same article into the homepage.
+
+## Publish a research update
+
+CMS → Content → Posts → create or edit.
+
+### Create the article
+
+1. In the left sidebar, click **Posts** under **Content**. Use the create control for a new post; open an existing title to revise one.
+2. Enter a clear **Title** and a stable **Slug**. Write the **Excerpt** as a short introduction that makes sense on a card.
+3. Choose the required **Category**. Select a cover image from Media. Do not upload confidential laboratory or participant information.
+4. Write the **Body**. Use meaningful headings, short paragraphs and descriptive links. Add publication or source links where relevant.
+5. Complete the SEO fields when available. Save a draft and preview the article.
+6. Publish, then visit the research-updates area and open the article. Check that its card and detail page both work.
+
+### CHECK RESULT
+
+The detail address uses /articles/ followed by the slug. Confirm title, excerpt, cover, body and links. If the homepage has an article-preview block, check whether the article appears under that block’s configured selection.
+
+### Revise or remove
+
+For a correction, edit the existing post so its URL stays stable. To withdraw a post, unpublish it rather than deleting it immediately. Check menus and homepage links that might still point to it. Delete only when you intend to remove the record and have preserved anything needed.
+
+## Images and media
+
+Prepare once, then reuse the same asset wherever it belongs.
+
+### Upload and place an image
+
+1. Prepare a JPG, PNG or other format accepted by the upload field. Use a descriptive filename and an appropriately sized image; avoid uploading an enormous original for a small card.
+2. Open **Media** in the CMS sidebar. Use the upload/create control and choose the file.
+3. Enter **Alt** text describing what the image communicates, such as “Microscopy workstation in the CERA laboratory”. Save the media record.
+4. Return to the page, post or service presentation. In the image relationship field, select the saved Media item.
+5. Save the content draft and preview. Check cropping, orientation and readability before publishing.
+
+### Replace carefully
+
+For a new image, select the replacement asset in each relevant content record and republish. Before deleting an old Media item, check where it is used. Deleting a shared file can break several pages.
+
+### Storage in this handover
+
+R2 is deferred. Treat uploaded media as dependent on the production server’s local storage until the technical administrator confirms migration. Confirm that media files, databases and configuration are covered by recovery procedures.
+
+### Logo changes
+
+After the logo-settings release is deployed: open **Site → Site settings → Website logo**. Upload or select a Media image, then save. Check the public header/footer and both portals. Clear the field to restore the default logo. Authentik branding remains a separate administrator task.
+
+## Add a research service
+
+Vendure creates the service; CMS gives it a rich presentation.
+
+### 1 · Create the catalogue record
+
+1. Open Vendure. In the left navigation, choose **Catalog → Products**, then **Create**. Vendure also calls research services “products”.
+2. Enter the name, slug, description and available service fields. Add the variant, SKU and appropriate price. Choose enquiry/checkout behavior deliberately and enable the record. Save.
+3. Open **Catalog → Collections**. Open the appropriate service collection: Laboratory Research, Bioinformatics, or Evidence and Reporting.
+4. In the collection’s Contents/Filters area, add the new record using its manual product-selection filter. Preserve the existing selections and save. Do not put a service in **Physical Products & Reagents**.
+
+### 2 · Build the service page
+
+1. Open CMS → **Content → Service presentations**. Create a presentation with the exact same slug as Vendure.
+2. Fill Title, Excerpt, Body and Card highlights. Add Layout blocks for the service hero, capabilities, process and enquiry panel. Save a draft.
+3. Publish after the corresponding Vendure service is enabled. To edit the main services-page introduction instead, open **Pages → services**.
+
+### CHECK RESULT
+
+Visit /services, then /services/your-slug. Check the card, full page and enquiry button. The CMS validates the catalogue when publishing: a missing/disabled catalogue record or mismatched slug must be corrected first.
+
+## Manage products and prices
+
+Vendure is the source of catalogue, variant and stock information.
+
+### Create or update a product
+
+1. Open Vendure. In the left navigation, select **Catalog → Products**. Open an existing product or choose **Create**.
+2. Enter the product name, stable slug and description. Upload/select product assets using Vendure’s asset controls; these are separate from CMS Media.
+3. Add or edit variants. Each sellable variant needs a meaningful SKU and the correct price. Check that you are working in the intended channel and currency.
+4. Set stock/availability as appropriate. Review any **Enquiry enabled** and **Checkout enabled** fields. A switch alone does not override the website’s eligibility rules.
+5. Save and enable when approved. From **Catalog → Collections**, add physical listings to **Physical Products & Reagents**, retaining the existing selections.
+6. Open the public product listing, then its detail page. Check the rendered name, images, description, SKU, PKR price and available action.
+
+### CHECK RESULT
+
+A catalogue record is not automatically purchasable. Some physical listings are enquiry-only. Confirm the public Add to cart or enquiry action rather than promising checkout based on the admin form.
+
+### Retire a listing
+
+Disable it first and check the public site. Do not delete products or variants needed by existing orders. If you must delete an unused test record, confirm it has no real orders and remove any related CMS/menu links. Product pages use a shared application layout; Vendure controls the product data.
+
+## Process a COD order
+
+Confirm the order, arrange fulfilment, then reconcile the cash.
+
+### From new order to completion
+
+1. Open Vendure and choose **Sales → Orders** in the left navigation. Open the order by its code. If the dashboard version groups navigation differently, find Orders in its navigation/search.
+2. Read the customer details, items, quantities, shipping address, shipping charge, total and payment method. Confirm that the order is COD.
+3. Contact the customer to confirm the address, telephone number, items and amount to collect. Record the contact outcome in the available order notes.
+4. Use the order’s fulfilment action when the goods are ready. Select the correct quantities and record the courier/tracking information requested by the form.
+5. Update fulfilment using only the actions available in the dashboard and the actual courier evidence. A submitted order is not proof of dispatch or delivery.
+6. When the courier remits the money, reconcile the amount with the order total and fees. Use the applicable payment action only after checking the payment record and money received.
+7. For a failed delivery, cancellation or return, record the reason and follow the available cancellation/return actions. Reconcile stock and any money separately.
+
+### CHECK RESULT
+
+Keep the order code, courier reference and payment evidence together. Vendure is the fulfilment source of truth. The ERPNext integration creates a Lead record, not a complete accounting or courier workflow.
+
+### Customer checkout checks
+
+Checkout requires a signed-in customer with verified email and an eligible listing. Verify the cart total, PKR currency, delivery details and COD option. Use an explicitly labelled test order only by agreement; do not accidentally dispatch or collect payment for it.
+
+## Contacts, menus and policies
+
+Small global changes can affect the entire website.
+
+### Update contact information
+
+1. Open the CMS sidebar and find **Site settings** in the globals area.
+2. Edit Email, Phone, Address or **Contact locations**. Check the label, value and link for each location.
+3. If needed, edit the **Contact page enquiry panel**, social links, newsletter wording or **Frequently asked questions**. Save the global.
+4. Open the public Contact page and footer. Test email, phone and social links.
+
+### Change navigation or an announcement
+
+1. Open **Navigation** in the CMS globals area. Edit the header or footer item’s label and href. Preserve working destinations; save.
+2. To change the notice strip, open **Announcement**. Review Enabled, Status label, Message, Href and Link label. Save.
+3. Check the header, footer and notice on desktop and mobile. Follow each changed link.
+
+### Consent and policy changes
+
+Site settings → **Enquiry form** holds consent wording, consent version, messages, labels and hints. Change the version when consent wording changes, and update the corresponding public policy pages consistently. Do not alter approved obligations casually.
+
+### Public policy check
+
+Review /privacy, /terms and /data-retention after a policy update. Confirm the effective date, real contact details and current storage/backup practice. Publication is not proof that deletion or retention jobs are implemented; confirm operational changes with the technical administrator.
+
+## Accounts and access
+
+Keep the customer experience separate from administration.
+
+### Sign in for the right job
+
+1. For customer testing, open the public account/sign-in link. For operational work, open **/staff/sign-in**.
+2. Use the account provisioned for that purpose. Signing in successfully does not automatically grant CMS, commerce or staff permissions.
+3. After sign-in, confirm the destination: customers use the account portal; staff use the staff workspace.
+4. When finished on a shared device, sign out of the application and close the browser session. If another application remains signed in, sign out there too.
+
+### If you hire someone later
+
+Create a named identity for that person and assign only the needed application roles. Authentik administration is at the identity link on page 4. CMS publishing and Vendure permissions must also be provisioned in their own systems; a customer or email address alone is not a staff role. Have the technical administrator confirm the group-to-role mappings before onboarding.
+
+### Recovery and protection
+
+Store passwords, recovery codes and ownership details in a password manager. Do not put them in this handbook or send a server .env file to a new employee. Use the recovery process configured for the particular application; do not repeatedly reset unrelated accounts.
+
+### Owner handover check
+
+Before taking over alone, sign in to every system in the directory and verify your actual role. Confirm access to the recovery inbox, hosting billing, domain renewal, monitoring notifications and a technical support contact.
+
+## Monitoring and backups
+
+Know what is healthy and what can actually be recovered.
+
+### Review availability alerts
+
+1. Open UptimeRobot and choose **Monitoring** in the left sidebar. Open the CERA monitor.
+2. Check its URL, latest status and recent incidents. Verify that the intended notification contact is attached and confirmed.
+3. Use the service’s notification-test control when available and confirm receipt. Then follow the troubleshooting procedure if the website is down.
+
+### Review server backups
+
+1. Open Hetzner Console → the CeraMedical project → **Servers** → **CERA-Production**.
+2. Open the server’s **Backups** tab. Confirm backups are enabled and that recent successful backup entries exist.
+3. Keep a record of the latest backup date. Arrange a recovery exercise with the technical administrator using a separate safe target; do not restore over the live server as a test.
+
+### What still needs confirmation
+
+You reported enabling Hetzner backups. This guide does not independently verify the current backup history. A server backup is different from an application-consistent database export; ask the technical administrator to confirm database, local media and secret/configuration recovery.
+
+### When to escalate
+
+Escalate missing backups, persistent delivery failures, full-disk alerts, repeated login errors or unexplained catalogue changes. Server restarts, restores, DNS changes and container upgrades belong in a planned technical intervention, not ordinary content editing.
+
+## When something goes wrong
+
+Record the symptom, check once, then escalate with useful evidence.
+
+### Symptom → first action
+
+- **New content is not visible:** Check published status, the correct record and slug. Reload the public URL. Do not create a duplicate.
+- **Service publish is rejected:** Match its CMS slug to an enabled Vendure service. Check catalogue availability.
+- **Product appears in the wrong list:** Review collection membership: service collection versus Physical Products & Reagents.
+- **Customer is sent to staff sign-in:** Record the starting URL, final URL and account type. Retest in a private window; do not grant staff roles as a workaround.
+- **No email or CRM record:** Inspect Integration deliveries and the provider error. Check the destination before retrying.
+- **Cannot complete checkout:** Confirm customer sign-in, verified email, eligible item, PKR currency and available shipping/payment method.
+- **Public site is down:** Check the monitor and whether other pages fail. Contact technical support; do not change DNS at random.
+
+### Send a useful support report
+
+1. Record the date/time, affected URL, system and record/order reference.
+2. Write what you clicked, what you expected and what actually happened. Include the exact visible error.
+3. Attach a screenshot with passwords, customer identifiers and tokens hidden. Mention whether one user or all users are affected.
+
+### Do not multiply the problem
+
+Avoid repeated checkout submissions, repeated integration retries and repeated deletion/recreation of records. Preserve the reference and evidence so the underlying fault can be traced.
+
+## Your handover checklist
+
+Complete these together before the technical handover is closed.
+
+### Readiness check
+
+- **Access:** Habab can sign in to staff, CMS, Vendure, CRM and required provider accounts.
+- **Content:** Edit a draft, preview it, publish an agreed small change and verify the public result.
+- **Services:** Locate the Vendure service and its matching CMS presentation.
+- **Enquiries:** Open a request, assign it, add an internal note and identify the reply channel.
+- **Orders:** Locate an order and distinguish order, payment and fulfilment records.
+- **Recovery:** Password-manager ownership, recovery inbox and support contact are recorded.
+- **Backups:** Recent backup history and recovery responsibilities are confirmed.
+- **Alerts:** A test notification reaches the person responsible.
+- **Storage:** Local media backup coverage is documented; R2 migration remains a separate task.
+
+### A few terms you will see
+
+**CMS:** website content editor. **Slug:** the readable identifier used in a URL. **Variant:** a purchasable version of a product. **SKU:** its stock identifier. **Draft:** unpublished work. **Publish:** make approved content publicly available. **Integration delivery:** a background email/CRM job. **Fulfilment:** handling the customer’s order.
+
+### The operating rule
+
+Make one deliberate change, save it, and verify the result where the customer sees it. Keep content work in the CMS, catalogue/order work in Vendure and infrastructure changes with the technical administrator.
+
+## Bulk uploads and galleries
+
+Available after the gallery release and database migration.
+
+### Upload a batch once
+
+1. In the CMS left sidebar, open Content → Media. Use the upload control and select several image files, or drop the files into the upload area.
+2. Review each image and complete its required Alt text. Save the uploads. Use names that identify the subject; never upload confidential participant information.
+3. Open Content → Posts for a research article, or Content → Service presentations for a service. Open the record to edit.
+4. Find Image gallery. Select the uploaded images. You can select multiple images and drag the selected entries to change their order. Add a Gallery heading if needed.
+5. Save the draft, preview, then publish. Open the public article or service detail page and scroll to its gallery.
+
+### CHECK RESULT
+
+Check every image, its text and its order on desktop and mobile. Click an image to open its full-size file. Removing an image from a gallery does not delete it from Media or from other pages.
+
+### Limits and ownership
+
+Each gallery accepts up to 40 images. Media accepts PNG, JPEG, WebP and AVIF files, with a 10 MB per-file limit. Uploads use the configured storage, including local server storage while R2 is deferred. Keep original images separately.
+
+## Manage the About page and team
+
+CMS → Content → Pages → about. Available after the team release.
+
+### Edit the organisation and its people
+
+1. Open Pages in the CMS left sidebar and select the About record with slug about.
+2. Edit Title, Excerpt, Body and Layout for the organisation information. These fields now drive the public About page.
+3. Find Team heading and Team introduction. Write the heading and short introduction for the people section.
+4. Under Team members, add a row. Enter Name and Role. Select or upload a Photo and add the Biography.
+5. In that member’s Links area, add a label such as LinkedIn, ORCID or University profile, plus its full HTTPS URL. Add additional links as needed.
+6. Add more members or drag rows to change their display order. To remove a person from the page, remove that row; their Media file is not automatically deleted.
+7. Save a draft, preview, then publish. Open /about and check the team section and each profile link.
+
+### CHECK RESULT
+
+Verify names, roles, biographies, photo crops and link destinations. Empty team lists are hidden. Up to 60 members and eight links per member are supported. Add only approved real staff information; sample data is not a finished company profile.

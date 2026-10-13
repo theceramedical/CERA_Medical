@@ -37,7 +37,7 @@ export function Wordmark({
         height={size === 'sm' ? 57 : 68}
         decoding="async"
         className={cn(
-          'h-auto w-auto max-w-none',
+          'h-auto w-auto max-w-[10.5rem] object-contain',
           size === 'sm' ? 'max-h-7' : 'max-h-9',
           onDark && 'brightness-0 invert',
         )}

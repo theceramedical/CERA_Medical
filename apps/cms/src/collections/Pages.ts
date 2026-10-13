@@ -1,4 +1,6 @@
 import { layoutBlocks } from '../blocks/layout.ts';
+import { galleryFields } from '../fields/gallery.ts';
+import { teamFields } from '../fields/team.ts';
 import { asString } from '../lib/as-string.ts';
 import { constrainedEditor } from '../lib/editor.ts';
 import { PREVIEW_BREAKPOINTS, previewUrl } from '../lib/preview.ts';
@@ -21,6 +23,8 @@ export const Pages: CollectionConfig = publishable({
     preview: (data) => previewUrl(`/${asString(data.slug)}`),
   },
   extraFields: [
+    ...galleryFields,
+    ...teamFields,
     { name: 'excerpt', type: 'textarea', maxLength: 400 },
     {
       name: 'layout',

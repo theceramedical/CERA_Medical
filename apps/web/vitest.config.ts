@@ -4,6 +4,7 @@ import { defineConfig, mergeConfig } from 'vitest/config';
 export default mergeConfig(
   baseTestConfig,
   defineConfig({
+    oxc: { jsx: { runtime: 'automatic' } },
     test: {
       include: ['src/**/*.{test,spec}.{ts,tsx}'],
 

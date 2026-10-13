@@ -30,6 +30,7 @@ export const Media: CollectionConfig = {
     read: () => true,
   },
   upload: {
+    bulkUpload: true,
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
     imageSizes: [
       { name: 'hero', width: 640, height: 800, position: 'centre' },

@@ -4,9 +4,11 @@ import { MapPin } from 'lucide-react';
 
 import type { ContentDocument } from '@cera/contracts';
 
+import { ContentGallery } from './content-gallery.tsx';
 import { AppLink } from './link.tsx';
 import { PageHeader } from './page-header.tsx';
 import { RichText } from './rich-text.tsx';
+import { TeamSection } from './team-section.tsx';
 
 export interface LayoutBlock {
   readonly blockType?: string;
@@ -474,15 +476,21 @@ export function CmsContentPage({
             <RichText body={document.body} />
           </div>
         ) : null}
+        <ContentGallery images={document.gallery} heading={document.galleryHeading} />
+        <TeamSection document={document} />
       </>
     );
   }
   return (
     <>
       {skipPageHeader ? null : <PageHeader title={document.title} lede={document.excerpt ?? ''} />}
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <RichText body={document.body} />
-      </div>
+      {document.body ? (
+        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+          <RichText body={document.body} />
+        </div>
+      ) : null}
+      <ContentGallery images={document.gallery} heading={document.galleryHeading} />
+      <TeamSection document={document} />
     </>
   );
 }
