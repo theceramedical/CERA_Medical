@@ -104,6 +104,13 @@ export function proxy(request: NextRequest): NextResponse {
 
   response.headers.set(REQUEST_ID_HEADER, requestId);
   response.headers.set('content-security-policy', csp);
+  // Cloudflare Email Obfuscation rewrites server-rendered email links and
+  // injects a decoder script. That changes React's hydration input and the
+  // injected script is correctly blocked by our nonce CSP. Cloudflare honors
+  // no-transform and leaves the HTML untouched.
+  if (request.method === 'GET' && request.headers.get('accept')?.includes('text/html')) {
+    response.headers.set('cache-control', 'no-transform');
+  }
   for (const [name, value] of Object.entries(STATIC_SECURITY_HEADERS)) {
     response.headers.set(name, value);
   }

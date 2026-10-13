@@ -4,6 +4,8 @@ import { Text } from '@cera/ui/typography';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import type { DeliveryAddress } from '@cera/contracts';
+
 import { AppLink } from '../../../../components/link.tsx';
 import { CHECKOUT_CONTACT_STORAGE_KEY, completeCheckout } from '../../../../lib/cart-client.ts';
 
@@ -23,15 +25,19 @@ function SafepayOrderFinalize({ tracker }: { readonly tracker: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let contact: { email?: string; fullName?: string } = {};
+    let contact: { email?: string; fullName?: string; deliveryAddress?: DeliveryAddress } = {};
     try {
       const raw = sessionStorage.getItem(CHECKOUT_CONTACT_STORAGE_KEY);
-      if (raw !== null) contact = JSON.parse(raw) as { email?: string; fullName?: string };
+      if (raw !== null) contact = JSON.parse(raw) as typeof contact;
     } catch {
       /* ignore */
     }
 
-    if (contact.email === undefined || contact.fullName === undefined) {
+    if (
+      contact.email === undefined ||
+      contact.fullName === undefined ||
+      contact.deliveryAddress === undefined
+    ) {
       router.replace('/checkout');
       return;
     }
@@ -40,6 +46,7 @@ function SafepayOrderFinalize({ tracker }: { readonly tracker: string }) {
       email: contact.email,
       fullName: contact.fullName,
       countryCode: 'PK',
+      deliveryAddress: contact.deliveryAddress,
       paymentMethod: 'safepay',
       safepayTracker: tracker,
     })

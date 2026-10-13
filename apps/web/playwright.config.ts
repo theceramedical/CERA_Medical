@@ -11,7 +11,8 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = 3100;
 /** Use `localhost` (not `127.0.0.1`) so session redirects and cookies stay on one host. */
 const BASE_URL = `http://localhost:${String(PORT)}`;
-const BACKEND_URL = 'http://127.0.0.1:3101';
+// Keep the API on the same site as the browser so its SameSite cart cookie is accepted.
+const BACKEND_URL = 'http://localhost:3101';
 
 /** Inlined on the shell command so `pnpm build` always sees public env vars (Playwright webServer env alone is not always picked up by nested scripts). */
 /** Must match `e2e/support/session.mjs` so sealed cookies work in portal tests. */
@@ -53,7 +54,7 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: `NODE_ENV=production ${E2E_APP_ENV} pnpm --filter @cera/contracts build && NODE_ENV=production ${E2E_APP_ENV} pnpm build && PORT=${String(PORT)} HOSTNAME=localhost NODE_ENV=production ${E2E_APP_ENV} node .next/standalone/apps/web/server.js`,
+      command: `NODE_ENV=production ${E2E_APP_ENV} pnpm --filter @cera/contracts build && NODE_ENV=production ${E2E_APP_ENV} pnpm build && NODE_ENV=production ${E2E_APP_ENV} pnpm exec next start --port ${String(PORT)} --hostname localhost`,
       url: BASE_URL,
       env: {
         CERA_ENABLE_DEV_ROUTES: '1',
@@ -129,7 +130,10 @@ export default defineConfig({
     {
       name: 'e2e',
       testMatch: /.*\.e2e\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        ...(process.env['PW_CHANNEL'] === 'chrome' ? { channel: 'chrome' } : {}),
+      },
     },
     {
       name: 'mobile',

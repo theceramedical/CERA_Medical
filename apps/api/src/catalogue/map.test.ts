@@ -105,4 +105,21 @@ describe('public physical products', () => {
     };
     expect(mapVendurePublicProduct(entered, origin)?.sku).toBe('123ASDASDSA');
   });
+
+  it('does not offer checkout when Vendure marks a variant out of stock', () => {
+    const unavailable = {
+      ...physical,
+      variants: [
+        {
+          id: 'v30',
+          sku: 'APPROVED-002',
+          price: 3400,
+          priceWithTax: 3400,
+          stockLevel: 'OUT_OF_STOCK' as const,
+        },
+      ],
+      customFields: { checkoutEnabled: true, enquiryEnabled: true },
+    };
+    expect(mapVendurePublicProduct(unavailable, origin)?.checkoutEnabled).toBe(false);
+  });
 });

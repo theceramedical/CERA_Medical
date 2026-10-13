@@ -56,6 +56,13 @@ describe('request id', () => {
 });
 
 describe('security headers', () => {
+  it('prevents Cloudflare from rewriting server-rendered HTML before React hydrates', () => {
+    const request = new NextRequest('https://cera.example/products', {
+      headers: { accept: 'text/html,application/xhtml+xml' },
+    });
+    expect(proxy(request).headers.get('cache-control')).toContain('no-transform');
+  });
+
   it('puts the policy on the response for the browser to enforce', () => {
     expect(proxy(requestFor('/')).headers.get('content-security-policy')).toContain('script-src');
   });

@@ -1,6 +1,6 @@
 import { ApiError } from '@cera/contracts/errors';
 
-import type { Cart, CartLine } from '@cera/contracts';
+import type { Cart, CartLine, DeliveryAddress } from '@cera/contracts';
 
 const AUTH_HEADER = 'vendure-auth-token';
 
@@ -188,16 +188,14 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         email: string;
         fullName: string;
         countryCode: string;
+        deliveryAddress: DeliveryAddress;
         paymentMethod: 'cod' | 'safepay' | 'test';
         safepayTracker?: string | undefined;
       },
     ): Promise<{ orderCode: string; token: string | null }> {
       const address = {
         fullName: input.fullName,
-        streetLine1: 'CERA Medical — online order',
-        city: 'Haripur',
-        province: 'KPK',
-        postalCode: '22620',
+        ...input.deliveryAddress,
         countryCode: input.countryCode,
       };
 

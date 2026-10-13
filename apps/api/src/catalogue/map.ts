@@ -104,7 +104,9 @@ export function mapVendurePublicProduct(
   if (!isPhysicalCatalogueProduct(product)) return null;
   const sku = (product.variants?.[0]?.sku ?? service.slug).toUpperCase();
   if (isUnapprovedSeedProductSku(sku)) return null;
-  const checkoutEnabled = product.customFields?.checkoutEnabled === true;
+  const checkoutEnabled =
+    product.customFields?.checkoutEnabled === true &&
+    product.variants?.[0]?.stockLevel !== 'OUT_OF_STOCK';
   return PublicProductSchema.parse({
     sku,
     title: service.title,

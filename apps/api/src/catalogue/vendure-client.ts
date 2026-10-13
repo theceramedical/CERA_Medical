@@ -24,6 +24,7 @@ const PRODUCT_FIELDS = `
     sku
     price
     priceWithTax
+    stockLevel
   }
 `;
 

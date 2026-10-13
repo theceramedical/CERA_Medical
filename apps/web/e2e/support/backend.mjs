@@ -115,6 +115,10 @@ const E2E_ORIGIN = 'http://localhost:3100';
 const VENDURE_COOKIE = 'cera_vendure_token';
 
 const PHYSICAL_LINES = {
+  'E2E-PRODUCT-001': {
+    title: 'E2E laboratory kit',
+    unitPriceMinor: 3400,
+  },
   'CR-CEL-8402': {
     title: 'CERA-GLIO-01: Authenticated Human Glioblastoma Multiforme Primary Cell Cohort',
     unitPriceMinor: 13_440_000,
@@ -246,6 +250,26 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (request.method === 'GET' && path === '/v1/products') {
+    json(response, 200, {
+      items: [
+        {
+          sku: 'E2E-PRODUCT-001',
+          title: 'E2E laboratory kit',
+          summary: 'A product used only by the browser test.',
+          description: 'A product used only by the browser test.',
+          displayPrice: null,
+          availabilityText: 'In stock',
+          listPriceMinor: 3400,
+          checkoutEnabled: true,
+          enquiryEnabled: true,
+          imageUrl: null,
+        },
+      ],
+    });
+    return;
+  }
+
   if (request.method === 'GET' && path === '/api/globals/site-settings') {
     json(response, 200, SITE_SETTINGS);
     return;
@@ -355,7 +379,9 @@ const server = createServer(async (request, response) => {
         cart === undefined ||
         cart.lines.length === 0 ||
         typeof body.email !== 'string' ||
-        typeof body.fullName !== 'string'
+        typeof body.fullName !== 'string' ||
+        typeof body.deliveryAddress?.streetLine1 !== 'string' ||
+        typeof body.deliveryAddress?.phoneNumber !== 'string'
       ) {
         json(response, 400, {
           error: { code: 'validation_failed', message: 'Invalid checkout.', retryable: false },
@@ -474,4 +500,4 @@ const server = createServer(async (request, response) => {
   json(response, 404, { error: { message: 'No test fixture for this endpoint.' } });
 });
 
-server.listen(3101, '127.0.0.1');
+server.listen(3101, 'localhost');

@@ -1,4 +1,9 @@
-import { CartSchema, SafepayCheckoutStartResponseSchema, type Cart } from '@cera/contracts';
+import {
+  CartSchema,
+  SafepayCheckoutStartResponseSchema,
+  type Cart,
+  type DeliveryAddress,
+} from '@cera/contracts';
 
 function apiUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
@@ -79,9 +84,10 @@ export async function completeCheckout(body: {
   fullName: string;
   countryCode?: string;
   paymentMethod: CheckoutPaymentMethod;
+  deliveryAddress: DeliveryAddress;
   safepayTracker?: string;
 }): Promise<{ orderCode: string }> {
-  const response = await fetch(`${apiUrl()}/v1/checkout/complete`, {
+  const response = await fetch('/api/checkout/complete', {
     method: 'POST',
     credentials: 'include',
     headers: { 'content-type': 'application/json' },
@@ -96,8 +102,9 @@ export async function startSafepayCheckout(body: {
   fullName: string;
   redirectUrl: string;
   cancelUrl: string;
+  deliveryAddress: DeliveryAddress;
 }): Promise<{ checkoutUrl: string; tracker: string }> {
-  const response = await fetch(`${apiUrl()}/v1/checkout/safepay/start`, {
+  const response = await fetch('/api/checkout/safepay/start', {
     method: 'POST',
     credentials: 'include',
     headers: { 'content-type': 'application/json' },

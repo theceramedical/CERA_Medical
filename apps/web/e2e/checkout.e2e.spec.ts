@@ -32,6 +32,11 @@ test.describe('physical product checkout', () => {
     await expect(page).toHaveURL(/\/checkout$/);
 
     await page.locator('input[name="fullName"]').fill('E2E Buyer');
+    await page.locator('input[name="phoneNumber"]').fill('03001234567');
+    await page.locator('input[name="streetLine1"]').fill('House 12, Main Road');
+    await page.locator('input[name="city"]').fill('Haripur');
+    await page.locator('input[name="province"]').fill('Khyber Pakhtunkhwa');
+    await page.locator('input[name="postalCode"]').fill('22620');
     await expect(page.locator('input[name="email"]')).toHaveValue('portal-customer@example.com');
     await page.locator('input[name="paymentMethod"][value="cod"]').check();
 
@@ -60,7 +65,7 @@ test.describe('physical product checkout', () => {
 
     await page.goto('/cart');
     await expect(page.getByRole('heading', { name: 'Your cart', level: 1 })).toBeVisible();
-    await expect(page.getByText('CERA-GLIO-01')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('E2E laboratory kit')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText('PKR', { exact: false }).first()).toBeVisible();
 
     await page.getByRole('link', { name: 'Proceed to checkout' }).click();

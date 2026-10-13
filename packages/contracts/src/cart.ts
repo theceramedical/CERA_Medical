@@ -27,11 +27,22 @@ export const AddCartLineBodySchema = z.object({
 
 export const CheckoutPaymentMethodSchema = z.enum(['cod', 'safepay', 'test']);
 
+export const DeliveryAddressSchema = z.object({
+  streetLine1: z.string().trim().min(5).max(160),
+  streetLine2: z.string().trim().max(160).optional(),
+  city: z.string().trim().min(2).max(80),
+  province: z.string().trim().min(2).max(80),
+  postalCode: z.string().trim().min(4).max(12),
+  phoneNumber: z.string().trim().min(10).max(24),
+});
+export type DeliveryAddress = z.infer<typeof DeliveryAddressSchema>;
+
 export const CheckoutCompleteBodySchema = z.object({
   email: z.string().email().max(254),
   fullName: z.string().min(1).max(160),
   countryCode: z.string().length(2).default('PK'),
   paymentMethod: CheckoutPaymentMethodSchema,
+  deliveryAddress: DeliveryAddressSchema,
   safepayTracker: z.string().max(120).optional(),
 });
 

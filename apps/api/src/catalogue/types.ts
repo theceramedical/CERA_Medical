@@ -12,6 +12,7 @@ export interface VendureVariant {
   readonly sku: string;
   readonly price: number;
   readonly priceWithTax: number;
+  readonly stockLevel?: 'IN_STOCK' | 'OUT_OF_STOCK';
 }
 
 export interface VendureProduct {

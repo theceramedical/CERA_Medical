@@ -24,6 +24,10 @@ Local/dev uses `cera-test-payment` when Safepay is not configured.
 
 Checkout (`/checkout`) requires a **signed-in customer** with a **verified email** (Google or email via Authentik). Guests cannot complete payment; the cart stays cookie-based until they sign in.
 
+The website posts checkout to its own `/api/checkout/*` route. This route forwards the sealed, host-only customer session to the API on the server; a browser request to `api.ceramedical.org` cannot carry the `__Host-cera_session` cookie set by `www.ceramedical.org`.
+
+Customers must enter their phone number, street address, city, province, and postal code. The API validates these fields and passes them to Vendure as the order shipping address. Do not substitute CERA's laboratory address for the customer address. Vendure product variants need stock on hand above their out-of-stock threshold before checkout can succeed; the threshold itself does not add stock.
+
 Every completed order is stored with the customer’s **subject id** and appears under **Your account → Orders** (`GET /v1/me/orders`).
 
 ## ERPNext (CRM)
@@ -32,4 +36,4 @@ Each completed checkout writes a `commerce_orders` row and enqueues `erpnext.ord
 
 ## Smoke test
 
-Verify: `/cart`, add a service, checkout with COD or Safepay (per env), then sign in and open `/account/orders`.
+Verify: `/cart`, add an approved in-stock product, enter a real delivery address, checkout with COD or Safepay (per env), then open `/account/orders` and confirm the delivery details in Vendure.
