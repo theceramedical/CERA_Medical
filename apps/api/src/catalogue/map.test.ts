@@ -96,4 +96,13 @@ describe('public physical products', () => {
     expect(publicProduct?.displayPrice).toBeNull();
     expect(publicProduct?.listPriceMinor).toBeNull();
   });
+
+  it('uses the uppercase cart SKU for a lowercase variant entered in Vendure', () => {
+    const entered = {
+      ...physical,
+      collections: [],
+      variants: [{ id: 'v29', sku: '123asdasdsa', price: 3400, priceWithTax: 3400 }],
+    };
+    expect(mapVendurePublicProduct(entered, origin)?.sku).toBe('123ASDASDSA');
+  });
 });

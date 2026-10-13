@@ -102,7 +102,7 @@ export function mapVendurePublicProduct(
   const service = mapVendureProduct(product, vendurePublicOrigin);
   if (service.status !== 'active') return null;
   if (!isPhysicalCatalogueProduct(product)) return null;
-  const sku = product.variants?.[0]?.sku ?? service.slug.toUpperCase();
+  const sku = (product.variants?.[0]?.sku ?? service.slug).toUpperCase();
   if (isUnapprovedSeedProductSku(sku)) return null;
   const checkoutEnabled = product.customFields?.checkoutEnabled === true;
   return PublicProductSchema.parse({

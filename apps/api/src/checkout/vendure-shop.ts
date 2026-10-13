@@ -78,7 +78,7 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         { slug: sku.toLowerCase() },
       );
       const variants = data.product?.variants ?? [];
-      const variant = variants.find((row) => row.sku === sku) ?? variants[0];
+      const variant = variants.find((row) => row.sku.toUpperCase() === sku) ?? variants[0];
       if (variant !== undefined) return variant.id;
 
       const searched = await post<{
@@ -112,7 +112,8 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         { slug: sku.toLowerCase() },
       );
       const slugVariants = bySlug.data.products.items.flatMap((item) => item.variants);
-      const slugVariant = slugVariants.find((row) => row.sku === sku) ?? slugVariants[0];
+      const slugVariant =
+        slugVariants.find((row) => row.sku.toUpperCase() === sku) ?? slugVariants[0];
       if (slugVariant !== undefined) return slugVariant.id;
 
       // The SKU can also belong to a product with a descriptive slug. A small
@@ -123,7 +124,7 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       }>(session, `query { products(options: { take: 50 }) { items { variants { id sku } } } }`);
       const catalogueVariant = catalogue.data.products.items
         .flatMap((item) => item.variants)
-        .find((row) => row.sku === sku);
+        .find((row) => row.sku.toUpperCase() === sku);
       if (catalogueVariant !== undefined) return catalogueVariant.id;
       throw new ApiError('not_found', { internalDetail: `no variant for ${sku}` });
     },
@@ -329,7 +330,7 @@ function mapOrder(order: VendureOrder): Cart {
   }
   const lines: CartLine[] = order.lines.map((line) => ({
     id: line.id,
-    slug: line.productVariant.sku,
+    slug: line.productVariant.sku.toUpperCase(),
     title: line.productVariant.name,
     quantity: line.quantity,
     unitPriceMinor: Math.round(line.linePriceWithTax / line.quantity),

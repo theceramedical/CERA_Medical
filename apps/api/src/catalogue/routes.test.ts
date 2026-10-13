@@ -188,7 +188,7 @@ describe('GET /v1/products/:sku', () => {
     ]);
     const response = await app.inject({ method: 'GET', url: '/v1/products/123asdasdsa' });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({ sku: '123asdasdsa' });
+    expect(response.json()).toMatchObject({ sku: '123ASDASDSA' });
   });
 });
 
