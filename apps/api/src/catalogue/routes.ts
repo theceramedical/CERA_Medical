@@ -97,14 +97,14 @@ export const catalogueRoutes = (deps: CatalogueDependencies): FastifyPluginCallb
       try {
         const raw =
           (await listRawCached(deps)).find((product) =>
-            product.variants?.some((variant) => variant.sku === parsed.data.sku),
+            product.variants?.some((variant) => variant.sku.toUpperCase() === parsed.data.sku),
           ) ?? null;
         if (raw === null) {
           sendCode(request, reply, 'not_found');
           return;
         }
         const publicProduct = mapVendurePublicProduct(raw, deps.vendurePublicOrigin);
-        if (publicProduct?.sku !== parsed.data.sku) {
+        if (publicProduct?.sku.toUpperCase() !== parsed.data.sku) {
           sendCode(request, reply, 'not_found');
           return;
         }

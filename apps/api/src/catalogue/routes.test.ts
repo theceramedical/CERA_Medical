@@ -178,6 +178,18 @@ describe('GET /v1/products/:sku', () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({ sku: 'LAB-NEW-001', title: 'Approved Buffer' });
   });
+
+  it('resolves lowercase Vendure SKUs despite URL case normalization', async () => {
+    app = await build([
+      {
+        ...newlyCreatedKit,
+        variants: [{ id: 'v30', sku: '123asdasdsa', price: 3400, priceWithTax: 3400 }],
+      },
+    ]);
+    const response = await app.inject({ method: 'GET', url: '/v1/products/123asdasdsa' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ sku: '123asdasdsa' });
+  });
 });
 
 describe('GET /v1/services/:slug', () => {
