@@ -74,6 +74,9 @@ if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEAS
   exit 1
 fi
 compose up -d web api worker cms commerce commerce-worker caddy
+# Caddyfile is bind-mounted. Docker leaves the container running when only its
+# contents change, so reload Caddy explicitly on every configuration release.
+compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 if ! wait_healthy; then
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Release health gate failed' >&2
