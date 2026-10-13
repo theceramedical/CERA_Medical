@@ -47,6 +47,7 @@ admin.{$CERA_DOMAIN:localhost} {
 
 catalogue.{$CERA_DOMAIN:localhost} {
 	import secure
+	redir / /dashboard 308
 	reverse_proxy commerce:3002
 }
 
