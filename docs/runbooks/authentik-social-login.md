@@ -28,7 +28,19 @@ bash infra/scripts/reconfigure-authentik-customer-experience.sh
 
 Then in Authentik admin (**Directory → Users** → the customer): after one more Google sign-in, **Attributes** should show `email_verified: true` (set by Google mapping, not by hand). Under **Providers → CERA production OIDC**, the **email** scope must include the **CERA email verification** property mapping.
 
-**First-time Google signup:** completing “Create your CERA account” on `auth.ceramedical.org` can land on `/if/user/` (“internal users only”). That is Authentik’s portal, not CERA. Open **https://www.ceramedical.org/auth/sign-in** and **Continue with Google** again to finish the website session.
+### What deploy configures for customer identity
+
+`configure-authentik-customer-experience.py` (run on every deploy) applies:
+
+- **Email verification from Google.** Authentik's Google source reads Google's v1 userinfo, which reports `verified_email` (not `email_verified`). Both are accepted. Verification is stored with the address it covers (`email_verified_address`); if the account email later changes, the email scope reports unverified.
+- **Sync on every Google sign-in.** The `cera-customer-source-authentication` flow runs the `CERA sync email verification` policy, so a returning customer's status follows Google's current claim. Gmail accounts stored as unverified by the earlier mapping are corrected during deploy.
+- **Real sign-out.** CERA providers use `cera-customer-invalidation` / `cera-staff-invalidation`, which end the Authentik session and redirect to `/auth/signed-out`. Authentik's default provider invalidation flow has no stages and left the Authentik session alive.
+- **No stale-session denial.** The social source sign-in flow does not require an unauthenticated browser, so a leftover Authentik session for another account no longer produces “Flow does not apply to current user”.
+- **No customer dead end on `/if/user/`.** The brand's default application is CERA Medical, with launch URL `https://www.ceramedical.org/auth/signin?next=/account`; external (customer) accounts reaching Authentik's portal are sent back to the website.
+
+The deploy log prints counts only (Google-linked accounts, repaired accounts, emails shared by more than one account), never addresses.
+
+Email/password customers without a stored `email_verified` attribute are still treated as verified by the email scope. Add an Authentik email-verification stage to the email enrollment flow before relying on that path for proof of address.
 
 ## What visitors should see
 

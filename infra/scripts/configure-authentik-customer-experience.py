@@ -6,17 +6,26 @@ connected Google yet can still deploy.
 """
 
 from authentik.brands.models import Brand
-from authentik.core.models import Application, Group
+from authentik.core.models import Application, Group, User
 from authentik.flows.models import Flow, FlowStageBinding
 from authentik.policies.expression.models import ExpressionPolicy
 from authentik.policies.models import PolicyBinding
 from authentik.providers.oauth2.models import OAuth2Provider
-from authentik.sources.oauth.models import OAuthSource
+from authentik.sources.oauth.models import OAuthSource, UserOAuthSourceConnection
 from authentik.stages.identification.models import IdentificationStage
+from authentik.stages.redirect.models import RedirectMode, RedirectStage
+from authentik.stages.user_login.models import UserLoginStage
+from authentik.stages.user_logout.models import UserLogoutStage
 
 PROVIDER_NAME = "CERA production OIDC"
+STAFF_PROVIDER_NAME = "CERA staff OIDC"
 GOOGLE_SLUG = "google"
 ENROLLMENT_SLUG = "cera-customer-enrollment"
+SOURCE_AUTHENTICATION_SLUG = "cera-customer-source-authentication"
+SITE_URL = "https://www.ceramedical.org"
+# Authentik formats launch URLs with `%`, so the return path stays unencoded.
+CUSTOMER_LAUNCH_URL = f"{SITE_URL}/auth/signin?next=/account"
+GMAIL_DOMAINS = ("gmail.com", "googlemail.com")
 CUSTOMER_GROUP = "cera-customers"
 STAFF_GROUPS = (
     "cera-administrators",
@@ -202,19 +211,23 @@ def ensure_customer_enrollment():
     return flow
 
 
+# Authentik's Google source reads the v1 userinfo endpoint, which reports
+# `verified_email`; OpenID userinfo reports `email_verified`. Accept either.
 GOOGLE_EMAIL_VERIFIED = """
-raw = info.get("email_verified")
-if isinstance(raw, str):
-    verified = raw.strip().lower() == "true"
-else:
-    verified = raw is True
+def claim(value):
+    if isinstance(value, str):
+        return value.strip().lower() == "true"
+    return value is True
+
+verified = claim(info.get("email_verified")) or claim(info.get("verified_email"))
 email = info.get("email") if isinstance(info.get("email"), str) else None
 attributes = dict((request.user.attributes if request.user else None) or {})
 # Record Google's claim explicitly, including False. A missing claim is not
 # verification. Do not leave the attribute unset, or the email scope would
 # fall back to treating any address as verified.
-attributes["email_verified"] = True if verified else False
+attributes["email_verified"] = bool(verified and email)
 attributes["email_verified_source"] = "google"
+attributes["email_verified_address"] = email.strip().lower() if verified and email else ""
 result = {"attributes": attributes}
 if email:
     result["email"] = email
@@ -226,12 +239,18 @@ return result
 
 CERA_EMAIL_SCOPE = """
 attributes = request.user.attributes or {}
+current = (request.user.email or "").strip().lower()
 if "email_verified" in attributes:
     verified = attributes.get("email_verified")
     if isinstance(verified, str):
         verified = verified.strip().lower() == "true"
     else:
         verified = verified is True
+    # Verification belongs to an address. If the account email changed after
+    # the provider verified it, the new address is not verified.
+    address = attributes.get("email_verified_address")
+    if verified and isinstance(address, str) and address and address != current:
+        verified = False
 else:
     # Accounts created before Google's claim was stored have no attribute.
     # Keep the previous email-scope behaviour for those accounts only.
@@ -291,6 +310,198 @@ def ensure_email_scope(provider):
     print("CERA email scope emits email_verified from the stored claim.")
 
 
+# Runs as a flow-level policy on every source sign-in, so a returning Google
+# customer's verification follows Google's current claim rather than whatever
+# was stored at enrollment. It always passes; a failure is logged, not fatal.
+SYNC_EMAIL_VERIFICATION = """
+try:
+    user = context.get("pending_user")
+    info = context.get("oauth_userinfo")
+    source = context.get("source")
+    if user is not None and getattr(user, "pk", None) and isinstance(info, dict):
+        raw_values = (info.get("email_verified"), info.get("verified_email"))
+        verified = any(
+            (value.strip().lower() == "true") if isinstance(value, str) else value is True
+            for value in raw_values
+        )
+        provider_email = info.get("email") if isinstance(info.get("email"), str) else ""
+        current = (user.email or "").strip().lower()
+        matches = bool(current) and provider_email.strip().lower() == current
+        source_slug = getattr(source, "slug", "oauth")
+        attributes = dict(user.attributes or {})
+        if verified and matches:
+            attributes["email_verified"] = True
+            attributes["email_verified_source"] = source_slug
+            attributes["email_verified_address"] = current
+        elif attributes.get("email_verified_source") in (None, source_slug):
+            attributes["email_verified"] = False
+            attributes["email_verified_source"] = source_slug
+            attributes["email_verified_address"] = ""
+        if attributes != (user.attributes or {}):
+            user.attributes = attributes
+            user.save(update_fields=["attributes"])
+except Exception as exc:
+    ak_logger.warning("CERA email verification sync failed", exc=exc)
+return True
+"""
+
+REQUIRE_SSO = "return ak_is_sso_flow"
+
+
+def bind_policy(target, name, expression, order):
+    policy, _created = ExpressionPolicy.objects.get_or_create(
+        name=name, defaults={"expression": expression}
+    )
+    policy.expression = expression
+    policy.save()
+    binding, _created = PolicyBinding.objects.get_or_create(
+        policy=policy, target=target, defaults={"order": order, "enabled": True}
+    )
+    if binding.order != order or not binding.enabled:
+        binding.order = order
+        binding.enabled = True
+        binding.save()
+
+
+def ensure_source_authentication(sources):
+    """Sign returning social customers in even when an Authentik session exists.
+
+    The default source flow is ``require_unauthenticated``: Authentik denies it
+    when the browser still holds a session for a different account, which is
+    the "Flow does not apply to current user" page. The source callback has
+    already proven the external identity, so the login stage switches the
+    session to the connected account instead.
+    """
+    flow, _created = Flow.objects.get_or_create(
+        slug=SOURCE_AUTHENTICATION_SLUG,
+        defaults={
+            "name": "CERA customer source sign-in",
+            "title": "Sign in to CERA Medical",
+            "designation": "authentication",
+            "authentication": "none",
+        },
+    )
+    flow.name = "CERA customer source sign-in"
+    flow.title = "Sign in to CERA Medical"
+    flow.designation = "authentication"
+    flow.authentication = "none"
+    # Both bound policies must pass; "any" would let the always-true sync policy
+    # bypass the SSO requirement.
+    flow.policy_engine_mode = "all"
+    flow.save()
+
+    login_stage = UserLoginStage.objects.filter(name="default-source-authentication-login").first()
+    if login_stage is None:
+        login_stage, _created = UserLoginStage.objects.get_or_create(name="cera-customer-source-login")
+    FlowStageBinding.objects.update_or_create(
+        target=flow, stage=login_stage, defaults={"order": 10}
+    )
+    bind_policy(flow, "CERA source sign-in requires SSO", REQUIRE_SSO, 0)
+    bind_policy(flow, "CERA sync email verification", SYNC_EMAIL_VERIFICATION, 10)
+
+    for source in sources:
+        if source.authentication_flow_id != flow.pk:
+            source.authentication_flow = flow
+            source.save(update_fields=["authentication_flow"])
+    print("CERA social sign-in replaces stale Authentik sessions and syncs email verification.")
+
+
+def ensure_invalidation_flow(provider, audience):
+    """End the Authentik session on CERA sign-out, then return to the site.
+
+    Authentik's default provider invalidation flow has no stages, so signing
+    out of CERA left the Authentik session alive. The next sign-in then reused
+    whichever account that browser last used.
+    """
+    flow, _created = Flow.objects.get_or_create(
+        slug=f"cera-{audience}-invalidation",
+        defaults={
+            "name": f"CERA {audience} sign-out",
+            "title": "Signing out of CERA Medical",
+            "designation": "invalidation",
+            "authentication": "none",
+        },
+    )
+    flow.name = f"CERA {audience} sign-out"
+    flow.title = "Signing out of CERA Medical"
+    flow.designation = "invalidation"
+    flow.authentication = "none"
+    flow.save()
+
+    logout_stage, _created = UserLogoutStage.objects.get_or_create(name="cera-user-logout")
+    redirect_stage, _created = RedirectStage.objects.get_or_create(
+        name=f"cera-{audience}-signed-out",
+        defaults={"mode": RedirectMode.STATIC},
+    )
+    redirect_stage.mode = RedirectMode.STATIC
+    redirect_stage.target_static = f"{SITE_URL}/auth/signed-out?audience={audience}"
+    redirect_stage.keep_context = False
+    redirect_stage.save()
+    FlowStageBinding.objects.update_or_create(
+        target=flow, stage=logout_stage, defaults={"order": 10}
+    )
+    FlowStageBinding.objects.update_or_create(
+        target=flow, stage=redirect_stage, defaults={"order": 20}
+    )
+    if provider.invalidation_flow_id != flow.pk:
+        provider.invalidation_flow = flow
+        provider.save(update_fields=["invalidation_flow"])
+
+
+def ensure_customer_landing(brand, application):
+    """Send customer (external) accounts to the website, not Authentik's portal.
+
+    Without a default application, an external user who finishes an Authentik
+    flow outside an OAuth request lands on ``/if/user/`` and sees "Interface can
+    only be accessed by internal users".
+    """
+    if application.meta_launch_url != CUSTOMER_LAUNCH_URL:
+        application.meta_launch_url = CUSTOMER_LAUNCH_URL
+        application.save(update_fields=["meta_launch_url"])
+    if brand is not None and brand.default_application_id != application.pk:
+        brand.default_application = application
+        brand.save(update_fields=["default_application"])
+
+
+def repair_gmail_verification(source):
+    """Correct Gmail accounts stored as unverified by the earlier mapping.
+
+    Before `verified_email` was read, every Google enrollment stored
+    ``email_verified: False``. A Gmail address is owned by the Google account
+    that signed in with it, so those records are corrected here; other domains
+    are corrected by the sync policy on the customer's next Google sign-in.
+    """
+    repaired = 0
+    connections = UserOAuthSourceConnection.objects.filter(source=source).select_related("user")
+    for connection in connections:
+        user = connection.user
+        email = (user.email or "").strip().lower()
+        attributes = dict(user.attributes or {})
+        if attributes.get("email_verified_source") != source.slug:
+            continue
+        if attributes.get("email_verified") is True:
+            continue
+        if not email or email.rsplit("@", 1)[-1] not in GMAIL_DOMAINS:
+            continue
+        attributes["email_verified"] = True
+        attributes["email_verified_address"] = email
+        user.attributes = attributes
+        user.save(update_fields=["attributes"])
+        repaired += 1
+    print(f"CERA Google verification repair: {repaired} account(s) corrected.")
+
+
+def report_identity_health(source):
+    """Print counts only, so the deploy log never carries customer addresses."""
+    linked = UserOAuthSourceConnection.objects.filter(source=source).count()
+    emails = {}
+    for email in User.objects.exclude(email="").values_list("email", flat=True):
+        key = email.strip().lower()
+        emails[key] = emails.get(key, 0) + 1
+    duplicates = sum(1 for count in emails.values() if count > 1)
+    print(f"CERA identity health: {linked} Google-linked account(s); {duplicates} email(s) shared by more than one account.")
+
+
 def main():
     provider = OAuth2Provider.objects.filter(name=PROVIDER_NAME).first()
     if provider is None:
@@ -329,6 +540,20 @@ def main():
 
     ensure_email_scope(provider)
 
+    ensure_invalidation_flow(provider, "customer")
+    staff_provider = OAuth2Provider.objects.filter(name=STAFF_PROVIDER_NAME).first()
+    if staff_provider is not None:
+        ensure_invalidation_flow(staff_provider, "staff")
+    print("CERA sign-out ends the Authentik session and returns to the website.")
+
+    if application is not None:
+        ensure_customer_landing(brand, application)
+        print("CERA customer accounts land on the website instead of the Authentik portal.")
+
+    social_sources = list(OAuthSource.objects.filter(slug__in=(GOOGLE_SLUG, "microsoft")))
+    if social_sources:
+        ensure_source_authentication(social_sources)
+
     source = OAuthSource.objects.filter(slug=GOOGLE_SLUG).first()
     stage = identification_stage(flow) if flow is not None else None
     if source is None or stage is None:
@@ -341,6 +566,8 @@ def main():
     if source.enrollment_flow_id != enrollment.pk:
         source.enrollment_flow = enrollment
         source.save(update_fields=["enrollment_flow"])
+    repair_gmail_verification(source)
+    report_identity_health(source)
     print("CERA customer sign-in branding and Google enrollment are configured.")
 
 
