@@ -406,6 +406,60 @@ def ensure_source_authentication(sources):
     print("CERA social sign-in replaces stale Authentik sessions and syncs email verification.")
 
 
+def social_shortcut_policy(slug):
+    # The authorize URL CERA builds carries `source=<slug>`; Authentik keeps
+    # that URL as the flow's `next`, which is where the source flow returns.
+    return (
+        "from urllib.parse import parse_qs, urlsplit\n"
+        "if http_request is None:\n"
+        "    return False\n"
+        'get = http_request.session.get("authentik/flows/get")\n'
+        'nxt = get.get("next", "") if get is not None else ""\n'
+        f'return {slug!r} in parse_qs(urlsplit(nxt).query).get("source", [])\n'
+    )
+
+
+def ensure_social_shortcut(flow, sources):
+    """Send "Continue with Google" on CERA straight to Google.
+
+    Authentik ignores the `source` authorize parameter, so the button stopped
+    on the identification page and needed a second click on a bare icon. A
+    redirect stage ahead of identification, gated on that parameter, starts
+    the source login while the original authorize request stays as `next`.
+    """
+    own_names = {f"cera-{source.slug}-shortcut" for source in sources}
+    orders = [
+        binding.order
+        for binding in FlowStageBinding.objects.filter(target=flow).select_related("stage")
+        if binding.stage.name not in own_names
+    ]
+    first = min(orders) if orders else 10
+    for index, source in enumerate(sources):
+        stage, _created = RedirectStage.objects.get_or_create(
+            name=f"cera-{source.slug}-shortcut", defaults={"mode": RedirectMode.STATIC}
+        )
+        stage.mode = RedirectMode.STATIC
+        stage.target_static = f"/source/oauth/login/{source.slug}/"
+        stage.keep_context = True
+        stage.save()
+        binding, _created = FlowStageBinding.objects.update_or_create(
+            target=flow,
+            stage=stage,
+            defaults={
+                "order": first - len(sources) + index,
+                "evaluate_on_plan": False,
+                "re_evaluate_policies": True,
+            },
+        )
+        bind_policy(
+            binding,
+            f"CERA start {source.slug} sign-in directly",
+            social_shortcut_policy(source.slug),
+            0,
+        )
+    print("CERA social buttons go straight to the identity provider.")
+
+
 def ensure_signed_out_flow(audience, logout_stage):
     """A one-stage flow that finishes with a final redirect to the website.
 
@@ -592,9 +646,13 @@ def main():
         ensure_customer_landing(brand, application)
         print("CERA customer accounts land on the website instead of the Authentik portal.")
 
-    social_sources = list(OAuthSource.objects.filter(slug__in=(GOOGLE_SLUG, "microsoft")))
+    social_sources = list(
+        OAuthSource.objects.filter(slug__in=(GOOGLE_SLUG, "microsoft"), enabled=True)
+    )
     if social_sources:
         ensure_source_authentication(social_sources)
+        if flow is not None:
+            ensure_social_shortcut(flow, social_sources)
 
     source = OAuthSource.objects.filter(slug=GOOGLE_SLUG).first()
     stage = identification_stage(flow) if flow is not None else None
