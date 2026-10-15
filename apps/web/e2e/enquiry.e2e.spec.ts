@@ -37,7 +37,10 @@ test.describe('enquiry form', () => {
 
     const summary = page.getByRole('alert').first();
     await expect(summary).toBeVisible();
-    await expect(summary).toBeFocused();
+    await expect(summary).toContainText('Email address: Enter a valid email address.');
+    await expect(summary).not.toContainText('Invalid email');
+    await expect(summary).not.toContainText('String must');
+    await expect(page.locator('#enquiry-email')).toBeFocused();
     await expect(page.locator('input[name="name"]')).toHaveValue('Alex Patient');
     await expect(page.locator('input[name="consent"]')).toBeChecked();
   });
@@ -57,6 +60,24 @@ test.describe('enquiry form', () => {
     await page.getByRole('button', { name: 'Submit enquiry', exact: true }).click();
     await expect(page.getByTestId('enquiry-reference')).toBeVisible();
     await context.close();
+  });
+
+  test('blank submission names every required field in plain language', async ({ page }) => {
+    await page.goto('/enquiry');
+    await page.waitForTimeout(2100);
+    await page.getByRole('button', { name: 'Submit enquiry', exact: true }).click();
+
+    const summary = page.getByRole('alert').first();
+    await expect(summary).toContainText('Name: Enter your name');
+    await expect(summary).toContainText('Email address: Enter a valid email address.');
+    await expect(summary).toContainText('Project description:');
+    await expect(summary).toContainText('Consent: Please confirm you agree');
+    await expect(summary).not.toContainText('Invalid literal');
+    await expect(summary).not.toContainText('expected true');
+    await expect(page.locator('#enquiry-name')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('#enquiry-email')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('#enquiry-message')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('#enquiry-consent')).toHaveAttribute('aria-invalid', 'true');
   });
 
   test('requires the selected service-specific consent before accepting an enquiry', async ({

@@ -120,6 +120,17 @@ const groups: Record<string, Role> = {
   'cera-administrators': 'administrator',
   'cera-auditors': 'auditor',
 };
+/**
+ * A verified email is only an explicit true claim.
+ * Missing, false, and any other value stay unverified. The string "true" is
+ * accepted because some identity providers serialise the boolean that way.
+ */
+export function emailVerifiedClaim(value: unknown): boolean {
+  if (value === true) return true;
+  if (typeof value === 'string' && value.trim().toLowerCase() === 'true') return true;
+  return false;
+}
+
 export function identityClaims(claims: Record<string, unknown>) {
   if (
     typeof claims.sub !== 'string' ||
@@ -134,7 +145,8 @@ export function identityClaims(claims: Record<string, unknown>) {
       ),
     ),
   ];
-  if (roles.length === 0 && claims.email_verified === true) {
+  const emailVerified = emailVerifiedClaim(claims.email_verified);
+  if (roles.length === 0 && emailVerified) {
     roles.push('customer');
   }
   roles.forEach((role) => RoleSchema.parse(role));
@@ -142,7 +154,7 @@ export function identityClaims(claims: Record<string, unknown>) {
   return {
     sub: claims.sub,
     email: claims.email,
-    emailVerified: claims.email_verified === true,
+    emailVerified,
     roles,
     mfa:
       claims.cera_mfa === true ||

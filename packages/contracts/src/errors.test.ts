@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { EnquiryInputSchema } from './entities.ts';
+import { EnquiryInputSchema, enquiryFieldErrors } from './entities.ts';
 import {
   ApiError,
   buildErrorEnvelope,
@@ -112,6 +112,16 @@ describe('fieldErrorsFromZod', () => {
     const paths = fieldErrors.map((error) => error.path).sort();
 
     expect(paths).toEqual(['consent', 'email', 'message', 'name', 'serviceId']);
+    const friendly = enquiryFieldErrors(result.error);
+    expect(friendly.map((error) => error.message).join(' ')).not.toMatch(
+      /Invalid literal|String must|expected true|received/,
+    );
+    expect(friendly.find((error) => error.path === 'consent')?.message).toMatch(
+      /agree to be contacted/,
+    );
+    expect(friendly.find((error) => error.path === 'email')?.message).toBe(
+      'Enter a valid email address.',
+    );
   });
 
   it('does not echo the submitted value', () => {

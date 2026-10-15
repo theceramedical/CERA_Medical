@@ -65,6 +65,7 @@ export interface PortalStore {
   putProfile(profile: PortalProfile): Awaitable<void>;
   issueClaim?(token: ClaimToken, raw: string): Promise<void>;
   consumeToken?(token: string, subject: string, emailHash: string): Promise<boolean>;
+  listNotes?(id: string): Promise<readonly { body: string; createdAt: string }[]>;
   listAudit?(id: string): Promise<unknown[]>;
   listDeliveries?(): Promise<unknown[]>;
   retryDelivery?(id: string, actor: string): Promise<boolean>;

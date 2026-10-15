@@ -2,7 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { Cart } from '@cera/contracts';
 
-import { addVerifiedCartLine, isCheckoutCurrency, mergeCartState } from './cart-client.ts';
+import {
+  addVerifiedCartLine,
+  isCheckoutCurrency,
+  mergeCartState,
+  updateCartLine,
+} from './cart-client.ts';
 
 const line = {
   id: 'line-1',
@@ -31,6 +36,53 @@ describe('cart state', () => {
   it('only enables checkout for the catalogue currency', () => {
     expect(isCheckoutCurrency(cart)).toBe(true);
     expect(isCheckoutCurrency({ ...cart, currencyCode: 'USD' })).toBe(false);
+  });
+});
+
+describe('updateCartLine', () => {
+  it('keeps a decrease from 2 to 1 after the cart is read back', async () => {
+    const decreased: Cart = {
+      ...cart,
+      lines: [{ ...line, quantity: 1, lineTotalMinor: line.unitPriceMinor }],
+      subtotalMinor: line.unitPriceMinor,
+      totalMinor: line.unitPriceMinor,
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify(decreased), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(decreased), { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(updateCartLine(line.id, 1)).resolves.toEqual(decreased);
+    expect(fetchMock.mock.calls[0]?.[0]).toContain(`/v1/cart/lines/${line.id}`);
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      method: 'PATCH',
+      body: JSON.stringify({ quantity: 1 }),
+    });
+  });
+
+  it('rejects a decrease that the next read does not persist', async () => {
+    const decreased: Cart = {
+      ...cart,
+      lines: [{ ...line, quantity: 1, lineTotalMinor: line.unitPriceMinor }],
+      subtotalMinor: line.unitPriceMinor,
+      totalMinor: line.unitPriceMinor,
+    };
+    const stale: Cart = {
+      ...cart,
+      lines: [{ ...line, quantity: 2, lineTotalMinor: line.unitPriceMinor * 2 }],
+      subtotalMinor: line.unitPriceMinor * 2,
+      totalMinor: line.unitPriceMinor * 2,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValueOnce(new Response(JSON.stringify(decreased), { status: 200 }))
+        .mockResolvedValueOnce(new Response(JSON.stringify(stale), { status: 200 })),
+    );
+
+    await expect(updateCartLine(line.id, 1)).rejects.toThrow('cart_not_saved');
   });
 });
 

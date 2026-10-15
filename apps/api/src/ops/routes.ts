@@ -98,7 +98,15 @@ export const opsRoutes = (options: OpsRoutesOptions): FastifyPluginCallback => {
         await guarded(request);
         const enquiry = await options.store.getById((request.params as { id: string }).id);
         if (enquiry === null) throw new ApiError('not_found');
-        return reply.send({ items: enquiry.notes });
+        const notes = await options.store.listNotes?.(enquiry.id);
+        return reply.send({
+          items:
+            notes ??
+            enquiry.notes.map((body) => ({
+              body,
+              createdAt: null,
+            })),
+        });
       } catch (error) {
         if (error instanceof ApiError) return sendApiError(request, reply, error);
         sendCode(request, reply, 'internal_error');

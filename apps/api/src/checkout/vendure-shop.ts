@@ -182,6 +182,56 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       return { cart: mapOrder(result as VendureOrder), token };
     },
 
+    async adjustLine(
+      session: ShopSession,
+      orderLineId: string,
+      quantity: number,
+    ): Promise<{ cart: Cart; token: string | null }> {
+      const mutation =
+        quantity === 0
+          ? `mutation ($id: ID!) {
+              removeOrderLine(orderLineId: $id) {
+                __typename
+                ... on Order {
+                  id currencyCode subTotalWithTax totalWithTax
+                  lines {
+                    id quantity linePriceWithTax
+                    productVariant { id sku name }
+                  }
+                }
+                ... on ErrorResult { errorCode message }
+              }
+            }`
+          : `mutation ($id: ID!, $qty: Int!) {
+              adjustOrderLine(orderLineId: $id, quantity: $qty) {
+                __typename
+                ... on Order {
+                  id currencyCode subTotalWithTax totalWithTax
+                  lines {
+                    id quantity linePriceWithTax
+                    productVariant { id sku name }
+                  }
+                }
+                ... on ErrorResult { errorCode message }
+              }
+            }`;
+      const { data, token } = await post<{
+        adjustOrderLine?: VendureOrder | { errorCode: string };
+        removeOrderLine?: VendureOrder | { errorCode: string };
+      }>(
+        session,
+        mutation,
+        quantity === 0 ? { id: orderLineId } : { id: orderLineId, qty: quantity },
+      );
+      const result = quantity === 0 ? data.removeOrderLine : data.adjustOrderLine;
+      if (result === undefined || typeof result !== 'object' || !('id' in result)) {
+        throw new ApiError('validation_failed', {
+          internalDetail: quantity === 0 ? 'removeOrderLine failed' : 'adjustOrderLine failed',
+        });
+      }
+      return { cart: mapOrder(result as VendureOrder), token };
+    },
+
     async completeCheckout(
       session: ShopSession,
       input: {

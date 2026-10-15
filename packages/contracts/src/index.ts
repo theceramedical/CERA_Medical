@@ -75,6 +75,7 @@ export {
 
 export {
   AddCartLineBodySchema,
+  UpdateCartLineBodySchema,
   type Cart,
   type CartLine,
   CartLineSchema,
@@ -103,6 +104,7 @@ export {
   EnquiryClaimTokenSchema,
   type EnquiryInput,
   EnquiryInputSchema,
+  enquiryFieldErrors,
   EnquirySchema,
   ENQUIRY_CONSENT_VERSION,
   type EnquiryStatusEvent,

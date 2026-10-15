@@ -1,6 +1,7 @@
 import {
   CreateEnquiryResponseSchema,
   EnquiryInputSchema,
+  enquiryFieldErrors,
   requiredServiceSpecificConsent,
   toCustomerEnquiry,
   toCustomerStatus,
@@ -87,11 +88,7 @@ export function createEnquiryService(options: EnquiryServiceOptions) {
           throw new ApiError('consent_required');
         }
         throw new ApiError('validation_failed', {
-          fieldErrors: parsed.error.issues.slice(0, 50).map((issue) => ({
-            path: issue.path.join('.'),
-            code: issue.code,
-            message: issue.message,
-          })),
+          fieldErrors: enquiryFieldErrors(parsed.error),
         });
       }
 

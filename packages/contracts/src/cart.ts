@@ -25,6 +25,11 @@ export const AddCartLineBodySchema = z.object({
   quantity: z.number().int().min(1).max(99).default(1),
 });
 
+/** Absolute line quantity. Zero removes the line. */
+export const UpdateCartLineBodySchema = z.object({
+  quantity: z.number().int().min(0).max(99),
+});
+
 export const CheckoutPaymentMethodSchema = z.enum(['cod', 'safepay', 'test']);
 
 export const DeliveryAddressSchema = z.object({

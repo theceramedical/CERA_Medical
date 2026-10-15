@@ -1,11 +1,18 @@
 'use client';
 
+import { Button } from '@cera/ui/button';
 import { Heading, Text } from '@cera/ui/typography';
 import { useEffect, useState } from 'react';
 
-import type { Cart } from '@cera/contracts';
+import type { Cart, CartLine } from '@cera/contracts';
 
-import { fetchCart, isCheckoutCurrency, mergeCartState } from '../lib/cart-client.ts';
+import {
+  fetchCart,
+  isCheckoutCurrency,
+  mergeCartState,
+  notifyCartUpdated,
+  updateCartLine,
+} from '../lib/cart-client.ts';
 import { formatCartMoney } from '../lib/cart-money.ts';
 
 import { AppButtonLink, AppLink } from './link.tsx';
@@ -13,6 +20,20 @@ import { AppButtonLink, AppLink } from './link.tsx';
 export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
   const [cart, setCart] = useState(initialCart);
   const [ready, setReady] = useState(false);
+  const [pendingLineId, setPendingLineId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  function changeQuantity(line: CartLine, quantity: number) {
+    setPendingLineId(line.id);
+    setError(null);
+    void updateCartLine(line.id, quantity)
+      .then((next) => {
+        setCart(next);
+        notifyCartUpdated(next);
+      })
+      .catch(() => setError('Quantity could not be updated. Please try again.'))
+      .finally(() => setPendingLineId(null));
+  }
 
   useEffect(() => {
     void fetchCart()
@@ -47,8 +68,43 @@ export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
             <div>
               <Text className="font-semibold">{line.title}</Text>
               <Text size="body-sm" tone="muted">
-                Qty {line.quantity} · {line.slug}
+                {line.slug}
               </Text>
+              <div className="mt-2 flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label={`Decrease quantity of ${line.title}`}
+                  disabled={pendingLineId !== null || line.quantity <= 1}
+                  onClick={() => changeQuantity(line, line.quantity - 1)}
+                >
+                  Decrease
+                </Button>
+                <Text size="body-sm" aria-live="polite">
+                  Quantity {line.quantity}
+                </Text>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label={`Increase quantity of ${line.title}`}
+                  disabled={pendingLineId !== null || line.quantity >= 99}
+                  onClick={() => changeQuantity(line, line.quantity + 1)}
+                >
+                  Increase
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label={`Remove ${line.title} from cart`}
+                  disabled={pendingLineId !== null}
+                  onClick={() => changeQuantity(line, 0)}
+                >
+                  Remove
+                </Button>
+              </div>
             </div>
             <Text className="font-mono text-body-sm">
               {formatCartMoney(line.lineTotalMinor, cart.currencyCode)}
@@ -56,6 +112,11 @@ export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
           </li>
         ))}
       </ul>
+      {error !== null ? (
+        <Text className="mt-4 text-danger-600" role="alert">
+          {error}
+        </Text>
+      ) : null}
       <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
         <Heading level={2} size="h4">
           Total{' '}

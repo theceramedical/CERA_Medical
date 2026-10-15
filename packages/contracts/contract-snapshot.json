@@ -287,12 +287,84 @@
           "type": "string",
           "enum": ["cod", "safepay", "test"]
         },
+        "deliveryAddress": {
+          "type": "object",
+          "properties": {
+            "streetLine1": {
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 160
+            },
+            "streetLine2": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "city": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "province": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "postalCode": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 12
+            },
+            "phoneNumber": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 24
+            }
+          },
+          "required": ["streetLine1", "city", "province", "postalCode", "phoneNumber"],
+          "additionalProperties": false
+        },
+        "billingAddress": {
+          "type": "object",
+          "properties": {
+            "streetLine1": {
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 160
+            },
+            "streetLine2": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "city": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "province": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "postalCode": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 12
+            },
+            "phoneNumber": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 24
+            }
+          },
+          "required": ["streetLine1", "city", "province", "postalCode", "phoneNumber"],
+          "additionalProperties": false
+        },
         "safepayTracker": {
           "type": "string",
           "maxLength": 120
         }
       },
-      "required": ["email", "fullName", "countryCode", "paymentMethod"],
+      "required": ["email", "fullName", "countryCode", "paymentMethod", "deliveryAddress"],
       "additionalProperties": false
     },
     "CheckoutCompleteResponseSchema": {
@@ -400,6 +472,97 @@
         },
         "body": {},
         "layout": {},
+        "galleryHeading": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "gallery": {
+          "maxItems": 40,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "alt": {
+                "type": "string",
+                "maxLength": 200
+              }
+            },
+            "required": ["url", "alt"],
+            "additionalProperties": false
+          }
+        },
+        "teamHeading": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "teamIntroduction": {
+          "type": "string",
+          "maxLength": 800
+        },
+        "teamMembers": {
+          "maxItems": 60,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "role": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "biography": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "photo": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "alt": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                },
+                "required": ["url", "alt"],
+                "additionalProperties": false
+              },
+              "links": {
+                "maxItems": 8,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  },
+                  "required": ["label", "url"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["id", "name", "role", "links"],
+            "additionalProperties": false
+          }
+        },
         "cardHighlights": {
           "maxItems": 6,
           "type": "array",
@@ -411,6 +574,28 @@
         "cardIcon": {
           "type": "string",
           "maxLength": 32
+        },
+        "coverImageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverImageAlt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "seo": {
           "type": "object",
@@ -450,6 +635,17 @@
             },
             "ogImageId": {
               "type": ["string", "null"]
+            },
+            "ogImageUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uri"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "noIndex": {
               "default": false,
@@ -840,10 +1036,20 @@
       "type": "object",
       "properties": {
         "slug": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40,
+              "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+            }
+          ]
         },
         "title": {
           "type": "string",
@@ -909,10 +1115,20 @@
             "type": "object",
             "properties": {
               "slug": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120,
-                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40,
+                    "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+                  }
+                ]
               },
               "title": {
                 "type": "string",
@@ -1045,6 +1261,43 @@
         }
       },
       "required": ["status", "label", "at"],
+      "additionalProperties": false
+    },
+    "DeliveryAddressSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "streetLine1": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 160
+        },
+        "streetLine2": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "city": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "province": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "postalCode": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 12
+        },
+        "phoneNumber": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 24
+        }
+      },
+      "required": ["streetLine1", "city", "province", "postalCode", "phoneNumber"],
       "additionalProperties": false
     },
     "DeliveryListItemSchema": {
@@ -2204,10 +2457,20 @@
                   "type": "object",
                   "properties": {
                     "slug": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 120,
-                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120,
+                          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                        },
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40,
+                          "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+                        }
+                      ]
                     },
                     "title": {
                       "type": "string",
@@ -3550,6 +3813,17 @@
         "ogImageId": {
           "type": ["string", "null"]
         },
+        "ogImageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "noIndex": {
           "default": false,
           "type": "boolean"
@@ -4029,6 +4303,19 @@
         }
       },
       "required": ["internalStatus", "allowedNext"],
+      "additionalProperties": false
+    },
+    "UpdateCartLineBodySchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "quantity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99
+        }
+      },
+      "required": ["quantity"],
       "additionalProperties": false
     },
     "UpdateMyProfileRequestSchema": {

@@ -98,6 +98,20 @@ function serviceConsent(
 
 const INITIAL: EnquiryFormState = { status: 'idle' };
 
+const FIELD_LABELS: Record<string, string> = {
+  name: 'Name',
+  email: 'Email address',
+  phone: 'Phone',
+  institution: 'Institution',
+  country: 'Country',
+  serviceId: 'Service required',
+  message: 'Project description',
+  consent: 'Consent',
+  sequencingDataConsent: 'Sequencing data consent',
+  samplesCompoundsConsent: 'Samples and compounds consent',
+  healthDataConsent: 'Health data consent',
+};
+
 export interface EnquiryFormProps {
   readonly startedAt: string;
   readonly defaultServiceId?: string;
@@ -142,15 +156,25 @@ export function EnquiryForm({
   const [selectedService, setSelectedService] = useState(
     defaultServiceId ?? serviceOptions[0]?.slug ?? 'preclinical-studies',
   );
+  const [trackedError, setTrackedError] = useState<EnquiryFormState | null>(null);
+  if (state.status === 'error' && trackedError !== state) {
+    setTrackedError(state);
+    if (state.values.serviceId.length > 0) setSelectedService(state.values.serviceId);
+  }
   const labels = copy?.labels ?? {};
   const hints = copy?.hints ?? {};
   const summaryRef = useRef<HTMLDivElement>(null);
   const summaryId = useId();
 
   useEffect(() => {
-    if (state.status === 'error') {
-      summaryRef.current?.focus();
-    }
+    if (state.status !== 'error') return;
+    const frame = requestAnimationFrame(() => {
+      const first = state.fieldErrors[0];
+      const target = first === undefined ? null : document.getElementById(`enquiry-${first.path}`);
+      if (target instanceof HTMLElement) target.focus();
+      else summaryRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
   }, [state]);
 
   if (state.status === 'success') {
@@ -185,7 +209,7 @@ export function EnquiryForm({
               {state.fieldErrors.map((error) => (
                 <li key={error.path}>
                   <a href={`#enquiry-${error.path}`} className="text-primary underline">
-                    {error.message}
+                    {FIELD_LABELS[error.path] ?? 'Form field'}: {error.message}
                   </a>
                 </li>
               ))}

@@ -362,6 +362,49 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  const lineMatch = path.match(/^\/v1\/cart\/lines\/([^/]+)$/);
+  if (request.method === 'PATCH' && lineMatch !== null) {
+    let raw = '';
+    for await (const chunk of request) raw += chunk;
+    let body;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      json(response, 400, {
+        error: { code: 'validation_failed', message: 'Invalid JSON.', retryable: false },
+        requestId: 'e2e',
+      });
+      return;
+    }
+    const quantity = body.quantity;
+    if (!Number.isInteger(quantity) || quantity < 0 || quantity > 99) {
+      json(response, 400, {
+        error: { code: 'validation_failed', message: 'Invalid quantity.', retryable: false },
+        requestId: 'e2e',
+      });
+      return;
+    }
+    const token = readCookie(request, VENDURE_COOKIE);
+    const cart = token === null ? undefined : carts.get(token);
+    const lineId = decodeURIComponent(lineMatch[1]);
+    const line = cart?.lines.find((entry) => entry.id === lineId);
+    if (cart === undefined || line === undefined) {
+      json(response, 404, {
+        error: { code: 'not_found', message: 'Not found.', retryable: false },
+        requestId: 'e2e',
+      });
+      return;
+    }
+    if (quantity === 0) {
+      cart.lines = cart.lines.filter((entry) => entry.id !== lineId);
+    } else {
+      line.quantity = quantity;
+      line.lineTotalMinor = line.unitPriceMinor * quantity;
+    }
+    json(response, 200, cartPayload(cart));
+    return;
+  }
+
   if (request.method === 'POST' && path === '/v1/checkout/complete') {
     const claims = await portalClaims(request);
     const authStatus = portalAuthStatus(claims, true);

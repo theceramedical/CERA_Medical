@@ -5,6 +5,7 @@ import {
   createPkce,
   configuredCallbackUrl,
   registeredOidcRedirectUri,
+  emailVerifiedClaim,
   identityClaims,
   openHandshake,
   sealHandshake,
@@ -67,6 +68,33 @@ describe('OIDC boundary', () => {
     expect(c.roles).toEqual(['enquiry_handler']);
     expect(c.mfa).toBe(true);
     expect(() => identityClaims({ sub: 'x', groups: ['cera-administrators'] })).toThrow();
+  });
+
+  it('treats only an explicit true email claim as verified', () => {
+    expect(emailVerifiedClaim(true)).toBe(true);
+    expect(emailVerifiedClaim('true')).toBe(true);
+    expect(emailVerifiedClaim(' TRUE ')).toBe(true);
+    expect(emailVerifiedClaim(false)).toBe(false);
+    expect(emailVerifiedClaim('false')).toBe(false);
+    expect(emailVerifiedClaim(undefined)).toBe(false);
+    expect(emailVerifiedClaim(1)).toBe(false);
+
+    const verified = identityClaims({
+      sub: 'sub-google',
+      email: 'buyer@example.test',
+      email_verified: 'true',
+      groups: ['cera-customers'],
+    });
+    expect(verified.emailVerified).toBe(true);
+    expect(verified.roles).toEqual(['customer']);
+
+    const unverified = identityClaims({
+      sub: 'sub-unverified',
+      email: 'buyer@example.test',
+      email_verified: false,
+      groups: ['cera-customers'],
+    });
+    expect(unverified.emailVerified).toBe(false);
   });
 
   it('assigns customer when email is verified and no CERA groups are mapped', () => {

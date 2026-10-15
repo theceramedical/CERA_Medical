@@ -1,5 +1,6 @@
 import {
   AddCartLineBodySchema,
+  UpdateCartLineBodySchema,
   CartSchema,
   CheckoutCompleteBodySchema,
   CheckoutCompleteResponseSchema,
@@ -141,6 +142,35 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         const session = { token: tokenFromRequest(request) };
         const variantId = await shop.getVariantIdBySku(session, parsed.data.slug);
         const { cart, token } = await shop.addLine(session, variantId, parsed.data.quantity);
+        setTokenCookie(reply, token);
+        return reply.code(200).send(CartSchema.parse(cart));
+      } catch (error) {
+        if (error instanceof ApiError) {
+          sendApiError(request, reply, error);
+          return;
+        }
+        sendCode(request, reply, 'upstream_unavailable');
+      }
+    });
+
+    app.patch('/v1/cart/lines/:lineId', async (request, reply) => {
+      if (!checkoutEnabled()) {
+        sendCode(request, reply, 'not_found');
+        return;
+      }
+      const parsed = UpdateCartLineBodySchema.safeParse(request.body);
+      if (!parsed.success) {
+        sendCode(request, reply, 'validation_failed');
+        return;
+      }
+      const lineId = (request.params as { lineId?: string }).lineId;
+      if (lineId === undefined || lineId.length === 0) {
+        sendCode(request, reply, 'validation_failed');
+        return;
+      }
+      try {
+        const session = { token: tokenFromRequest(request) };
+        const { cart, token } = await shop.adjustLine(session, lineId, parsed.data.quantity);
         setTokenCookie(reply, token);
         return reply.code(200).send(CartSchema.parse(cart));
       } catch (error) {

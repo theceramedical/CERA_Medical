@@ -79,6 +79,23 @@ export async function addVerifiedCartLine(slug: string, quantity = 1): Promise<C
   return persisted;
 }
 
+export async function updateCartLine(lineId: string, quantity: number): Promise<Cart> {
+  const response = await fetch(`${apiUrl()}/v1/cart/lines/${encodeURIComponent(lineId)}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ quantity }),
+  });
+  if (!response.ok) throw new Error('update_failed');
+  const updated = CartSchema.parse(await response.json());
+  const persisted = await fetchCart();
+  const updatedQuantity = updated.lines.find((line) => line.id === lineId)?.quantity ?? 0;
+  const persistedQuantity = persisted.lines.find((line) => line.id === lineId)?.quantity ?? 0;
+  if (persistedQuantity !== updatedQuantity) throw new Error('cart_not_saved');
+  if (updated.lines.length !== persisted.lines.length) throw new Error('cart_not_saved');
+  return persisted;
+}
+
 export async function completeCheckout(body: {
   email: string;
   fullName: string;

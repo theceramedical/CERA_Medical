@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { authorizationCodeGrant, fetchUserInfo } from 'openid-client';
 
 import {
+  emailVerifiedClaim,
   identityClaims,
   configuredCallbackUrl,
   oidcConfiguration,
@@ -56,8 +57,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
       let claimSet: Record<string, unknown> = { ...(tokens.claims() ?? {}) };
       const groups = claimSet.groups;
+      const idTokenVerified = emailVerifiedClaim(claimSet.email_verified);
       const needsUserInfo =
-        !Array.isArray(groups) || groups.length === 0 || typeof claimSet.email !== 'string';
+        !Array.isArray(groups) ||
+        groups.length === 0 ||
+        typeof claimSet.email !== 'string' ||
+        !idTokenVerified;
       if (
         needsUserInfo &&
         typeof tokens.access_token === 'string' &&
@@ -68,7 +73,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           tokens.access_token,
           claimSet.sub,
         );
+        const userInfoVerified = emailVerifiedClaim(userinfo.email_verified);
         claimSet = { ...claimSet, ...userinfo };
+        // An explicit verified claim from either token wins. A missing claim
+        // does not. Spreading userinfo must not wipe a verified ID token when
+        // userinfo omits the field.
+        if (idTokenVerified || userInfoVerified) claimSet.email_verified = true;
       }
       identity = identityClaims(claimSet);
     } catch (error) {

@@ -81,6 +81,26 @@ test.describe('physical product checkout', () => {
     await expect(page.getByText('E2E laboratory kit')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText('PKR', { exact: false }).first()).toBeVisible();
 
+    const line = page.getByRole('listitem').filter({ hasText: 'E2E laboratory kit' });
+    await expect(line.getByText('Quantity 1')).toBeVisible();
+    await line.getByRole('button', { name: 'Increase quantity of E2E laboratory kit' }).click();
+    await expect(line.getByText('Quantity 2')).toBeVisible();
+    await line.getByRole('button', { name: 'Increase quantity of E2E laboratory kit' }).click();
+    await expect(line.getByText('Quantity 3')).toBeVisible();
+    await line.getByRole('button', { name: 'Decrease quantity of E2E laboratory kit' }).click();
+    await expect(line.getByText('Quantity 2')).toBeVisible();
+    await line.getByRole('button', { name: 'Decrease quantity of E2E laboratory kit' }).click();
+    await expect(line.getByText('Quantity 1')).toBeVisible();
+    await expect(page.getByRole('listitem').filter({ hasText: 'E2E laboratory kit' })).toHaveCount(
+      1,
+    );
+
+    await page.reload();
+    await expect(page.getByText('Quantity 1')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('listitem').filter({ hasText: 'E2E laboratory kit' })).toHaveCount(
+      1,
+    );
+
     await page.getByRole('link', { name: 'Proceed to checkout' }).click();
     await expect(page).toHaveURL(/\/checkout$/);
     await expect(page.getByRole('heading', { name: 'Checkout', level: 1 })).toBeVisible();

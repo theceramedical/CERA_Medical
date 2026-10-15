@@ -3,6 +3,7 @@ import 'server-only';
 import {
   CreateEnquiryResponseSchema,
   EnquiryInputSchema,
+  enquiryFieldErrors,
   requiredServiceSpecificConsent,
   type CreateEnquiryResponse,
   type EnquiryInput,
@@ -132,10 +133,7 @@ function evaluateLocal(input: EnquirySubmitInput): EnquirySubmitResult {
         ? 'Please confirm you agree to be contacted before submitting.'
         : 'Some of the information provided is not valid. Please check and try again.',
       retryable: false,
-      fieldErrors: parsed.error.issues.slice(0, 50).map((issue) => ({
-        path: issue.path.join('.'),
-        message: issue.message,
-      })),
+      fieldErrors: enquiryFieldErrors(parsed.error),
     };
   }
 

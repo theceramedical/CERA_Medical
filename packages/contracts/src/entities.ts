@@ -173,6 +173,46 @@ export const EnquiryInputSchema = z.object({
 });
 export type EnquiryInput = z.infer<typeof EnquiryInputSchema>;
 
+/**
+ * Plain-language replacements for Zod's default wording on the public enquiry form.
+ * The schema still decides validity; these strings are what a customer is allowed to see.
+ */
+const ENQUIRY_FIELD_MESSAGES: Record<string, string> = {
+  name: 'Enter your name (at least 2 characters).',
+  email: 'Enter a valid email address.',
+  phone: 'Enter a phone number using digits, spaces, + ( ) or -, or leave this blank.',
+  institution: 'Institution must be 160 characters or fewer.',
+  country: 'Country must be 80 characters or fewer.',
+  serviceId: 'Choose a service.',
+  message:
+    'Describe your project in at least 10 characters. Do not include patient names or other identifying details.',
+  consent: 'Please confirm you agree to be contacted before submitting.',
+  sequencingDataConsent: 'Please accept this consent to submit your enquiry.',
+  samplesCompoundsConsent: 'Please accept this consent to submit your enquiry.',
+  healthDataConsent: 'Please accept this consent to submit your enquiry.',
+  source: 'This enquiry could not be submitted from this page. Refresh and try again.',
+};
+
+export function enquiryFieldErrors(
+  error: z.ZodError,
+): { path: string; code: string; message: string }[] {
+  const seen = new Set<string>();
+  const errors: { path: string; code: string; message: string }[] = [];
+  for (const issue of error.issues) {
+    const path = issue.path.join('.');
+    if (seen.has(path)) continue;
+    seen.add(path);
+    const friendly = ENQUIRY_FIELD_MESSAGES[path];
+    errors.push({
+      path,
+      code: issue.code,
+      message: friendly ?? 'Check this field and try again.',
+    });
+    if (errors.length >= 50) break;
+  }
+  return errors;
+}
+
 export const ENQUIRY_CONSENT_VERSION = 'cera-brief-2026-10-03-v1';
 
 export type ServiceSpecificConsentField =

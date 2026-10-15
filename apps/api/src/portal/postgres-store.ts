@@ -195,6 +195,16 @@ export function postgresPortalStore(pool: Pool): PortalStore {
         [p.subjectId, p.email, p.displayName, p.phone],
       );
     },
+    async listNotes(id) {
+      const result = await pool.query<{ body: string; created_at: Date | string }>(
+        'SELECT body, created_at FROM internal_notes WHERE enquiry_id=$1 ORDER BY created_at',
+        [id],
+      );
+      return result.rows.map((row) => ({
+        body: row.body,
+        createdAt: new Date(row.created_at).toISOString(),
+      }));
+    },
     async listAudit(id) {
       return (
         await pool.query<{ action: string; at: Date; actor: string | null }>(

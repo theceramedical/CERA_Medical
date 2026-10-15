@@ -202,6 +202,95 @@ def ensure_customer_enrollment():
     return flow
 
 
+GOOGLE_EMAIL_VERIFIED = """
+raw = info.get("email_verified")
+if isinstance(raw, str):
+    verified = raw.strip().lower() == "true"
+else:
+    verified = raw is True
+email = info.get("email") if isinstance(info.get("email"), str) else None
+attributes = dict((request.user.attributes if request.user else None) or {})
+# Record Google's claim explicitly, including False. A missing claim is not
+# verification. Do not leave the attribute unset, or the email scope would
+# fall back to treating any address as verified.
+attributes["email_verified"] = True if verified else False
+attributes["email_verified_source"] = "google"
+result = {"attributes": attributes}
+if email:
+    result["email"] = email
+name = info.get("name")
+if isinstance(name, str) and name:
+    result["name"] = name
+return result
+"""
+
+CERA_EMAIL_SCOPE = """
+attributes = request.user.attributes or {}
+if "email_verified" in attributes:
+    verified = attributes.get("email_verified")
+    if isinstance(verified, str):
+        verified = verified.strip().lower() == "true"
+    else:
+        verified = verified is True
+else:
+    # Accounts created before Google's claim was stored have no attribute.
+    # Keep the previous email-scope behaviour for those accounts only.
+    # Google sign-in always writes the attribute, including when it is false.
+    verified = bool(request.user.email)
+return {
+    "email": request.user.email,
+    "email_verified": verified is True,
+}
+"""
+
+
+def ensure_google_email_verification(source):
+    try:
+        from authentik.sources.oauth.models import OAuthSourcePropertyMapping
+    except ImportError:
+        print("OAuthSourcePropertyMapping is unavailable; Google email_verified mapping was not installed.")
+        return
+    mapping, _created = OAuthSourcePropertyMapping.objects.get_or_create(
+        name="CERA Google email_verified",
+        defaults={"expression": GOOGLE_EMAIL_VERIFIED},
+    )
+    mapping.expression = GOOGLE_EMAIL_VERIFIED
+    mapping.save()
+    relation = None
+    for name in ("user_property_mappings", "property_mappings"):
+        if hasattr(source, name):
+            relation = getattr(source, name)
+            break
+    if relation is None:
+        print("Google source has no property-mapping relation; email_verified mapping was saved but not attached.")
+        return
+    relation.add(mapping)
+    print("CERA Google email_verified property mapping attached.")
+
+
+def ensure_email_scope(provider):
+    from authentik.providers.oauth2.models import ScopeMapping
+
+    mapping, _created = ScopeMapping.objects.get_or_create(
+        name="CERA email verification",
+        defaults={"scope_name": "email", "expression": CERA_EMAIL_SCOPE},
+    )
+    mapping.scope_name = "email"
+    mapping.expression = CERA_EMAIL_SCOPE
+    mapping.save()
+    for existing in list(provider.property_mappings.all()):
+        if getattr(existing, "scope_name", None) == "email" and existing.pk != mapping.pk:
+            provider.property_mappings.remove(existing)
+    provider.property_mappings.add(mapping)
+    staff = OAuth2Provider.objects.filter(name="CERA staff OIDC").first()
+    if staff is not None:
+        for existing in list(staff.property_mappings.all()):
+            if getattr(existing, "scope_name", None) == "email" and existing.pk != mapping.pk:
+                staff.property_mappings.remove(existing)
+        staff.property_mappings.add(mapping)
+    print("CERA email scope emits email_verified from the stored claim.")
+
+
 def main():
     provider = OAuth2Provider.objects.filter(name=PROVIDER_NAME).first()
     if provider is None:
@@ -238,12 +327,15 @@ def main():
         flow.title = "Sign in to CERA Medical"
         flow.save(update_fields=["title"])
 
+    ensure_email_scope(provider)
+
     source = OAuthSource.objects.filter(slug=GOOGLE_SLUG).first()
     stage = identification_stage(flow) if flow is not None else None
     if source is None or stage is None:
         print("Google source or identification stage is not configured; customer branding still applied.")
         return
 
+    ensure_google_email_verification(source)
     stage.sources.add(source)
     enrollment = ensure_customer_enrollment()
     if source.enrollment_flow_id != enrollment.pk:

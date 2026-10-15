@@ -9,21 +9,15 @@ import { Button } from '@cera/ui/button';
 import { Card } from '@cera/ui/card';
 import { InternalStatusBadge } from '@cera/ui/internal-status-badge';
 import { Text } from '@cera/ui/typography';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
 
-import { AppButtonLink, AppLink } from '../../../../../components/link.tsx';
+import { EnquiryReplyActions } from '../../../../../components/enquiry-reply-actions.client.tsx';
+import { AppLink } from '../../../../../components/link.tsx';
 import { PageHeader } from '../../../../../components/page-header.tsx';
 import { authenticatedApi } from '../../../../../lib/auth/api.ts';
 import { getSession } from '../../../../../lib/auth/session.ts';
-
-function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(iso));
-}
+import { formatPakistanDateTime } from '../../../../../lib/format-pakistan-time.ts';
 
 function consentLine(accepted: boolean): string {
   return accepted ? 'Accepted' : 'Not applicable';
@@ -54,9 +48,9 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
   const e = await authenticatedApi<StaffEnquiry & { permittedNext: InternalStatus[] }>(
     `/v1/ops/enquiries/${encodeURIComponent(id)}`,
   );
-  const { items: notes } = await authenticatedApi<{ items: string[] }>(
-    `/v1/ops/enquiries/${id}/notes`,
-  );
+  const { items: notes } = await authenticatedApi<{
+    items: { body: string; createdAt: string | null }[];
+  }>(`/v1/ops/enquiries/${id}/notes`);
   const { items: audit } = await authenticatedApi<{ items: { action: string; at: string }[] }>(
     `/v1/ops/enquiries/${id}/audit`,
   );
@@ -120,18 +114,11 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
                   </div>
                 ) : null}
               </dl>
-              <AppButtonLink
-                href={`mailto:${encodeURIComponent(e.email)}?subject=${encodeURIComponent(`Re: ${e.reference} — ${e.serviceTitle}`)}`}
-                variant="primary"
-                className="self-start"
-              >
-                <Mail aria-hidden className="size-4" />
-                Reply to enquiry
-              </AppButtonLink>
-              <Text size="body-sm" tone="muted">
-                Opens a draft in your email app. Send your reply there, then record the follow-up in
-                Internal note below. Opening the draft does not send an email.
-              </Text>
+              <EnquiryReplyActions
+                email={e.email}
+                reference={e.reference}
+                serviceTitle={e.serviceTitle}
+              />
             </Card>
 
             <Card as="section" className="gap-4 p-6" aria-labelledby="message-heading">
@@ -147,7 +134,8 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
               </h2>
               <ul className="list-disc space-y-2 pl-5 text-body-sm text-copy-muted">
                 <li>
-                  Service request: accepted {formatDateTime(e.consentAt)} ({e.consentVersion})
+                  Service request: accepted {formatPakistanDateTime(e.consentAt)} (
+                  {e.consentVersion})
                 </li>
                 <li>
                   Sequencing data and sample metadata:{' '}
@@ -265,10 +253,15 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
               <ul className="list-none space-y-3 p-0">
                 {notes.map((note) => (
                   <li
-                    key={note}
+                    key={`${note.createdAt ?? 'note'}-${note.body}`}
                     className="rounded-md border border-border bg-surface-subtle px-4 py-3 text-body-sm whitespace-pre-wrap text-copy"
                   >
-                    {note}
+                    {note.createdAt !== null ? (
+                      <Text size="caption" tone="muted" className="mb-1">
+                        {formatPakistanDateTime(note.createdAt)}
+                      </Text>
+                    ) : null}
+                    {note.body}
                   </li>
                 ))}
               </ul>
@@ -286,7 +279,7 @@ export default async function StaffEnquiryPage({ params }: { params: Promise<{ i
                   className="flex flex-col gap-0.5 sm:flex-row sm:gap-3"
                 >
                   <span className="font-medium text-copy">{event.action}</span>
-                  <span className="text-copy-muted">{formatDateTime(event.at)}</span>
+                  <span className="text-copy-muted">{formatPakistanDateTime(event.at)}</span>
                 </li>
               ))}
             </ul>
