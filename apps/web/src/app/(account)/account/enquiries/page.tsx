@@ -22,7 +22,10 @@ export default async function AccountEnquiriesPage() {
   const items = Array.isArray(rawItems) ? rawItems : [];
   return (
     <>
-      <PageHeader title="Your enquiries" lede="Every enquiry claimed to this account." />
+      <PageHeader
+        title="Your enquiries"
+        lede="Enquiries sent from your verified email are added to this account."
+      />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         {items.length === 0 ? (
           <EmptyState

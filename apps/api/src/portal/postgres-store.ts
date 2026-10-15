@@ -57,6 +57,20 @@ export function postgresPortalStore(pool: Pool): PortalStore {
       );
       return result.rowCount === 1;
     },
+    async attachUnclaimedByEmail(email, subject) {
+      return transaction(pool, async (client) => {
+        const result = await client.query<{ id: string }>(
+          `UPDATE enquiries SET customer_subject_id=$2, updated_at=now()
+           WHERE customer_subject_id IS NULL AND lower(email) = lower($1)
+           RETURNING id`,
+          [email.trim(), subject],
+        );
+        for (const row of result.rows) {
+          await recordAudit(client, row.id, 'enquiry.claimed', subject);
+        }
+        return result.rows.length;
+      });
+    },
     async putEnquiry(e, actor) {
       await transaction(pool, async (client) => {
         const result = await client.query('SELECT * FROM enquiries WHERE id=$1 FOR UPDATE', [e.id]);

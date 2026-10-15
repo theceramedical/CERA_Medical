@@ -63,6 +63,35 @@ describe('claim tokens', () => {
   });
 });
 
+describe('verified email attachment', () => {
+  it('links every unclaimed enquiry for that address and leaves other addresses alone', () => {
+    const store = memoryPortalStore();
+    store.putEnquiry(sample());
+    store.putEnquiry(sample({ id: 'enq-2', reference: 'CERA-260101-BBBBB' }));
+    store.putEnquiry(
+      sample({
+        id: 'enq-3',
+        reference: 'CERA-260101-CCCCC',
+        email: 'other@example.com',
+        emailHash: emailHashOf('other@example.com'),
+      }),
+    );
+    store.putEnquiry(
+      sample({ id: 'enq-4', reference: 'CERA-260101-DDDDD', customerSubjectId: 'someone-else' }),
+    );
+
+    expect(store.attachUnclaimedByEmail?.('A@Example.com', 'cust-a')).toBe(2);
+    expect(
+      store
+        .listForSubject('cust-a')
+        .map((enquiry) => enquiry.id)
+        .sort(),
+    ).toEqual(['enq-1', 'enq-2']);
+    expect(store.getById('enq-3')?.customerSubjectId).toBeNull();
+    expect(store.getById('enq-4')?.customerSubjectId).toBe('someone-else');
+  });
+});
+
 describe('customer projection leak', () => {
   it('never includes notes, owner, or staff-only statuses', () => {
     const view = projectPortalEnquiry(sample({ customerSubjectId: 'cust-a' }));

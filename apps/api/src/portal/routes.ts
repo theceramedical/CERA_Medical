@@ -94,6 +94,11 @@ export const portalRoutes = (options: PortalRoutesOptions): FastifyPluginCallbac
       try {
         const session = await guarded(request);
         if (session === null) throw new ApiError('unauthenticated');
+        // A verified address is enough to own enquiries sent from it. Attach
+        // them here so the list includes requests made before this sign-in.
+        if (session.emailVerified) {
+          await options.store.attachUnclaimedByEmail?.(session.email, session.sub);
+        }
         const items = (await options.store.listForSubject(session.sub)).map(projectPortalEnquiry);
         return reply.send({ items });
       } catch (error) {

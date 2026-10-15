@@ -58,6 +58,11 @@ export interface PortalStore {
   getForSubject(subjectId: string, reference: string): Awaitable<PortalEnquiry | null>;
   findUnclaimedByEmailHash(emailHash: string): Awaitable<PortalEnquiry[]>;
   claim(enquiryId: string, subjectId: string): Awaitable<boolean>;
+  /**
+   * Link unclaimed enquiries whose address matches a verified session.
+   * The verified sign-in is the proof of address, so no extra email link is required.
+   */
+  attachUnclaimedByEmail?(email: string, subjectId: string): Awaitable<number>;
   putEnquiry(enquiry: PortalEnquiry, actor?: string): Awaitable<void>;
   putToken(token: ClaimToken): Awaitable<void>;
   findToken(hash: string): Awaitable<ClaimToken | null>;
@@ -109,6 +114,16 @@ export function memoryPortalStore(): SyncPortalStore {
       if (enquiry?.customerSubjectId !== null) return false;
       enquiries.set(enquiryId, { ...enquiry, customerSubjectId: subjectId });
       return true;
+    },
+    attachUnclaimedByEmail(email, subjectId) {
+      const hash = emailHashOf(email);
+      let attached = 0;
+      for (const enquiry of enquiries.values()) {
+        if (enquiry.customerSubjectId !== null || enquiry.emailHash !== hash) continue;
+        enquiries.set(enquiry.id, { ...enquiry, customerSubjectId: subjectId });
+        attached += 1;
+      }
+      return attached;
     },
     putEnquiry(enquiry) {
       enquiries.set(enquiry.id, enquiry);
