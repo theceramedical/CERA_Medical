@@ -84,8 +84,9 @@ export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
  */
 export function AppButtonLink({ href, ...props }: UiButtonLinkProps) {
   const hrefStr = typeof href === 'string' ? href : '';
+  const offSite = hrefStr.length > 0 && NON_ROUTER_HREF.test(hrefStr);
   const linkAs =
-    hrefStr.length > 0 && isOidcBrowserRoute(hrefStr)
+    offSite || (hrefStr.length > 0 && isOidcBrowserRoute(hrefStr))
       ? 'a'
       : hrefStr.length > 0 && requiresNoPrefetch(hrefStr)
         ? NoPrefetchNextLink

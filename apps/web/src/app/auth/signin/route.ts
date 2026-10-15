@@ -27,6 +27,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     );
     const { state, nonce } = createHandshakeSecrets();
     const pkce = createPkce();
+    const refreshVerification =
+      url.searchParams.get('refresh') === '1' || url.searchParams.get('prompt') === 'login';
     const location = buildAuthorizationUrl(await oidcConfiguration(audience), {
       response_type: 'code',
       client_id: oidcClientId(audience) ?? '',
@@ -37,6 +39,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       code_challenge: pkce.challenge,
       code_challenge_method: 'S256',
       ...(social !== undefined ? { source: social.sourceSlug } : {}),
+      ...(refreshVerification ? { prompt: 'login' } : {}),
     });
     const response = NextResponse.redirect(location);
     response.cookies.set(

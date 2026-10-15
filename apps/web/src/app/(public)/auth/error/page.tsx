@@ -22,7 +22,10 @@ export default async function AuthErrorPage({
 }: {
   searchParams: Promise<{ reason?: string | string[] }>;
 }) {
-  const { title, lede, plan } = authErrorCopy((await searchParams).reason);
+  const params = await searchParams;
+  const reasonKey = typeof params.reason === 'string' ? params.reason : undefined;
+  const { title, lede, plan } = authErrorCopy(params.reason);
+  const emailUnverified = reasonKey === 'email_unverified';
   return (
     <>
       <PageHeader title={title} lede={lede} />
@@ -31,10 +34,16 @@ export default async function AuthErrorPage({
           <Alert tone="info" title="Your account and enquiry details are safe">
             <Text size="body-sm">{plan}</Text>
           </Alert>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <AppButtonLink href="/auth/sign-in" variant="primary">
-              Try signing in again
-            </AppButtonLink>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {emailUnverified ? (
+              <AppButtonLink href="/auth/verify-email" variant="primary">
+                Verify email
+              </AppButtonLink>
+            ) : (
+              <AppButtonLink href="/auth/sign-in" variant="primary">
+                Try signing in again
+              </AppButtonLink>
+            )}
             <AppButtonLink href="/enquiry" variant="outline">
               Make an enquiry
             </AppButtonLink>

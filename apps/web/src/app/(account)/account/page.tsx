@@ -75,8 +75,15 @@ export default async function AccountDashboardPage() {
               <Alert tone="warning" title="Verify your email to use enquiries and orders">
                 <Text size="body-sm">
                   Your profile can be updated now. Enquiries, orders, and claim links need a
-                  verified email in your sign-in service.
+                  verified email for{' '}
+                  <span className="font-medium text-foreground">{session.email}</span> in your
+                  sign-in service.
                 </Text>
+                <div className="mt-4">
+                  <AppButtonLink href="/auth/verify-email" variant="primary" size="sm">
+                    Verify email
+                  </AppButtonLink>
+                </div>
               </Alert>
             ) : null}
 

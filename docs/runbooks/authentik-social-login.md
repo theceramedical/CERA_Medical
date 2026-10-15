@@ -11,6 +11,25 @@ CERA does not implement Google OAuth in the web app. Social buttons call `/auth/
 
 New users still need the **`cera-customers`** group (or verified email per CERA’s OIDC mapping) before the portal grants access.
 
+## After a production deploy (Google customers)
+
+Identity claim changes (for example `email_verified` from Google) apply on the **next** OIDC login. Existing browser sessions keep the old claims until the customer signs in again.
+
+1. On **https://www.ceramedical.org/account**, use **Sign out**.
+2. **Continue with Google** (same email).
+3. Reload **Your account** — the yellow “Verify your email” banner should clear when Authentik emits `email_verified: true`.
+
+If the banner remains after that fresh Google sign-in, on the production host re-apply the customer Authentik script (same as deploy):
+
+```bash
+cd /opt/cera
+bash infra/scripts/reconfigure-authentik-customer-experience.sh
+```
+
+Then in Authentik admin (**Directory → Users** → the customer): after one more Google sign-in, **Attributes** should show `email_verified: true` (set by Google mapping, not by hand). Under **Providers → CERA production OIDC**, the **email** scope must include the **CERA email verification** property mapping.
+
+**First-time Google signup:** completing “Create your CERA account” on `auth.ceramedical.org` can land on `/if/user/` (“internal users only”). That is Authentik’s portal, not CERA. Open **https://www.ceramedical.org/auth/sign-in** and **Continue with Google** again to finish the website session.
+
 ## What visitors should see
 
 Passwords stay in Authentik. The website does not grow a second password database.
