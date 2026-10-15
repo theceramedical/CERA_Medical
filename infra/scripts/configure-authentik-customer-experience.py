@@ -406,6 +406,44 @@ def ensure_source_authentication(sources):
     print("CERA social sign-in replaces stale Authentik sessions and syncs email verification.")
 
 
+def ensure_signed_out_flow(audience, logout_stage):
+    """A one-stage flow that finishes with a final redirect to the website.
+
+    A Redirect stage or the provider's SessionEndStage only *navigates* away;
+    the plan stays in the Authentik session, and the next end-session request
+    then returns an empty page. Completing a flow whose plan carries
+    ``redirect`` clears the plan before redirecting.
+    """
+    target = f"{SITE_URL}/auth/signed-out?audience={audience}"
+    flow, _created = Flow.objects.get_or_create(
+        slug=f"cera-{audience}-signed-out",
+        defaults={
+            "name": f"CERA {audience} signed out",
+            "title": "Signed out of CERA Medical",
+            "designation": "invalidation",
+            "authentication": "none",
+        },
+    )
+    flow.name = f"CERA {audience} signed out"
+    flow.title = "Signed out of CERA Medical"
+    flow.designation = "invalidation"
+    flow.authentication = "none"
+    flow.save()
+    binding, _created = FlowStageBinding.objects.update_or_create(
+        target=flow,
+        stage=logout_stage,
+        defaults={"order": 10, "evaluate_on_plan": True, "re_evaluate_policies": False},
+    )
+    expression = (
+        'plan = context.get("flow_plan")\n'
+        "if plan is not None:\n"
+        f'    plan.context["redirect"] = {target!r}\n'
+        "return True\n"
+    )
+    bind_policy(binding, f"CERA {audience} return to website after sign-out", expression, 0)
+    return flow
+
+
 def ensure_invalidation_flow(provider, audience):
     """End the Authentik session on CERA sign-out, then return to the site.
 
@@ -429,12 +467,16 @@ def ensure_invalidation_flow(provider, audience):
     flow.save()
 
     logout_stage, _created = UserLogoutStage.objects.get_or_create(name="cera-user-logout")
+    signed_out = ensure_signed_out_flow(audience, logout_stage)
+    # Hand off to the signed-out flow so this plan never reaches the appended
+    # SessionEndStage, which would leave the plan behind in the session.
     redirect_stage, _created = RedirectStage.objects.get_or_create(
         name=f"cera-{audience}-signed-out",
-        defaults={"mode": RedirectMode.STATIC},
+        defaults={"mode": RedirectMode.FLOW},
     )
-    redirect_stage.mode = RedirectMode.STATIC
-    redirect_stage.target_static = f"{SITE_URL}/auth/signed-out?audience={audience}"
+    redirect_stage.mode = RedirectMode.FLOW
+    redirect_stage.target_flow = signed_out
+    redirect_stage.target_static = ""
     redirect_stage.keep_context = False
     redirect_stage.save()
     FlowStageBinding.objects.update_or_create(
