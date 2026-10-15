@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { type Enquiry, type EnquiryStatusEvent, EnquirySchema, type Service } from './entities.ts';
 import { CustomerStatusSchema, DeliveryStatusSchema } from './enums.ts';
+import { PhysicalProductSkuSchema } from './physical-catalog.ts';
 import { EmailSchema, SlugSchema, UtcTimestampSchema } from './primitives.ts';
 import { buildCustomerTimeline, customerStatusLabel, toCustomerStatus } from './status.ts';
 
@@ -222,7 +223,7 @@ function crmLeadSource(source: Enquiry['source']): string {
 export const CustomerOrderPaymentMethodSchema = z.enum(['cod', 'safepay', 'test']);
 
 export const CustomerOrderLineSchema = z.object({
-  slug: SlugSchema,
+  slug: z.union([SlugSchema, PhysicalProductSkuSchema]),
   title: z.string().min(1).max(160),
   quantity: z.number().int().min(1).max(99),
   lineTotalMinor: z.number().int().nonnegative(),

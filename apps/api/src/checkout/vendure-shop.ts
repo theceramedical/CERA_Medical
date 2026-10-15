@@ -189,6 +189,7 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         fullName: string;
         countryCode: string;
         deliveryAddress: DeliveryAddress;
+        billingAddress: DeliveryAddress;
         paymentMethod: 'cod' | 'safepay' | 'test';
         safepayTracker?: string | undefined;
       },
@@ -196,6 +197,11 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
       const address = {
         fullName: input.fullName,
         ...input.deliveryAddress,
+        countryCode: input.countryCode,
+      };
+      const billingAddress = {
+        fullName: input.fullName,
+        ...input.billingAddress,
         countryCode: input.countryCode,
       };
 
@@ -225,6 +231,14 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
           setOrderShippingAddress(input: $input) { __typename }
         }`,
         { input: address },
+      );
+
+      await post(
+        { token },
+        `mutation ($input: CreateAddressInput!) {
+          setOrderBillingAddress(input: $input) { __typename }
+        }`,
+        { input: billingAddress },
       );
 
       const methods = await post<{

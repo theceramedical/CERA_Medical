@@ -25,7 +25,12 @@ function SafepayOrderFinalize({ tracker }: { readonly tracker: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let contact: { email?: string; fullName?: string; deliveryAddress?: DeliveryAddress } = {};
+    let contact: {
+      email?: string;
+      fullName?: string;
+      deliveryAddress?: DeliveryAddress;
+      billingAddress?: DeliveryAddress;
+    } = {};
     try {
       const raw = sessionStorage.getItem(CHECKOUT_CONTACT_STORAGE_KEY);
       if (raw !== null) contact = JSON.parse(raw) as typeof contact;
@@ -47,6 +52,7 @@ function SafepayOrderFinalize({ tracker }: { readonly tracker: string }) {
       fullName: contact.fullName,
       countryCode: 'PK',
       deliveryAddress: contact.deliveryAddress,
+      ...(contact.billingAddress ? { billingAddress: contact.billingAddress } : {}),
       paymentMethod: 'safepay',
       safepayTracker: tracker,
     })

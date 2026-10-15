@@ -43,6 +43,7 @@ export const CheckoutCompleteBodySchema = z.object({
   countryCode: z.string().length(2).default('PK'),
   paymentMethod: CheckoutPaymentMethodSchema,
   deliveryAddress: DeliveryAddressSchema,
+  billingAddress: DeliveryAddressSchema.optional(),
   safepayTracker: z.string().max(120).optional(),
 });
 

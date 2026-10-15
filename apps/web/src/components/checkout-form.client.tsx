@@ -29,6 +29,7 @@ export function CheckoutForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>('safepay');
+  const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(true);
 
   return (
     <form
@@ -60,6 +61,16 @@ export function CheckoutForm({
           postalCode: field('postalCode'),
           phoneNumber: field('phoneNumber'),
         };
+        const billingAddress: DeliveryAddress = billingSameAsDelivery
+          ? deliveryAddress
+          : {
+              streetLine1: field('billingStreetLine1'),
+              ...(field('billingStreetLine2') ? { streetLine2: field('billingStreetLine2') } : {}),
+              city: field('billingCity'),
+              province: field('billingProvince'),
+              postalCode: field('billingPostalCode'),
+              phoneNumber: field('billingPhoneNumber'),
+            };
         const method =
           methodRaw === 'cod' || methodRaw === 'safepay' || methodRaw === 'test'
             ? methodRaw
@@ -67,7 +78,7 @@ export function CheckoutForm({
 
         if (method === 'safepay') {
           const origin = window.location.origin;
-          const contact = { email, fullName, deliveryAddress };
+          const contact = { email, fullName, deliveryAddress, billingAddress };
           try {
             sessionStorage.setItem(CHECKOUT_CONTACT_STORAGE_KEY, JSON.stringify(contact));
           } catch {
@@ -96,6 +107,7 @@ export function CheckoutForm({
           countryCode: 'PK',
           paymentMethod: method,
           deliveryAddress,
+          billingAddress,
         })
           .then((result) =>
             router.push(`/checkout/confirmation?order=${encodeURIComponent(result.orderCode)}`),
@@ -206,6 +218,45 @@ export function CheckoutForm({
             />
           </label>
         ))}
+      </fieldset>
+      <fieldset className="space-y-4 border-t border-border pt-5">
+        <legend className="text-lg font-semibold">Billing address</legend>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="billingSameAsDelivery"
+            checked={billingSameAsDelivery}
+            onChange={(event) => setBillingSameAsDelivery(event.target.checked)}
+          />
+          <Text size="body-sm">Same as delivery address</Text>
+        </label>
+        {!billingSameAsDelivery ? (
+          <div className="space-y-4">
+            {[
+              { name: 'billingPhoneNumber', label: 'Billing phone number', required: true },
+              { name: 'billingStreetLine1', label: 'Billing street address', required: true },
+              {
+                name: 'billingStreetLine2',
+                label: 'Billing apartment, suite or building (optional)',
+                required: false,
+              },
+              { name: 'billingCity', label: 'Billing city', required: true },
+              { name: 'billingProvince', label: 'Billing province or region', required: true },
+              { name: 'billingPostalCode', label: 'Billing postal code', required: true },
+            ].map((field) => (
+              <label key={field.name} className="block">
+                <Text size="body-sm" className="mb-1 font-medium">
+                  {field.label}
+                </Text>
+                <input
+                  name={field.name}
+                  required={field.required}
+                  className="w-full rounded-md border border-border bg-surface px-3 py-2"
+                />
+              </label>
+            ))}
+          </div>
+        ) : null}
       </fieldset>
       {error ? (
         <Text size="body-sm" className="text-danger-600">

@@ -244,6 +244,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
             fullName: body.fullName,
             countryCode: body.countryCode,
             deliveryAddress: body.deliveryAddress,
+            billingAddress: body.billingAddress ?? body.deliveryAddress,
             paymentMethod: body.paymentMethod,
             ...(body.safepayTracker !== undefined ? { safepayTracker: body.safepayTracker } : {}),
           },

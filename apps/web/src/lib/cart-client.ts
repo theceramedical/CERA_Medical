@@ -85,6 +85,7 @@ export async function completeCheckout(body: {
   countryCode?: string;
   paymentMethod: CheckoutPaymentMethod;
   deliveryAddress: DeliveryAddress;
+  billingAddress?: DeliveryAddress;
   safepayTracker?: string;
 }): Promise<{ orderCode: string }> {
   const response = await fetch('/api/checkout/complete', {

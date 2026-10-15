@@ -10,12 +10,29 @@ import {
 import { EnquirySchema } from './entities.ts';
 import { EnquirySourceSchema } from './enums.ts';
 import {
+  CustomerOrderSchema,
   splitName,
   toCustomerEnquiry,
   toPublicService,
   toStaffEnquiry,
   toCrmLeadPayload,
 } from './projections.ts';
+
+describe('customer orders', () => {
+  it('accepts physical Vendure SKUs in order history', () => {
+    expect(
+      CustomerOrderSchema.safeParse({
+        orderCode: 'TJWWQJCH3JPRXJQW',
+        placedAt: '2026-10-13T19:44:21.233Z',
+        paymentMethod: 'cod',
+        paymentLabel: 'Cash on delivery',
+        currencyCode: 'PKR',
+        totalMinor: 3400,
+        lines: [{ slug: '123ASDASDSA', title: 'QA product', quantity: 1, lineTotalMinor: 3400 }],
+      }).success,
+    ).toBe(true);
+  });
+});
 
 /**
  * The leak tests are the point of this file.

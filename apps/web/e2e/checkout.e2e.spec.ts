@@ -39,8 +39,21 @@ test.describe('physical product checkout', () => {
     await page.locator('input[name="postalCode"]').fill('22620');
     await expect(page.locator('input[name="email"]')).toHaveValue('portal-customer@example.com');
     await page.locator('input[name="paymentMethod"][value="cod"]').check();
+    await expect(page.locator('input[name="billingSameAsDelivery"]')).toBeChecked();
+    await page.locator('input[name="billingSameAsDelivery"]').uncheck();
+    await page.locator('input[name="billingPhoneNumber"]').fill('03007654321');
+    await page.locator('input[name="billingStreetLine1"]').fill('Office 4, Market Road');
+    await page.locator('input[name="billingCity"]').fill('Islamabad');
+    await page.locator('input[name="billingProvince"]').fill('Islamabad Capital Territory');
+    await page.locator('input[name="billingPostalCode"]').fill('44000');
 
+    const complete = page.waitForRequest(
+      (request) => request.url().includes('/api/checkout/complete') && request.method() === 'POST',
+    );
     await page.getByRole('button', { name: 'Confirm order', exact: true }).click();
+    const submitted = (await complete).postDataJSON();
+    expect(submitted.deliveryAddress.city).toBe('Haripur');
+    expect(submitted.billingAddress.city).toBe('Islamabad');
 
     await expect(page).toHaveURL(/\/checkout\/confirmation\?order=/);
     await expect(page.getByRole('heading', { name: 'Thank you', level: 1 })).toBeVisible();
