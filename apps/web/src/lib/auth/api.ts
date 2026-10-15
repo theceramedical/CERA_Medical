@@ -10,6 +10,7 @@ import {
   assertCustomerPortalSession,
   assertStaffPortalSession,
   signInPath,
+  verifyEmailPath,
 } from './portal-access.ts';
 import { getSession } from './session.ts';
 
@@ -54,7 +55,7 @@ export async function authenticatedApi<T>(
   });
 
   if (response.status === 401) redirect(signIn);
-  if (response.status === 403) redirect('/auth/error?reason=email_unverified');
+  if (response.status === 403) redirect(verifyEmailPath(returnTo));
   if (response.status === 404 && CUSTOMER_LIST_PATHS.has(path)) {
     redirect('/auth/error?reason=access');
   }

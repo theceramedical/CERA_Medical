@@ -55,10 +55,8 @@ test.describe('customer portal', () => {
     ).toBeVisible();
 
     await page.goto('/account/enquiries');
-    await expect(page).toHaveURL(/\/auth\/error\?reason=email_unverified/);
-    await expect(
-      page.getByRole('heading', { name: 'Verify your email to use the portal', level: 1 }),
-    ).toBeVisible();
+    await expect(page).toHaveURL(/\/auth\/verify-email/);
+    await expect(page.getByRole('heading', { name: 'Verify your email', level: 1 })).toBeVisible();
 
     await page.goto('/account/profile');
     await expect(page.getByRole('heading', { name: 'Your profile', level: 1 })).toBeVisible();

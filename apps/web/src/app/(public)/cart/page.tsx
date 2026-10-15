@@ -30,7 +30,7 @@ export default async function CartPage() {
     <>
       <MarketingPageHeader
         title="Your cart"
-        lede="Physical products and fixed-price service lines. Sign in after checkout to track orders at Account → Orders."
+        lede="Physical products and fixed-price service lines. Checkout needs a signed-in account with a verified email; orders then appear under Your account → Orders."
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Products', href: '/products' },

@@ -14,3 +14,9 @@ export function signInPath(returnTo?: string): string {
     ? '/auth/sign-in'
     : `/auth/sign-in?next=${encodeURIComponent(returnTo)}`;
 }
+
+export function verifyEmailPath(returnTo?: string): string {
+  return returnTo === undefined
+    ? '/auth/verify-email'
+    : `/auth/verify-email?next=${encodeURIComponent(returnTo)}`;
+}
