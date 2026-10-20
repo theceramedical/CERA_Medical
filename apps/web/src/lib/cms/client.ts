@@ -14,6 +14,9 @@ import { mapCmsDocument } from './map.ts';
  * bundle (INT-803, and the preview-token contract).
  */
 
+/** A booting CMS must not hold a public page open until the container health check gives up. */
+const CMS_FETCH_TIMEOUT_MS = 4000;
+
 const COLLECTION: Record<ContentType, string> = {
   page: 'pages',
   post: 'posts',
@@ -43,7 +46,10 @@ export async function getPublishedDocument(
   const cached = unstable_cache(
     async () => {
       try {
-        const response = await fetch(url, { headers: { accept: 'application/json' } });
+        const response = await fetch(url, {
+          headers: { accept: 'application/json' },
+          signal: AbortSignal.timeout(CMS_FETCH_TIMEOUT_MS),
+        });
         if (!response.ok) return null;
         const body = (await response.json()) as PayloadList<Record<string, unknown>>;
         const doc = body.docs[0];
@@ -119,7 +125,10 @@ export async function listPublishedDocuments(
 
   let body: PayloadList<Record<string, unknown>>;
   try {
-    const response = await fetch(url, { next: { tags: [`cms:${collection}`] } });
+    const response = await fetch(url, {
+      next: { tags: [`cms:${collection}`] },
+      signal: AbortSignal.timeout(CMS_FETCH_TIMEOUT_MS),
+    });
     if (!response.ok) return [];
     body = (await response.json()) as PayloadList<Record<string, unknown>>;
   } catch {

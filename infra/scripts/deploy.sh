@@ -73,7 +73,12 @@ if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEAS
   echo 'Catalogue seed failed' >&2
   exit 1
 fi
-compose up -d web api worker cms commerce commerce-worker caddy
+if ! compose up -d web api worker cms commerce commerce-worker caddy; then
+  compose logs --tail 120 web >&2 || true
+  bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
+  echo 'Application startup failed' >&2
+  exit 1
+fi
 # The release tar can replace the Caddyfile inode. Recreate just the edge
 # container so its bind mount points at the current file before smoke checks.
 compose up -d --force-recreate --no-deps caddy

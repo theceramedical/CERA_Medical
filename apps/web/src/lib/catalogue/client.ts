@@ -35,6 +35,7 @@ function catalogueFetchInit(tags: string[], options?: CatalogueFetchOptions) {
       revalidate: options?.revalidateSeconds ?? DEFAULT_CATALOGUE_REVALIDATE_SECONDS,
       tags: [...tags],
     },
+    signal: AbortSignal.timeout(4000),
   };
 }
 
