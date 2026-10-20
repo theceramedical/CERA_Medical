@@ -258,5 +258,7 @@ export const config = {
    * every page load. `_next/static` is immutable and fingerprinted; `_next/image` is the
    * optimiser, whose output is an image.
    */
-  matcher: ['/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|sitemap\\.xml).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|api/health|favicon\\.ico|robots\\.txt|sitemap\\.xml).*)',
+  ],
 };

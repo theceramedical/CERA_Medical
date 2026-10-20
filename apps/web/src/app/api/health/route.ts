@@ -5,6 +5,8 @@
  * starting when Compose asks whether this process is up, and a slow page
  * must not be what decides that.
  */
+export const dynamic = 'force-static';
+
 export function GET(): Response {
   return Response.json({ ok: true });
 }

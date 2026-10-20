@@ -243,12 +243,15 @@ describe('matcher', () => {
     expect(matches(path)).toBe(true);
   });
 
-  it.each(['/_next/static/chunks/main.js', '/_next/image', '/favicon.ico', '/robots.txt'])(
-    'skips %s',
-    (path) => {
-      // These are files on disk with no document to protect and no session to consider. Matching
-      // them would mint a nonce for every image and font on every page load.
-      expect(matches(path)).toBe(false);
-    },
-  );
+  it.each([
+    '/_next/static/chunks/main.js',
+    '/_next/image',
+    '/api/health',
+    '/favicon.ico',
+    '/robots.txt',
+  ])('skips %s', (path) => {
+    // These are files on disk with no document to protect and no session to consider. Matching
+    // them would mint a nonce for every image and font on every page load.
+    expect(matches(path)).toBe(false);
+  });
 });

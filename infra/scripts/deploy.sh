@@ -75,6 +75,10 @@ if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEAS
 fi
 if ! compose up -d web api worker cms commerce commerce-worker caddy; then
   compose logs --tail 120 web >&2 || true
+  web_id="$(compose ps -q web | head -1)"
+  if [[ -n "$web_id" ]]; then
+    docker inspect --format '{{range .State.Health.Log}}{{.ExitCode}} {{.Output}}{{end}}' "$web_id" >&2 || true
+  fi
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Application startup failed' >&2
   exit 1
