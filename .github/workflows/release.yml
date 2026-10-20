@@ -307,6 +307,7 @@ jobs:
           trap cleanup_registry_auth EXIT
           printf '%s' "$DEPLOY_GHCR_TOKEN" | ssh "$DEPLOY_USER@$DEPLOY_HOST" \
             "docker login ghcr.io --username '$GITHUB_ACTOR' --password-stdin"
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" 'df -h / && docker image prune -af && docker builder prune -af && df -h /'
           tar -cf - compose.yaml infra/compose infra/caddy infra/postgres infra/erpnext infra/scripts infra/systemd | \
             ssh "$DEPLOY_USER@$DEPLOY_HOST" 'mkdir -p /opt/cera && tar -xf - -C /opt/cera'
           ssh "$DEPLOY_USER@$DEPLOY_HOST" \
