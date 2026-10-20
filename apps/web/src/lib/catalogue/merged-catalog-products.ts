@@ -2,6 +2,8 @@ import 'server-only';
 
 import type { PublicProduct } from '@cera/contracts/projections';
 
+import { catalogueProducts, productMediaFor } from '../../content/catalogue-products.ts';
+
 import { listPublicProducts } from './client.ts';
 
 import type { CatalogProduct } from '../../content/products-catalog.ts';
@@ -25,15 +27,23 @@ function catalogRowFromApi(product: PublicProduct): CatalogProduct {
         : 'Price on enquiry',
     inStock: null,
     fulfillment: 'physical',
-    ...(product.imageUrl === null ? {} : { imageUrl: product.imageUrl }),
+    ...(() => {
+      const imageUrl = product.imageUrl ?? productMediaFor(product.sku)?.imageSrc;
+      return imageUrl === undefined ? {} : { imageUrl };
+    })(),
   };
 }
 
 /**
- * Display only products returned by the public catalogue API. Marketing copy
- * must not create product inventory or override a live product by SKU.
+ * Live API rows win. Catalogue entries fill SKUs the API has not published yet
+ * and never replace a live product with the same SKU.
  */
 export async function listMergedCatalogProducts(): Promise<readonly CatalogProduct[]> {
   const { items } = await listPublicProducts({ revalidateSeconds: 30 });
-  return items.map(catalogRowFromApi).sort((a, b) => a.sku.localeCompare(b.sku));
+  const known = new Set(items.map((product) => product.sku.toLowerCase()));
+  const listed = [
+    ...items,
+    ...catalogueProducts().filter((product) => !known.has(product.sku.toLowerCase())),
+  ];
+  return listed.map(catalogRowFromApi).sort((a, b) => a.sku.localeCompare(b.sku));
 }

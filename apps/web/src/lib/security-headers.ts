@@ -41,6 +41,11 @@ export interface CspOrigins {
    * not block legitimate sign-in forms.
    */
   readonly formActionOrigins?: readonly string[] | undefined;
+  /**
+   * React's development runtime reconstructs call stacks with `eval()`.
+   * Production builds never call `eval`, so this stays off outside `next dev`.
+   */
+  readonly allowDevEval?: boolean | undefined;
 }
 
 /**
@@ -56,6 +61,8 @@ export interface CspOrigins {
  * `'self'` and `https:` are still listed in `script-src` on purpose: a CSP3 browser ignores them
  * in the presence of `'strict-dynamic'`, and a CSP2 browser ignores `'strict-dynamic'` and falls
  * back to them. Removing them would leave older engines with no policy at all.
+ * `'unsafe-eval'` is not one of the sources `'strict-dynamic'` ignores, so it is added only for
+ * the development server, where React uses `eval` to rebuild call stacks.
  */
 export function buildCsp(nonce: string, origins: CspOrigins = {}): string {
   const imageSources = ["'self'", 'data:', 'blob:'];
@@ -76,7 +83,13 @@ export function buildCsp(nonce: string, origins: CspOrigins = {}): string {
   const directives: Record<string, readonly string[] | null> = {
     'default-src': ["'self'"],
 
-    'script-src': [`'nonce-${nonce}'`, "'strict-dynamic'", "'self'", 'https:'],
+    'script-src': [
+      `'nonce-${nonce}'`,
+      "'strict-dynamic'",
+      "'self'",
+      'https:',
+      ...(origins.allowDevEval === true ? ["'unsafe-eval'"] : []),
+    ],
 
     /**
      * `'unsafe-inline'` for styles, and it is a deliberate concession rather than an oversight.

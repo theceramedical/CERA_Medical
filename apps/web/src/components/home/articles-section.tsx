@@ -6,6 +6,7 @@ import Image from 'next/image';
 import type { ContentDocument } from '@cera/contracts';
 
 import { HOMEPAGE_ARTICLES } from '../../content/homepage.ts';
+import { postCoverSrc } from '../../lib/cms/post-cover.ts';
 import { AppLink } from '../link.tsx';
 
 export interface ArticlesSectionProps {
@@ -18,26 +19,37 @@ export interface ArticlesSectionProps {
 }
 
 export function ArticlesSection({
-  heading = 'Health Insights & Articles',
+  heading = 'Research Updates',
   subheading = 'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.',
   viewAllHref = '/articles',
   viewAllLabel = 'View All Articles',
   maxPosts = 3,
   posts,
 }: ArticlesSectionProps) {
-  const fromCms = (posts ?? []).slice(0, maxPosts).map((post, index) => ({
+  const fromCms = (posts ?? []).map((post) => ({
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt ?? '',
-    category: HOMEPAGE_ARTICLES[index]?.category ?? 'Article',
-    coverSrc: HOMEPAGE_ARTICLES[index]?.coverSrc ?? '/images/article-cover-data.svg',
+    category: HOMEPAGE_ARTICLES.find((item) => item.slug === post.slug)?.category ?? 'Article',
+    coverSrc: postCoverSrc(post, post.slug),
   }));
-  const articles = fromCms.length > 0 ? fromCms : HOMEPAGE_ARTICLES.slice(0, maxPosts);
+  const known = new Set(fromCms.map((item) => item.slug));
+  const local = HOMEPAGE_ARTICLES.filter((item) => !known.has(item.slug)).map((item) => ({
+    slug: item.slug,
+    title: item.title,
+    excerpt: item.excerpt,
+    category: item.category,
+    coverSrc: item.coverSrc,
+  }));
+  const articles = [...fromCms, ...local].slice(0, Math.max(maxPosts, HOMEPAGE_ARTICLES.length));
 
   if (articles.length === 0) return null;
 
   return (
-    <section aria-labelledby="articles-heading" className="border-b border-border bg-surface py-16">
+    <section
+      aria-labelledby="articles-heading"
+      className="cera-view border-b border-border bg-surface py-16"
+    >
       <div className="mx-auto max-w-site px-6 md:px-10">
         <div className="mb-12 flex flex-col justify-between md:flex-row md:items-end">
           <div>
@@ -65,7 +77,7 @@ export function ArticlesSection({
           {articles.map((article) => (
             <li
               key={article.slug}
-              className="flex flex-col justify-between overflow-hidden rounded-lg border border-border bg-surface shadow-card"
+              className="cera-card flex flex-col justify-between overflow-hidden rounded-lg border border-border bg-surface shadow-card"
             >
               <div>
                 <div className="pointer-events-none relative aspect-video w-full overflow-hidden bg-surface-tint">

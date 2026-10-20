@@ -869,6 +869,42 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
         'A written protocol defines endpoints, controls, and reporting before samples are shipped.',
       ]),
     },
+    {
+      slug: 'confocal-imaging-in-the-laboratory',
+      title: 'Confocal imaging on the STELLARIS 8',
+      category: laboratory,
+      excerpt:
+        'How CERA uses the Leica STELLARIS 8 and DMi8 workstation for molecular and histological imaging, and what to agree before slides arrive.',
+      body: lexicalFromStrings([
+        'CERA uses a Leica STELLARIS 8 confocal on a DMi8 workstation for molecular and histological imaging.',
+        'Agree sample type, labels, and the figures you need before imaging time is booked.',
+        'The microscope is laboratory equipment used in the molecular research service. It is not sold.',
+      ]),
+    },
+    {
+      slug: 'plate-based-assays-and-readout',
+      title: 'Plate assays, dry baths and readout',
+      category: laboratory,
+      excerpt:
+        'Incubation on a DLAB dry bath and absorbance or fluorescence readout on a Multiskan SkyHigh — what a plate-assay handoff needs.',
+      body: lexicalFromStrings([
+        'Plate assays move from a temperature-controlled dry bath to a microplate reader.',
+        'Send a plate map, incubation time, and the read mode named in the protocol.',
+        'Sponsors receive the agreed data. The instruments stay in the laboratory.',
+      ]),
+    },
+    {
+      slug: 'documenting-laboratory-methods',
+      title: 'Documenting laboratory methods as you work',
+      category: researchMethods,
+      excerpt:
+        'Scale cards, labelled tubes and a bench camera so methods notes match the samples that later appear in a report.',
+      body: lexicalFromStrings([
+        'A methods note should match the bench: instrument, protocol version, and sample codes.',
+        'Photographs with a scale card support the note. They do not replace sample identifiers.',
+        'Do not put participant names on tubes, filenames, or free-text labels.',
+      ]),
+    },
   ] as const;
 
   for (const post of posts) {

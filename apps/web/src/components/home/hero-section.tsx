@@ -3,6 +3,7 @@ import { Heading, Text } from '@cera/ui/typography';
 import { ClipboardCheck, ShieldCheck, Users } from 'lucide-react';
 import Image from 'next/image';
 
+import { FACILITY_HERO } from '../../content/facility.ts';
 import { HERO } from '../../content/homepage.ts';
 import { AppButtonLink } from '../link.tsx';
 
@@ -53,7 +54,7 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
       </div>
       <div className="relative z-10 mx-auto max-w-site px-6 md:px-10">
         <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
-          <div className="flex flex-col items-start lg:col-span-7 lg:pr-4">
+          <div className="cera-enter flex flex-col items-start lg:col-span-7 lg:pr-4">
             <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 shadow-sm">
               <span className="size-2 rounded-full bg-accent" />
               <Text as="p" size="eyebrow" tone="muted" className="tracking-[0.14em]">
@@ -94,21 +95,18 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
           </div>
 
           <div className="relative mt-8 lg:col-span-5 lg:mt-0">
-            <div className="relative h-64 overflow-hidden rounded-lg border border-border bg-surface shadow-md sm:h-80 lg:h-[460px]">
+            <div className="cera-photo relative h-72 overflow-hidden rounded-lg border border-border bg-surface shadow-md sm:h-96 lg:h-[520px]">
               <Image
-                src={content.imageUrl ?? '/images/hero-portrait.svg'}
-                alt={
-                  content.imageAlt ??
-                  'Laboratory researcher pipetting reagents in a biomedical testing facility.'
-                }
+                src={content.imageUrl ?? FACILITY_HERO.src}
+                alt={content.imageAlt ?? FACILITY_HERO.alt}
                 fill
                 priority
                 sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-cover object-center"
+                className="object-cover object-[center_20%]"
               />
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-primary-900/40 via-transparent to-transparent" />
             </div>
-            <div className="relative mt-4 flex max-w-full items-start gap-4 rounded-lg border border-border bg-surface p-4 shadow-lg sm:absolute sm:-bottom-6 sm:-left-6 sm:mt-0 sm:max-w-sm sm:p-5">
+            <div className="cera-enter cera-delay-3 relative mt-4 flex max-w-full items-start gap-4 rounded-lg border border-border bg-surface p-4 shadow-lg sm:absolute sm:-bottom-6 sm:-left-6 sm:mt-0 sm:max-w-sm sm:p-5">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-surface-tint text-accent">
                 <Icon icon={ClipboardCheck} size="md" />
               </div>

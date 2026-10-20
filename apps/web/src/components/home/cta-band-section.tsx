@@ -16,7 +16,7 @@ export function CtaBandSection({ content = {} }: { readonly content?: CtaContent
   return (
     <section
       aria-labelledby="cta-heading"
-      className="bg-linear-to-r from-gradient-from to-gradient-to py-16 text-on-primary"
+      className="cera-view bg-linear-to-r from-gradient-from to-gradient-to py-16 text-on-primary"
     >
       <div className="mx-auto max-w-site px-6 text-center md:px-10">
         <Heading

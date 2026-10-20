@@ -24,14 +24,24 @@ const publishedProduct: PublicProduct = {
 describe('public product listing', () => {
   beforeEach(() => listPublicProducts.mockReset());
 
-  it('does not produce invented products when the API returns none', async () => {
+  it('shows the catalogue when the API returns none', async () => {
     listPublicProducts.mockResolvedValue({ items: [], degraded: true });
-    expect(await listMergedCatalogProducts()).toEqual([]);
+    const products = await listMergedCatalogProducts();
+    expect(products.map((product) => product.sku)).toEqual([
+      'CR-CEL-3091',
+      'CR-CEL-8402',
+      'CR-MOL-1021',
+      'CR-MOL-2045',
+      'CR-MOL-3012',
+      'CR-PRE-5510',
+      'CR-REG-1180',
+    ]);
   });
 
   it('shows public records without inferring price or stock', async () => {
     listPublicProducts.mockResolvedValue({ items: [publishedProduct], degraded: false });
-    expect(await listMergedCatalogProducts()).toEqual([
+    const products = await listMergedCatalogProducts();
+    expect(products).toContainEqual(
       expect.objectContaining({
         sku: 'REAL-001',
         title: 'Published product',
@@ -40,6 +50,7 @@ describe('public product listing', () => {
         inStock: null,
         specs: [],
       }),
-    ]);
+    );
+    expect(products.some((product) => product.sku === 'CR-MOL-1021')).toBe(true);
   });
 });

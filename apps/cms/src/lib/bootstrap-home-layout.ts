@@ -164,7 +164,7 @@ export function homePageMarketingBlocks(): PageLayout {
     },
     {
       blockType: 'articlesPreview',
-      heading: 'Health Insights & Articles',
+      heading: 'Research Updates',
       body: 'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.',
       viewAllHref: '/articles',
       viewAllLabel: 'View All Articles',

@@ -84,6 +84,7 @@ export function proxy(request: NextRequest): NextResponse {
       originOf(process.env.OIDC_STAFF_ISSUER ?? process.env.OIDC_ISSUER),
     ].filter((origin): origin is string => origin !== undefined),
     formActionOrigins,
+    allowDevEval: process.env.NODE_ENV === 'development',
   });
 
   const requestHeaders = new Headers(request.headers);

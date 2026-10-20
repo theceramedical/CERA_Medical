@@ -1,8 +1,4 @@
-import { EmptyState } from '@cera/ui/empty-state';
-
 import { CmsLayout } from '../../../components/cms-content-page.tsx';
-import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
-import { AppLink } from '../../../components/link.tsx';
 import { ServicePortfolio } from '../../../components/services/service-portfolio.tsx';
 import { listPublicServices } from '../../../lib/catalogue/client.ts';
 import { listPublishedDocuments, getCurrentDocument } from '../../../lib/cms/client.ts';
@@ -35,11 +31,10 @@ export default async function ServicesPage({
     listPublishedDocuments('servicePresentation'),
     getCurrentDocument('page', 'services'),
   ]);
-  if (servicePage === null) return <CmsPageUnavailable slug="services" />;
-
-  const bodyBlocks = layoutBlocksWithoutServicesChrome(servicePage.layout);
-  const catalogueLabels = servicesCatalogueFromLayout(servicePage.layout);
-  const cmsHero = servicesHeroFromLayout(servicePage.layout);
+  const bodyBlocks =
+    servicePage === null ? [] : layoutBlocksWithoutServicesChrome(servicePage.layout);
+  const catalogueLabels = servicesCatalogueFromLayout(servicePage?.layout);
+  const cmsHero = servicesHeroFromLayout(servicePage?.layout);
   const domain = params.domain ?? params.category;
 
   return (
@@ -54,15 +49,6 @@ export default async function ServicesPage({
         {...(degraded ? { degraded: true } : {})}
       />
       {bodyBlocks.length > 0 ? <CmsLayout blocks={bodyBlocks} /> : null}
-      {degraded && presentations.length === 0 ? (
-        <div className="mx-auto max-w-site px-6 pb-12 md:px-10">
-          <EmptyState
-            heading="Catalogue unavailable"
-            description="Browse the service lines above or make an enquiry."
-            action={<AppLink href="/enquiry">Make an enquiry</AppLink>}
-          />
-        </div>
-      ) : null}
     </>
   );
 }

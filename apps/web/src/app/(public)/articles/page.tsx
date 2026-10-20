@@ -1,5 +1,6 @@
 import { ArticlesIndex } from '../../../components/articles/articles-index.tsx';
 import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
+import { withLocalArticles } from '../../../content/local-articles.ts';
 import { getCurrentDocument, listPublishedDocuments } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
@@ -23,11 +24,12 @@ export default async function ArticlesPage({
     listPublishedDocuments('post'),
     getCurrentDocument('page', 'articles'),
   ]);
-  if (page === null) return <CmsPageUnavailable slug="articles" />;
+  const posts = withLocalArticles(published);
+  if (page === null && posts.length === 0) return <CmsPageUnavailable slug="articles" />;
 
   return (
     <ArticlesIndex
-      posts={published}
+      posts={posts}
       {...(params.q === undefined ? {} : { query: params.q })}
       {...(params.topic === undefined ? {} : { topic: params.topic })}
     />

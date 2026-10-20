@@ -25,7 +25,7 @@ export function FaqPreviewSection({
   return (
     <section
       aria-labelledby="faq-preview-heading"
-      className="border-b border-border bg-surface-tint py-16"
+      className="cera-view border-b border-border bg-surface-tint py-16"
     >
       <div className="mx-auto max-w-site px-6 md:px-10">
         <div className="mb-12 flex flex-col justify-between md:flex-row md:items-end">

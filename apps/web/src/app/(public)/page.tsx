@@ -1,5 +1,6 @@
 import { type LayoutBlock } from '../../components/cms-content-page.tsx';
 import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
+import { EquipmentMarquee } from '../../components/home/equipment-marquee.tsx';
 import { HeroSection } from '../../components/home/hero-section.tsx';
 import { HomeMarketingBlocks } from '../../components/home/home-marketing-blocks.tsx';
 import { MetricsBand } from '../../components/home/metrics-band.tsx';
@@ -10,7 +11,8 @@ import {
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
 import { defaultHomeMarketingBlocks } from '../../content/home-marketing-layout.ts';
-import { listPublicServices } from '../../lib/catalogue/client.ts';
+import { withLocalArticles } from '../../content/local-articles.ts';
+import { listPublicProducts, listPublicServices } from '../../lib/catalogue/client.ts';
 import { getCurrentDocument, listPublishedDocuments } from '../../lib/cms/client.ts';
 import { pageMetadata } from '../../lib/seo.ts';
 import { siteUrl } from '../../lib/site-url.ts';
@@ -135,55 +137,72 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const HOME_SHELL_BLOCKS = new Set(['hero', 'statistics', 'ctaBand']);
 
+function splitHomeBlocks(blocks: readonly LayoutBlock[]) {
+  const services = blocks.filter((block) => block.blockType === 'servicesShowcase');
+  const articles = blocks.filter((block) => block.blockType === 'articlesPreview');
+  const rest = blocks.filter(
+    (block) => block.blockType !== 'servicesShowcase' && block.blockType !== 'articlesPreview',
+  );
+  const fallback = defaultHomeMarketingBlocks();
+  return {
+    services:
+      services.length > 0
+        ? services
+        : fallback.filter((block) => block.blockType === 'servicesShowcase'),
+    articles:
+      articles.length > 0
+        ? articles
+        : fallback.filter((block) => block.blockType === 'articlesPreview'),
+    rest,
+  };
+}
+
 export default async function HomePage() {
   const origin = siteUrl().origin;
-  const [document, presentations, posts, catalogue] = await Promise.all([
+  const [document, presentations, posts, catalogue, products] = await Promise.all([
     getCurrentDocument('page', 'home'),
     listPublishedDocuments('servicePresentation'),
     listPublishedDocuments('post'),
     listPublicServices(),
+    listPublicProducts(),
   ]);
-  if (document === null) {
-    return (
-      <>
-        <JsonLd data={organizationJsonLd(origin)} />
-        <JsonLd data={websiteJsonLd(origin)} />
-        <JsonLd data={medicalBusinessJsonLd(origin)} />
-        <HeroSection />
-        <MetricsBand />
-        <HomeMarketingBlocks
-          blocks={defaultHomeMarketingBlocks()}
-          presentations={presentations}
-          posts={posts}
-          catalogue={catalogue.items}
-        />
-        <CtaBandSection />
-      </>
-    );
-  }
-
-  const content = pageContent(document);
-  const layoutBlocks = Array.isArray(document.layout) ? (document.layout as LayoutBlock[]) : [];
+  const layoutBlocks =
+    document !== null && Array.isArray(document.layout) ? (document.layout as LayoutBlock[]) : [];
   const marketingBlocks = layoutBlocks.filter(
     (block) => !HOME_SHELL_BLOCKS.has(block.blockType ?? ''),
   );
-  const blocksToRender =
-    marketingBlocks.length > 0 ? marketingBlocks : defaultHomeMarketingBlocks();
+  const source = marketingBlocks.length > 0 ? marketingBlocks : defaultHomeMarketingBlocks();
+  const bands = splitHomeBlocks(source);
+  const researchPosts = withLocalArticles(posts);
+  const content = document === null ? null : pageContent(document);
 
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
-      <HeroSection content={content.hero} />
-      <MetricsBand metrics={content.metrics} />
+      <HeroSection {...(content === null ? {} : { content: content.hero })} />
+      <EquipmentMarquee products={products.items} />
       <HomeMarketingBlocks
-        blocks={blocksToRender}
+        blocks={bands.services}
         presentations={presentations}
-        posts={posts}
+        posts={researchPosts}
         catalogue={catalogue.items}
       />
-      <CtaBandSection content={content.cta} />
+      <HomeMarketingBlocks
+        blocks={bands.articles}
+        presentations={presentations}
+        posts={researchPosts}
+        catalogue={catalogue.items}
+      />
+      <MetricsBand {...(content?.metrics === undefined ? {} : { metrics: content.metrics })} />
+      <HomeMarketingBlocks
+        blocks={bands.rest}
+        presentations={presentations}
+        posts={researchPosts}
+        catalogue={catalogue.items}
+      />
+      <CtaBandSection {...(content === null ? {} : { content: content.cta })} />
     </>
   );
 }

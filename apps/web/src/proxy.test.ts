@@ -67,6 +67,24 @@ describe('security headers', () => {
     expect(proxy(requestFor('/')).headers.get('content-security-policy')).toContain('script-src');
   });
 
+  it('keeps eval blocked outside the development server', () => {
+    expect(proxy(requestFor('/')).headers.get('content-security-policy')).not.toContain(
+      'unsafe-eval',
+    );
+  });
+
+  it('allows eval while Next is running in development', () => {
+    const previous = process.env.NODE_ENV;
+    (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
+    try {
+      expect(proxy(requestFor('/')).headers.get('content-security-policy')).toContain(
+        "'unsafe-eval'",
+      );
+    } finally {
+      (process.env as { NODE_ENV: string | undefined }).NODE_ENV = previous;
+    }
+  });
+
   it('mints a fresh nonce per request', () => {
     // A reused nonce is no better than `'unsafe-inline'`: an attacker who reads one page's HTML
     // learns the value that will be accepted on the next.

@@ -19,7 +19,7 @@ export function ProcessSection({
   return (
     <section
       aria-labelledby="process-heading"
-      className="border-b border-border bg-surface-tint py-16"
+      className="cera-view border-b border-border bg-surface-tint py-16"
     >
       <div className="mx-auto max-w-site px-6 md:px-10">
         <div className="mb-12 max-w-2xl">

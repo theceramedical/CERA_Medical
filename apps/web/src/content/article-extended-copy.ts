@@ -77,6 +77,65 @@ const EXTENDED: Record<string, readonly ArticleSection[]> = {
       ],
     },
   ],
+  'confocal-imaging-in-the-laboratory': [
+    {
+      heading: 'What the STELLARIS bench is used for',
+      paragraphs: [
+        'CERA uses a Leica STELLARIS 8 confocal on a DMi8 workstation for molecular and histological imaging. The instrument supports fluorescence work that bright-field microscopy cannot resolve, including labelled sections and cultured samples agreed in the study protocol.',
+        'The microscope is laboratory equipment used inside the molecular research service. It is not a product offered for sale.',
+      ],
+    },
+    {
+      heading: 'What to send before imaging starts',
+      paragraphs: [
+        'Imaging time is scheduled after the sample type, labels, and expected outputs are written down. Unlabelled slides and missing fluorophore details are the usual cause of a delayed session.',
+      ],
+      bullets: [
+        'Sample type, fixation, and mounting medium',
+        'Fluorophores or stains, and the channels you need reported',
+        'Whether the deliverable is representative fields, a z-stack, or annotated figures',
+      ],
+    },
+  ],
+  'plate-based-assays-and-readout': [
+    {
+      heading: 'From incubation to a plate read',
+      paragraphs: [
+        'Many molecular assays move from labelled tubes on a temperature-controlled dry bath to a microplate. CERA reads those plates on a Thermo Scientific Multiskan SkyHigh when the protocol calls for absorbance or fluorescence.',
+        'The dry bath and plate reader stay in the laboratory. Sponsors receive the agreed data and methods notes, not the instruments.',
+      ],
+    },
+    {
+      heading: 'Handoff details that change the result',
+      paragraphs: [
+        'Plate layout, blank wells, and the incubation temperature have to match the protocol version on file. A photograph of the loaded plate is kept with the run record when the method calls for it.',
+      ],
+      bullets: [
+        'Plate map with sample codes, standards, and blanks',
+        'Incubation temperature and time',
+        'Read mode and wavelengths named in the protocol',
+      ],
+    },
+  ],
+  'documenting-laboratory-methods': [
+    {
+      heading: 'A record that matches the bench',
+      paragraphs: [
+        'Methods sections fail when the written steps drift from what was actually done. CERA keeps a small documentation kit — a camera, a scale card, and labelled tubes — so preparation steps can be checked against the protocol.',
+      ],
+    },
+    {
+      heading: 'What belongs in the methods note',
+      paragraphs: [
+        'The note names the instrument, the reagent lot when it matters, and the person who ran the step. Photographs support the note; they do not replace sample codes or the protocol version.',
+      ],
+      bullets: [
+        'Sample codes visible on the tube, not participant names',
+        'Scale reference in frame when size matters',
+        'Instrument name and the protocol version used that day',
+      ],
+    },
+  ],
 };
 
 export function extendedArticleSections(slug: string): readonly ArticleSection[] | undefined {

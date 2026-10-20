@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { ProductPurchaseActions } from '../../../../components/products/product-purchase-actions.tsx';
+import { productMediaFor } from '../../../../content/catalogue-products.ts';
 import { productDetailPath, productEnquiryHref } from '../../../../content/products-catalog.ts';
 import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
 import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
@@ -51,6 +52,8 @@ export default async function ProductDetailPage({
   const entry = await resolveProductDetail(sku);
   if (entry === null) notFound();
   const { product } = entry;
+  const media = productMediaFor(product.sku);
+  const imageSrc = product.imageUrl ?? media?.imageSrc;
   return (
     <>
       <MarketingPageHeader
@@ -63,6 +66,24 @@ export default async function ProductDetailPage({
         ]}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        {media?.videoSrc !== undefined ? (
+          <video
+            src={media.videoSrc}
+            poster={imageSrc}
+            controls
+            playsInline
+            preload="metadata"
+            className="mb-8 aspect-video w-full rounded-lg border border-border bg-surface object-cover shadow-card"
+          >
+            <track kind="captions" />
+          </video>
+        ) : imageSrc !== undefined ? (
+          <img
+            src={imageSrc}
+            alt={media?.imageAlt ?? product.title}
+            className="mb-8 aspect-video w-full rounded-lg border border-border object-cover shadow-card"
+          />
+        ) : null}
         <Text size="caption" tone="muted" className="font-mono">
           Cat #{product.sku}
         </Text>

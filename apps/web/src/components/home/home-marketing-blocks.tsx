@@ -85,7 +85,12 @@ export function HomeMarketingBlocks({
       return (
         <ArticlesSection
           key={key}
-          heading={stringField(block, 'heading') || 'Health Insights & Articles'}
+          heading={
+            stringField(block, 'heading') === '' ||
+            stringField(block, 'heading') === 'Health Insights & Articles'
+              ? 'Research Updates'
+              : stringField(block, 'heading')
+          }
           subheading={stringField(block, 'body')}
           viewAllHref={stringField(block, 'viewAllHref') || '/articles'}
           viewAllLabel={stringField(block, 'viewAllLabel') || 'View All Articles'}

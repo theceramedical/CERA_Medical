@@ -10,6 +10,7 @@ import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { RichText } from '../../../../components/rich-text.tsx';
 import { ServiceEnquiryAside } from '../../../../components/service-enquiry-aside.tsx';
+import { SERVICE_PHOTOS } from '../../../../content/facility.ts';
 import { getPublicService, listPublicServices } from '../../../../lib/catalogue/client.ts';
 import { getDocument, getPublishedDocument } from '../../../../lib/cms/client.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
@@ -112,11 +113,11 @@ export default async function ServiceDetailPage({
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <article className="min-w-0 space-y-12">
-            {service.imageUrl !== null ? (
+            {service.imageUrl !== null || SERVICE_PHOTOS[slug] !== undefined ? (
               <figure className="overflow-hidden rounded-lg border border-border bg-surface shadow-card">
                 <img
-                  src={service.imageUrl}
-                  alt=""
+                  src={service.imageUrl ?? SERVICE_PHOTOS[slug]?.src}
+                  alt={SERVICE_PHOTOS[slug]?.alt ?? ''}
                   className="h-auto max-h-[28rem] w-full object-cover"
                 />
               </figure>

@@ -10,6 +10,7 @@ import { articleJsonLd, JsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { HOMEPAGE_ARTICLES } from '../../../../content/homepage.ts';
+import { localArticleBySlug } from '../../../../content/local-articles.ts';
 import { getDocument, listPublishedDocuments } from '../../../../lib/cms/client.ts';
 import { postCoverAlt, postCoverSrc } from '../../../../lib/cms/post-cover.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
@@ -24,7 +25,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const draft = await draftMode();
-  const document = await getDocument('post', slug, draft.isEnabled);
+  const document = (await getDocument('post', slug, draft.isEnabled)) ?? localArticleBySlug(slug);
   const title = document?.title;
   if (title === undefined) {
     return pageMetadata({
@@ -53,7 +54,7 @@ export default async function ArticleDetailPage({
 }) {
   const { slug } = await params;
   const draft = await draftMode();
-  const document = await getDocument('post', slug, draft.isEnabled);
+  const document = (await getDocument('post', slug, draft.isEnabled)) ?? localArticleBySlug(slug);
   if (document === null) notFound();
   if (document.status !== 'published' && !draft.isEnabled) notFound();
 

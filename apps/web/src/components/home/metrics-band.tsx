@@ -9,7 +9,10 @@ export function MetricsBand({
 }) {
   const items = metrics !== undefined && metrics.length > 0 ? metrics : HOMEPAGE_METRICS;
   return (
-    <section aria-label="CERA at a glance" className="border-b border-border bg-surface py-12">
+    <section
+      aria-label="CERA at a glance"
+      className="cera-view border-b border-border bg-surface py-12"
+    >
       <div className="mx-auto max-w-site px-6 md:px-10">
         <ul className="grid list-none grid-cols-2 divide-y divide-border p-0 sm:divide-y-0 sm:divide-x md:grid-cols-4">
           {items.map((metric) => (

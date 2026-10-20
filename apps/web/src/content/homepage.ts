@@ -141,7 +141,7 @@ export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [
     title: 'Planning a metagenomic submission',
     excerpt:
       'What to agree before transfer: read depth, controls, metadata fields, and how de-identified files should be packaged.',
-    coverSrc: '/images/article-cover-data.svg',
+    coverSrc: '/images/facility/molecular-bench.jpg',
   },
   {
     slug: 'omics-quality-control-basics',
@@ -149,7 +149,7 @@ export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [
     title: 'Omics quality control that reviewers expect',
     excerpt:
       'Documented filtering, batch awareness, and traceable figures — the minimum bar for reproducible biomedical analysis.',
-    coverSrc: '/images/article-cover-research.svg',
+    coverSrc: '/images/facility/analytical-balance.jpg',
   },
   {
     slug: 'preclinical-study-handoff',
@@ -157,7 +157,31 @@ export const HOMEPAGE_ARTICLES: readonly ArticleSummary[] = [
     title: 'Handing off a preclinical study cleanly',
     excerpt:
       'Ethics approvals, compound safety data, and a written protocol before samples move — how CERA scopes animal and in-vitro work.',
-    coverSrc: '/images/article-cover-lab.svg',
+    coverSrc: '/images/facility/preclinical-handling.jpg',
+  },
+  {
+    slug: 'confocal-imaging-in-the-laboratory',
+    category: 'Laboratory',
+    title: 'Confocal imaging on the STELLARIS 8',
+    excerpt:
+      'How CERA uses the Leica STELLARIS 8 and DMi8 workstation for molecular and histological imaging, and what to agree before slides arrive.',
+    coverSrc: '/images/facility/confocal-stellaris.jpg',
+  },
+  {
+    slug: 'plate-based-assays-and-readout',
+    category: 'Laboratory',
+    title: 'Plate assays, dry baths and readout',
+    excerpt:
+      'Incubation on a DLAB dry bath and absorbance or fluorescence readout on a Multiskan SkyHigh — what a plate-assay handoff needs.',
+    coverSrc: '/images/facility/plate-reader.jpg',
+  },
+  {
+    slug: 'documenting-laboratory-methods',
+    category: 'Research methods',
+    title: 'Documenting laboratory methods as you work',
+    excerpt:
+      'Scale cards, labelled tubes and a bench camera so methods notes match the samples that later appear in a report.',
+    coverSrc: '/images/facility/methods-documentation.jpg',
   },
 ];
 

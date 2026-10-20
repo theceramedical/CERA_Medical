@@ -1,6 +1,4 @@
-import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { ContactScoping } from '../../../components/contact/contact-scoping.tsx';
-import { getCurrentDocument } from '../../../lib/cms/client.ts';
 import { loadEnquiryFormData } from '../../../lib/enquiry-form-server.ts';
 
 import type { Metadata } from 'next';
@@ -12,11 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const [document, enquiryData] = await Promise.all([
-    getCurrentDocument('page', 'contact'),
-    loadEnquiryFormData(),
-  ]);
-  if (document === null) return <CmsPageUnavailable slug="contact" />;
+  const enquiryData = await loadEnquiryFormData();
 
   return (
     <ContactScoping

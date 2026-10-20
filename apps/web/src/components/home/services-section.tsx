@@ -1,10 +1,12 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
 
 import type { ContentDocument } from '@cera/contracts';
 import type { PublicService } from '@cera/contracts/projections';
 
+import { SERVICE_PHOTOS } from '../../content/facility.ts';
 import { HOMEPAGE_SERVICES } from '../../content/homepage.ts';
 import { serviceCardIcon } from '../../lib/service-card-icon';
 import { AppButtonLink } from '../link.tsx';
@@ -36,6 +38,7 @@ export function ServicesSection({
             description: copy?.excerpt ?? service.summary,
             highlights: copy?.cardHighlights ?? fallback?.highlights,
             icon: serviceCardIcon(copy?.cardIcon) ?? fallback?.icon,
+            photo: SERVICE_PHOTOS[service.slug],
             wide: service.slug === 'evidence-synthesis-technical-reports',
           };
         })
@@ -45,13 +48,17 @@ export function ServicesSection({
           description: service.description,
           highlights: service.highlights,
           icon: service.icon,
+          photo: SERVICE_PHOTOS[service.slug],
           wide: service.slug === 'evidence-synthesis-technical-reports',
         }));
 
   if (cards.length === 0) return null;
 
   return (
-    <section aria-labelledby="services-heading" className="border-b border-border bg-surface py-16">
+    <section
+      aria-labelledby="services-heading"
+      className="cera-view border-b border-border bg-surface py-16"
+    >
       <div className="mx-auto max-w-site px-6 md:px-10">
         <div className="mb-12 max-w-2xl">
           <div className="mb-3 h-1 w-10 rounded-full bg-accent" />
@@ -66,47 +73,62 @@ export function ServicesSection({
             return (
               <li
                 key={service.slug}
-                className={`flex flex-col justify-between rounded-lg border border-border bg-surface p-6 shadow-card ${service.wide ? 'md:col-span-2' : ''}`}
+                className={`cera-card flex flex-col justify-between overflow-hidden rounded-lg border border-border bg-surface shadow-card ${service.wide ? 'md:col-span-2' : ''}`}
               >
                 <div>
-                  {LucideIcon === undefined ? null : (
-                    <div className="mb-5 flex size-12 items-center justify-center rounded-full bg-surface-tint text-primary">
-                      <Icon icon={LucideIcon} size="lg" />
+                  {service.photo !== undefined ? (
+                    <div className="relative mb-5 aspect-[16/9] w-full bg-surface-tint">
+                      <Image
+                        src={service.photo.src}
+                        alt={service.photo.alt}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, 100vw"
+                        className="object-cover"
+                      />
                     </div>
-                  )}
-                  <Heading level={3} size="h4" className="mb-2">
-                    {service.title}
-                  </Heading>
-                  <Text
-                    size="body-sm"
-                    tone="muted"
-                    className={`mb-6 leading-relaxed ${service.wide ? 'max-w-xl' : ''}`}
-                  >
-                    {service.description}
-                  </Text>
-                  {service.highlights !== undefined && service.highlights.length > 0 ? (
-                    <ul
-                      className={`mb-6 list-none space-y-2 p-0 text-caption text-muted ${service.wide ? 'grid grid-cols-1 gap-3 space-y-0 sm:grid-cols-2' : ''}`}
-                    >
-                      {service.highlights.map((item) => (
-                        <li key={item} className="flex items-center gap-1.5">
-                          <Icon icon={CheckCircle2} size="sm" className="text-accent" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
                   ) : null}
+                  <div className="px-6">
+                    {LucideIcon === undefined ? null : (
+                      <div className="mb-5 flex size-12 items-center justify-center rounded-full bg-surface-tint text-primary">
+                        <Icon icon={LucideIcon} size="lg" />
+                      </div>
+                    )}
+                    <Heading level={3} size="h4" className="mb-2">
+                      {service.title}
+                    </Heading>
+                    <Text
+                      size="body-sm"
+                      tone="muted"
+                      className={`mb-6 leading-relaxed ${service.wide ? 'max-w-xl' : ''}`}
+                    >
+                      {service.description}
+                    </Text>
+                    {service.highlights !== undefined && service.highlights.length > 0 ? (
+                      <ul
+                        className={`mb-6 list-none space-y-2 p-0 text-caption text-muted ${service.wide ? 'grid grid-cols-1 gap-3 space-y-0 sm:grid-cols-2' : ''}`}
+                      >
+                        {service.highlights.map((item) => (
+                          <li key={item} className="flex items-center gap-1.5">
+                            <Icon icon={CheckCircle2} size="sm" className="text-accent" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
                 </div>
-                <AppButtonLink
-                  href={`/services/${service.slug}`}
-                  variant="outline"
-                  fullWidth={!service.wide}
-                  className={service.wide ? 'sm:w-auto' : undefined}
-                  iconEnd={<Icon icon={ArrowRight} size="sm" />}
-                  aria-label={`Learn more about ${service.title}`}
-                >
-                  Learn More
-                </AppButtonLink>
+                <div className="px-6 pb-6">
+                  <AppButtonLink
+                    href={`/services/${service.slug}`}
+                    variant="outline"
+                    fullWidth={!service.wide}
+                    className={service.wide ? 'sm:w-auto' : undefined}
+                    iconEnd={<Icon icon={ArrowRight} size="sm" />}
+                    aria-label={`Learn more about ${service.title}`}
+                  >
+                    Learn More
+                  </AppButtonLink>
+                </div>
               </li>
             );
           })}

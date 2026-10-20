@@ -8,9 +8,11 @@ import { resolveProductDetail } from './resolve-product-detail.ts';
 describe('product detail resolution', () => {
   beforeEach(() => getPublicProduct.mockReset());
 
-  it('does not serve a former static SKU when the public API has no record', async () => {
+  it('shows the catalogue product when the public API has no record yet', async () => {
     getPublicProduct.mockResolvedValue(null);
-    expect(await resolveProductDetail('CR-CEL-8402')).toBeNull();
+    const resolved = await resolveProductDetail('CR-CEL-8402');
+    expect(resolved?.product.sku).toBe('CR-CEL-8402');
+    expect(resolved?.product.title).toContain('CERA-GLIO-01');
     expect(getPublicProduct).toHaveBeenCalledWith('CR-CEL-8402');
   });
 

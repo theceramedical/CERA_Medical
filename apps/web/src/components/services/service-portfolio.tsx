@@ -10,9 +10,11 @@ import {
   Microscope,
   Send,
 } from 'lucide-react';
+import Image from 'next/image';
 
 import type { ContentDocument, PublicService } from '@cera/contracts';
 
+import { SERVICE_PHOTOS } from '../../content/facility.ts';
 import { SERVICE_DOMAINS, type ServiceDomain } from '../../content/service-portfolio.ts';
 import {
   enrichPortfolioLine,
@@ -223,61 +225,75 @@ export function ServicePortfolio({
                   : line.capabilities;
               const border =
                 line.accent === 'secondary' ? 'border-t-accent' : 'border-t-primary-700';
+              const photo = SERVICE_PHOTOS[line.slug];
               return (
                 <article
                   key={line.slug}
-                  className={`rounded-lg border border-border border-t-4 bg-surface p-6 shadow-card ${border}`}
+                  className={`overflow-hidden rounded-lg border border-border border-t-4 bg-surface shadow-card ${border}`}
                 >
-                  <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row">
-                    <div className="flex items-start gap-4">
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-tint-2 text-primary-700">
-                        <Icon icon={LucideIcon} size="lg" />
-                      </div>
-                      <div>
-                        <span className="text-[11px] font-semibold tracking-wider text-accent-fill uppercase">
-                          {line.line}
-                        </span>
-                        <Heading level={2} size="h3">
-                          {copy?.title ?? line.title}
-                        </Heading>
-                      </div>
+                  {photo !== undefined ? (
+                    <div className="relative aspect-[21/9] w-full bg-surface-tint">
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        fill
+                        sizes="(min-width: 1024px) 66vw, 100vw"
+                        className="object-cover"
+                      />
                     </div>
-                    <span className="inline-flex items-center gap-1 rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-caption font-semibold text-accent-fill">
-                      <span className="size-1.5 rounded-full bg-accent" />
-                      {line.badge}
-                    </span>
-                  </div>
-                  <Text tone="muted" className="mb-5">
-                    {copy?.excerpt ?? line.description}
-                  </Text>
-                  <div className="mb-5">
-                    <h3 className="mb-2.5 text-caption tracking-wider text-muted uppercase">
-                      Key Capabilities
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {highlights.map((cap) => (
-                        <span
-                          key={cap}
-                          className="rounded-md border border-border bg-surface-subtle px-3 py-1 text-caption text-heading"
-                        >
-                          {cap}
-                        </span>
-                      ))}
+                  ) : null}
+                  <div className="p-6">
+                    <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row">
+                      <div className="flex items-start gap-4">
+                        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-tint-2 text-primary-700">
+                          <Icon icon={LucideIcon} size="lg" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-semibold tracking-wider text-accent-fill uppercase">
+                            {line.line}
+                          </span>
+                          <Heading level={2} size="h3">
+                            {copy?.title ?? line.title}
+                          </Heading>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-sm border border-accent bg-surface-tint px-2.5 py-1 text-caption font-semibold text-accent-fill">
+                        <span className="size-1.5 rounded-full bg-accent" />
+                        {line.badge}
+                      </span>
                     </div>
-                  </div>
-                  <div className="mb-6 flex items-center gap-2 rounded-md border border-border bg-surface-tint px-4 py-2.5">
-                    <Text size="caption" className="font-medium">
-                      {line.note}
+                    <Text tone="muted" className="mb-5">
+                      {copy?.excerpt ?? line.description}
                     </Text>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-                    <AppButtonLink href={`/services/${line.slug}`} variant="outline">
-                      Learn More
-                      <Icon icon={ArrowRight} size="sm" />
-                    </AppButtonLink>
-                    <AppButtonLink href={`/enquiry?service=${line.slug}`} variant="primary">
-                      Request Scoping
-                    </AppButtonLink>
+                    <div className="mb-5">
+                      <h3 className="mb-2.5 text-caption tracking-wider text-muted uppercase">
+                        Key Capabilities
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {highlights.map((cap) => (
+                          <span
+                            key={cap}
+                            className="rounded-md border border-border bg-surface-subtle px-3 py-1 text-caption text-heading"
+                          >
+                            {cap}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mb-6 flex items-center gap-2 rounded-md border border-border bg-surface-tint px-4 py-2.5">
+                      <Text size="caption" className="font-medium">
+                        {line.note}
+                      </Text>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                      <AppButtonLink href={`/services/${line.slug}`} variant="outline">
+                        Learn More
+                        <Icon icon={ArrowRight} size="sm" />
+                      </AppButtonLink>
+                      <AppButtonLink href={`/enquiry?service=${line.slug}`} variant="primary">
+                        Request Scoping
+                      </AppButtonLink>
+                    </div>
                   </div>
                 </article>
               );

@@ -44,11 +44,19 @@ describe('buildCsp', () => {
 
   it('never allows unsafe-inline or unsafe-eval for script', () => {
     // The one assertion in this file that is worth more than all the others: either of these
-    // reduces the entire policy to decoration.
+    // reduces the entire policy to decoration. The default policy is the production policy.
     const scriptSrc = directives(buildCsp(NONCE)).get('script-src')?.join(' ') ?? '';
 
     expect(scriptSrc).not.toContain('unsafe-inline');
     expect(scriptSrc).not.toContain('unsafe-eval');
+  });
+
+  it('allows eval only when the development server asks for it', () => {
+    // React reconstructs development call stacks with eval(). Production builds do not.
+    const scriptSrc = directives(buildCsp(NONCE, { allowDevEval: true })).get('script-src') ?? [];
+
+    expect(scriptSrc).toContain("'unsafe-eval'");
+    expect(scriptSrc.join(' ')).not.toContain('unsafe-inline');
   });
 
   it('forbids a base element, which would repoint every relative script URL', () => {

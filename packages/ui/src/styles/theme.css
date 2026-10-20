@@ -410,6 +410,103 @@
   }
 }
 
+@keyframes cera-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cera-photo {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cera-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cera-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.cera-enter {
+  animation: cera-enter 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cera-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.cera-delay-2 {
+  animation-delay: 0.22s;
+}
+
+.cera-delay-3 {
+  animation-delay: 0.36s;
+}
+
+.cera-photo {
+  animation: cera-photo 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cera-progress {
+  transform-origin: left center;
+  animation: cera-progress 4.8s linear;
+}
+
+.cera-card {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.cera-card:hover {
+  transform: translateY(-4px);
+}
+
+.cera-card img,
+.cera-card .cera-card-photo {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cera-card:hover img,
+.cera-card:hover .cera-card-photo {
+  transform: scale(1.04);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cera-view {
+      animation: cera-view-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+
 /**
  * Reduced motion.
  *
