@@ -91,12 +91,25 @@ jobs:
             echo "skip_filter=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          last_release_sha="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/release.yml/runs?branch=main&status=success&per_page=5" \
-            --jq '.workflow_runs[] | select(.conclusion == "success") | .head_sha' | head -1)"
+          last_release_sha=""
+          while read -r run_id run_sha; do
+            [[ -n "$run_id" && -n "$run_sha" && "$run_sha" != "$GITHUB_SHA" ]] || continue
+            deployed="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=30" \
+              --jq '[.jobs[] | select(.name=="Deploy to production") | .steps[]? | select(.name=="Deploy over SSH") | .conclusion] | last // empty')"
+            if [[ "$deployed" == "success" ]] && git merge-base --is-ancestor "$run_sha" HEAD 2>/dev/null; then
+              last_release_sha="$run_sha"
+              break
+            fi
+          done < <(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/release.yml/runs?branch=main&per_page=15" \
+            --jq '.workflow_runs[] | "\(.id) \(.head_sha)"')
+          if [[ -z "$last_release_sha" ]]; then
+            last_release_sha="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/release.yml/runs?branch=main&status=success&per_page=5" \
+              --jq '[.workflow_runs[] | select(.conclusion == "success") | .head_sha] | first // empty')"
+          fi
           if [[ -n "$last_release_sha" && "$last_release_sha" != "$GITHUB_SHA" ]] \
             && git merge-base --is-ancestor "$last_release_sha" HEAD 2>/dev/null; then
             echo "base=$last_release_sha" >> "$GITHUB_OUTPUT"
-            echo "Diff since last successful production release ($last_release_sha)"
+            echo "Diff since last deployed production release ($last_release_sha)"
           elif git rev-parse --verify HEAD^ >/dev/null 2>&1; then
             echo "base=$(git rev-parse HEAD^)" >> "$GITHUB_OUTPUT"
             echo "Diff since previous commit (no prior release run found)"

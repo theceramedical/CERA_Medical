@@ -58,13 +58,26 @@ for app in "${all_apps[@]}"; do
 done
 mv "$tmp" "$RELEASE_FILE"
 compose config -q
+if [[ "${CERA_PULL_APPS:-}" == "none" ]]; then
+  echo "No application images changed. Leaving running containers in place."
+  echo 'Published edge ports:'
+  compose port caddy 443 || true
+  compose port caddy 80 || true
+  if ! bash "$ROOT_DIR/infra/scripts/health-check.sh" "$ENVIRONMENT"; then
+    compose logs --tail 80 caddy >&2 || true
+    echo 'Production health and public smoke gate failed' >&2
+    exit 1
+  fi
+  printf 'Deployed %s at %s\n' "$image_tag" "$(date -u +%FT%TZ)"
+  exit 0
+fi
 compose up -d postgres valkey authentik-server authentik-worker
 bash "$ROOT_DIR/infra/scripts/backup.sh" "$ENVIRONMENT"
-if ! compose --profile migration run --rm migrator; then
+if should_pull_app migrator && ! compose --profile migration run --rm migrator; then
   echo 'Migration failed. Previous images were not restarted. Restore requires explicit incident procedure.' >&2
   exit 1
 fi
-if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEASE_FILE" \
+if should_pull_app commerce && ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEASE_FILE" \
   -f compose.yaml -f infra/compose/compose.application.yaml \
   -f "infra/compose/compose.$ENVIRONMENT.yaml" -f infra/compose/compose.authentik.yaml \
   run --rm --no-deps -e CERA_ALLOW_PRODUCTION_CATALOGUE_SEED=approved \
@@ -73,7 +86,13 @@ if ! timeout 180s docker compose --env-file "$CERA_ENV_FILE" --env-file "$RELEAS
   echo 'Catalogue seed failed' >&2
   exit 1
 fi
-if ! compose up -d web api worker cms commerce commerce-worker caddy; then
+app_services=()
+should_pull_app web && app_services+=(web)
+should_pull_app api && app_services+=(api)
+should_pull_app worker && app_services+=(worker)
+should_pull_app cms && app_services+=(cms)
+should_pull_app commerce && app_services+=(commerce commerce-worker)
+if ((${#app_services[@]})) && ! compose up -d --no-deps "${app_services[@]}"; then
   compose logs --tail 120 web >&2 || true
   web_id="$(compose ps -q web | head -1)"
   if [[ -n "$web_id" ]]; then
