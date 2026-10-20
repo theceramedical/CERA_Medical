@@ -13,7 +13,12 @@ export function EquipmentMarquee({
 }: {
   readonly products?: readonly PublicProduct[];
 }) {
-  const slides = (products.length > 0 ? products : catalogueProducts()).map((product) => {
+  const pictured = products.filter(
+    (product) =>
+      (product.imageUrl !== null && product.imageUrl.length > 0) ||
+      productMediaFor(product.sku) !== undefined,
+  );
+  const slides = (pictured.length > 0 ? pictured : catalogueProducts()).map((product) => {
     const media = productMediaFor(product.sku);
     return {
       sku: product.sku,

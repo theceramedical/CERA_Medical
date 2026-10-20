@@ -1,12 +1,12 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
 import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
 
 import type { ContentDocument } from '@cera/contracts';
 
 import { HOMEPAGE_ARTICLES } from '../../content/homepage.ts';
 import { postCoverSrc } from '../../lib/cms/post-cover.ts';
+import { ArticleCoverImage } from '../articles/article-cover-image.tsx';
 import { AppLink } from '../link.tsx';
 
 export interface ArticlesSectionProps {
@@ -81,13 +81,7 @@ export function ArticlesSection({
             >
               <div>
                 <div className="pointer-events-none relative aspect-video w-full overflow-hidden bg-surface-tint">
-                  <Image
-                    src={article.coverSrc}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 33vw, 100vw"
-                    className="object-cover"
-                  />
+                  <ArticleCoverImage src={article.coverSrc} alt="" fill className="object-cover" />
                   <span className="absolute top-3 left-3 rounded-sm bg-accent px-2.5 py-1 text-[11px] font-bold text-on-accent">
                     {article.category}
                   </span>

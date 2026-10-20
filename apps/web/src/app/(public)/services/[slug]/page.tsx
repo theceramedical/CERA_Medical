@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 
 import { CmsLayout } from '../../../../components/cms-content-page.tsx';
 import { ContentGallery } from '../../../../components/content-gallery.tsx';
+import { FacilityMedia } from '../../../../components/facility-media.tsx';
 import { JsonLd, serviceJsonLd } from '../../../../components/json-ld.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
@@ -115,10 +116,11 @@ export default async function ServiceDetailPage({
           <article className="min-w-0 space-y-12">
             {service.imageUrl !== null || SERVICE_PHOTOS[slug] !== undefined ? (
               <figure className="overflow-hidden rounded-lg border border-border bg-surface shadow-card">
-                <img
-                  src={service.imageUrl ?? SERVICE_PHOTOS[slug]?.src}
+                <FacilityMedia
+                  src={service.imageUrl ?? SERVICE_PHOTOS[slug]?.src ?? ''}
                   alt={SERVICE_PHOTOS[slug]?.alt ?? ''}
-                  className="h-auto max-h-[28rem] w-full object-cover"
+                  videoSrc={SERVICE_PHOTOS[slug]?.videoSrc}
+                  fill={false}
                 />
               </figure>
             ) : null}

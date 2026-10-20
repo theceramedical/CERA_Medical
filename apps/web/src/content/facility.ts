@@ -6,6 +6,7 @@
 export interface FacilityPhoto {
   readonly src: string;
   readonly alt: string;
+  readonly videoSrc?: string;
 }
 
 export const FACILITY_HERO: FacilityPhoto = {
@@ -21,10 +22,12 @@ export const SERVICE_PHOTOS: Readonly<Record<string, FacilityPhoto>> = {
   'molecular-research': {
     src: '/images/facility/confocal-stellaris.jpg',
     alt: 'Confocal microscope used for molecular and histological imaging.',
+    videoSrc: '/videos/products/qpcr-assay.mp4',
   },
   'metagenomic-data-analysis': {
     src: '/images/facility/molecular-bench.jpg',
     alt: 'Labelled tubes, pipettes and reagents on a molecular preparation bench.',
+    videoSrc: '/videos/products/tube-preparation.mp4',
   },
   'biomedical-omics-data-analysis': {
     src: '/images/facility/plate-reader.jpg',

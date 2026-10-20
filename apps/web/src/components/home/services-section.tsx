@@ -1,7 +1,6 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import Image from 'next/image';
 
 import type { ContentDocument } from '@cera/contracts';
 import type { PublicService } from '@cera/contracts/projections';
@@ -9,6 +8,7 @@ import type { PublicService } from '@cera/contracts/projections';
 import { SERVICE_PHOTOS } from '../../content/facility.ts';
 import { HOMEPAGE_SERVICES } from '../../content/homepage.ts';
 import { serviceCardIcon } from '../../lib/service-card-icon';
+import { FacilityMedia } from '../facility-media.tsx';
 import { AppButtonLink } from '../link.tsx';
 
 export interface ServicesSectionProps {
@@ -78,12 +78,10 @@ export function ServicesSection({
                 <div>
                   {service.photo !== undefined ? (
                     <div className="relative mb-5 aspect-[16/9] w-full bg-surface-tint">
-                      <Image
+                      <FacilityMedia
                         src={service.photo.src}
                         alt={service.photo.alt}
-                        fill
-                        sizes="(min-width: 1024px) 33vw, 100vw"
-                        className="object-cover"
+                        videoSrc={service.photo.videoSrc}
                       />
                     </div>
                   ) : null}

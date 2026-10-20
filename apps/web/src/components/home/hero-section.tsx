@@ -1,10 +1,10 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
 import { ClipboardCheck, ShieldCheck, Users } from 'lucide-react';
-import Image from 'next/image';
 
 import { FACILITY_HERO } from '../../content/facility.ts';
 import { HERO } from '../../content/homepage.ts';
+import { FacilityMedia } from '../facility-media.tsx';
 import { AppButtonLink } from '../link.tsx';
 
 import type { LucideIcon } from 'lucide-react';
@@ -96,12 +96,10 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
 
           <div className="relative mt-8 lg:col-span-5 lg:mt-0">
             <div className="cera-photo relative h-72 overflow-hidden rounded-lg border border-border bg-surface shadow-md sm:h-96 lg:h-[520px]">
-              <Image
+              <FacilityMedia
                 src={content.imageUrl ?? FACILITY_HERO.src}
                 alt={content.imageAlt ?? FACILITY_HERO.alt}
-                fill
                 priority
-                sizes="(min-width: 1024px) 40vw, 100vw"
                 className="object-cover object-[center_20%]"
               />
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-primary-900/40 via-transparent to-transparent" />

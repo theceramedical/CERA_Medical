@@ -10,7 +10,6 @@ import {
   Microscope,
   Send,
 } from 'lucide-react';
-import Image from 'next/image';
 
 import type { ContentDocument, PublicService } from '@cera/contracts';
 
@@ -21,6 +20,7 @@ import {
   mergeServicePortfolioLines,
 } from '../../lib/merge-service-portfolio.ts';
 import { serviceCardIcon } from '../../lib/service-card-icon';
+import { FacilityMedia } from '../facility-media.tsx';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
 import type { ServicesCatalogueLabels, ServicesPageHero } from '../../lib/services-page-layout.ts';
@@ -233,13 +233,7 @@ export function ServicePortfolio({
                 >
                   {photo !== undefined ? (
                     <div className="relative aspect-[21/9] w-full bg-surface-tint">
-                      <Image
-                        src={photo.src}
-                        alt={photo.alt}
-                        fill
-                        sizes="(min-width: 1024px) 66vw, 100vw"
-                        className="object-cover"
-                      />
+                      <FacilityMedia src={photo.src} alt={photo.alt} videoSrc={photo.videoSrc} />
                     </div>
                   ) : null}
                   <div className="p-6">

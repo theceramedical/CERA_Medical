@@ -12,8 +12,8 @@ import {
   Send,
   ShieldCheck,
 } from 'lucide-react';
-import Image from 'next/image';
 
+import { FacilityMedia } from '../facility-media.tsx';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
 const TRUST = [
@@ -497,13 +497,7 @@ function FacilityShowcase({
   return (
     <article className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card">
       <div className="relative h-72 w-full overflow-hidden bg-surface-tint">
-        <Image
-          src={src}
-          alt=""
-          fill
-          className="object-cover"
-          sizes="(min-width: 1024px) 50vw, 100vw"
-        />
+        <FacilityMedia src={src} alt="" />
         <div className="absolute bottom-3 left-3 rounded-sm bg-primary-900/85 px-3 py-1 text-xs text-on-primary">
           {caption}
         </div>
