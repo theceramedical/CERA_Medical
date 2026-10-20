@@ -145,7 +145,11 @@ if ! compose exec -T worker node -e '
   echo 'ERPNext CRM preflight failed' >&2
   exit 1
 fi
+echo 'Published edge ports:'
+compose port caddy 443 || true
+compose port caddy 80 || true
 if ! bash "$ROOT_DIR/infra/scripts/health-check.sh" "$ENVIRONMENT"; then
+  compose logs --tail 80 caddy >&2 || true
   bash "$ROOT_DIR/infra/scripts/rollback.sh" "$ENVIRONMENT" || true
   echo 'Production health and public smoke gate failed' >&2
   exit 1

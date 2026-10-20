@@ -80,7 +80,7 @@ check_public_routes() {
   if [[ -n "${SMOKE_ORIGIN:-}" && -n "${SMOKE_API:-}" ]]; then origin="$SMOKE_ORIGIN"; api="$SMOKE_API"
   elif [[ -n "$domain" ]]; then origin="https://www.$domain"; api="https://api.$domain"
   else report fail public-smoke 'CERA_DOMAIN (or SMOKE_ORIGIN and SMOKE_API) is required'; return 1; fi
-  if SMOKE_ORIGIN="$origin" SMOKE_API="$api" bash "$ROOT_DIR/infra/scripts/smoke-test.sh"; then report pass public-smoke "$origin"; return 0; fi
+  if SMOKE_LOOPBACK=1 SMOKE_ORIGIN="$origin" SMOKE_API="$api" bash "$ROOT_DIR/infra/scripts/smoke-test.sh"; then report pass public-smoke "$origin"; return 0; fi
   report fail public-smoke 'read-only public smoke test failed'; return 1
 }
 run_checks() {
