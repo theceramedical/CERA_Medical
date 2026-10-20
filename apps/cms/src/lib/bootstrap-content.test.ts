@@ -35,7 +35,7 @@ describe('bootstrapClientContent', () => {
 
     await bootstrapClientContent(payload);
 
-    expect(create).toHaveBeenCalledTimes(24);
+    expect(create).toHaveBeenCalledTimes(27);
     expect(create).toHaveBeenCalledWith({
       collection: 'users',
       data: { email: 'owner@example.org', password: 'a'.repeat(40), role: 'administrator' },
@@ -85,6 +85,15 @@ describe('bootstrapClientContent', () => {
       ]),
     );
     expect(records.filter((record) => record.collection === 'pages').length).toBe(10);
+    expect(
+      records.filter((record) => record.collection === 'posts').map((record) => record.data.slug),
+    ).toEqual(
+      expect.arrayContaining([
+        'confocal-imaging-in-the-laboratory',
+        'plate-based-assays-and-readout',
+        'documenting-laboratory-methods',
+      ]),
+    );
     const home = records.find((record) => record.data.slug === 'home')?.data;
     expect(home?.layout).toEqual(
       expect.arrayContaining([
