@@ -23,6 +23,45 @@ const TRUST = [
   { title: 'Client Data Ownership', detail: 'Confidential handling' },
 ] as const;
 
+const TEAM = [
+  {
+    name: 'Dr. Muhammad Imran Khan',
+    role: 'PI, Head of Drug Testing',
+    detail: 'Assistant Professor, Department of Biomedical Sciences, PAF-IAST',
+    photo: '/images/team/muhammad-imran-khan.jpg',
+  },
+  {
+    name: 'Dr. Fazal Wahab',
+    role: 'Lead Animal Studies',
+    detail: 'Associate Professor',
+    photo: '/images/team/fazal-wahab.jpg',
+  },
+  {
+    name: 'Dr. Waqar Khalid Saeed',
+    role: 'Lead Disease Modeling and Clinical Studies',
+    detail: 'Assistant Professor',
+    photo: '/images/team/waqar-khalid-saeed.jpg',
+  },
+  {
+    name: 'Habab Ali Ahmad',
+    role: 'Community Lead and Research Scientist',
+    detail: '',
+    photo: '/images/team/habab-ali-ahmad.jpg',
+  },
+  {
+    name: 'Ayesha Khan',
+    role: 'Preclinical Researcher',
+    detail: '',
+    photo: '/images/team/ayesha-khan.jpg',
+  },
+  {
+    name: 'Jalal Khan Utman',
+    role: 'Research Assistant',
+    detail: 'In-silico studies',
+    photo: '/images/team/jalal-khan-utman.jpg',
+  },
+] as const;
+
 const PILLARS = [
   {
     domain: 'Domain 01',
@@ -183,7 +222,48 @@ export function AboutProfile() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-surface">
+      <section className="border-b border-border bg-surface" aria-labelledby="team-heading">
+        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+          <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
+            Our team
+          </p>
+          <Heading level={2} size="h2" id="team-heading" className="mt-1 mb-4">
+            The people behind the work
+          </Heading>
+          <Text tone="muted" className="mb-10 max-w-3xl">
+            Preclinical, molecular and computational research at CERA Medical is led by this team.
+          </Text>
+          <ul className="grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+            {TEAM.map((person) => (
+              <li
+                key={person.name}
+                className="overflow-hidden rounded-lg border border-border bg-surface shadow-card"
+              >
+                <img
+                  src={person.photo}
+                  alt=""
+                  className="aspect-[4/5] w-full object-cover object-top"
+                />
+                <div className="p-5">
+                  <Heading level={3} size="h4">
+                    {person.name}
+                  </Heading>
+                  <Text size="body-sm" className="mt-1 font-semibold text-accent-fill">
+                    {person.role}
+                  </Text>
+                  {person.detail.length > 0 ? (
+                    <Text size="caption" tone="muted" className="mt-1">
+                      {person.detail}
+                    </Text>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
           <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
             Core Capabilities & Services
@@ -229,7 +309,7 @@ export function AboutProfile() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-surface-tint">
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
           <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
             Governance & Standard Operating Procedures
