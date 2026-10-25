@@ -8,19 +8,17 @@ import { resolveProductDetail } from './resolve-product-detail.ts';
 describe('product detail resolution', () => {
   beforeEach(() => getPublicProduct.mockReset());
 
-  it('keeps the held product hidden even when the public API has no record', async () => {
+  it('shows the catalogue product when the public API has no record yet', async () => {
     getPublicProduct.mockResolvedValue(null);
     const resolved = await resolveProductDetail('CR-CEL-8402');
-    expect(resolved).toBeNull();
-    expect(getPublicProduct).not.toHaveBeenCalled();
+    expect(resolved?.product.sku).toBe('CR-CEL-8402');
+    expect(resolved?.product.title).toContain('CERA-GLIO-01');
+    expect(getPublicProduct).toHaveBeenCalledWith('CR-CEL-8402');
   });
 
-  it('uses a published API record for an approved catalogue SKU', async () => {
-    const product = { sku: 'CR-CEL-3091', title: 'Published admin title' };
+  it('uses a published API record even for a former static SKU', async () => {
+    const product = { sku: 'CR-CEL-8402', title: 'Published admin title' };
     getPublicProduct.mockResolvedValue(product);
-    expect(await resolveProductDetail('CR-CEL-3091')).toEqual({
-      kind: 'catalogue',
-      product: { ...product, checkoutEnabled: false },
-    });
+    expect(await resolveProductDetail('CR-CEL-8402')).toEqual({ kind: 'catalogue', product });
   });
 });

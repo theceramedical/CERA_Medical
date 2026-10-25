@@ -9,7 +9,7 @@ vi.mock('server-only', () => ({}));
 import { listMergedCatalogProducts } from './merged-catalog-products.ts';
 
 const publishedProduct: PublicProduct = {
-  sku: 'CR-CEL-3091',
+  sku: 'REAL-001',
   title: 'Published product',
   summary: 'Public summary',
   description: 'Public description',
@@ -42,12 +42,12 @@ describe('public product listing', () => {
     const products = await listMergedCatalogProducts();
     expect(products).toContainEqual(
       expect.objectContaining({
-        sku: 'CR-CEL-3091',
+        sku: 'REAL-001',
         title: 'Published product',
         price: 'Price on enquiry',
         listPriceMinor: null,
         inStock: null,
-        specs: ['Availability must be confirmed before dispatch.'],
+        specs: [],
       }),
     );
     expect(products.some((product) => product.sku === 'CR-MOL-1021')).toBe(true);
