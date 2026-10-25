@@ -16,15 +16,50 @@ import {
 import { FacilityMedia } from '../facility-media.tsx';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
-import { ApprovedTeamSection } from './approved-team-section.tsx';
-
-import type { PublishedTeamMember } from '../../lib/cms/public-research-content.ts';
-
 const TRUST = [
   { title: 'SECP-Registered', detail: 'R&D Corporate Entity' },
   { title: 'Expert Team', detail: 'PhD-level researchers' },
   { title: 'Documented Methods', detail: 'Reproducible workflows' },
   { title: 'Client Data Ownership', detail: 'Confidential handling' },
+] as const;
+
+const TEAM = [
+  {
+    name: 'Dr. Muhammad Imran Khan',
+    role: 'PI, Head of Drug Testing',
+    detail: 'Assistant Professor, Department of Biomedical Sciences, PAF-IAST',
+    photo: '/images/team/muhammad-imran-khan.jpg',
+  },
+  {
+    name: 'Dr. Fazal Wahab',
+    role: 'Lead Animal Studies',
+    detail: 'Associate Professor',
+    photo: '/images/team/fazal-wahab.jpg',
+  },
+  {
+    name: 'Dr. Waqar Khalid Saeed',
+    role: 'Lead Disease Modeling and Clinical Studies',
+    detail: 'Assistant Professor',
+    photo: '/images/team/waqar-khalid-saeed.jpg',
+  },
+  {
+    name: 'Habab Ali Ahmad',
+    role: 'Community Lead and Research Scientist',
+    detail: '',
+    photo: '/images/team/habab-ali-ahmad.jpg',
+  },
+  {
+    name: 'Ayesha Khan',
+    role: 'Preclinical Researcher',
+    detail: '',
+    photo: '/images/team/ayesha-khan.jpg',
+  },
+  {
+    name: 'Jalal Khan Utman',
+    role: 'Research Assistant',
+    detail: 'In-silico studies',
+    photo: '/images/team/jalal-khan-utman.jpg',
+  },
 ] as const;
 
 const PILLARS = [
@@ -78,38 +113,67 @@ const PILLARS = [
   },
 ] as const;
 
-const WHY = [
+const STAGES = [
   {
-    title: 'Expert team',
-    body: 'PhD-level researchers and bioinformaticians with active biomedical research backgrounds.',
+    n: '01',
+    title: 'Scoping',
+    body: 'We discuss your research question, available materials or data, and required output, then agree the scope, timeline and cost in writing.',
+    tag: 'Agreed scope',
   },
   {
-    title: 'Validated pipelines',
-    body: 'Established tools in reproducible, fully documented workflows.',
+    n: '02',
+    title: 'Protocol',
+    body: 'We prepare the study protocol or analysis plan before work starts. Animal studies require institutional animal ethics committee approval first.',
+    tag: 'Written plan',
   },
   {
-    title: 'Strict confidentiality',
-    body: 'All data handled securely. A non-disclosure agreement is available on request.',
+    n: '03',
+    title: 'Execution',
+    body: 'The assigned scientist carries out the work with the controls, replicates and quality checks defined in the protocol.',
+    tag: 'Quality checks',
   },
   {
-    title: 'Publication-ready output',
-    body: 'Figures, methods text and reports suitable for direct use in a manuscript.',
+    n: '04',
+    title: 'Analysis & Reporting',
+    body: 'Results are analysed with documented methods and delivered with figures, tables and methods text suitable for a report or manuscript.',
+    tag: 'Research report',
   },
   {
-    title: 'Transparent process',
-    body: 'Regular updates, with full data ownership retained by the client.',
-  },
-  {
-    title: 'Revision rounds included',
-    body: 'Outputs are revised until they meet your research requirements.',
+    n: '05',
+    title: 'Follow-up',
+    body: 'A consultation call is available on delivery, and revision rounds are included.',
+    tag: 'Review & revisions',
   },
 ] as const;
 
-export function AboutProfile({
-  teamMembers,
-}: {
-  readonly teamMembers: readonly PublishedTeamMember[];
-}) {
+const WHY = [
+  {
+    title: 'PhD-Level Scientific Leadership',
+    body: 'PhD-level researchers and bioinformaticians bring active biomedical research experience to each project.',
+  },
+  {
+    title: 'Traceable & Reproducible Workflows',
+    body: 'Established tools are used in documented, reproducible analysis workflows. Methods state the tools, versions and parameters used.',
+  },
+  {
+    title: 'Client Data Ownership',
+    body: 'Client files, samples and generated results remain the client’s property. Research collaborations may set separate ownership and authorship terms in writing.',
+  },
+  {
+    title: 'Transparent Scoping & Pricing',
+    body: 'The scope, timeline, cost and expected outputs are agreed in writing before work starts.',
+  },
+  {
+    title: 'Included Revision Rounds',
+    body: 'A consultation call is available on delivery, and revision rounds help bring the outputs in line with the agreed research requirements.',
+  },
+  {
+    title: 'Confidential Data Handling',
+    body: 'Clients are asked to provide de-identified data and coded samples. A non-disclosure agreement is available on request before transfer.',
+  },
+] as const;
+
+export function AboutProfile() {
   return (
     <>
       <nav aria-label="Breadcrumb" className="border-b border-border bg-surface">
@@ -128,12 +192,14 @@ export function AboutProfile({
           <Heading level={1} size="h1" className="mb-4">
             About CERA Medical
           </Heading>
-          <Text size="body-lg" className="mb-8 max-w-4xl">
-            CERA Medical is an SECP-registered biomedical research and development company based at
-            the Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST),
-            Haripur, Pakistan. We test candidate treatments in animal models, in cells and by
-            computer simulation, run the molecular laboratory work that supports those studies, and
-            analyse metagenomic, omics and health data through to publication-ready results.
+          <Text size="body-lg" className="mb-3 max-w-4xl font-medium">
+            A biomedical research and development company providing laboratory, computational and
+            evidence services.
+          </Text>
+          <Text tone="muted" className="mb-8 max-w-4xl">
+            Bridging bench wet-lab experimentation with advanced in silico computational analysis to
+            deliver reproducible, publication-ready findings for research teams, universities, and
+            biotech innovators globally.
           </Text>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {TRUST.map((item) => (
@@ -156,30 +222,46 @@ export function AboutProfile({
         </div>
       </section>
 
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto grid max-w-site grid-cols-1 gap-8 px-6 py-12 md:grid-cols-2 md:px-10">
-          <div>
-            <Heading level={2} size="h3" className="mb-3">
-              Mission
-            </Heading>
-            <Text tone="muted">
-              To provide rigorous preclinical, molecular and data analysis services that help
-              researchers move candidate treatments and health findings closer to practical use.
-            </Text>
-          </div>
-          <div>
-            <Heading level={2} size="h3" className="mb-3">
-              Vision
-            </Heading>
-            <Text tone="muted">
-              To be a trusted research partner for universities, industry and health organisations
-              in Pakistan and abroad.
-            </Text>
-          </div>
+      <section className="border-b border-border bg-surface" aria-labelledby="team-heading">
+        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+          <p className="text-caption font-semibold tracking-wider text-accent-fill uppercase">
+            Our team
+          </p>
+          <Heading level={2} size="h2" id="team-heading" className="mt-1 mb-4">
+            The people behind the work
+          </Heading>
+          <Text tone="muted" className="mb-10 max-w-3xl">
+            Preclinical, molecular and computational research at CERA Medical is led by this team.
+          </Text>
+          <ul className="grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+            {TEAM.map((person) => (
+              <li
+                key={person.name}
+                className="overflow-hidden rounded-lg border border-border bg-surface shadow-card"
+              >
+                <img
+                  src={person.photo}
+                  alt=""
+                  className="aspect-[4/5] w-full object-cover object-top"
+                />
+                <div className="p-5">
+                  <Heading level={3} size="h4">
+                    {person.name}
+                  </Heading>
+                  <Text size="body-sm" className="mt-1 font-semibold text-accent-fill">
+                    {person.role}
+                  </Text>
+                  {person.detail.length > 0 ? (
+                    <Text size="caption" tone="muted" className="mt-1">
+                      {person.detail}
+                    </Text>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
-
-      <ApprovedTeamSection teamMembers={teamMembers} />
 
       <section className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
@@ -233,12 +315,39 @@ export function AboutProfile({
             Governance & Standard Operating Procedures
           </p>
           <Heading level={2} size="h2" className="mt-1 mb-4">
-            How we work
+            How Every Project Runs: The 5-Stage Governance Lifecycle
           </Heading>
-          <Text tone="muted" className="mb-8 max-w-3xl">
-            Every project starts with a written scope and protocol and ends with documented results
-            and revision rounds. <AppLink href="/methodology">See how we work.</AppLink>
+          <Text tone="muted" className="mb-12 max-w-3xl">
+            Every project follows five stages: scoping, protocol, execution, analysis and reporting,
+            then follow-up. Animal studies begin only after institutional animal ethics committee
+            (IAEC) approval. Deliverables are defined in writing before materials or data move.
           </Text>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+            {STAGES.map((stage) => (
+              <div
+                key={stage.n}
+                className="flex flex-col justify-between rounded-lg border border-border bg-surface p-5 shadow-card"
+              >
+                <div>
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="flex size-8 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-on-primary">
+                      {stage.n}
+                    </span>
+                    <span className="text-[11px] tracking-wider text-muted uppercase">Phase</span>
+                  </div>
+                  <Heading level={3} size="h4" className="mb-2">
+                    {stage.title}
+                  </Heading>
+                  <Text size="caption" tone="muted">
+                    {stage.body}
+                  </Text>
+                </div>
+                <div className="mt-4 border-t border-border pt-3 text-xs font-semibold text-accent-fill">
+                  {stage.tag}
+                </div>
+              </div>
+            ))}
+          </div>
           <div className="mt-8 rounded-r-lg border border-l-4 border-l-accent border-border bg-surface p-4">
             <Text size="caption">
               <strong className="text-heading">Protocol-led studies:</strong> Controls, replicates
@@ -259,10 +368,8 @@ export function AboutProfile({
           </Heading>
           <Text tone="muted" className="mb-12 max-w-3xl">
             Our facilities at PAF-IAST in Haripur include an Animal House, Cell Culture Lab,
-            Genomics Lab with Sanger sequencing, Histopathology Lab and Microscopy Lab. Our
-            computational infrastructure includes an NVIDIA Tesla V100 GPU and an Intel Xeon Gold
-            processor, used for molecular dynamics simulation, sequencing data analysis and other
-            compute-intensive work.
+            Genomics Lab with Sanger sequencing, Histopathology Lab and Microscopy Lab. Computing
+            resources support molecular simulations and sequencing analysis.
           </Text>
           <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
             <FacilityShowcase
@@ -323,7 +430,7 @@ export function AboutProfile({
               Institutional Reliability
             </p>
             <Heading level={2} size="h2" className="mt-1 mb-3">
-              Why CERA Medical
+              Why Work with CERA Medical
             </Heading>
             <Text tone="muted">
               Scientific expertise, documented workflows, confidential handling and
@@ -374,10 +481,10 @@ export function AboutProfile({
                   </a>
                 </p>
                 <Text size="caption" tone="muted">
-                  Email: <a href="mailto:contact@ceramedical.org">contact@ceramedical.org</a>
+                  Secondary: <a href="mailto:theceramedical@gmail.com">theceramedical@gmail.com</a>
                 </Text>
               </div>
-              <AppButtonLink href="/contact#enquiry" variant="primary">
+              <AppButtonLink href="/enquiry" variant="primary">
                 <Icon icon={Send} size="sm" />
                 Make an Enquiry
               </AppButtonLink>

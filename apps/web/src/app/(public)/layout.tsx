@@ -2,7 +2,7 @@ import { SkipLink } from '@cera/ui/skip-link';
 import { draftMode } from 'next/headers';
 
 import { LivePreview } from '../../components/live-preview.client.tsx';
-import { ResearchCursor } from '../../components/research-cursor.client.tsx';
+import { SiteAnnouncementBar } from '../../components/site-announcement-bar.tsx';
 import { SiteFooter } from '../../components/site-footer.tsx';
 import { SiteHeader } from '../../components/site-header.tsx';
 import { SiteJsonLd } from '../../components/site-json-ld.tsx';
@@ -42,7 +42,7 @@ export default async function PublicLayout({ children }: { readonly children: Re
      * which reads as a failed render. `dvh` rather than `vh` because mobile browsers shrink the
      * viewport as their toolbar appears, and `vh` is measured against the larger of the two.
      */
-    <div className="flex min-h-dvh flex-col overflow-x-clip">
+    <div className="flex min-h-dvh flex-col overflow-x-hidden">
       <SiteJsonLd />
       {/*
        * First in the DOM, so it is the first thing Tab reaches. That is the whole requirement of
@@ -53,8 +53,9 @@ export default async function PublicLayout({ children }: { readonly children: Re
 
       {draft.isEnabled ? <LivePreview serverURL={cmsUrl} /> : null}
 
-      <ResearchCursor />
       <SiteHeader />
+
+      <SiteAnnouncementBar />
 
       {/*
        * `id="main"` matches the skip link's target, and `tabIndex={-1}` is what makes the jump

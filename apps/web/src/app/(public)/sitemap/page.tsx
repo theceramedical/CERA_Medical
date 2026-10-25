@@ -35,11 +35,13 @@ export default async function SitemapPage() {
   const indexable = await listIndexableLinks();
 
   const services = indexable.filter((link) => link.href.startsWith('/services/'));
+  const articles = indexable.filter((link) => link.href.startsWith('/articles/'));
   const products = indexable.filter((link) => link.href.startsWith('/products/'));
   const cmsPages = indexable.filter(
     (link) =>
       link.href.startsWith('/') &&
       !link.href.startsWith('/services/') &&
+      !link.href.startsWith('/articles/') &&
       !link.href.startsWith('/products/') &&
       !MAIN_NAV.some((item) => item.href === link.href) &&
       !SUPPORT_NAV.some((item) => item.href === link.href) &&
@@ -60,6 +62,9 @@ export default async function SitemapPage() {
         <SitemapGroup heading="This site" items={LEGAL_AND_OTHER} />
         {services.length > 0 ? (
           <SitemapLinkGroup heading="Research services" links={services} />
+        ) : null}
+        {articles.length > 0 ? (
+          <SitemapLinkGroup heading="Research updates" links={articles} />
         ) : null}
         {products.length > 0 ? (
           <SitemapLinkGroup heading="Physical products" links={products} />

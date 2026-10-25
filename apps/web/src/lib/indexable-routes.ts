@@ -22,8 +22,9 @@ export async function listIndexablePaths(): Promise<readonly string[]> {
 }
 
 export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
-  const [pages, presentations, policies, catalogue, productSkus, catalogueProducts] =
+  const [posts, pages, presentations, policies, catalogue, productSkus, catalogueProducts] =
     await Promise.all([
+      listPublishedDocumentsForSitemap('post').catch(() => []),
       listPublishedDocumentsForSitemap('page').catch(() => []),
       listPublishedDocumentsForSitemap('servicePresentation').catch(() => []),
       listPublishedDocumentsForSitemap('policy').catch(() => []),
@@ -41,14 +42,7 @@ export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
   }));
 
   const pageLinks: SitemapLink[] = pages
-    .filter(
-      (page) =>
-        page.slug !== 'home' &&
-        page.slug !== 'sitemap' &&
-        page.slug !== 'articles' &&
-        !page.slug.startsWith('articles/') &&
-        page.seo.noIndex !== true,
-    )
+    .filter((page) => page.slug !== 'home' && page.slug !== 'sitemap' && page.seo.noIndex !== true)
     .map((page) => ({ href: `/${page.slug}`, label: page.title }));
 
   const policyLinks: SitemapLink[] = policies
@@ -66,6 +60,13 @@ export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
     label: presentationTitle.get(slug) ?? catalogueTitle.get(slug) ?? titleFromSlug(slug),
   }));
 
+  const articleLinks: SitemapLink[] = posts
+    .filter((post) => post.seo.noIndex !== true)
+    .map((post) => ({
+      href: `/articles/${post.slug}`,
+      label: post.title,
+    }));
+
   const productLinks: SitemapLink[] = productSkus.map((sku) => {
     const label = catalogueProductTitle.get(sku) ?? sku.toUpperCase();
     return { href: productDetailPath(sku), label };
@@ -76,6 +77,7 @@ export async function listIndexableLinks(): Promise<readonly SitemapLink[]> {
     ...pageLinks,
     ...policyLinks,
     ...serviceLinks,
+    ...articleLinks,
     ...productLinks,
   ]);
 }
@@ -93,6 +95,7 @@ function staticLabel(href: string): string {
     '/': 'Home',
     '/services': 'Research services',
     '/products': 'Research product catalogue',
+    '/articles': 'Research updates',
     '/about': 'About',
     '/contact': 'Contact',
     '/methodology': 'Methodology',

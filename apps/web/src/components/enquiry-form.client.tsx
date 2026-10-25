@@ -7,7 +7,6 @@ import { Input, Select, Textarea } from '@cera/ui/input';
 import { Heading, Text } from '@cera/ui/typography';
 import { useActionState, useEffect, useId, useRef, useState } from 'react';
 
-import { ENQUIRY_SERVICE_OPTIONS } from '../content/public-revision.ts';
 import {
   submitEnquiryAction,
   type EnquiryFieldValues,
@@ -16,7 +15,16 @@ import {
 
 import { AppLink } from './link.tsx';
 
-const FALLBACK_SERVICES = ENQUIRY_SERVICE_OPTIONS;
+const FALLBACK_SERVICES: readonly { slug: string; title: string }[] = [
+  { slug: 'preclinical-studies', title: 'Preclinical Studies' },
+  { slug: 'molecular-research', title: 'Molecular Research' },
+  { slug: 'metagenomic-data-analysis', title: 'Metagenomic Data Analysis' },
+  { slug: 'biomedical-omics-data-analysis', title: 'Biomedical and Omics Data Analysis' },
+  {
+    slug: 'evidence-synthesis-technical-reports',
+    title: 'Evidence Synthesis and Technical Reports',
+  },
+];
 
 function serviceConsent(
   serviceId: string,
@@ -145,8 +153,9 @@ export function EnquiryForm({
   const [state, action, pending] = useActionState(submitEnquiryAction, INITIAL);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
   const serviceOptions = services.length > 0 ? services : FALLBACK_SERVICES;
-  const firstServiceId = serviceOptions[0].slug;
-  const [selectedService, setSelectedService] = useState(defaultServiceId ?? firstServiceId);
+  const [selectedService, setSelectedService] = useState(
+    defaultServiceId ?? serviceOptions[0]?.slug ?? 'preclinical-studies',
+  );
   const [trackedError, setTrackedError] = useState<EnquiryFormState | null>(null);
   if (state.status === 'error' && trackedError !== state) {
     setTrackedError(state);
@@ -266,7 +275,10 @@ export function EnquiryForm({
         <Select
           name="serviceId"
           defaultValue={
-            values === undefined ? (defaultServiceId ?? firstServiceId) : values.serviceId
+            values?.serviceId ??
+            defaultServiceId ??
+            serviceOptions[0]?.slug ??
+            'preclinical-studies'
           }
           disabled={serviceLocked}
           onChange={(event) => setSelectedService(event.currentTarget.value)}
@@ -382,7 +394,8 @@ function EnquiryConfirmation({
         <a className="text-primary underline" href="mailto:contact@ceramedical.org">
           contact@ceramedical.org
         </a>{' '}
-        if you need to follow up.
+        if you need to follow up. You can also create an account with this email to follow progress
+        and claim the enquiry.
       </Text>
     </div>
   );

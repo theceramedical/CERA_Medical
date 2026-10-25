@@ -14,7 +14,7 @@ import type { Metadata } from 'next';
 export function generateMetadata(): Metadata {
   return pageMetadata({
     title: 'Search',
-    description: 'Search CERA Medical research services.',
+    description: 'Search CERA Medical services and articles.',
     path: '/search',
     noIndex: true,
   });
@@ -34,9 +34,10 @@ export default async function SearchPage({
   const { q } = await searchParams;
   const query = q?.trim() ?? '';
 
-  const [page, { items: services }] = await Promise.all([
+  const [page, { items: services }, posts] = await Promise.all([
     getCurrentDocument('page', 'search'),
     listPublicServices(),
+    listPublishedDocuments('post'),
   ]);
   if (page === null) return <CmsPageUnavailable slug="search" />;
 
@@ -57,6 +58,16 @@ export default async function SearchPage({
               href: `/services/${item.slug}`,
               title: presentationBySlug.get(item.slug)?.title ?? item.title,
               excerpt: presentationBySlug.get(item.slug)?.excerpt ?? item.summary,
+            })),
+          ...posts
+            .filter((item) => {
+              const text = `${item.title} ${item.excerpt ?? ''}`.toLowerCase();
+              return text.includes(query.toLowerCase());
+            })
+            .map((item) => ({
+              href: `/articles/${item.slug}`,
+              title: item.title,
+              excerpt: item.excerpt ?? '',
             })),
         ].sort((a, b) => a.href.localeCompare(b.href))
       : [];
@@ -92,7 +103,7 @@ export default async function SearchPage({
         {query.length >= 2 && hits.length === 0 ? (
           <EmptyState
             heading="No results"
-            description="Try a different term, or browse our research services."
+            description="Try a different term, or browse services and articles from the menu."
             action={<AppLink href="/services">Browse services</AppLink>}
           />
         ) : null}

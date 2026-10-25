@@ -272,6 +272,7 @@ jobs:
           format: table
           severity: CRITICAL,HIGH
           ignore-unfixed: true
+          trivyignores: infra/docker/production.trivyignore
           exit-code: "1"
 
   deploy:

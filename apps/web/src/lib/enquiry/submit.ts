@@ -14,8 +14,6 @@ import {
 const ALLOWED = new Set([
   'preclinical-studies',
   'molecular-research',
-  'biomedical-data-analysis',
-  'product-enquiry',
   'metagenomic-data-analysis',
   'biomedical-omics-data-analysis',
   'evidence-synthesis-technical-reports',

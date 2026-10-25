@@ -29,6 +29,7 @@ describe('public product listing', () => {
     const products = await listMergedCatalogProducts();
     expect(products.map((product) => product.sku)).toEqual([
       'CR-CEL-3091',
+      'CR-CEL-8402',
       'CR-MOL-1021',
       'CR-MOL-2045',
       'CR-MOL-3012',

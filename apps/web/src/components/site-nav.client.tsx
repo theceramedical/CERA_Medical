@@ -143,20 +143,6 @@ export function MobileNav({
                       >
                         {item.label}
                       </NextLink>
-                      {item.children === undefined ? null : (
-                        <ul className="m-0 list-none p-0 pl-3">
-                          {item.children.map((child) => (
-                            <li key={child.href}>
-                              <NextLink
-                                href={child.href}
-                                className="flex min-h-11 items-center rounded-md px-3 text-caption text-neutral-700 no-underline hover:text-foreground"
-                              >
-                                {child.label}
-                              </NextLink>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
                     </li>
                   );
                 })}
@@ -176,8 +162,12 @@ export function MobileNav({
                       Your account
                     </ButtonLink>
                   </>
-                ) : null}
-                <ButtonLink as={NextLink} href="/contact#enquiry" variant="accent" fullWidth>
+                ) : (
+                  <ButtonLink href="/auth/sign-in?next=/account" variant="outline" fullWidth>
+                    Sign In
+                  </ButtonLink>
+                )}
+                <ButtonLink as={NextLink} href="/enquiry" variant="accent" fullWidth>
                   Make an Enquiry
                 </ButtonLink>
               </div>

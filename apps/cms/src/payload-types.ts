@@ -71,8 +71,6 @@ export interface Config {
     media: Media;
     pages: Page;
     posts: Post;
-    projects: Project;
-    'team-members': TeamMember;
     categories: Category;
     policies: Policy;
     'service-presentations': ServicePresentation;
@@ -90,8 +88,6 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    projects: ProjectsSelect<false> | ProjectsSelect<true>;
-    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     policies: PoliciesSelect<false> | PoliciesSelect<true>;
     'service-presentations': ServicePresentationsSelect<false> | ServicePresentationsSelect<true>;
@@ -619,99 +615,6 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects".
- */
-export interface Project {
-  id: number;
-  title: string;
-  /**
-   * Lower-case, hyphenated. Becomes the public URL.
-   */
-  slug: string;
-  seo?: {
-    title?: string | null;
-    description?: string | null;
-    canonicalUrl?: string | null;
-    ogImage?: (number | null) | Media;
-    /**
-     * Published but not indexed. Preview is always noindex.
-     */
-    noIndex?: boolean | null;
-  };
-  /**
-   * Flag this draft for an approver. Does not publish it.
-   */
-  reviewRequested?: boolean | null;
-  authorId?: string | null;
-  approverId?: string | null;
-  publishedAt?: string | null;
-  fixture?: boolean | null;
-  category: 'preclinical-studies' | 'molecular-research' | 'biomedical-data-analysis';
-  projectStatus: 'running' | 'completed';
-  summary: string;
-  featured?: boolean | null;
-  /**
-   * Optional. Use the public publication page URL.
-   */
-  publicationUrl?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Do not add profiles until CERA has confirmed current details and supplied approved photos.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team-members".
- */
-export interface TeamMember {
-  id: number;
-  title: string;
-  /**
-   * Lower-case, hyphenated. Becomes the public URL.
-   */
-  slug: string;
-  seo?: {
-    title?: string | null;
-    description?: string | null;
-    canonicalUrl?: string | null;
-    ogImage?: (number | null) | Media;
-    /**
-     * Published but not indexed. Preview is always noindex.
-     */
-    noIndex?: boolean | null;
-  };
-  /**
-   * Flag this draft for an approver. Does not publish it.
-   */
-  reviewRequested?: boolean | null;
-  authorId?: string | null;
-  approverId?: string | null;
-  publishedAt?: string | null;
-  fixture?: boolean | null;
-  name: string;
-  role: string;
-  designation: string;
-  affiliation: string;
-  /**
-   * Use only a photo supplied and approved for public use by CERA.
-   */
-  photo?: (number | null) | Media;
-  displayOrder: number;
-  /**
-   * Approver only: confirm CERA has verified this profile’s current details.
-   */
-  clientConfirmed?: boolean | null;
-  /**
-   * Approver only: confirm this uploaded photo is approved for public use.
-   */
-  photoApproved?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "policies".
  */
 export interface Policy {
@@ -1180,14 +1083,6 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
-        relationTo: 'projects';
-        value: number | Project;
-      } | null)
-    | ({
-        relationTo: 'team-members';
-        value: number | TeamMember;
-      } | null)
-    | ({
         relationTo: 'categories';
         value: number | Category;
       } | null)
@@ -1644,69 +1539,6 @@ export interface PostsSelect<T extends boolean = true> {
   cover?: T;
   category?: T;
   body?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects_select".
- */
-export interface ProjectsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  seo?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        canonicalUrl?: T;
-        ogImage?: T;
-        noIndex?: T;
-      };
-  reviewRequested?: T;
-  authorId?: T;
-  approverId?: T;
-  publishedAt?: T;
-  fixture?: T;
-  category?: T;
-  projectStatus?: T;
-  summary?: T;
-  featured?: T;
-  publicationUrl?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team-members_select".
- */
-export interface TeamMembersSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  seo?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        canonicalUrl?: T;
-        ogImage?: T;
-        noIndex?: T;
-      };
-  reviewRequested?: T;
-  authorId?: T;
-  approverId?: T;
-  publishedAt?: T;
-  fixture?: T;
-  name?: T;
-  role?: T;
-  designation?: T;
-  affiliation?: T;
-  photo?: T;
-  displayOrder?: T;
-  clientConfirmed?: T;
-  photoApproved?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2377,14 +2209,6 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'posts';
           value: number | Post;
-        } | null)
-      | ({
-          relationTo: 'projects';
-          value: number | Project;
-        } | null)
-      | ({
-          relationTo: 'team-members';
-          value: number | TeamMember;
         } | null)
       | ({
           relationTo: 'policies';

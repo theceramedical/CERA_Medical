@@ -90,10 +90,7 @@ export function ServiceEnquiryAside({
           </div>
         ) : null}
         {enquiryEnabled ? (
-          <AppButtonLink
-            href={`/contact?service=${encodeURIComponent(slug)}#enquiry`}
-            className="mt-6 w-full justify-center"
-          >
+          <AppButtonLink href={`/services/${slug}/enquiry`} className="mt-6 w-full justify-center">
             {buttonLabel}
           </AppButtonLink>
         ) : (
