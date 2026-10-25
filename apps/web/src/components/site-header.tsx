@@ -1,16 +1,10 @@
-import { Icon } from '@cera/ui/icon';
-import { Search } from 'lucide-react';
 import NextLink from 'next/link';
 
 import { sessionHasStaffRole } from '../lib/auth/portal-access.ts';
 import { getSession } from '../lib/auth/session.ts';
-import { checkoutEnabled } from '../lib/checkout-enabled.ts';
-import { getPublicGlobal } from '../lib/cms/client.ts';
 
 import { AppButtonLink } from './link.tsx';
-import { MAIN_NAV, withProductsNav } from './navigation.ts';
-import { SiteHeaderAuthActions } from './site-header-auth-actions.tsx';
-import { SiteHeaderCartMenu } from './site-header-cart-menu.tsx';
+import { MAIN_NAV } from './navigation.ts';
 import { HeaderScrollShadow } from './site-header.client.tsx';
 import { DesktopNavLinks } from './site-nav-links.client.tsx';
 import { MobileNav } from './site-nav.client.tsx';
@@ -27,11 +21,8 @@ import { SiteWordmark } from './site-wordmark.tsx';
  * the two buttons, the landmark structure - renders on the server and ships no JavaScript.
  */
 export async function SiteHeader() {
-  const [navigation, session] = await Promise.all([
-    getPublicGlobal<{ header?: readonly { label: string; href: string }[] }>('navigation'),
-    getSession(),
-  ]);
-  const navItems = withProductsNav(navigation?.header?.length ? navigation.header : MAIN_NAV);
+  const session = await getSession();
+  const navItems = MAIN_NAV;
   const signedIn = session !== null;
   const staff = session !== null && sessionHasStaffRole(session);
   return (
@@ -64,24 +55,8 @@ export async function SiteHeader() {
         </nav>
 
         <div className="relative z-50 flex flex-1 items-center justify-end gap-2 lg:flex-none">
-          {/*
-           * Search is a link to a page, not a button that opens a widget. Phase 07 builds the
-           * search route; a real page is reachable, linkable, and works without JavaScript, and it
-           * does not need the combobox pattern that an inline widget would require.
-           */}
-          {checkoutEnabled() ? <SiteHeaderCartMenu className="inline-flex" /> : null}
-          <NextLink
-            href="/search"
-            className="inline-flex size-11 items-center justify-center rounded-md text-neutral-700 transition-colors duration-base ease-standard hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-          >
-            <Icon icon={Search} size="md" label="Search the site" />
-          </NextLink>
-
-          {/* Hidden below `lg`, where the same destinations are inside the disclosure. Rendering
-              them twice and hiding one copy would put two "Sign In" links in the tab order. */}
           <div className="hidden items-center gap-2 lg:flex">
-            <SiteHeaderAuthActions signedIn={signedIn} staff={staff} />
-            <AppButtonLink href="/enquiry" variant="accent" size="sm">
+            <AppButtonLink href="/contact#enquiry" variant="accent" size="sm">
               Make an Enquiry
             </AppButtonLink>
           </div>

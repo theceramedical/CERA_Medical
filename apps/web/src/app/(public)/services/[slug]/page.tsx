@@ -11,7 +11,9 @@ import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { RichText } from '../../../../components/rich-text.tsx';
 import { ServiceEnquiryAside } from '../../../../components/service-enquiry-aside.tsx';
+import { ClientServicePage } from '../../../../components/services/client-service-page.tsx';
 import { SERVICE_PHOTOS } from '../../../../content/facility.ts';
+import { serviceCategoryBySlug } from '../../../../content/public-revision.ts';
 import { getPublicService, listPublicServices } from '../../../../lib/catalogue/client.ts';
 import { getDocument, getPublishedDocument } from '../../../../lib/cms/client.ts';
 import { absoluteUrl, pageMetadata } from '../../../../lib/seo.ts';
@@ -27,6 +29,14 @@ export async function generateMetadata({
   readonly params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const local = serviceCategoryBySlug(slug);
+  if (local !== undefined) {
+    return pageMetadata({
+      title: local.title,
+      description: local.summary,
+      path: `/services/${slug}`,
+    });
+  }
   const [service, presentation] = await Promise.all([
     getPublicService(slug),
     getPublishedDocument('servicePresentation', slug),
@@ -60,6 +70,8 @@ export default async function ServiceDetailPage({
   readonly params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const local = serviceCategoryBySlug(slug);
+  if (local !== undefined) return <ClientServicePage service={local} />;
   const [service, allServices] = await Promise.all([getPublicService(slug), listPublicServices()]);
 
   if (service === 'gone') {

@@ -3,6 +3,7 @@ import 'server-only';
 import type { PublicProduct } from '@cera/contracts/projections';
 
 import { catalogueProducts, productMediaFor } from '../../content/catalogue-products.ts';
+import { HELD_PRODUCT_SKUS } from '../../content/public-revision.ts';
 
 import { listPublicProducts } from './client.ts';
 
@@ -15,16 +16,11 @@ function catalogRowFromApi(product: PublicProduct): CatalogProduct {
     categoryLabel: 'Catalogue product',
     title: product.title,
     description: product.summary.length > 0 ? product.summary : product.description,
-    specs: product.availabilityText === null ? [] : [product.availabilityText],
+    specs: [product.availabilityText ?? 'Availability must be confirmed before dispatch.'],
     packLabel: '',
-    listPriceMinor: product.listPriceMinor,
-    checkoutEnabled: product.checkoutEnabled,
-    price:
-      product.checkoutEnabled && product.listPriceMinor !== null
-        ? new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(
-            product.listPriceMinor / 100,
-          )
-        : 'Price on enquiry',
+    listPriceMinor: null,
+    checkoutEnabled: false,
+    price: 'Price on enquiry',
     inStock: null,
     fulfillment: 'physical',
     ...(() => {
@@ -40,10 +36,16 @@ function catalogRowFromApi(product: PublicProduct): CatalogProduct {
  */
 export async function listMergedCatalogProducts(): Promise<readonly CatalogProduct[]> {
   const { items } = await listPublicProducts({ revalidateSeconds: 30 });
-  const known = new Set(items.map((product) => product.sku.toLowerCase()));
+  const allowed = new Set(catalogueProducts().map((product) => product.sku.toLowerCase()));
+  const held = new Set<string>(HELD_PRODUCT_SKUS.map((sku) => sku.toLowerCase()));
+  const allowedApiItems = items.filter((product) => {
+    const sku = product.sku.toLowerCase();
+    return allowed.has(sku) && !held.has(sku);
+  });
+  const known = new Set(allowedApiItems.map((product) => product.sku.toLowerCase()));
   const listed = [
-    ...items,
+    ...allowedApiItems,
     ...catalogueProducts().filter((product) => !known.has(product.sku.toLowerCase())),
-  ];
+  ].filter((product) => !held.has(product.sku.toLowerCase()));
   return listed.map(catalogRowFromApi).sort((a, b) => a.sku.localeCompare(b.sku));
 }

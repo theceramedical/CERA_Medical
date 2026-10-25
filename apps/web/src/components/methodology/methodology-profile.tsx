@@ -1,14 +1,6 @@
 import { Icon } from '@cera/ui/icon';
 import { Heading, Text } from '@cera/ui/typography';
-import {
-  BarChart3,
-  ClipboardList,
-  Dna,
-  FileCheck2,
-  FlaskConical,
-  Microscope,
-  PawPrint,
-} from 'lucide-react';
+import { ClipboardList, FileCheck2, FlaskConical, Microscope, PawPrint } from 'lucide-react';
 
 import { HOMEPAGE_PROCESS } from '../../content/homepage.ts';
 import { AppButtonLink } from '../link.tsx';
@@ -21,7 +13,7 @@ const SERVICE_METHODOLOGY = [
     summary:
       'In vivo, in vitro, and in silico work scoped under institutional ethics with written protocols before samples move.',
     points: [
-      'Rodent and lagomorph models with documented welfare and endpoint criteria',
+      'Studies in mice, rats, rabbits and guinea pigs, with documented welfare and endpoint criteria',
       'Cell-based assays with defined controls, replicates, and acceptance limits',
       'In silico docking and dynamics when computational evidence supports the study plan',
     ],
@@ -31,7 +23,7 @@ const SERVICE_METHODOLOGY = [
     icon: FlaskConical,
     accent: 'border-t-accent',
     summary:
-      'BSL-2 laboratory methods with batch records, calibrated instruments, and traceable reagent lots.',
+      'Laboratory methods with batch records, calibrated instruments, and traceable reagent lots.',
     points: [
       'Nucleic acid extraction, PCR, sequencing, and immunoassays under SOPs',
       'Histology and microscopy with documented staining and imaging parameters',
@@ -39,39 +31,15 @@ const SERVICE_METHODOLOGY = [
     ],
   },
   {
-    title: 'Metagenomic data analysis',
+    title: 'Biomedical data analysis',
     icon: Microscope,
     accent: 'border-t-primary',
     summary:
-      'From raw reads through taxonomic and functional profiles with reproducible Nextflow-style workflows.',
+      'Metagenomic, health, omics and evidence-synthesis work from raw files through to figures, tables and results text.',
     points: [
-      'Quality control, host removal, and contamination screening documented per run',
-      'Kraken2, QIIME 2, or project-specific pipelines version-locked in containers',
-      'Typical delivery target within three weeks, subject to agreed scope and data volume',
-    ],
-  },
-  {
-    title: 'Biomedical & omics analysis',
-    icon: Dna,
-    accent: 'border-t-accent',
-    summary:
-      'RNA-seq, variant calling, and clinical–omics integration with biostatistics and figure traceability.',
-    points: [
-      'Normalization, differential expression, and pathway analysis with explicit parameters',
-      'Variant annotation workflows and sensitivity analyses when clinically relevant',
-      'Tables and figures linked to underlying data for reviewer questions',
-    ],
-  },
-  {
-    title: 'Evidence synthesis & reports',
-    icon: BarChart3,
-    accent: 'border-t-primary',
-    summary:
-      'Systematic reviews, technical reports, and policy briefs aligned to PRISMA-style transparency.',
-    points: [
-      'Registered protocols, search strategies, and screening logs on request',
-      'Risk-of-bias tools and GRADE-style certainty language where appropriate',
-      'Deliverables formatted for internal decision-making or external publication',
+      'Metagenomic results are typically delivered within three weeks, confirmed during project scoping',
+      'Systematic reviews and technical reports are written to the agreed reporting standard',
+      'Tables and figures are linked to the underlying data',
     ],
   },
 ] as const;
@@ -168,7 +136,7 @@ export function MethodologyProfile() {
               <Text tone="muted" className="mt-4">
                 Protocols, software versions, and instrument calibration records are retained for
                 the project retention period. Customer-facing reports separate findings from
-                operational notes; staff-only triage stays in the secure portal.
+                operational notes.
               </Text>
             </div>
             <div className="rounded-lg border border-border bg-surface-tint p-6 shadow-card">

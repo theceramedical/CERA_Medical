@@ -1,208 +1,217 @@
-import { type LayoutBlock } from '../../components/cms-content-page.tsx';
-import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
-import { EquipmentMarquee } from '../../components/home/equipment-marquee.tsx';
-import { HeroSection } from '../../components/home/hero-section.tsx';
-import { HomeMarketingBlocks } from '../../components/home/home-marketing-blocks.tsx';
-import { MetricsBand } from '../../components/home/metrics-band.tsx';
-import {
-  JsonLd,
-  medicalBusinessJsonLd,
-  organizationJsonLd,
-  websiteJsonLd,
-} from '../../components/json-ld.tsx';
-import { defaultHomeMarketingBlocks } from '../../content/home-marketing-layout.ts';
-import { withLocalArticles } from '../../content/local-articles.ts';
-import { listPublicProducts, listPublicServices } from '../../lib/catalogue/client.ts';
-import { getCurrentDocument, listPublishedDocuments } from '../../lib/cms/client.ts';
-import { pageMetadata } from '../../lib/seo.ts';
-import { siteUrl } from '../../lib/site-url.ts';
+import { Heading, Text } from '@cera/ui/typography';
 
-import type { CtaContent } from '../../components/home/cta-band-section.tsx';
-import type { HeroContent } from '../../components/home/hero-section.tsx';
-import type { MetricHighlight } from '../../content/homepage.ts';
+import { HomeMotion } from '../../components/home/home-motion.client.tsx';
+import { ScrollHero } from '../../components/home/scroll-hero.client.tsx';
+import { AppButtonLink, AppLink } from '../../components/link.tsx';
+import { catalogueProducts, productMediaFor } from '../../content/catalogue-products.ts';
+import {
+  HOME_PROJECTS,
+  HELD_PRODUCT_SKUS,
+  SERVICE_CATEGORIES,
+} from '../../content/public-revision.ts';
+import { getPublishedProjects } from '../../lib/cms/public-research-content.ts';
+import { pageMetadata } from '../../lib/seo.ts';
+
 import type { Metadata } from 'next';
 
-function stringField(block: LayoutBlock | undefined, field: string): string | undefined {
-  const value = block?.[field];
-  return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
-}
-
-function mediaField(block: LayoutBlock | undefined): { imageUrl?: string; imageAlt?: string } {
-  const portrait = block?.portrait;
-  if (portrait === null || typeof portrait !== 'object') return {};
-  const media = portrait as { readonly url?: unknown; readonly alt?: unknown };
-  return {
-    ...(typeof media.url === 'string' && media.url.length > 0 ? { imageUrl: media.url } : {}),
-    ...(typeof media.alt === 'string' && media.alt.length > 0 ? { imageAlt: media.alt } : {}),
-  };
-}
-
-function trustLabelsFromHero(hero: LayoutBlock | undefined): readonly string[] | undefined {
-  const raw = hero?.trustItems;
-  if (!Array.isArray(raw)) return undefined;
-  const labels = raw
-    .map((item) => {
-      if (item === null || typeof item !== 'object') return null;
-      const label = (item as { label?: unknown }).label;
-      return typeof label === 'string' && label.length > 0 ? label : null;
-    })
-    .filter((item): item is string => item !== null);
-  return labels.length > 0 ? labels : undefined;
-}
-
-function metricsFromBlocks(blocks: readonly LayoutBlock[]): readonly MetricHighlight[] | undefined {
-  const stats = blocks.find((block) => block.blockType === 'statistics');
-  if (stats === undefined) return undefined;
-  const raw = stats.items;
-  if (!Array.isArray(raw)) return undefined;
-  const items = raw
-    .map((item) => {
-      if (item === null || typeof item !== 'object') return null;
-      const row = item as Record<string, unknown>;
-      const value = typeof row.value === 'string' ? row.value : '';
-      const label = typeof row.label === 'string' ? row.label : '';
-      const detail = typeof row.detail === 'string' ? row.detail : undefined;
-      if (value.length === 0 || label.length === 0) return null;
-      return { value, label, ...(detail !== undefined ? { detail } : {}) };
-    })
-    .filter((item): item is MetricHighlight => item !== null);
-  return items.length > 0 ? items : undefined;
-}
-
-function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
-  const blocks = Array.isArray(document?.layout) ? (document.layout as LayoutBlock[]) : [];
-  const hero = blocks.find((block) => block.blockType === 'hero');
-  const cta = blocks.find((block) => block.blockType === 'ctaBand');
-  return {
-    metrics: metricsFromBlocks(blocks),
-    hero: {
-      eyebrow: stringField(hero, 'eyebrow'),
-      headlinePrimary: stringField(hero, 'headlinePrimary'),
-      headlineAccent: stringField(hero, 'headlineAccent'),
-      body: stringField(hero, 'body'),
-      primaryHref: stringField(hero, 'primaryHref'),
-      primaryLabel: stringField(hero, 'primaryLabel'),
-      secondaryHref: stringField(hero, 'secondaryHref'),
-      secondaryLabel: stringField(hero, 'secondaryLabel'),
-      badgeTitle: stringField(hero, 'badgeTitle'),
-      badgeBody: stringField(hero, 'badgeBody'),
-      trustLabels: trustLabelsFromHero(hero),
-      ...mediaField(hero),
-    } satisfies HeroContent,
-    cta: {
-      heading: stringField(cta, 'headline'),
-      body: stringField(cta, 'body'),
-      href: stringField(cta, 'href'),
-      label: stringField(cta, 'label'),
-    } satisfies CtaContent,
-  };
-}
-
-/**
- * The homepage, reproducing the reference image section for section.
- *
- * **The band order and their backgrounds are the layout,** per design-language.md section 4.1: hero on
- * `surface-tint`, services on white, process on `surface-tint-2`, articles on white, the gradient CTA,
- * then the footer. The alternation is what separates the bands - there are no dividing rules between
- * them - so reordering these five lines would put two white bands together and visually merge them.
- *
- * Each section owns its own background and padding rather than receiving them here, so a section can be
- * moved to another page without carrying a `className` that only made sense in this stack.
- *
- * Every section is a server component. The only client code on this page arrives through the header's
- * three islands, which is what keeps a content page's JavaScript to the router and the hydration
- * bootstrap.
- */
-
-export async function generateMetadata(): Promise<Metadata> {
-  const document = await getCurrentDocument('page', 'home');
-  if (document !== null)
-    return pageMetadata({
-      title: document.seo.title ?? document.title,
-      description: document.seo.description ?? document.excerpt ?? '',
-      path: '/',
-      noIndex: document.seo.noIndex,
-    });
-  return {
-    /**
-     * An absolute title, overriding the layout's `%s | CERA Medical` template.
-     *
-     * The homepage is the one page where the template produces the wrong result: "Home | CERA Medical"
-     */
-    title: { absolute: 'CERA Medical - Biomedical Research and Development' },
+export function generateMetadata(): Metadata {
+  return pageMetadata({
+    title: 'Research that moves health forward',
     description:
-      'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis for research teams and health organisations.',
-  };
+      'CERA Medical is an SECP-registered biomedical research company in Haripur, Pakistan. Preclinical studies, molecular research and biomedical data analysis.',
+    path: '/',
+  });
 }
 
-const HOME_SHELL_BLOCKS = new Set(['hero', 'statistics', 'ctaBand']);
-
-function splitHomeBlocks(blocks: readonly LayoutBlock[]) {
-  const services = blocks.filter((block) => block.blockType === 'servicesShowcase');
-  const articles = blocks.filter((block) => block.blockType === 'articlesPreview');
-  const rest = blocks.filter(
-    (block) => block.blockType !== 'servicesShowcase' && block.blockType !== 'articlesPreview',
-  );
-  const fallback = defaultHomeMarketingBlocks();
-  return {
-    services:
-      services.length > 0
-        ? services
-        : fallback.filter((block) => block.blockType === 'servicesShowcase'),
-    articles:
-      articles.length > 0
-        ? articles
-        : fallback.filter((block) => block.blockType === 'articlesPreview'),
-    rest,
-  };
-}
+const held = new Set<string>(HELD_PRODUCT_SKUS);
 
 export default async function HomePage() {
-  const origin = siteUrl().origin;
-  const [document, presentations, posts, catalogue, products] = await Promise.all([
-    getCurrentDocument('page', 'home'),
-    listPublishedDocuments('servicePresentation'),
-    listPublishedDocuments('post'),
-    listPublicServices(),
-    listPublicProducts(),
-  ]);
-  const layoutBlocks =
-    document !== null && Array.isArray(document.layout) ? (document.layout as LayoutBlock[]) : [];
-  const marketingBlocks = layoutBlocks.filter(
-    (block) => !HOME_SHELL_BLOCKS.has(block.blockType ?? ''),
-  );
-  const source = marketingBlocks.length > 0 ? marketingBlocks : defaultHomeMarketingBlocks();
-  const bands = splitHomeBlocks(source);
-  const researchPosts = withLocalArticles(posts);
-  const content = document === null ? null : pageContent(document);
+  const products = catalogueProducts()
+    .filter((product) => !held.has(product.sku))
+    .slice(0, 3);
+  const publishedProjects = await getPublishedProjects();
+  const homeProjects =
+    publishedProjects === null
+      ? HOME_PROJECTS
+      : publishedProjects.filter((project) => project.featured).slice(0, 3);
 
   return (
-    <>
-      <JsonLd data={organizationJsonLd(origin)} />
-      <JsonLd data={websiteJsonLd(origin)} />
-      <JsonLd data={medicalBusinessJsonLd(origin)} />
-      <HeroSection {...(content === null ? {} : { content: content.hero })} />
-      <EquipmentMarquee products={products.items} />
-      <HomeMarketingBlocks
-        blocks={bands.services}
-        presentations={presentations}
-        posts={researchPosts}
-        catalogue={catalogue.items}
-      />
-      <HomeMarketingBlocks
-        blocks={bands.articles}
-        presentations={presentations}
-        posts={researchPosts}
-        catalogue={catalogue.items}
-      />
-      <MetricsBand {...(content?.metrics === undefined ? {} : { metrics: content.metrics })} />
-      <HomeMarketingBlocks
-        blocks={bands.rest}
-        presentations={presentations}
-        posts={researchPosts}
-        catalogue={catalogue.items}
-      />
-      <CtaBandSection {...(content === null ? {} : { content: content.cta })} />
-    </>
+    <HomeMotion>
+      <ScrollHero />
+
+      <section data-reveal className="border-b border-border py-14">
+        <div className="mx-auto max-w-site px-6 md:px-10">
+          <div data-reveal-title>
+            <Heading level={2} size="h2" className="mb-3">
+              Our Services
+            </Heading>
+            <Text tone="muted" className="mb-8 max-w-2xl">
+              Mouse research leads the laboratory. Molecular work and data analysis support those
+              studies.
+            </Text>
+          </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {SERVICE_CATEGORIES.map((service) => (
+              <article
+                data-card
+                key={service.slug}
+                className="rounded-lg border border-border bg-surface p-6 shadow-card"
+              >
+                <Heading level={3} size="h3" className="mb-2">
+                  <AppLink href={`/services/${service.slug}`} className="no-underline">
+                    {service.title}
+                  </AppLink>
+                </Heading>
+                <Text tone="muted" className="mb-4">
+                  {service.summary}
+                </Text>
+                <ul className="flex list-none flex-wrap gap-2 p-0">
+                  {service.chips.map((chip) => (
+                    <li key={chip.href}>
+                      <AppLink
+                        href={chip.href}
+                        className="inline-flex rounded-full border border-border px-3 py-1 text-caption no-underline"
+                      >
+                        {chip.label}
+                      </AppLink>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section data-reveal className="border-b border-border bg-surface-tint py-14">
+        <div className="mx-auto max-w-site px-6 md:px-10">
+          <div data-reveal-title className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <Heading level={2} size="h2">
+                Our Projects
+              </Heading>
+              <Text tone="muted" className="mt-2">
+                Studies running in our laboratories and analyses we have completed.
+              </Text>
+            </div>
+            <AppLink href="/projects">View all projects</AppLink>
+          </div>
+          {homeProjects.length === 0 ? (
+            <Text tone="muted">No projects are currently published.</Text>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {homeProjects.map((project) => {
+                const image = 'image' in project ? project.image : undefined;
+                return (
+                  <article
+                    data-card
+                    key={project.slug}
+                    className="overflow-hidden rounded-lg border border-border bg-surface shadow-card"
+                  >
+                    {image === undefined ? null : (
+                      <img src={image} alt="" className="h-44 w-full object-cover" />
+                    )}
+                    <div className="p-6">
+                      <div className="mb-3 flex flex-wrap gap-2">
+                        <span className="rounded-full bg-surface-tint px-3 py-1 text-caption font-semibold">
+                          {project.category}
+                        </span>
+                        <span className="rounded-full border border-border px-3 py-1 text-caption font-semibold">
+                          {project.status}
+                        </span>
+                      </div>
+                      <Heading level={3} size="h4" className="mb-2">
+                        <AppLink href={`/projects/${project.slug}`} className="no-underline">
+                          {project.title}
+                        </AppLink>
+                      </Heading>
+                      <Text tone="muted">{project.summary}</Text>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section data-reveal className="border-b border-border py-14">
+        <div className="mx-auto max-w-site px-6 md:px-10">
+          <div data-reveal-title className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <Heading level={2} size="h2">
+                Research Products
+              </Heading>
+              <Text tone="muted" className="mt-2">
+                Research-use reagents, kits and cell preparations. Price on enquiry.
+              </Text>
+            </div>
+            <AppLink href="/products">View catalogue</AppLink>
+          </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {products.map((product) => {
+              const media = productMediaFor(product.sku);
+              return (
+                <article
+                  data-card
+                  key={product.sku}
+                  className="overflow-hidden rounded-lg border border-border bg-surface shadow-card"
+                >
+                  {media === undefined ? null : (
+                    <img
+                      src={media.imageSrc}
+                      alt={media.imageAlt}
+                      className="h-44 w-full object-cover"
+                    />
+                  )}
+                  <div className="p-6">
+                    <Heading level={3} size="h4" className="mb-2">
+                      <AppLink
+                        href={`/products#product-${product.sku.toLowerCase()}`}
+                        className="no-underline"
+                      >
+                        {product.title}
+                      </AppLink>
+                    </Heading>
+                    <Text tone="muted" className="mb-4">
+                      {product.summary}
+                    </Text>
+                    <Text className="font-semibold">Price on enquiry</Text>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section data-reveal className="border-b border-border py-14">
+        <div data-reveal-title className="mx-auto max-w-measure px-6 md:px-10">
+          <Heading level={2} size="h2" className="mb-4">
+            How we work
+          </Heading>
+          <Text size="body-lg" tone="muted">
+            Every project starts with a written scope and protocol and ends with documented results
+            and revision rounds. <AppLink href="/methodology">See how we work.</AppLink>
+          </Text>
+        </div>
+      </section>
+
+      <section data-reveal className="bg-primary-800 py-14 text-on-primary">
+        <div className="mx-auto max-w-site px-6 md:px-10">
+          <div data-reveal-title>
+            <Heading level={2} size="h2" className="mb-3 text-on-primary">
+              Ready to discuss your study?
+            </Heading>
+            <Text className="mb-6 max-w-2xl text-on-primary/90">
+              Tell us about your samples, compounds or data. We reply within three working days.
+            </Text>
+            <AppButtonLink href="/contact#enquiry" variant="accent" data-cursor="Make an enquiry">
+              Make an Enquiry
+            </AppButtonLink>
+          </div>
+        </div>
+      </section>
+    </HomeMotion>
   );
 }

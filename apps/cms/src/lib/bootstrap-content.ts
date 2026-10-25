@@ -268,6 +268,30 @@ async function upsert(
   }
 }
 
+async function upsertDraftPost(
+  payload: Payload,
+  slug: string,
+  data: RequiredDataFromCollectionSlug<'posts'>,
+): Promise<void> {
+  const found = await payload.find({
+    collection: 'posts',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    draft: true,
+    overrideAccess: true,
+  });
+  // Keep any editor-managed record intact. Existing legacy rows are moved to
+  // draft by the additive migration; bootstrap only creates missing fixtures.
+  if (found.docs[0] !== undefined) return;
+  await payload.create({
+    collection: 'posts',
+    data: { ...data, fixture: false, _status: 'draft' },
+    overrideAccess: true,
+    draft: true,
+    req: systemReq(payload),
+  });
+}
+
 /** Inserts the client-approved initial copy once, while preserving subsequent CMS edits. */
 export async function bootstrapClientContent(payload: Payload): Promise<void> {
   const users = await payload.find({
@@ -908,7 +932,7 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
   ] as const;
 
   for (const post of posts) {
-    await upsert(payload, 'posts', post.slug, {
+    await upsertDraftPost(payload, post.slug, {
       title: post.title,
       slug: post.slug,
       excerpt: post.excerpt,
@@ -923,8 +947,8 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
   }
 
   const navigation = await payload.findGlobal({ slug: 'navigation', overrideAccess: true });
-  const header = navigation.header;
-  if (!Array.isArray(header) || header.length === 0) {
+  const header = Array.isArray(navigation.header) ? navigation.header : [];
+  if (header.length === 0) {
     await payload.updateGlobal({
       slug: 'navigation',
       data: {
@@ -932,7 +956,7 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
           { label: 'Home', href: '/' },
           { label: 'Services', href: '/services' },
           { label: 'Products', href: '/products' },
-          { label: 'Research Updates', href: '/articles' },
+          { label: 'Our Projects', href: '/projects' },
           { label: 'About', href: '/about' },
           { label: 'Contact', href: '/contact' },
         ],
@@ -943,6 +967,42 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
           { label: 'Terms of Service', href: '/terms' },
         ],
       },
+      overrideAccess: true,
+    });
+    return;
+  }
+
+  const projectLinkIndex = header.findIndex(
+    (item) =>
+      item.label === 'Research Updates' ||
+      item.href === '/articles' ||
+      item.label === 'Our Projects' ||
+      item.href === '/projects',
+  );
+  const nextHeader = header.flatMap((item, index) => {
+    const isLegacyResearchLink = item.label === 'Research Updates' || item.href === '/articles';
+    const isProjectLink = item.label === 'Our Projects' || item.href === '/projects';
+    if (isLegacyResearchLink || isProjectLink) {
+      if (index !== projectLinkIndex) return [];
+      return [{ label: 'Our Projects', href: '/projects' }];
+    }
+    return [item];
+  });
+
+  if (projectLinkIndex === -1) nextHeader.push({ label: 'Our Projects', href: '/projects' });
+
+  const hasLegacyResearchLink = header.some(
+    (item) => item.label === 'Research Updates' || item.href === '/articles',
+  );
+  const hasCanonicalProjectLink = header.some(
+    (item) => item.label === 'Our Projects' && item.href === '/projects',
+  );
+  const hasDuplicateProjectLinks =
+    header.filter((item) => item.label === 'Our Projects' || item.href === '/projects').length > 1;
+  if (hasLegacyResearchLink || !hasCanonicalProjectLink || hasDuplicateProjectLinks) {
+    await payload.updateGlobal({
+      slug: 'navigation',
+      data: { header: nextHeader },
       overrideAccess: true,
     });
   }

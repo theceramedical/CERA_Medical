@@ -10,8 +10,10 @@ const DEFAULT_SERVICES = new Set([
   'preclinical-studies',
   'molecular-research',
   'metagenomic-data-analysis',
+  'biomedical-data-analysis',
   'biomedical-omics-data-analysis',
   'evidence-synthesis-technical-reports',
+  'product-enquiry',
   'research-collaboration',
   'other-enquiry',
 ]);

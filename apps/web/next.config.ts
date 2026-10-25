@@ -79,6 +79,9 @@ function cmsMediaApiPattern(): {
  */
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // The IDE browser opens 127.0.0.1 while `next dev` advertises localhost. Without this,
+  // dev HMR is refused and client components, including the scroll hero, never hydrate.
+  allowedDevOrigins: ['127.0.0.1'],
 
   // `manifest.ts` and `/dev/design` read `packages/ui/src/styles/theme.css` at runtime.
   outputFileTracingRoot: monorepoRoot,

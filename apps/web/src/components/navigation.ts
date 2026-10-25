@@ -13,14 +13,23 @@
 export interface NavItem {
   readonly href: string;
   readonly label: string;
+  readonly children?: readonly NavItem[];
 }
 
 /** Header centre group. Products is the Stitch research-assets catalogue. */
 export const MAIN_NAV: readonly NavItem[] = [
   { href: '/', label: 'Home' },
-  { href: '/services', label: 'Services' },
+  {
+    href: '/services',
+    label: 'Services',
+    children: [
+      { href: '/services/preclinical-studies', label: 'Preclinical Studies' },
+      { href: '/services/molecular-research', label: 'Molecular Research' },
+      { href: '/services/biomedical-data-analysis', label: 'Biomedical Data Analysis' },
+    ],
+  },
   { href: '/products', label: 'Products' },
-  { href: '/articles', label: 'Research Updates' },
+  { href: '/projects', label: 'Our Projects' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -41,13 +50,11 @@ export function withProductsNav(items: readonly NavItem[]): readonly NavItem[] {
 
 /** Footer "Support" column, per section 5.9. */
 export const SUPPORT_NAV: readonly NavItem[] = [
-  { href: '/enquiry', label: 'Make an Enquiry' },
-  { href: '/auth/sign-in?next=/account', label: 'Sign In' },
   { href: '/faqs', label: 'FAQs' },
   { href: '/methodology', label: 'Methodology' },
-  { href: '/data-retention', label: 'Data Retention Policy' },
   { href: '/privacy', label: 'Privacy Terms' },
   { href: '/terms', label: 'Terms of Service' },
+  { href: '/data-retention', label: 'Data Retention Policy' },
 ];
 
 /**

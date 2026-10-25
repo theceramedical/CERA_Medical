@@ -12,8 +12,10 @@ import { Media } from './collections/Media.ts';
 import { Pages } from './collections/Pages.ts';
 import { Policies } from './collections/Policies.ts';
 import { Posts } from './collections/Posts.ts';
+import { Projects } from './collections/Projects.ts';
 import { Redirects } from './collections/Redirects.ts';
 import { ServicePresentations } from './collections/ServicePresentations.ts';
+import { TeamMembers } from './collections/TeamMembers.ts';
 import { Users } from './collections/Users.ts';
 import { Announcement } from './globals/Announcement.ts';
 import { Navigation } from './globals/Navigation.ts';
@@ -85,6 +87,8 @@ export default buildConfig({
     Media,
     Pages,
     Posts,
+    Projects,
+    TeamMembers,
     Categories,
     Policies,
     ServicePresentations,

@@ -132,6 +132,8 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
   if (canonical !== null) return canonical;
 
   const pathname = normalisePath(request.nextUrl.pathname);
+  const briefRedirect = redirectRevisedBriefPath(request, pathname);
+  if (briefRedirect !== null) return briefRedirect;
 
   const cmsRedirect = resolveRedirect(pathname, readConfiguredRedirects());
   if (cmsRedirect !== null) {
@@ -158,6 +160,32 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
   }
 
   return NextResponse.next({ request: { headers: requestHeaders } });
+}
+
+/** Old public URLs retained by the October 2026 brief; Next config redirects only emit 308s. */
+function redirectRevisedBriefPath(request: NextRequest, pathname: string): NextResponse | null {
+  const target = request.nextUrl.clone();
+  if (pathname === '/enquiry') {
+    target.pathname = '/contact';
+    target.hash = 'enquiry';
+  } else if (pathname === '/articles' || pathname.startsWith('/articles/')) {
+    target.pathname = '/projects';
+    target.hash = '';
+  } else {
+    const serviceAnchors: Readonly<Record<string, string>> = {
+      '/services/metagenomic-data-analysis': 'metagenomics',
+      '/services/biomedical-omics-data-analysis': 'omics',
+      '/services/evidence-synthesis-technical-reports': 'evidence',
+    };
+    const anchor = serviceAnchors[pathname];
+    if (anchor === undefined) return null;
+    target.pathname = '/services/biomedical-data-analysis';
+    target.hash = anchor;
+  }
+
+  const response = NextResponse.redirect(target, 301);
+  response.headers.set('cache-control', 'public, max-age=3600');
+  return response;
 }
 
 /**

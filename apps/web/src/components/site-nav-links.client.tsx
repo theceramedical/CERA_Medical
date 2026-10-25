@@ -27,7 +27,7 @@ export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] 
         const current = isCurrent(item.href, pathname);
 
         return (
-          <li key={item.href}>
+          <li key={item.href} className="group relative">
             <NextLink
               href={item.href}
               /**
@@ -53,6 +53,20 @@ export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] 
                 {item.label}
               </span>
             </NextLink>
+            {item.children !== undefined && item.children.length > 0 ? (
+              <ul className="invisible pointer-events-none absolute top-full left-0 z-40 m-0 min-w-64 list-none rounded-md border border-border bg-surface p-2 opacity-0 shadow-card group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:opacity-100">
+                {item.children.map((child) => (
+                  <li key={child.href}>
+                    <NextLink
+                      href={child.href}
+                      className="block rounded-md px-3 py-2 text-caption font-medium text-neutral-700 no-underline hover:bg-surface-subtle hover:text-foreground"
+                    >
+                      {child.label}
+                    </NextLink>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </li>
         );
       })}

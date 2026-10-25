@@ -1,4 +1,3 @@
-import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
 import { MethodologyProfile } from '../../../components/methodology/methodology-profile.tsx';
 import { getCurrentDocument } from '../../../lib/cms/client.ts';
@@ -18,17 +17,15 @@ export function generateMetadata(): Metadata {
 
 export default async function MethodologyPage() {
   const document = await getCurrentDocument('page', 'methodology');
-  if (document === null) return <CmsPageUnavailable slug="methodology" />;
-
-  const hero = sectionHeadingFromLayout(document.layout);
+  const hero = document === null ? null : sectionHeadingFromLayout(document.layout);
 
   return (
     <>
       <MarketingPageHeader
-        title={hero?.title ?? document.title}
+        title={hero?.title ?? document?.title ?? 'Methodology'}
         lede={
           hero?.lede ??
-          document.excerpt ??
+          document?.excerpt ??
           'Every project follows five stages, with service-specific methods set out in a protocol or analysis plan.'
         }
         eyebrow={hero?.eyebrow ?? 'Methodology'}

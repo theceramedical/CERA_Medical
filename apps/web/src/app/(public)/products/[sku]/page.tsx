@@ -5,9 +5,9 @@ import { notFound } from 'next/navigation';
 import { AppLink } from '../../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../../components/marketing-page-header.tsx';
 import { ProductPurchaseActions } from '../../../../components/products/product-purchase-actions.tsx';
-import { productMediaFor } from '../../../../content/catalogue-products.ts';
+import { catalogueProducts, productMediaFor } from '../../../../content/catalogue-products.ts';
 import { productDetailPath, productEnquiryHref } from '../../../../content/products-catalog.ts';
-import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
+import { HELD_PRODUCT_SKUS } from '../../../../content/public-revision.ts';
 import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
@@ -15,9 +15,11 @@ import type { Metadata } from 'next';
 
 export const dynamicParams = true;
 
-export async function generateStaticParams(): Promise<{ sku: string }[]> {
-  const { items } = await listPublicProducts().catch(() => ({ items: [] }));
-  const skus = [...new Set(items.map((row) => row.sku.toLowerCase()))];
+export function generateStaticParams(): { sku: string }[] {
+  const held = new Set(HELD_PRODUCT_SKUS.map((sku) => sku.toLowerCase()));
+  const skus = [...new Set(catalogueProducts().map((row) => row.sku.toLowerCase()))].filter(
+    (sku) => !held.has(sku),
+  );
   return skus.map((sku) => ({ sku }));
 }
 
@@ -87,17 +89,14 @@ export default async function ProductDetailPage({
         <Text size="caption" tone="muted" className="font-mono">
           Cat #{product.sku}
         </Text>
-        {product.availabilityText !== null ? (
-          <Text size="body-sm" tone="muted" className="mt-2">
-            {product.availabilityText}
-          </Text>
-        ) : null}
+        <Text size="body-sm" tone="muted" className="mt-2">
+          {product.availabilityText ?? 'Availability must be confirmed before dispatch.'}
+        </Text>
+        <Text size="body-sm" className="mt-2 font-semibold">
+          Price on enquiry
+        </Text>
         <div className="mt-8 flex flex-wrap gap-3">
-          <ProductPurchaseActions
-            sku={product.sku}
-            enquiryHref={productEnquiryHref(product.sku)}
-            enabled={product.checkoutEnabled}
-          />
+          <ProductPurchaseActions enquiryHref={productEnquiryHref(product.sku)} />
           <ButtonLink href="/products" as={AppLink} variant="outline">
             Back to catalogue
           </ButtonLink>

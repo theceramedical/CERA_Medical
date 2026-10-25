@@ -6,6 +6,7 @@ import * as migration_20261006_115622_service_presentation_layout_tables from '.
 import * as migration_20261006_125453_sp_nested_layout_arrays from './20261006_125453_sp_nested_layout_arrays';
 import * as migration_20261013_030100_galleries_and_team from './20261013_030100_galleries_and_team';
 import * as migration_20261013_030000_site_logo from './20261013_030000_site_logo';
+import * as migration_20261025_120000_projects_and_team_members from './20261025_120000_projects_and_team_members';
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20261013_030100_galleries_and_team.up,
     down: migration_20261013_030100_galleries_and_team.down,
     name: '20261013_030100_galleries_and_team',
+  },
+  {
+    up: migration_20261025_120000_projects_and_team_members.up,
+    down: migration_20261025_120000_projects_and_team_members.down,
+    name: '20261025_120000_projects_and_team_members',
   },
 ];

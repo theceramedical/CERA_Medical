@@ -29,6 +29,7 @@ export interface HeroContent {
   readonly badgeTitle?: string | undefined;
   readonly badgeBody?: string | undefined;
   readonly trustLabels?: readonly string[] | undefined;
+  readonly plain?: boolean | undefined;
 }
 
 export function HeroSection({ content = {} }: { readonly content?: HeroContent }) {
@@ -46,21 +47,25 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-surface-tint pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-20">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 -right-6 select-none font-wordmark text-[3.25rem] leading-none font-extrabold text-primary opacity-5 sm:-right-10 sm:text-[5rem] lg:text-[7rem]"
-      >
-        SCIENCE • RIGOR • DATA
-      </div>
+      {content.plain === true ? null : (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 -right-6 select-none font-wordmark text-[3.25rem] leading-none font-extrabold text-primary opacity-5 sm:-right-10 sm:text-[5rem] lg:text-[7rem]"
+        >
+          SCIENCE • RIGOR • DATA
+        </div>
+      )}
       <div className="relative z-10 mx-auto max-w-site px-6 md:px-10">
         <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
           <div className="cera-enter flex flex-col items-start lg:col-span-7 lg:pr-4">
-            <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 shadow-sm">
-              <span className="size-2 rounded-full bg-accent" />
-              <Text as="p" size="eyebrow" tone="muted" className="tracking-[0.14em]">
-                {content.eyebrow ?? HERO.eyebrow}
-              </Text>
-            </div>
+            {content.plain === true ? null : (
+              <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 shadow-sm">
+                <span className="size-2 rounded-full bg-accent" />
+                <Text as="p" size="eyebrow" tone="muted" className="tracking-[0.14em]">
+                  {content.eyebrow ?? HERO.eyebrow}
+                </Text>
+              </div>
+            )}
             <Heading
               level={1}
               size="display-1"
@@ -82,16 +87,18 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
                 {content.secondaryLabel ?? 'Make an Enquiry'}
               </AppButtonLink>
             </div>
-            <ul className="grid w-full list-none grid-cols-1 gap-4 border-t border-border p-0 pt-6 sm:grid-cols-3">
-              {trustItems.map((item) => (
-                <li key={item.label} className="flex items-center gap-2.5">
-                  <Icon icon={item.icon} size="md" className="shrink-0 text-accent" />
-                  <Text size="body-sm" className="font-semibold">
-                    {item.label}
-                  </Text>
-                </li>
-              ))}
-            </ul>
+            {content.plain === true ? null : (
+              <ul className="grid w-full list-none grid-cols-1 gap-4 border-t border-border p-0 pt-6 sm:grid-cols-3">
+                {trustItems.map((item) => (
+                  <li key={item.label} className="flex items-center gap-2.5">
+                    <Icon icon={item.icon} size="md" className="shrink-0 text-accent" />
+                    <Text size="body-sm" className="font-semibold">
+                      {item.label}
+                    </Text>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="relative mt-8 lg:col-span-5 lg:mt-0">
@@ -104,19 +111,21 @@ export function HeroSection({ content = {} }: { readonly content?: HeroContent }
               />
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-primary-900/40 via-transparent to-transparent" />
             </div>
-            <div className="cera-enter cera-delay-3 relative mt-4 flex max-w-full items-start gap-4 rounded-lg border border-border bg-surface p-4 shadow-lg sm:absolute sm:-bottom-6 sm:-left-6 sm:mt-0 sm:max-w-sm sm:p-5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-surface-tint text-accent">
-                <Icon icon={ClipboardCheck} size="md" />
+            {content.plain === true ? null : (
+              <div className="cera-enter cera-delay-3 relative mt-4 flex max-w-full items-start gap-4 rounded-lg border border-border bg-surface p-4 shadow-lg sm:absolute sm:-bottom-6 sm:-left-6 sm:mt-0 sm:max-w-sm sm:p-5">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-surface-tint text-accent">
+                  <Icon icon={ClipboardCheck} size="md" />
+                </div>
+                <div>
+                  <Heading level={2} size="h4" className="mb-1">
+                    {badgeTitle}
+                  </Heading>
+                  <Text size="caption" tone="muted">
+                    {badgeBody}
+                  </Text>
+                </div>
               </div>
-              <div>
-                <Heading level={2} size="h4" className="mb-1">
-                  {badgeTitle}
-                </Heading>
-                <Text size="caption" tone="muted">
-                  {badgeBody}
-                </Text>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,11 +1,8 @@
 import { Heading, Text } from '@cera/ui/typography';
 import NextLink from 'next/link';
 
-import { getSession } from '../lib/auth/session.ts';
-import { getPublicGlobal } from '../lib/cms/client.ts';
-
 import { AppLink } from './link.tsx';
-import { MAIN_NAV, supportNavForSession, withProductsNav } from './navigation.ts';
+import { SUPPORT_NAV } from './navigation.ts';
 import { SiteWordmark } from './site-wordmark.tsx';
 
 import type { NavItem } from './navigation.ts';
@@ -15,35 +12,40 @@ import type { NavItem } from './navigation.ts';
  *
  * Server-rendered contact details and navigation.
  */
-export async function SiteFooter() {
-  const [settings, navigation, session] = await Promise.all([
-    getPublicGlobal<{ email?: string; tagline?: string }>('site-settings'),
-    getPublicGlobal<{ footer?: readonly NavItem[] }>('navigation'),
-    getSession(),
-  ]);
-  const email = settings?.email ?? 'contact@ceramedical.org';
-  const quickLinks = withProductsNav(navigation?.footer?.length ? navigation.footer : MAIN_NAV);
+const SERVICE_LINKS = [
+  { href: '/services/preclinical-studies', label: 'Preclinical Studies' },
+  { href: '/services/molecular-research', label: 'Molecular Research' },
+  { href: '/services/biomedical-data-analysis', label: 'Biomedical Data Analysis' },
+] as const;
+
+const COMPANY_LINKS = [
+  { href: '/about', label: 'About' },
+  { href: '/projects', label: 'Our Projects' },
+  { href: '/products', label: 'Products' },
+  { href: '/contact', label: 'Contact' },
+] as const;
+
+export function SiteFooter() {
   return (
     <footer className="bg-surface-footer">
       <div className="mx-auto grid max-w-site grid-cols-1 gap-10 px-6 pt-12 pb-12 sm:grid-cols-2 md:px-10 lg:grid-cols-4">
         <div>
           <SiteWordmark />
           <Text size="body-sm" tone="muted" className="mt-4">
-            {settings?.tagline ?? 'Biomedical Research and Development.'}
+            Biomedical research and development in Haripur, Pakistan.
           </Text>
         </div>
 
-        <FooterNav heading="Quick Links" items={quickLinks} />
-        <FooterNav heading="Support" items={supportNavForSession(session !== null)} />
-
+        <FooterNav heading="Services" items={SERVICE_LINKS} />
+        <FooterNav heading="Company" items={COMPANY_LINKS} />
         <div>
-          <FooterHeading>Contact CERA Medical</FooterHeading>
-          <Text size="body-sm" tone="muted" className="mt-4">
-            Project enquiries and information requests:
-          </Text>
-          <AppLink href={`mailto:${email}`} className="mt-2 inline-flex">
-            {email}
-          </AppLink>
+          <FooterNav heading="Policies" items={SUPPORT_NAV} />
+          <div className="mt-6">
+            <FooterHeading>Contact</FooterHeading>
+            <AppLink href="mailto:contact@ceramedical.org" className="mt-4 inline-flex">
+              contact@ceramedical.org
+            </AppLink>
+          </div>
         </div>
       </div>
 

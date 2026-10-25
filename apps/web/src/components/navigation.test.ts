@@ -8,7 +8,7 @@ describe('main nav', () => {
       '/',
       '/services',
       '/products',
-      '/articles',
+      '/projects',
       '/about',
       '/contact',
     ]);
@@ -18,8 +18,8 @@ describe('main nav', () => {
     const merged = withProductsNav([
       { href: '/', label: 'Home' },
       { href: '/services', label: 'Services' },
-      { href: '/articles', label: 'Research Updates' },
+      { href: '/projects', label: 'Our Projects' },
     ]);
-    expect(merged.map((item) => item.href)).toEqual(['/', '/services', '/products', '/articles']);
+    expect(merged.map((item) => item.href)).toEqual(['/', '/services', '/products', '/projects']);
   });
 });

@@ -13,6 +13,14 @@ import { bootstrapClientContent } from './lib/bootstrap-content.ts';
 import config from './payload.config.ts';
 
 const PENDING = 'Pending CERA content approval.';
+const LEGACY_TECHNICAL_POSTS = [
+  'planning-metagenomic-submissions',
+  'omics-quality-control-basics',
+  'preclinical-study-handoff',
+  'confocal-imaging-in-the-laboratory',
+  'plate-based-assays-and-readout',
+  'documenting-laboratory-methods',
+] as const;
 
 function lexical(paragraphs: readonly string[]) {
   return {
@@ -147,10 +155,138 @@ async function main(): Promise<void> {
       body: lexical(post.paragraphs),
       seo: { title: `${post.title} | CERA Medical`, description: post.excerpt },
       fixture: true,
-      _status: 'published' as const,
+      _status: 'draft' as const,
     };
     if (found.docs[0] === undefined) {
-      await payload.create({ collection: 'posts', data, overrideAccess: true, draft: false });
+      await payload.create({ collection: 'posts', data, overrideAccess: true, draft: true });
+    } else if (found.docs[0].fixture === true && found.docs[0]._status !== 'draft') {
+      // These local sample articles are unapproved. Keep their content while
+      // withdrawing any version published by an earlier seed run.
+      await payload.update({
+        collection: 'posts',
+        id: found.docs[0].id,
+        data: { _status: 'draft' },
+        overrideAccess: true,
+        draft: true,
+      });
+    }
+  }
+
+  const projects = [
+    {
+      slug: 'methamphetamine-induced-neurotoxicity',
+      title: 'Methamphetamine-induced neurotoxicity',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: true,
+      summary:
+        'A mouse model of methamphetamine exposure in which a natural compound is tested for protective and restorative effects on recognition memory, neuroinflammation and neuronal cell death.',
+    },
+    {
+      slug: 'social-isolation-stress',
+      title: 'Social isolation stress',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: false,
+      summary:
+        'The effect of early-life social isolation on the brain and on behaviour, including vulnerability to drug dependence in later life.',
+    },
+    {
+      slug: 'morphine-dependence',
+      title: 'Morphine dependence',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: false,
+      summary:
+        'Mouse models of morphine dependence and withdrawal, used to test candidate treatments and the signalling pathways through which they act.',
+    },
+    {
+      slug: 'nicotine',
+      title: 'Nicotine',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: false,
+      summary:
+        'Rodent models of nicotine exposure, in which candidate products are evaluated for their neuroprotective and behavioural effects.',
+    },
+    {
+      slug: 'synthetic-compounds-in-neuroscience',
+      title: 'Synthetic compounds in neuroscience',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: false,
+      summary:
+        'Newly synthesised compounds, and compounds modified from a base compound, screened for activity in neurological and behavioural models.',
+    },
+    {
+      slug: 'gut-induced-depression',
+      title: 'Gut-induced depression',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: false,
+      summary:
+        'Models in which disturbance of the gut microbiota produces depression-like behaviour, used to study the gut-brain axis and to test interventions.',
+    },
+    {
+      slug: 'natural-products-in-glioblastoma',
+      title: 'Natural products in glioblastoma',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: true,
+      summary:
+        'Natural products tested against glioblastoma cell lines for their effect on cell viability and proliferation.',
+    },
+    {
+      slug: 'in-silico-target-studies',
+      title: 'In silico target studies',
+      category: 'preclinical-studies',
+      projectStatus: 'running',
+      featured: false,
+      summary:
+        'Docking and molecular dynamics studies that test whether a compound under investigation binds the inflammatory and cell-death proteins implicated by our animal studies.',
+    },
+    {
+      slug: 'infant-gut-microbiome-development',
+      title: 'Infant gut microbiome development',
+      category: 'biomedical-data-analysis',
+      projectStatus: 'completed',
+      featured: true,
+      summary:
+        'A longitudinal shotgun metagenomic study of infants in a population-based birth cohort in Pakistan, sampled from birth to twelve months and analysed by both genome-resolved and read-based routes, with a data descriptor manuscript and deposition of the raw reads in NCBI SRA.',
+    },
+    {
+      slug: 'mother-and-infant-gut-microbiome',
+      title: 'Mother and infant gut microbiome',
+      category: 'biomedical-data-analysis',
+      projectStatus: 'completed',
+      featured: false,
+      summary:
+        'Species-level profiling of a longitudinal mother-infant cohort, published in a peer-reviewed nutrition journal.',
+    },
+    {
+      slug: 'oral-microbiome-of-pre-school-children',
+      title: 'Oral microbiome of pre-school children',
+      category: 'biomedical-data-analysis',
+      projectStatus: 'completed',
+      featured: false,
+      summary:
+        'A 16S rRNA amplicon study of the salivary microbiome of Pakistani pre-school children, including a comparison of stunted and normal-weight children.',
+    },
+  ] as const;
+
+  for (const project of projects) {
+    const found = await payload.find({
+      collection: 'projects',
+      where: { slug: { equals: project.slug } },
+      limit: 1,
+    });
+    if (found.docs[0] === undefined) {
+      await payload.create({
+        collection: 'projects',
+        data: { ...project, _status: 'published' },
+        overrideAccess: true,
+        draft: false,
+      });
     }
   }
 
@@ -294,7 +430,7 @@ async function main(): Promise<void> {
         { label: 'Home', href: '/' },
         { label: 'Services', href: '/services' },
         { label: 'Products', href: '/products' },
-        { label: 'Research Updates', href: '/articles' },
+        { label: 'Our Projects', href: '/projects' },
         { label: 'About', href: '/about' },
         { label: 'Contact', href: '/contact' },
       ],
@@ -318,6 +454,28 @@ async function main(): Promise<void> {
   });
 
   await bootstrapClientContent(payload);
+
+  for (const slug of LEGACY_TECHNICAL_POSTS) {
+    const existing = await payload.find({
+      collection: 'posts',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      draft: true,
+      overrideAccess: true,
+    });
+    const post = existing.docs[0];
+    if (post !== undefined && post._status !== 'draft') {
+      // Preserve the record and body; the legacy articles are retained for
+      // editor review but must no longer be public fixtures.
+      await payload.update({
+        collection: 'posts',
+        id: post.id,
+        data: { _status: 'draft' },
+        overrideAccess: true,
+        draft: true,
+      });
+    }
+  }
 
   payload.logger.info('CMS seed complete. Approver login: approver@cera.localhost');
   await payload.destroy();
