@@ -109,10 +109,19 @@ describe('bootstrapClientContent', () => {
     expect(
       records.find((record) => record.data.slug === 'privacy-policy')?.data.effectiveDate,
     ).toBe('2026-10-03');
-    const publishedRecords = records.filter((record) => record.collection !== 'categories');
+    const publishedRecords = records.filter(
+      (record) => record.collection !== 'categories' && record.collection !== 'posts',
+    );
+    const draftPosts = records.filter((record) => record.collection === 'posts');
     expect(
       publishedRecords.every(
         (record) => record.data.fixture === false && record.data._status === 'published',
+      ),
+    ).toBe(true);
+    expect(draftPosts).toHaveLength(6);
+    expect(
+      draftPosts.every(
+        (record) => record.data.fixture === false && record.data._status === 'draft',
       ),
     ).toBe(true);
     expect(
