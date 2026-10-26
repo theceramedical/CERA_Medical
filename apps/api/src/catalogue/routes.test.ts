@@ -136,8 +136,8 @@ describe('GET /v1/products', () => {
     const body: { items: { sku: string }[] } = response.json();
     expect(body.items.map((item) => item.sku)).toEqual(['APPROVED-BUFFER-001']);
     expect(body.items[0]).toMatchObject({
-      checkoutEnabled: true,
-      displayPrice: 'Unverified price',
+      checkoutEnabled: false,
+      displayPrice: null,
     });
   });
 
