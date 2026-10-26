@@ -4,7 +4,7 @@ import { ButtonLink } from '@cera/ui/button';
 import { cn } from '@cera/ui/cn';
 import { FocusTrap } from '@cera/ui/focus-trap';
 import { Icon } from '@cera/ui/icon';
-import { Menu, X } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useId, useState } from 'react';
@@ -127,6 +127,40 @@ export function MobileNav({
               <ul className="flex list-none flex-col gap-1 p-0">
                 {items.map((item) => {
                   const current = isCurrent(item.href, pathname);
+
+                  if (item.children && item.children.length > 0) {
+                    return (
+                      <li key={item.href}>
+                        <details className="rounded-md">
+                          <summary
+                            aria-current={current ? 'page' : undefined}
+                            className={cn(
+                              'flex min-h-11 cursor-pointer list-none items-center justify-between rounded-md px-3 text-button [&::-webkit-details-marker]:hidden',
+                              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                              current ? 'bg-primary-50 text-foreground' : 'text-neutral-700 hover:bg-surface-subtle',
+                            )}
+                          >
+                            {item.label}
+                            <ChevronDown aria-hidden="true" size={16} />
+                          </summary>
+                          <ul className="list-none space-y-1 border-s-2 border-border py-1 ps-3">
+                            <li>
+                              <NextLink href={item.href} aria-current={pathname === item.href ? 'page' : undefined} className="flex min-h-11 items-center rounded-md px-3 text-body-sm font-semibold text-primary no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus">
+                                All Services
+                              </NextLink>
+                            </li>
+                            {item.children.map((child) => (
+                              <li key={child.href}>
+                                <NextLink href={child.href} aria-current={isCurrent(child.href, pathname) ? 'page' : undefined} className="flex min-h-11 items-center rounded-md px-3 text-body-sm text-copy no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus">
+                                  {child.label}
+                                </NextLink>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      </li>
+                    );
+                  }
 
                   return (
                     <li key={item.href}>

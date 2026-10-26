@@ -1,208 +1,131 @@
-import { type LayoutBlock } from '../../components/cms-content-page.tsx';
-import { CtaBandSection } from '../../components/home/cta-band-section.tsx';
-import { EquipmentMarquee } from '../../components/home/equipment-marquee.tsx';
-import { HeroSection } from '../../components/home/hero-section.tsx';
-import { HomeMarketingBlocks } from '../../components/home/home-marketing-blocks.tsx';
-import { MetricsBand } from '../../components/home/metrics-band.tsx';
+import type { ContentDocument } from '@cera/contracts';
+
+import { HomeLandingPage } from '../../components/home/home-landing-page.tsx';
+import {
+  DEFAULT_HOME_LANDING_COPY,
+  type HomeLandingCopy,
+} from '../../components/home/home-landing-page.tsx';
 import {
   JsonLd,
   medicalBusinessJsonLd,
   organizationJsonLd,
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
-import { defaultHomeMarketingBlocks } from '../../content/home-marketing-layout.ts';
-import { withLocalArticles } from '../../content/local-articles.ts';
-import { listPublicProducts, listPublicServices } from '../../lib/catalogue/client.ts';
-import { getCurrentDocument, listPublishedDocuments } from '../../lib/cms/client.ts';
+import { listPublicProducts } from '../../lib/catalogue/client.ts';
+import { getCurrentDocument } from '../../lib/cms/client.ts';
+import { getFeaturedProjects } from '../../lib/projects/getFeaturedProjects.ts';
 import { pageMetadata } from '../../lib/seo.ts';
 import { siteUrl } from '../../lib/site-url.ts';
 
-import type { CtaContent } from '../../components/home/cta-band-section.tsx';
-import type { HeroContent } from '../../components/home/hero-section.tsx';
-import type { MetricHighlight } from '../../content/homepage.ts';
 import type { Metadata } from 'next';
 
-function stringField(block: LayoutBlock | undefined, field: string): string | undefined {
-  const value = block?.[field];
-  return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
+type HomeBlock = Readonly<Record<string, unknown>> & { readonly blockType?: string };
+
+function blocksOf(document: ContentDocument | null): readonly HomeBlock[] {
+  return Array.isArray(document?.layout)
+    ? document.layout.filter((block): block is HomeBlock => block !== null && typeof block === 'object')
+    : [];
 }
 
-function mediaField(block: LayoutBlock | undefined): { imageUrl?: string; imageAlt?: string } {
-  const portrait = block?.portrait;
-  if (portrait === null || typeof portrait !== 'object') return {};
-  const media = portrait as { readonly url?: unknown; readonly alt?: unknown };
+function field(block: HomeBlock | undefined, name: string): string | undefined {
+  const value = block?.[name];
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function findBlock(blocks: readonly HomeBlock[], blockType: string): HomeBlock | undefined {
+  return blocks.find((block) => block.blockType === blockType);
+}
+
+function internalHref(value: string | undefined, fallback: string): string {
+  if (value === undefined) return fallback;
+  if (value === '/enquiry') return '/contact#contact-form';
+  if (value.startsWith('/enquiry?')) return `/contact${value.slice('/enquiry'.length)}#contact-form`;
+  return value;
+}
+
+/** Resolve editorial copy from published Payload layout blocks; the six-band template stays typed. */
+function homeCopyFromDocument(document: ContentDocument | null): HomeLandingCopy {
+  const blocks = blocksOf(document);
+  const hero = findBlock(blocks, 'hero');
+  const services = findBlock(blocks, 'servicesShowcase');
+  const projects = findBlock(blocks, 'articlesPreview');
+  const products = blocks.find((block) => block.blockType === 'sectionHeading' && field(block, 'heading') === 'Research Products');
+  const work = blocks.find((block) => block.blockType === 'processSteps' && (field(block, 'heading')?.toLowerCase().includes('work') ?? false));
+  const cta = findBlock(blocks, 'ctaBand');
+  const base = DEFAULT_HOME_LANDING_COPY;
+
   return {
-    ...(typeof media.url === 'string' && media.url.length > 0 ? { imageUrl: media.url } : {}),
-    ...(typeof media.alt === 'string' && media.alt.length > 0 ? { imageAlt: media.alt } : {}),
-  };
-}
-
-function trustLabelsFromHero(hero: LayoutBlock | undefined): readonly string[] | undefined {
-  const raw = hero?.trustItems;
-  if (!Array.isArray(raw)) return undefined;
-  const labels = raw
-    .map((item) => {
-      if (item === null || typeof item !== 'object') return null;
-      const label = (item as { label?: unknown }).label;
-      return typeof label === 'string' && label.length > 0 ? label : null;
-    })
-    .filter((item): item is string => item !== null);
-  return labels.length > 0 ? labels : undefined;
-}
-
-function metricsFromBlocks(blocks: readonly LayoutBlock[]): readonly MetricHighlight[] | undefined {
-  const stats = blocks.find((block) => block.blockType === 'statistics');
-  if (stats === undefined) return undefined;
-  const raw = stats.items;
-  if (!Array.isArray(raw)) return undefined;
-  const items = raw
-    .map((item) => {
-      if (item === null || typeof item !== 'object') return null;
-      const row = item as Record<string, unknown>;
-      const value = typeof row.value === 'string' ? row.value : '';
-      const label = typeof row.label === 'string' ? row.label : '';
-      const detail = typeof row.detail === 'string' ? row.detail : undefined;
-      if (value.length === 0 || label.length === 0) return null;
-      return { value, label, ...(detail !== undefined ? { detail } : {}) };
-    })
-    .filter((item): item is MetricHighlight => item !== null);
-  return items.length > 0 ? items : undefined;
-}
-
-function pageContent(document: Awaited<ReturnType<typeof getCurrentDocument>>) {
-  const blocks = Array.isArray(document?.layout) ? (document.layout as LayoutBlock[]) : [];
-  const hero = blocks.find((block) => block.blockType === 'hero');
-  const cta = blocks.find((block) => block.blockType === 'ctaBand');
-  return {
-    metrics: metricsFromBlocks(blocks),
+    ...base,
     hero: {
-      eyebrow: stringField(hero, 'eyebrow'),
-      headlinePrimary: stringField(hero, 'headlinePrimary'),
-      headlineAccent: stringField(hero, 'headlineAccent'),
-      body: stringField(hero, 'body'),
-      primaryHref: stringField(hero, 'primaryHref'),
-      primaryLabel: stringField(hero, 'primaryLabel'),
-      secondaryHref: stringField(hero, 'secondaryHref'),
-      secondaryLabel: stringField(hero, 'secondaryLabel'),
-      badgeTitle: stringField(hero, 'badgeTitle'),
-      badgeBody: stringField(hero, 'badgeBody'),
-      trustLabels: trustLabelsFromHero(hero),
-      ...mediaField(hero),
-    } satisfies HeroContent,
+      ...base.hero,
+      eyebrow: field(hero, 'eyebrow') ?? base.hero.eyebrow,
+      headlinePrimary: field(hero, 'headlinePrimary') ?? base.hero.headlinePrimary,
+      headlineAccent: field(hero, 'headlineAccent') ?? base.hero.headlineAccent,
+      body: field(hero, 'body') ?? base.hero.body,
+      primaryLabel: field(hero, 'primaryLabel') ?? base.hero.primaryLabel,
+      primaryHref: internalHref(field(hero, 'primaryHref'), base.hero.primaryHref),
+      secondaryLabel: field(hero, 'secondaryLabel') ?? base.hero.secondaryLabel,
+      secondaryHref: internalHref(field(hero, 'secondaryHref'), base.hero.secondaryHref),
+    },
+    services: {
+      ...base.services,
+      heading: field(services, 'heading') === 'Research Services' ? base.services.heading : field(services, 'heading') ?? base.services.heading,
+      body: field(services, 'body') === 'Five integrated service lines — each with enquiry enabled on the catalogue so you can request scoping without leaving the site.' ? base.services.body : field(services, 'body') ?? base.services.body,
+    },
+    projects: {
+      ...base.projects,
+      heading: field(projects, 'heading') === 'Research Updates' ? base.projects.heading : field(projects, 'heading') ?? base.projects.heading,
+      body: field(projects, 'body') === 'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.' ? base.projects.body : field(projects, 'body') ?? base.projects.body,
+      viewAllHref: internalHref(field(projects, 'viewAllHref') === '/articles' ? undefined : field(projects, 'viewAllHref'), base.projects.viewAllHref),
+      viewAllLabel: field(projects, 'viewAllLabel') === 'View All Articles' ? base.projects.viewAllLabel : field(projects, 'viewAllLabel') ?? base.projects.viewAllLabel,
+    },
+    products: {
+      ...base.products,
+      heading: field(products, 'heading') ?? base.products.heading,
+      body: field(products, 'body') ?? base.products.body,
+    },
+    howWeWork: {
+      ...base.howWeWork,
+      heading: field(work, 'heading') ?? base.howWeWork.heading,
+      body: field(work, 'body') === 'A consistent workflow from first conversation to delivered results, with quality checks at each stage.' ? base.howWeWork.body : field(work, 'body') ?? base.howWeWork.body,
+    },
     cta: {
-      heading: stringField(cta, 'headline'),
-      body: stringField(cta, 'body'),
-      href: stringField(cta, 'href'),
-      label: stringField(cta, 'label'),
-    } satisfies CtaContent,
+      ...base.cta,
+      heading: field(cta, 'headline') ?? base.cta.heading,
+      body: field(cta, 'body') ?? base.cta.body,
+      label: field(cta, 'label') ?? base.cta.label,
+      href: internalHref(field(cta, 'href'), base.cta.href),
+    },
   };
 }
-
-/**
- * The homepage, reproducing the reference image section for section.
- *
- * **The band order and their backgrounds are the layout,** per design-language.md section 4.1: hero on
- * `surface-tint`, services on white, process on `surface-tint-2`, articles on white, the gradient CTA,
- * then the footer. The alternation is what separates the bands - there are no dividing rules between
- * them - so reordering these five lines would put two white bands together and visually merge them.
- *
- * Each section owns its own background and padding rather than receiving them here, so a section can be
- * moved to another page without carrying a `className` that only made sense in this stack.
- *
- * Every section is a server component. The only client code on this page arrives through the header's
- * three islands, which is what keeps a content page's JavaScript to the router and the hydration
- * bootstrap.
- */
 
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getCurrentDocument('page', 'home');
-  if (document !== null)
-    return pageMetadata({
-      title: document.seo.title ?? document.title,
-      description: document.seo.description ?? document.excerpt ?? '',
-      path: '/',
-      noIndex: document.seo.noIndex,
-    });
-  return {
-    /**
-     * An absolute title, overriding the layout's `%s | CERA Medical` template.
-     *
-     * The homepage is the one page where the template produces the wrong result: "Home | CERA Medical"
-     */
-    title: { absolute: 'CERA Medical - Biomedical Research and Development' },
+  return pageMetadata({
+    title: document?.seo.title ?? document?.title ?? 'CERA Medical - Biomedical Research and Development',
     description:
-      'Preclinical studies, molecular research, metagenomic and omics data analysis, and evidence synthesis for research teams and health organisations.',
-  };
-}
-
-const HOME_SHELL_BLOCKS = new Set(['hero', 'statistics', 'ctaBand']);
-
-function splitHomeBlocks(blocks: readonly LayoutBlock[]) {
-  const services = blocks.filter((block) => block.blockType === 'servicesShowcase');
-  const articles = blocks.filter((block) => block.blockType === 'articlesPreview');
-  const rest = blocks.filter(
-    (block) => block.blockType !== 'servicesShowcase' && block.blockType !== 'articlesPreview',
-  );
-  const fallback = defaultHomeMarketingBlocks();
-  return {
-    services:
-      services.length > 0
-        ? services
-        : fallback.filter((block) => block.blockType === 'servicesShowcase'),
-    articles:
-      articles.length > 0
-        ? articles
-        : fallback.filter((block) => block.blockType === 'articlesPreview'),
-    rest,
-  };
+      document?.seo.description ??
+      document?.excerpt ??
+      'CERA Medical is an SECP-registered biomedical research and development company based in Haripur, Pakistan.',
+    path: '/',
+    ...(document === null ? {} : { noIndex: document.seo.noIndex }),
+  });
 }
 
 export default async function HomePage() {
   const origin = siteUrl().origin;
-  const [document, presentations, posts, catalogue, products] = await Promise.all([
+  const [document, projects, products] = await Promise.all([
     getCurrentDocument('page', 'home'),
-    listPublishedDocuments('servicePresentation'),
-    listPublishedDocuments('post'),
-    listPublicServices(),
+    getFeaturedProjects(3),
     listPublicProducts(),
   ]);
-  const layoutBlocks =
-    document !== null && Array.isArray(document.layout) ? (document.layout as LayoutBlock[]) : [];
-  const marketingBlocks = layoutBlocks.filter(
-    (block) => !HOME_SHELL_BLOCKS.has(block.blockType ?? ''),
-  );
-  const source = marketingBlocks.length > 0 ? marketingBlocks : defaultHomeMarketingBlocks();
-  const bands = splitHomeBlocks(source);
-  const researchPosts = withLocalArticles(posts);
-  const content = document === null ? null : pageContent(document);
 
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
-      <HeroSection {...(content === null ? {} : { content: content.hero })} />
-      <EquipmentMarquee products={products.items} />
-      <HomeMarketingBlocks
-        blocks={bands.services}
-        presentations={presentations}
-        posts={researchPosts}
-        catalogue={catalogue.items}
-      />
-      <HomeMarketingBlocks
-        blocks={bands.articles}
-        presentations={presentations}
-        posts={researchPosts}
-        catalogue={catalogue.items}
-      />
-      <MetricsBand {...(content?.metrics === undefined ? {} : { metrics: content.metrics })} />
-      <HomeMarketingBlocks
-        blocks={bands.rest}
-        presentations={presentations}
-        posts={researchPosts}
-        catalogue={catalogue.items}
-      />
-      <CtaBandSection {...(content === null ? {} : { content: content.cta })} />
+      <HomeLandingPage projects={projects} products={products.items.slice(0, 3)} copy={homeCopyFromDocument(document)} />
     </>
   );
 }

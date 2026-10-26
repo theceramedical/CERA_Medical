@@ -125,9 +125,8 @@ await app.register(
       allowedServiceIds: new Set([
         'preclinical-studies',
         'molecular-research',
-        'metagenomic-data-analysis',
-        'biomedical-omics-data-analysis',
-        'evidence-synthesis-technical-reports',
+        'biomedical-data-analysis',
+        'product-enquiry',
         'research-collaboration',
         'other-enquiry',
       ]),

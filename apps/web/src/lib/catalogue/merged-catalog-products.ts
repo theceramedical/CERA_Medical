@@ -19,12 +19,6 @@ function catalogRowFromApi(product: PublicProduct): CatalogProduct {
     packLabel: '',
     listPriceMinor: product.listPriceMinor,
     checkoutEnabled: product.checkoutEnabled,
-    price:
-      product.checkoutEnabled && product.listPriceMinor !== null
-        ? new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(
-            product.listPriceMinor / 100,
-          )
-        : 'Price on enquiry',
     inStock: null,
     fulfillment: 'physical',
     ...(() => {

@@ -6,41 +6,19 @@ export interface EnquiryServiceOption {
   readonly title: string;
 }
 
+const PUBLIC_ENQUIRY_OPTIONS: readonly EnquiryServiceOption[] = [
+  { slug: 'preclinical-studies', title: 'Preclinical Studies' },
+  { slug: 'molecular-research', title: 'Molecular Research' },
+  { slug: 'biomedical-data-analysis', title: 'Biomedical Data Analysis' },
+  { slug: 'product-enquiry', title: 'Product enquiry' },
+  { slug: 'research-collaboration', title: 'Research collaboration' },
+  { slug: 'other-enquiry', title: 'Other enquiry' },
+];
+
 export function enquiryServiceOptions(
-  catalogue: readonly PublicService[],
-  presentations: readonly ContentDocument[],
-  settings: unknown,
+  _catalogue: readonly PublicService[],
+  _presentations: readonly ContentDocument[],
+  _settings: unknown,
 ): readonly EnquiryServiceOption[] {
-  const presentationBySlug = new Map(presentations.map((item) => [item.slug, item]));
-  const fromCatalogue = catalogue
-    .filter((service) => service.enquiryEnabled)
-    .map((service) => ({
-      slug: service.slug,
-      title: presentationBySlug.get(service.slug)?.title ?? service.title,
-    }));
-
-  const extras: EnquiryServiceOption[] = [];
-  if (settings !== null && typeof settings === 'object') {
-    const enquiryForm = (settings as { enquiryForm?: unknown }).enquiryForm;
-    if (enquiryForm !== null && typeof enquiryForm === 'object') {
-      const raw = (enquiryForm as { extraServices?: unknown }).extraServices;
-      if (Array.isArray(raw)) {
-        for (const row of raw) {
-          if (row === null || typeof row !== 'object') continue;
-          const slug = (row as { slug?: unknown }).slug;
-          const title = (row as { title?: unknown }).title;
-          if (typeof slug === 'string' && slug.length > 0 && typeof title === 'string') {
-            extras.push({ slug, title });
-          }
-        }
-      }
-    }
-  }
-
-  const seen = new Set<string>();
-  return [...fromCatalogue, ...extras].filter((item) => {
-    if (seen.has(item.slug)) return false;
-    seen.add(item.slug);
-    return true;
-  });
+  return PUBLIC_ENQUIRY_OPTIONS;
 }

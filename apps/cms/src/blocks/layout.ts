@@ -383,6 +383,41 @@ const SpServiceEnquiryAsideBlock: Block = {
 /** Blocks allowed on service presentations (Vendure catalogue product pages). */
 export const servicePresentationBlocks: Block[] = [
   servicePresentationBlock(ServiceHeroBlock, 'sp_hero'),
+  {
+    slug: 'serviceSections',
+    dbName: 'svc_sec',
+    labels: { singular: 'Service sections', plural: 'Service sections' },
+    fields: [
+      {
+        name: 'sections',
+        type: 'array',
+        dbName: 'sec',
+        required: true,
+        minRows: 1,
+        maxRows: 16,
+        fields: [
+          {
+            name: 'anchor',
+            type: 'text',
+            required: true,
+            validate: (value: unknown) =>
+              typeof value === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)
+                ? true
+                : 'Use a lowercase anchor slug.',
+          },
+          { name: 'heading', type: 'text', required: true, maxLength: 160 },
+          { name: 'description', type: 'textarea', maxLength: 1200 },
+          {
+            name: 'points',
+            type: 'array',
+            dbName: 'pts',
+            maxRows: 12,
+            fields: [{ name: 'text', type: 'textarea', required: true, maxLength: 500 }],
+          },
+        ],
+      },
+    ],
+  },
   SectionHeadingBlock,
   RichTextBlock,
   SpFeatureGridBlock,

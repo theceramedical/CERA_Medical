@@ -2,7 +2,6 @@ import { listPublicServicesForIndex } from './catalogue/client.ts';
 import { listPublishedDocumentsForSitemap } from './cms/client.ts';
 import { listIndexableProductSkus } from './indexable-products.ts';
 import {
-  buildArticleSitemapEntries,
   buildCmsPageSitemapEntries,
   buildPolicySitemapEntries,
   buildProductSitemapEntries,
@@ -27,8 +26,7 @@ export type { IndexableSitemapEntry } from './indexable-sitemap-builders.ts';
  *   (Vendure `physical-products` collection).
  */
 export async function listSitemapEntries(): Promise<readonly IndexableSitemapEntry[]> {
-  const [posts, pages, presentations, policies, catalogue, productSkus] = await Promise.all([
-    listPublishedDocumentsForSitemap('post').catch(() => []),
+  const [pages, presentations, policies, catalogue, productSkus] = await Promise.all([
     listPublishedDocumentsForSitemap('page').catch(() => []),
     listPublishedDocumentsForSitemap('servicePresentation').catch(() => []),
     listPublishedDocumentsForSitemap('policy').catch(() => []),
@@ -43,7 +41,6 @@ export async function listSitemapEntries(): Promise<readonly IndexableSitemapEnt
     ...buildCmsPageSitemapEntries(pages),
     ...buildPolicySitemapEntries(policies),
     ...buildServiceSitemapEntries(serviceSlugs, presentations),
-    ...buildArticleSitemapEntries(posts),
     ...buildProductSitemapEntries(productSkus),
   ]);
 }

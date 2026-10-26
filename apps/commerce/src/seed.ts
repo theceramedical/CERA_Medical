@@ -64,6 +64,7 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
   collections.setApplyAllFiltersOnProductUpdates(false);
   const assignedProducts = new Map<string, string[]>();
   const collectionIds = new Map<string, string | number>();
+  for (const collection of SEED_COLLECTIONS) assignedProducts.set(collection.slug, []);
 
   for (const collection of SEED_COLLECTIONS) {
     const existing = await collections.findOneBySlug(ctx, collection.slug);
@@ -102,6 +103,7 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
       enquiryEnabled: service.enquiryEnabled,
       checkoutEnabled: service.checkoutEnabled,
       internalNotes: service.internalNotes,
+      syncExisting: true,
     });
   }
 
@@ -116,11 +118,12 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
       collectionSlug: 'physical-products',
       listPriceMinor: product.listPriceMinor,
       displayPriceText: product.displayPriceText,
-      availabilityText: 'Shippable RUO product — dispatch after batch release',
+      availabilityText:
+        'Research use only. Availability, documentation and delivery confirmed by request.',
       stockOnHand: product.stockOnHand,
       enabled: true,
       enquiryEnabled: true,
-      checkoutEnabled: true,
+      checkoutEnabled: false,
       internalNotes: null,
     });
   }
@@ -135,7 +138,7 @@ async function seedCatalogue(app: Awaited<ReturnType<typeof bootstrap>>): Promis
       await products.update(ctx, {
         id: retired.id,
         enabled: false,
-        customFields: { enquiryEnabled: false },
+        customFields: { enquiryEnabled: false, checkoutEnabled: false },
       });
     }
   }
@@ -193,17 +196,18 @@ async function seedCatalogueEntry(
     readonly enquiryEnabled: boolean;
     readonly checkoutEnabled: boolean;
     readonly internalNotes: string | null;
+    readonly syncExisting?: boolean;
   },
 ): Promise<void> {
   const existing = await products.findOneBySlug(ctx, entry.slug);
   const customFields = {
     enquiryEnabled: entry.enquiryEnabled,
     checkoutEnabled: entry.checkoutEnabled,
-    internalNotes: entry.internalNotes ?? undefined,
+    internalNotes: entry.internalNotes,
   };
   const localizedFields = {
-    availabilityText: entry.availabilityText ?? undefined,
-    displayPriceText: entry.displayPriceText ?? undefined,
+    availabilityText: entry.availabilityText,
+    displayPriceText: entry.displayPriceText,
     shortSummary: entry.summary,
   };
 
@@ -224,6 +228,21 @@ async function seedCatalogueEntry(
     });
 
     productId = created.id;
+  } else if (entry.syncExisting === true) {
+    await products.update(ctx, {
+      id: existing.id,
+      enabled: entry.enabled,
+      translations: [
+        {
+          languageCode: LanguageCode.en,
+          name: entry.name,
+          slug: entry.slug,
+          description: entry.description,
+          customFields: localizedFields,
+        },
+      ],
+      customFields,
+    });
   }
   if (productId !== undefined)
     assignedProducts.set(entry.collectionSlug, [

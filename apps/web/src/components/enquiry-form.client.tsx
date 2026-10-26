@@ -283,8 +283,8 @@ export function EnquiryForm({
           disabled={serviceLocked}
           onChange={(event) => setSelectedService(event.currentTarget.value)}
         >
-          {serviceOptions.map((service) => (
-            <option key={service.slug} value={service.slug}>
+          {serviceOptions.map((service, index) => (
+            <option key={`${service.slug}-${String(index)}`} value={service.slug}>
               {service.title}
             </option>
           ))}

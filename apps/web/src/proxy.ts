@@ -50,6 +50,15 @@ const SIGN_IN_PATH = '/auth/sign-in';
  */
 const RETURN_TO_PARAM = 'next';
 
+const LEGACY_SERVICE_TARGETS: Readonly<Record<string, string>> = {
+  '/services/metagenomic-data-analysis':
+    '/services/biomedical-data-analysis#metagenomics-and-microbiome-analysis',
+  '/services/biomedical-omics-data-analysis':
+    '/services/biomedical-data-analysis#omics-and-genomic-data-analysis',
+  '/services/evidence-synthesis-technical-reports':
+    '/services/biomedical-data-analysis#evidence-synthesis-and-technical-reports',
+};
+
 export function proxy(request: NextRequest): NextResponse {
   const requestId = resolveRequestId(request.headers.get(REQUEST_ID_HEADER));
 
@@ -132,6 +141,13 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
   if (canonical !== null) return canonical;
 
   const pathname = normalisePath(request.nextUrl.pathname);
+
+  const legacyServiceTarget = LEGACY_SERVICE_TARGETS[pathname];
+  if (legacyServiceTarget !== undefined || pathname === '/articles' || pathname.startsWith('/articles/')) {
+    const target = new URL(legacyServiceTarget ?? '/projects', request.nextUrl.origin);
+    target.search = request.nextUrl.search;
+    return NextResponse.redirect(target, 301);
+  }
 
   const cmsRedirect = resolveRedirect(pathname, readConfiguredRedirects());
   if (cmsRedirect !== null) {

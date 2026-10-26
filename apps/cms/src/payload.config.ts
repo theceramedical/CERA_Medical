@@ -12,6 +12,7 @@ import { Media } from './collections/Media.ts';
 import { Pages } from './collections/Pages.ts';
 import { Policies } from './collections/Policies.ts';
 import { Posts } from './collections/Posts.ts';
+import { Projects } from './collections/Projects.ts';
 import { Redirects } from './collections/Redirects.ts';
 import { ServicePresentations } from './collections/ServicePresentations.ts';
 import { Users } from './collections/Users.ts';
@@ -85,6 +86,7 @@ export default buildConfig({
     Media,
     Pages,
     Posts,
+    Projects,
     Categories,
     Policies,
     ServicePresentations,
@@ -125,7 +127,7 @@ export default buildConfig({
         const url = new URL(req.url ?? 'http://localhost/', 'http://localhost');
         const collection = url.searchParams.get('collection');
         const slug = url.searchParams.get('slug');
-        const allowed = ['pages', 'posts', 'policies', 'service-presentations'] as const;
+        const allowed = ['pages', 'posts', 'projects', 'policies', 'service-presentations'] as const;
         const allowedCollection = allowed.find((candidate) => candidate === collection);
         if (collection === null || slug === null || allowedCollection === undefined) {
           return Response.json({ error: 'bad_request' }, { status: 400 });

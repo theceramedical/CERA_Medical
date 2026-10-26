@@ -16,7 +16,7 @@ export const STATIC_SITEMAP_ENTRIES: readonly IndexableSitemapEntry[] = [
   { path: '/', priority: 1, changeFrequency: 'weekly' },
   { path: '/services', priority: 0.9, changeFrequency: 'weekly' },
   { path: '/products', priority: 0.9, changeFrequency: 'weekly' },
-  { path: '/articles', priority: 0.8, changeFrequency: 'weekly' },
+  { path: '/projects', priority: 0.8, changeFrequency: 'weekly' },
   { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/contact', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/methodology', priority: 0.6, changeFrequency: 'monthly' },
@@ -24,7 +24,6 @@ export const STATIC_SITEMAP_ENTRIES: readonly IndexableSitemapEntry[] = [
   { path: '/privacy', priority: 0.4, changeFrequency: 'yearly' },
   { path: '/terms', priority: 0.4, changeFrequency: 'yearly' },
   { path: '/faqs', priority: 0.6, changeFrequency: 'monthly' },
-  { path: '/enquiry', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/sitemap', priority: 0.3, changeFrequency: 'monthly' },
 ];
 
@@ -65,11 +64,18 @@ export function indexableServiceSlugs(
 ): string[] {
   const presentationBySlug = new Map(presentations.map((row) => [row.slug, row]));
   const slugs = new Set<string>();
+  const currentCategories = new Set([
+    'preclinical-studies',
+    'molecular-research',
+    'biomedical-data-analysis',
+  ]);
   for (const service of catalogue) {
+    if (!currentCategories.has(service.slug)) continue;
     if (presentationBySlug.get(service.slug)?.seo.noIndex === true) continue;
     slugs.add(service.slug);
   }
   for (const presentation of presentations) {
+    if (!currentCategories.has(presentation.slug)) continue;
     if (presentation.seo.noIndex === true) continue;
     slugs.add(presentation.slug);
   }
@@ -106,7 +112,14 @@ export function buildCmsPageSitemapEntries(
   pages: readonly ContentDocument[],
 ): IndexableSitemapEntry[] {
   return pages
-    .filter((page) => page.slug !== 'home' && page.slug !== 'sitemap' && page.seo.noIndex !== true)
+    .filter(
+      (page) =>
+        page.slug !== 'home' &&
+        page.slug !== 'sitemap' &&
+        page.slug !== 'articles' &&
+        page.slug !== 'enquiry' &&
+        page.seo.noIndex !== true,
+    )
     .map((page) => {
       const lastModified = parseIndexableDate(page.updatedAt);
       return {

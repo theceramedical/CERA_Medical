@@ -44,32 +44,8 @@ type ServiceCardIcon = NonNullable<ServicePresentation['cardIcon']>;
 const SERVICE_CARD_ICONS: Record<string, ServiceCardIcon> = {
   'preclinical-studies': 'microscope',
   'molecular-research': 'dna',
+  'biomedical-data-analysis': 'database',
   'metagenomic-data-analysis': 'database',
-  'biomedical-omics-data-analysis': 'chart',
-  'evidence-synthesis-technical-reports': 'fileText',
-};
-
-const SERVICE_CARD_HIGHLIGHTS: Record<string, readonly { text: string }[]> = {
-  'preclinical-studies': [
-    { text: 'In vitro cytotoxicity assays' },
-    { text: 'Histopathology tissue microarrays' },
-  ],
-  'molecular-research': [
-    { text: 'RT-qPCR, ELISA and Western blotting' },
-    { text: 'High-fidelity DNA/RNA extractions' },
-  ],
-  'metagenomic-data-analysis': [
-    { text: '16S/18S and shotgun metagenomics' },
-    { text: 'Alpha and beta diversity calculations' },
-  ],
-  'biomedical-omics-data-analysis': [
-    { text: 'RNA-seq differential expression' },
-    { text: 'Multi-cohort clinical regression modelling' },
-  ],
-  'evidence-synthesis-technical-reports': [
-    { text: 'PRISMA-compliant search workflows' },
-    { text: 'GRADE evidence quality grading' },
-  ],
 };
 
 function lexicalFromStrings(paragraphs: readonly string[]) {
@@ -233,9 +209,9 @@ function publicText(paragraphs: readonly SourceParagraph[]): readonly SourcePara
 
 async function upsert(
   payload: Payload,
-  collection: 'pages' | 'policies' | 'service-presentations' | 'posts',
+  collection: 'pages' | 'policies' | 'service-presentations' | 'posts' | 'projects',
   slug: string,
-  data: RequiredDataFromCollectionSlug<'pages' | 'policies' | 'service-presentations' | 'posts'>,
+  data: RequiredDataFromCollectionSlug<'pages' | 'policies' | 'service-presentations' | 'posts' | 'projects'>,
 ): Promise<void> {
   const found = await payload.find({
     collection,
@@ -451,52 +427,42 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
     });
   }
   const services = [
-    [
-      '1.1 Preclinical Studies',
-      '1.2 Molecular Research',
-      'preclinical-studies',
-      'Preclinical Studies',
-    ],
-    [
-      '1.2 Molecular Research',
-      '1.3 Metagenomic Data Analysis',
-      'molecular-research',
-      'Molecular Research',
-    ],
-    [
-      '1.3 Metagenomic Data Analysis',
-      '1.4 Biomedical and Omics Data Analysis',
-      'metagenomic-data-analysis',
-      'Metagenomic Data Analysis',
-    ],
-    [
-      '1.4 Biomedical and Omics Data Analysis',
-      '1.5 Evidence Synthesis and Technical Reports',
-      'biomedical-omics-data-analysis',
-      'Biomedical and Omics Data Analysis',
-    ],
-    [
-      '1.5 Evidence Synthesis and Technical Reports',
-      '1.6 Facilities',
-      'evidence-synthesis-technical-reports',
-      'Evidence Synthesis and Technical Reports',
-    ],
+    {
+      slug: 'preclinical-studies',
+      title: 'Preclinical Studies',
+      serviceId: 'preclinical-studies',
+      excerpt: 'Safety and efficacy testing in animal models, in cells and by computer simulation.',
+      intro:
+        'We establish whether a candidate treatment is safe and effective before it reaches human trials. Studies are carried out in animal models, in cell-based systems or by computer simulation. Animal studies begin only after the institutional animal ethics committee has approved the written protocol, and all studies are designed, conducted and documented in line with the principles of Good Laboratory Practice. These are research services, not clinical care.',
+    },
+    {
+      slug: 'molecular-research',
+      title: 'Molecular Research',
+      serviceId: 'molecular-research',
+      excerpt: 'Molecular, biochemical and histological analysis of research samples.',
+      intro:
+        'We provide molecular, biochemical and histological analysis of research samples in our Genomics, Histopathology and Microscopy Labs. Human-derived samples must be coded and supplied without direct identifiers, with ethical approval and donor consent in place.',
+    },
+    {
+      slug: 'biomedical-data-analysis',
+      title: 'Biomedical Data Analysis',
+      serviceId: 'biomedical-data-analysis',
+      excerpt:
+        'Metagenomic, health and omics data analysed through to publication-ready results.',
+      intro:
+        'We analyse biomedical data from raw files through to publication-ready figures, tables and results text, with metagenomics as our speciality. Data are supplied de-identified, remain the client\'s property, are kept confidential and are deleted in line with our Data Retention Policy.',
+    },
   ] as const;
-  for (const [start, end, slug, title] of services) {
-    const content = publicText(range(start, end));
-    const excerpt =
-      content
-        .find((item) => item.text.startsWith('Grid summary:'))
-        ?.text.replace('Grid summary: ', '') ?? '';
+  for (const service of services) {
+    const { slug, title, serviceId, excerpt, intro } = service;
     const cardIcon = SERVICE_CARD_ICONS[slug];
     await upsert(payload, 'service-presentations', slug, {
       title,
       slug,
-      serviceId: slug,
+      serviceId,
       excerpt,
-      cardHighlights: [...(SERVICE_CARD_HIGHLIGHTS[slug] ?? [])],
       ...(cardIcon !== undefined ? { cardIcon } : {}),
-      body: lexical(content),
+      body: lexicalFromStrings([intro]),
       layout: buildServicePresentationLayout(slug),
       seo: {
         title: `${title} | CERA Medical`,
@@ -794,6 +760,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   });
 
   try {
+    await bootstrapProjectDrafts(payload);
     await bootstrapInsightPosts(payload);
   } catch (error) {
     // Insight posts are additive. A partial failure must not block the rest of
@@ -804,6 +771,141 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
   await ensureHomeMarketingLayout(payload);
   await ensureResearchRibbon(payload);
   await ensurePrivacyPolicyCopy(payload);
+}
+
+/** Idempotently imports the client-approved project cards as unpublished CMS drafts. */
+async function bootstrapProjectDrafts(payload: Payload): Promise<void> {
+  const projects = [
+    {
+      slug: 'methamphetamine-induced-neurotoxicity',
+      title: 'Methamphetamine-induced neurotoxicity',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 10,
+      featuredOnHome: true,
+      summary:
+        'A mouse model of methamphetamine exposure in which a natural compound is tested for protective and restorative effects on recognition memory, neuroinflammation and neuronal cell death.',
+    },
+    {
+      slug: 'social-isolation-stress',
+      title: 'Social isolation stress',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 20,
+      featuredOnHome: false,
+      summary:
+        'The effect of early-life social isolation on the brain and on behaviour, including vulnerability to drug dependence in later life.',
+    },
+    {
+      slug: 'morphine-dependence',
+      title: 'Morphine dependence',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 30,
+      featuredOnHome: false,
+      summary:
+        'Mouse models of morphine dependence and withdrawal, used to test candidate treatments and the signalling pathways through which they act.',
+    },
+    {
+      slug: 'nicotine',
+      title: 'Nicotine',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 40,
+      featuredOnHome: false,
+      summary:
+        'Rodent models of nicotine exposure, in which candidate products are evaluated for their neuroprotective and behavioural effects.',
+    },
+    {
+      slug: 'synthetic-compounds-in-neuroscience',
+      title: 'Synthetic compounds in neuroscience',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 50,
+      featuredOnHome: false,
+      summary:
+        'Newly synthesised compounds, and compounds modified from a base compound, screened for activity in neurological and behavioural models.',
+    },
+    {
+      slug: 'gut-induced-depression',
+      title: 'Gut-induced depression',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 60,
+      featuredOnHome: false,
+      summary:
+        'Models in which disturbance of the gut microbiota produces depression-like behaviour, used to study the gut-brain axis and to test interventions.',
+    },
+    {
+      slug: 'natural-products-in-glioblastoma',
+      title: 'Natural products in glioblastoma',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 70,
+      featuredOnHome: true,
+      summary:
+        'Natural products tested against glioblastoma cell lines for their effect on cell viability and proliferation.',
+    },
+    {
+      slug: 'in-silico-target-studies',
+      title: 'In silico target studies',
+      category: 'Preclinical Studies',
+      projectStatus: 'Running',
+      sortOrder: 80,
+      featuredOnHome: false,
+      summary:
+        'Docking and molecular dynamics studies that test whether a compound under investigation binds the inflammatory and cell-death proteins implicated by our animal studies.',
+    },
+    {
+      slug: 'infant-gut-microbiome-development',
+      title: 'Infant gut microbiome development',
+      category: 'Biomedical Data Analysis',
+      projectStatus: 'Completed',
+      sortOrder: 10,
+      featuredOnHome: true,
+      summary:
+        'A longitudinal shotgun metagenomic study of infants in a population-based birth cohort in Pakistan, sampled from birth to twelve months and analysed by both genome-resolved and read-based routes, with a data descriptor manuscript and deposition of the raw reads in NCBI SRA.',
+    },
+    {
+      slug: 'mother-and-infant-gut-microbiome',
+      title: 'Mother and infant gut microbiome',
+      category: 'Biomedical Data Analysis',
+      projectStatus: 'Completed',
+      sortOrder: 20,
+      featuredOnHome: false,
+      summary:
+        'Species-level profiling of a longitudinal mother-infant cohort, published in a peer-reviewed nutrition journal.',
+    },
+    {
+      slug: 'oral-microbiome-of-pre-school-children',
+      title: 'Oral microbiome of pre-school children',
+      category: 'Biomedical Data Analysis',
+      projectStatus: 'Completed',
+      sortOrder: 30,
+      featuredOnHome: false,
+      summary:
+        'A 16S rRNA amplicon study of the salivary microbiome of Pakistani pre-school children, including a comparison of stunted and normal-weight children.',
+    },
+  ] as const;
+
+  const req = systemReq(payload);
+  for (const project of projects) {
+    const found = await payload.find({
+      collection: 'projects',
+      where: { slug: { equals: project.slug } },
+      limit: 1,
+      draft: true,
+      overrideAccess: true,
+    });
+    if (found.docs[0] !== undefined) continue;
+    await payload.create({
+      collection: 'projects',
+      data: { ...project, _status: 'draft' },
+      overrideAccess: true,
+      draft: true,
+      req,
+    });
+  }
 }
 
 async function categoryId(payload: Payload, slug: string, title: string): Promise<number> {
@@ -908,17 +1010,32 @@ async function bootstrapInsightPosts(payload: Payload): Promise<void> {
   ] as const;
 
   for (const post of posts) {
-    await upsert(payload, 'posts', post.slug, {
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-      category: post.category,
-      authorId,
-      body: post.body,
-      seo: {
-        title: `${post.title} | CERA Medical`,
-        description: post.excerpt,
+    const existing = await payload.find({
+      collection: 'posts',
+      where: { slug: { equals: post.slug } },
+      limit: 1,
+      draft: true,
+      overrideAccess: true,
+    });
+    if (existing.docs[0] !== undefined) continue;
+    await payload.create({
+      collection: 'posts',
+      data: {
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        category: post.category,
+        authorId,
+        body: post.body,
+        seo: {
+          title: `${post.title} | CERA Medical`,
+          description: post.excerpt,
+        },
+        _status: 'draft',
       },
+      overrideAccess: true,
+      draft: true,
+      req: systemReq(payload),
     });
   }
 

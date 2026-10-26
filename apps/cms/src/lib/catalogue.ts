@@ -6,18 +6,15 @@
  * service that does not exist, or at one that has been withdrawn, would publish a
  * page whose "Make an Enquiry" button 404s or submits against nothing.
  *
- * Phase 06 swaps the lookup for a live Shop API call. Until then the six
- * reference-image slugs are the allow-list - the same six the homepage cards
- * already link to. `travel-vaccinations` is deliberately absent: it is the
- * withdrawn fixture, and a presentation for it must not save.
+ * CMS presentations can only be published for the three current Vendure
+ * service product slugs. Legacy service records are retired separately by the
+ * catalogue reseed and are not valid presentation targets.
  */
 
 export const REFERENCE_SERVICE_SLUGS = [
   'preclinical-studies',
   'molecular-research',
-  'metagenomic-data-analysis',
-  'biomedical-omics-data-analysis',
-  'evidence-synthesis-technical-reports',
+  'biomedical-data-analysis',
 ] as const;
 
 export type ReferenceServiceSlug = (typeof REFERENCE_SERVICE_SLUGS)[number];

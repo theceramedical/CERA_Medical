@@ -221,14 +221,10 @@ export type ServiceSpecificConsentField =
 export function requiredServiceSpecificConsent(
   serviceId: string,
 ): ServiceSpecificConsentField | null {
-  if (serviceId === 'metagenomic-data-analysis') return 'sequencingDataConsent';
+  if (serviceId === 'biomedical-data-analysis') return 'healthDataConsent';
   if (serviceId === 'preclinical-studies' || serviceId === 'molecular-research')
     return 'samplesCompoundsConsent';
-  if (
-    serviceId === 'biomedical-omics-data-analysis' ||
-    serviceId === 'evidence-synthesis-technical-reports'
-  )
-    return 'healthDataConsent';
+  if (serviceId === 'product-enquiry' || serviceId === 'research-collaboration' || serviceId === 'other-enquiry') return null;
   return null;
 }
 

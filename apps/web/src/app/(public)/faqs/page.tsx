@@ -1,60 +1,56 @@
-import { EmptyState } from '@cera/ui/empty-state';
 import { Text } from '@cera/ui/typography';
 
-import { CmsPageUnavailable } from '../../../components/cms-page-unavailable.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
-import { getCurrentDocument, getPublicGlobal } from '../../../lib/cms/client.ts';
-import { sectionHeadingFromLayout } from '../../../lib/cms-page-hero.ts';
+import { getCurrentDocument } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
 
-export function generateMetadata(): Metadata {
+const APPROVED_FAQS = [
+  {
+    question: 'Which services does CERA Medical provide?',
+    answer:
+      'Our services cover three areas: preclinical studies, molecular research and biomedical data analysis, which includes metagenomics, health and omics data analysis, and evidence synthesis and technical reports.',
+  },
+  {
+    question: 'How long does metagenomic analysis take?',
+    answer:
+      'Metagenomic analysis is typically delivered within three weeks. The exact timeline is confirmed during project scoping.',
+  },
+] as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getCurrentDocument('page', 'faqs');
   return pageMetadata({
-    title: 'Research Service FAQs',
-    description: 'Answers about CERA Medical research services and project enquiries.',
+    title: page?.seo.title ?? page?.title ?? 'Research Service FAQs',
+    description:
+      page?.seo.description ??
+      'Answers about CERA Medical services and project timing.',
     path: '/faqs',
+    ...(page === null ? {} : { noIndex: page.seo.noIndex }),
   });
 }
 
-export default async function FaqsPage() {
-  const [settings, page] = await Promise.all([
-    getPublicGlobal<{
-      faqs?: readonly { question: string; answer: string }[];
-    }>('site-settings'),
-    getCurrentDocument('page', 'faqs'),
-  ]);
-  if (page === null) return <CmsPageUnavailable slug="faqs" />;
-
-  const hero = sectionHeadingFromLayout(page.layout);
-  const items = settings?.faqs ?? [];
-
+export default function FaqsPage() {
   return (
     <>
       <MarketingPageHeader
-        title={hero?.title ?? page.title}
-        lede={hero?.lede ?? page.excerpt ?? ''}
-        eyebrow={hero?.eyebrow ?? 'Support'}
+        title="Research Service FAQs"
+        lede="Answers about CERA Medical services and project timing."
+        eyebrow="FAQs"
       />
       <div className="mx-auto max-w-measure px-6 py-12 md:px-10 lg:py-16">
-        {items.length === 0 ? (
-          <EmptyState
-            heading="No FAQs published"
-            description="Add frequently asked questions under Site → Site settings in Payload CMS."
-          />
-        ) : (
-          <div className="space-y-4">
-            {items.map((item) => (
-              <details
-                key={item.question}
-                className="rounded-md border border-border bg-surface p-4"
-              >
-                <summary className="cursor-pointer font-semibold">{item.question}</summary>
-                <Text className="mt-3">{item.answer}</Text>
-              </details>
-            ))}
-          </div>
-        )}
+        <div className="space-y-4">
+          {APPROVED_FAQS.map((item) => (
+            <details key={item.question} className="group border border-border bg-surface">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-semibold text-heading focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
+                {item.question}
+                <span aria-hidden="true" className="text-accent transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <Text className="border-t border-border px-5 py-4" tone="muted">{item.answer}</Text>
+            </details>
+          ))}
+        </div>
       </div>
     </>
   );

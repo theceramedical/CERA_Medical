@@ -11,7 +11,8 @@ export interface CatalogProduct {
   readonly packLabel: string;
   readonly listPriceMinor: number | null;
   readonly checkoutEnabled?: boolean;
-  readonly price: string;
+  /** Legacy internal fixture field; the catalogue UI never renders this value. */
+  readonly price?: string;
   readonly bsl?: '1' | '2';
   /** Null means the catalogue has not supplied a stock status. */
   readonly inStock: boolean | null;

@@ -2,10 +2,18 @@ import { Heading, Text } from '@cera/ui/typography';
 
 import type { ContentDocument } from '@cera/contracts';
 
+import { ABOUT_TEAM_PROFILES_REQUIRING_CONFIRMATION } from './about/about-profile.tsx';
 import { AppLink } from './link.tsx';
 
 export function TeamSection({ document }: { readonly document: ContentDocument }) {
-  if (!document.teamMembers?.length) return null;
+  const publicMembers = (document.teamMembers ?? []).filter((member) =>
+    !ABOUT_TEAM_PROFILES_REQUIRING_CONFIRMATION.has(member.name) &&
+    member.role.trim().length > 0 &&
+    member.photo !== undefined &&
+    member.photo.url.trim().length > 0 &&
+    member.photo.alt.trim().length > 0,
+  );
+  if (publicMembers.length === 0) return null;
   return (
     <section className="bg-surface-tint" aria-labelledby="team-heading">
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
@@ -16,7 +24,7 @@ export function TeamSection({ document }: { readonly document: ContentDocument }
           <Text className="mt-4 max-w-3xl">{document.teamIntroduction}</Text>
         ) : null}
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {document.teamMembers.map((member) => (
+          {publicMembers.map((member) => (
             <article
               key={member.id}
               className="overflow-hidden rounded-lg border border-border bg-surface"

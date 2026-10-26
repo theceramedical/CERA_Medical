@@ -1,7 +1,6 @@
 import type { ContentDocument } from '@cera/contracts';
 
 import { AboutProfile } from '../../../components/about/about-profile.tsx';
-import { CmsContentPage } from '../../../components/cms-content-page.tsx';
 import { getCurrentDocument } from '../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
@@ -12,26 +11,17 @@ function isPlaceholderAbout(document: ContentDocument): boolean {
   return haystack.includes('preview') || haystack.includes('local qa');
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-  const document = await getCurrentDocument('page', 'about');
-  if (document === null || isPlaceholderAbout(document)) {
-    return pageMetadata({
-      title: 'About CERA Medical',
-      description:
-        'Biomedical research and development, laboratory and computational services in Haripur, Pakistan.',
-      path: '/about',
-    });
-  }
+export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: document.seo.title ?? document.title,
-    description: document.seo.description ?? document.excerpt ?? '',
+    title: 'About CERA Medical',
+    description:
+      'Biomedical research and development, laboratory and computational services in Haripur, Pakistan.',
     path: '/about',
-    noIndex: document.seo.noIndex,
   });
 }
 
 export default async function AboutPage() {
   const document = await getCurrentDocument('page', 'about');
-  if (document === null || isPlaceholderAbout(document)) return <AboutProfile />;
-  return <CmsContentPage document={document} />;
+  const teamDocument = document !== null && !isPlaceholderAbout(document) ? document : undefined;
+  return <AboutProfile {...(teamDocument === undefined ? {} : { teamDocument })} />;
 }

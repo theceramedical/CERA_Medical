@@ -62,6 +62,41 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
   };
 
   return {
+    async isPhysicalCatalogueSku(session: ShopSession, sku: string): Promise<boolean> {
+      const pageSize = 100;
+      for (let skip = 0; ; skip += pageSize) {
+        const { data } = await post<{
+          products: {
+            items: {
+              collections: { slug: string }[];
+              variants: { sku: string }[];
+            }[];
+          };
+        }>(
+          session,
+          `query ($take: Int!, $skip: Int!) {
+            products(options: { take: $take, skip: $skip }) {
+              items { collections { slug } variants { sku } }
+            }
+          }`,
+          { take: pageSize, skip },
+        );
+        const products = data.products.items;
+        const matchingProduct = products.find((product) =>
+          product.variants.some((variant) => variant.sku.toUpperCase() === sku.toUpperCase()),
+        );
+        if (matchingProduct !== undefined) {
+          return (
+            matchingProduct.collections.some(
+              (collection) => collection.slug === 'physical-products',
+            ) ||
+            (matchingProduct.collections.length === 0 && matchingProduct.variants.length > 0)
+          );
+        }
+        if (products.length < pageSize) return false;
+      }
+    },
+
     async getVariantIdBySku(session: ShopSession, sku: string): Promise<string> {
       // Shop API exposes `product(slug)` + `variants[]`, not admin `productVariants`.
       // Seeded physical products use the lower-case SKU as their slug. CMS-created

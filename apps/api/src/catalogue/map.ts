@@ -7,7 +7,7 @@ import {
 } from '@cera/contracts/projections';
 
 import { isUnapprovedPrototypeServiceSlug } from './unapproved-prototype-services.ts';
-import { isUnapprovedSeedProductSku } from './unapproved-seed-products.ts';
+import { isHeldGlioblastomaCohort } from './unapproved-seed-products.ts';
 
 import type { VendureProduct } from './types.ts';
 
@@ -103,21 +103,18 @@ export function mapVendurePublicProduct(
   if (service.status !== 'active') return null;
   if (!isPhysicalCatalogueProduct(product)) return null;
   const sku = (product.variants?.[0]?.sku ?? service.slug).toUpperCase();
-  if (isUnapprovedSeedProductSku(sku)) return null;
-  const checkoutEnabled =
-    product.customFields?.checkoutEnabled === true &&
-    product.variants?.[0]?.stockLevel !== 'OUT_OF_STOCK';
+  if (isHeldGlioblastomaCohort(sku, service.title)) return null;
   return PublicProductSchema.parse({
     sku,
     title: service.title,
     summary: service.summary,
     description: service.description,
-    // Physical products are enquiry-only by default, but an approved product
-    // may explicitly opt into the PKR checkout channel through its custom field.
-    displayPrice: checkoutEnabled ? service.displayPrice : null,
+    // Physical catalogue products remain enquiry-only regardless of Vendure
+    // checkout custom fields or variant price data.
+    displayPrice: null,
     availabilityText: service.availabilityText,
-    listPriceMinor: checkoutEnabled ? service.listPriceMinor : null,
-    checkoutEnabled,
+    listPriceMinor: null,
+    checkoutEnabled: false,
     enquiryEnabled: service.enquiryEnabled,
     imageUrl: service.imageUrl,
   });

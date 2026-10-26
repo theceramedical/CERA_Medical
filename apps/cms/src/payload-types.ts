@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     pages: Page;
     posts: Post;
+    projects: Project;
     categories: Category;
     policies: Policy;
     'service-presentations': ServicePresentation;
@@ -88,6 +89,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     policies: PoliciesSelect<false> | PoliciesSelect<true>;
     'service-presentations': ServicePresentationsSelect<false> | ServicePresentationsSelect<true>;
@@ -184,6 +186,7 @@ export interface Media {
    * Required. Describe the image for someone who cannot see it. Decorative images still need a short honest label, not an empty string.
    */
   alt: string;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -614,6 +617,58 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * Public project cards for Our Projects. Keep client data and unpublished articles off this collection.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  title: string;
+  /**
+   * Lower-case, hyphenated. Becomes the public URL.
+   */
+  slug: string;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    canonicalUrl?: string | null;
+    ogImage?: (number | null) | Media;
+    /**
+     * Published but not indexed. Preview is always noindex.
+     */
+    noIndex?: boolean | null;
+  };
+  /**
+   * Flag this draft for an approver. Does not publish it.
+   */
+  reviewRequested?: boolean | null;
+  authorId?: string | null;
+  approverId?: string | null;
+  publishedAt?: string | null;
+  fixture?: boolean | null;
+  /**
+   * Public project description. Do not include client or participant data.
+   */
+  summary: string;
+  category: 'Preclinical Studies' | 'Molecular Research' | 'Biomedical Data Analysis';
+  projectStatus: 'Running' | 'Completed';
+  /**
+   * Lower numbers appear first within their status group.
+   */
+  sortOrder: number;
+  /**
+   * Include this published project in the homepage selection.
+   */
+  featuredOnHome?: boolean | null;
+  image?: (number | null) | Media;
+  imageAlt?: string | null;
+  publicationUrl?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "policies".
  */
@@ -754,6 +809,23 @@ export interface ServicePresentation {
             id?: string | null;
             blockName?: string | null;
             blockType: 'serviceHero';
+          }
+        | {
+            sections: {
+              anchor: string;
+              heading: string;
+              description?: string | null;
+              points?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'serviceSections';
           }
         | {
             eyebrow?: string | null;
@@ -1083,6 +1155,10 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
         relationTo: 'categories';
         value: number | Category;
       } | null)
@@ -1174,6 +1250,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1545,6 +1622,39 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        canonicalUrl?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  reviewRequested?: T;
+  authorId?: T;
+  approverId?: T;
+  publishedAt?: T;
+  fixture?: T;
+  summary?: T;
+  category?: T;
+  projectStatus?: T;
+  sortOrder?: T;
+  featuredOnHome?: T;
+  image?: T;
+  imageAlt?: T;
+  publicationUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
@@ -1631,6 +1741,26 @@ export interface ServicePresentationsSelect<T extends boolean = true> {
                   };
               noticeTitle?: T;
               noticeBody?: T;
+              id?: T;
+              blockName?: T;
+            };
+        serviceSections?:
+          | T
+          | {
+              sections?:
+                | T
+                | {
+                    anchor?: T;
+                    heading?: T;
+                    description?: T;
+                    points?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -2209,6 +2339,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'posts';
           value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'projects';
+          value: number | Project;
         } | null)
       | ({
           relationTo: 'policies';

@@ -10,7 +10,10 @@ import {
 import { ApiError } from '@cera/contracts/errors';
 
 import { authorize } from '../auth/authorize.ts';
-import { isUnapprovedSeedProductSku } from '../catalogue/unapproved-seed-products.ts';
+import {
+  isEnquiryOnlyPhysicalSku,
+  isUnapprovedSeedProductSku,
+} from '../catalogue/unapproved-seed-products.ts';
 import { sendApiError, sendCode } from '../http.ts';
 
 import { createSafepayHostedCheckout } from './safepay.ts';
@@ -83,6 +86,21 @@ function setTokenCookie(
 
 export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCallback => {
   const shop = createVendureShopClient(options.shopApiUrl);
+  const cartContainsEnquiryOnlyPhysicalProduct = async (
+    session: { readonly token: string | null },
+    cart: { readonly lines: readonly { readonly slug: string }[] },
+  ): Promise<boolean> => {
+    for (const line of cart.lines) {
+      if (
+        isEnquiryOnlyPhysicalSku(line.slug) ||
+        isUnapprovedSeedProductSku(line.slug) ||
+        (await shop.isPhysicalCatalogueSku(session, line.slug))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   const requireVerifiedCustomer = async (request: FastifyRequest) => {
     if (options.readSession === undefined) throw new ApiError('unauthenticated');
@@ -104,6 +122,10 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         const session = { token: tokenFromRequest(request) };
         const { cart, token } = await shop.getActiveCart(session);
         setTokenCookie(reply, token);
+        if (cart !== null && (await cartContainsEnquiryOnlyPhysicalProduct(session, cart))) {
+          sendCode(request, reply, 'not_found');
+          return;
+        }
         if (cart === null) {
           return reply.code(200).send(
             CartSchema.parse({
@@ -134,12 +156,16 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         sendCode(request, reply, 'validation_failed');
         return;
       }
-      if (isUnapprovedSeedProductSku(parsed.data.slug)) {
-        sendCode(request, reply, 'not_found');
-        return;
-      }
       try {
         const session = { token: tokenFromRequest(request) };
+        if (
+          isEnquiryOnlyPhysicalSku(parsed.data.slug) ||
+          isUnapprovedSeedProductSku(parsed.data.slug) ||
+          (await shop.isPhysicalCatalogueSku(session, parsed.data.slug))
+        ) {
+          sendCode(request, reply, 'not_found');
+          return;
+        }
         const variantId = await shop.getVariantIdBySku(session, parsed.data.slug);
         const { cart, token } = await shop.addLine(session, variantId, parsed.data.quantity);
         setTokenCookie(reply, token);
@@ -172,6 +198,10 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         const session = { token: tokenFromRequest(request) };
         const { cart, token } = await shop.adjustLine(session, lineId, parsed.data.quantity);
         setTokenCookie(reply, token);
+        if (await cartContainsEnquiryOnlyPhysicalProduct(session, cart)) {
+          sendCode(request, reply, 'not_found');
+          return;
+        }
         return reply.code(200).send(CartSchema.parse(cart));
       } catch (error) {
         if (error instanceof ApiError) {
@@ -208,7 +238,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
           cart === null ||
           cart.lines.length === 0 ||
           cart.totalMinor <= 0 ||
-          cart.lines.some((line) => isUnapprovedSeedProductSku(line.slug))
+          (await cartContainsEnquiryOnlyPhysicalProduct(session, cart))
         ) {
           sendCode(request, reply, 'validation_failed');
           return;
@@ -257,7 +287,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         if (
           cart === null ||
           cart.lines.length === 0 ||
-          cart.lines.some((line) => isUnapprovedSeedProductSku(line.slug))
+          (await cartContainsEnquiryOnlyPhysicalProduct(vendureSession, cart))
         ) {
           sendCode(request, reply, 'validation_failed');
           return;
