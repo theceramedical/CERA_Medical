@@ -28,14 +28,24 @@ export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] 
               <details className="group relative">
                 <summary
                   aria-current={current ? 'page' : undefined}
-                  className={cn(linkClass(current), 'cursor-pointer list-none gap-1 [&::-webkit-details-marker]:hidden')}
+                  className={cn(
+                    linkClass(current),
+                    'cursor-pointer list-none gap-1 [&::-webkit-details-marker]:hidden',
+                  )}
                 >
                   {item.label}
-                  <ChevronDown aria-hidden="true" size={15} className="transition-transform group-open:rotate-180" />
+                  <ChevronDown
+                    aria-hidden="true"
+                    size={15}
+                    className="transition-transform group-open:rotate-180"
+                  />
                 </summary>
                 <ul className="absolute top-full left-0 z-50 mt-1 min-w-64 list-none rounded-md border border-border bg-surface p-2 shadow-lg">
                   <li>
-                    <NextLink href={item.href} className="flex min-h-11 items-center rounded px-3 text-body-sm font-semibold text-primary no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus">
+                    <NextLink
+                      href={item.href}
+                      className="flex min-h-11 items-center rounded px-3 text-body-sm font-semibold text-primary no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus"
+                    >
                       All Services
                     </NextLink>
                   </li>
@@ -57,8 +67,17 @@ export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] 
         }
         return (
           <li key={item.href}>
-            <NextLink href={item.href} aria-current={current ? 'page' : undefined} className={linkClass(current)}>
-              <span className={cn('border-b-2 py-0.5', current ? 'border-primary' : 'border-transparent')}>
+            <NextLink
+              href={item.href}
+              aria-current={current ? 'page' : undefined}
+              className={linkClass(current)}
+            >
+              <span
+                className={cn(
+                  'border-b-2 py-0.5',
+                  current ? 'border-primary' : 'border-transparent',
+                )}
+              >
                 {item.label}
               </span>
             </NextLink>

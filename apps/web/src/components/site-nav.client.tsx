@@ -137,7 +137,9 @@ export function MobileNav({
                             className={cn(
                               'flex min-h-11 cursor-pointer list-none items-center justify-between rounded-md px-3 text-button [&::-webkit-details-marker]:hidden',
                               'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                              current ? 'bg-primary-50 text-foreground' : 'text-neutral-700 hover:bg-surface-subtle',
+                              current
+                                ? 'bg-primary-50 text-foreground'
+                                : 'text-neutral-700 hover:bg-surface-subtle',
                             )}
                           >
                             {item.label}
@@ -145,13 +147,23 @@ export function MobileNav({
                           </summary>
                           <ul className="list-none space-y-1 border-s-2 border-border py-1 ps-3">
                             <li>
-                              <NextLink href={item.href} aria-current={pathname === item.href ? 'page' : undefined} className="flex min-h-11 items-center rounded-md px-3 text-body-sm font-semibold text-primary no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus">
+                              <NextLink
+                                href={item.href}
+                                aria-current={pathname === item.href ? 'page' : undefined}
+                                className="flex min-h-11 items-center rounded-md px-3 text-body-sm font-semibold text-primary no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus"
+                              >
                                 All Services
                               </NextLink>
                             </li>
                             {item.children.map((child) => (
                               <li key={child.href}>
-                                <NextLink href={child.href} aria-current={isCurrent(child.href, pathname) ? 'page' : undefined} className="flex min-h-11 items-center rounded-md px-3 text-body-sm text-copy no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus">
+                                <NextLink
+                                  href={child.href}
+                                  aria-current={
+                                    isCurrent(child.href, pathname) ? 'page' : undefined
+                                  }
+                                  className="flex min-h-11 items-center rounded-md px-3 text-body-sm text-copy no-underline hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-focus"
+                                >
                                   {child.label}
                                 </NextLink>
                               </li>

@@ -6,12 +6,13 @@ import { ABOUT_TEAM_PROFILES_REQUIRING_CONFIRMATION } from './about/about-profil
 import { AppLink } from './link.tsx';
 
 export function TeamSection({ document }: { readonly document: ContentDocument }) {
-  const publicMembers = (document.teamMembers ?? []).filter((member) =>
-    !ABOUT_TEAM_PROFILES_REQUIRING_CONFIRMATION.has(member.name) &&
-    member.role.trim().length > 0 &&
-    member.photo !== undefined &&
-    member.photo.url.trim().length > 0 &&
-    member.photo.alt.trim().length > 0,
+  const publicMembers = (document.teamMembers ?? []).filter(
+    (member) =>
+      !ABOUT_TEAM_PROFILES_REQUIRING_CONFIRMATION.has(member.name) &&
+      member.role.trim().length > 0 &&
+      member.photo !== undefined &&
+      member.photo.url.trim().length > 0 &&
+      member.photo.alt.trim().length > 0,
   );
   if (publicMembers.length === 0) return null;
   return (

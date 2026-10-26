@@ -5,9 +5,7 @@ import { unstable_cache } from 'next/cache';
 import { publicizeCmsMediaUrl } from '../cms/media-url.ts';
 
 export type ProjectCategory =
-  | 'Preclinical Studies'
-  | 'Molecular Research'
-  | 'Biomedical Data Analysis';
+  'Preclinical Studies' | 'Molecular Research' | 'Biomedical Data Analysis';
 export type ProjectStatus = 'Running' | 'Completed';
 
 export interface PublicProject {

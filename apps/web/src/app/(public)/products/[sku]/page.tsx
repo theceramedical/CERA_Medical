@@ -93,9 +93,7 @@ export default async function ProductDetailPage({
           </Text>
         ) : null}
         <div className="mt-8 flex flex-wrap gap-3">
-          <ProductPurchaseActions
-            enquiryHref={productEnquiryHref(product.sku)}
-          />
+          <ProductPurchaseActions enquiryHref={productEnquiryHref(product.sku)} />
           <ButtonLink href="/products" as={AppLink} variant="outline">
             Back to catalogue
           </ButtonLink>

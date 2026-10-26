@@ -23,9 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getCurrentDocument('page', 'faqs');
   return pageMetadata({
     title: page?.seo.title ?? page?.title ?? 'Research Service FAQs',
-    description:
-      page?.seo.description ??
-      'Answers about CERA Medical services and project timing.',
+    description: page?.seo.description ?? 'Answers about CERA Medical services and project timing.',
     path: '/faqs',
     ...(page === null ? {} : { noIndex: page.seo.noIndex }),
   });
@@ -45,9 +43,16 @@ export default function FaqsPage() {
             <details key={item.question} className="group border border-border bg-surface">
               <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-semibold text-heading focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
                 {item.question}
-                <span aria-hidden="true" className="text-accent transition-transform group-open:rotate-45">+</span>
+                <span
+                  aria-hidden="true"
+                  className="text-accent transition-transform group-open:rotate-45"
+                >
+                  +
+                </span>
               </summary>
-              <Text className="border-t border-border px-5 py-4" tone="muted">{item.answer}</Text>
+              <Text className="border-t border-border px-5 py-4" tone="muted">
+                {item.answer}
+              </Text>
             </details>
           ))}
         </div>

@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 
-import { CategoryServiceDetails, serviceCategoryMetadata } from '../../../../components/services/category-service-details.tsx';
+import {
+  CategoryServiceDetails,
+  serviceCategoryMetadata,
+} from '../../../../components/services/category-service-details.tsx';
 import { getPublishedDocument } from '../../../../lib/cms/client.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 

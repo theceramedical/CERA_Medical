@@ -54,11 +54,12 @@ function positiveLimit(limit: number | undefined): number {
 
 function mapProject(project: PayloadProject): FeaturedProjectCard | null {
   if (
-    typeof project.id !== 'string' && typeof project.id !== 'number' ||
+    (typeof project.id !== 'string' && typeof project.id !== 'number') ||
     typeof project.slug !== 'string' ||
     typeof project.title !== 'string' ||
     typeof project.summary !== 'string'
-  ) return null;
+  )
+    return null;
 
   const card: FeaturedProjectCard = {
     id: project.slug,
@@ -86,9 +87,7 @@ function mapProject(project: PayloadProject): FeaturedProjectCard | null {
 }
 
 /** Published, homepage-selected project cards. CMS failures intentionally degrade to an empty selection. */
-export async function getFeaturedProjects(
-  limit?: number,
-): Promise<readonly FeaturedProjectCard[]> {
+export async function getFeaturedProjects(limit?: number): Promise<readonly FeaturedProjectCard[]> {
   const boundedLimit = positiveLimit(limit);
   if (boundedLimit === 0) return [];
 

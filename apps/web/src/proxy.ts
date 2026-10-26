@@ -143,7 +143,11 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
   const pathname = normalisePath(request.nextUrl.pathname);
 
   const legacyServiceTarget = LEGACY_SERVICE_TARGETS[pathname];
-  if (legacyServiceTarget !== undefined || pathname === '/articles' || pathname.startsWith('/articles/')) {
+  if (
+    legacyServiceTarget !== undefined ||
+    pathname === '/articles' ||
+    pathname.startsWith('/articles/')
+  ) {
     const target = new URL(legacyServiceTarget ?? '/projects', request.nextUrl.origin);
     target.search = request.nextUrl.search;
     return NextResponse.redirect(target, 301);

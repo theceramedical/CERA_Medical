@@ -23,7 +23,9 @@ type HomeBlock = Readonly<Record<string, unknown>> & { readonly blockType?: stri
 
 function blocksOf(document: ContentDocument | null): readonly HomeBlock[] {
   return Array.isArray(document?.layout)
-    ? document.layout.filter((block): block is HomeBlock => block !== null && typeof block === 'object')
+    ? document.layout.filter(
+        (block): block is HomeBlock => block !== null && typeof block === 'object',
+      )
     : [];
 }
 
@@ -39,7 +41,8 @@ function findBlock(blocks: readonly HomeBlock[], blockType: string): HomeBlock |
 function internalHref(value: string | undefined, fallback: string): string {
   if (value === undefined) return fallback;
   if (value === '/enquiry') return '/contact#contact-form';
-  if (value.startsWith('/enquiry?')) return `/contact${value.slice('/enquiry'.length)}#contact-form`;
+  if (value.startsWith('/enquiry?'))
+    return `/contact${value.slice('/enquiry'.length)}#contact-form`;
   return value;
 }
 
@@ -49,8 +52,15 @@ function homeCopyFromDocument(document: ContentDocument | null): HomeLandingCopy
   const hero = findBlock(blocks, 'hero');
   const services = findBlock(blocks, 'servicesShowcase');
   const projects = findBlock(blocks, 'articlesPreview');
-  const products = blocks.find((block) => block.blockType === 'sectionHeading' && field(block, 'heading') === 'Research Products');
-  const work = blocks.find((block) => block.blockType === 'processSteps' && (field(block, 'heading')?.toLowerCase().includes('work') ?? false));
+  const products = blocks.find(
+    (block) =>
+      block.blockType === 'sectionHeading' && field(block, 'heading') === 'Research Products',
+  );
+  const work = blocks.find(
+    (block) =>
+      block.blockType === 'processSteps' &&
+      (field(block, 'heading')?.toLowerCase().includes('work') ?? false),
+  );
   const cta = findBlock(blocks, 'ctaBand');
   const base = DEFAULT_HOME_LANDING_COPY;
 
@@ -69,15 +79,35 @@ function homeCopyFromDocument(document: ContentDocument | null): HomeLandingCopy
     },
     services: {
       ...base.services,
-      heading: field(services, 'heading') === 'Research Services' ? base.services.heading : field(services, 'heading') ?? base.services.heading,
-      body: field(services, 'body') === 'Five integrated service lines — each with enquiry enabled on the catalogue so you can request scoping without leaving the site.' ? base.services.body : field(services, 'body') ?? base.services.body,
+      heading:
+        field(services, 'heading') === 'Research Services'
+          ? base.services.heading
+          : (field(services, 'heading') ?? base.services.heading),
+      body:
+        field(services, 'body') ===
+        'Five integrated service lines — each with enquiry enabled on the catalogue so you can request scoping without leaving the site.'
+          ? base.services.body
+          : (field(services, 'body') ?? base.services.body),
     },
     projects: {
       ...base.projects,
-      heading: field(projects, 'heading') === 'Research Updates' ? base.projects.heading : field(projects, 'heading') ?? base.projects.heading,
-      body: field(projects, 'body') === 'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.' ? base.projects.body : field(projects, 'body') ?? base.projects.body,
-      viewAllHref: internalHref(field(projects, 'viewAllHref') === '/articles' ? undefined : field(projects, 'viewAllHref'), base.projects.viewAllHref),
-      viewAllLabel: field(projects, 'viewAllLabel') === 'View All Articles' ? base.projects.viewAllLabel : field(projects, 'viewAllLabel') ?? base.projects.viewAllLabel,
+      heading:
+        field(projects, 'heading') === 'Research Updates'
+          ? base.projects.heading
+          : (field(projects, 'heading') ?? base.projects.heading),
+      body:
+        field(projects, 'body') ===
+        'Practical guidance on scoping laboratory work, omics analysis, and evidence reporting.'
+          ? base.projects.body
+          : (field(projects, 'body') ?? base.projects.body),
+      viewAllHref: internalHref(
+        field(projects, 'viewAllHref') === '/articles' ? undefined : field(projects, 'viewAllHref'),
+        base.projects.viewAllHref,
+      ),
+      viewAllLabel:
+        field(projects, 'viewAllLabel') === 'View All Articles'
+          ? base.projects.viewAllLabel
+          : (field(projects, 'viewAllLabel') ?? base.projects.viewAllLabel),
     },
     products: {
       ...base.products,
@@ -87,7 +117,11 @@ function homeCopyFromDocument(document: ContentDocument | null): HomeLandingCopy
     howWeWork: {
       ...base.howWeWork,
       heading: field(work, 'heading') ?? base.howWeWork.heading,
-      body: field(work, 'body') === 'A consistent workflow from first conversation to delivered results, with quality checks at each stage.' ? base.howWeWork.body : field(work, 'body') ?? base.howWeWork.body,
+      body:
+        field(work, 'body') ===
+        'A consistent workflow from first conversation to delivered results, with quality checks at each stage.'
+          ? base.howWeWork.body
+          : (field(work, 'body') ?? base.howWeWork.body),
     },
     cta: {
       ...base.cta,
@@ -102,7 +136,10 @@ function homeCopyFromDocument(document: ContentDocument | null): HomeLandingCopy
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getCurrentDocument('page', 'home');
   return pageMetadata({
-    title: document?.seo.title ?? document?.title ?? 'CERA Medical - Biomedical Research and Development',
+    title:
+      document?.seo.title ??
+      document?.title ??
+      'CERA Medical - Biomedical Research and Development',
     description:
       document?.seo.description ??
       document?.excerpt ??
@@ -125,7 +162,11 @@ export default async function HomePage() {
       <JsonLd data={organizationJsonLd(origin)} />
       <JsonLd data={websiteJsonLd(origin)} />
       <JsonLd data={medicalBusinessJsonLd(origin)} />
-      <HomeLandingPage projects={projects} products={products.items.slice(0, 3)} copy={homeCopyFromDocument(document)} />
+      <HomeLandingPage
+        projects={projects}
+        products={products.items.slice(0, 3)}
+        copy={homeCopyFromDocument(document)}
+      />
     </>
   );
 }

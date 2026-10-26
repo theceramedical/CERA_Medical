@@ -62,10 +62,14 @@ function ProjectGroup({
       </Heading>
       {projects.length > 0 ? (
         <ul className="mt-6 grid list-none gap-5 p-0 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => <ProjectCard key={project.id} project={project} />)}
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </ul>
       ) : (
-        <Text tone="muted" className="mt-4">There are no {status.toLowerCase()} projects to show right now.</Text>
+        <Text tone="muted" className="mt-4">
+          There are no {status.toLowerCase()} projects to show right now.
+        </Text>
       )}
     </section>
   );
@@ -76,16 +80,27 @@ export function ProjectsIndex({ projects }: { readonly projects: readonly Public
     <>
       <header className="border-b border-border bg-surface-tint">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <Text size="eyebrow" tone="muted">CERA MEDICAL</Text>
-          <Heading level={1} size="h1" className="mt-3">Our Projects</Heading>
+          <Text size="eyebrow" tone="muted">
+            CERA MEDICAL
+          </Text>
+          <Heading level={1} size="h1" className="mt-3">
+            Our Projects
+          </Heading>
           <Text size="body-lg" tone="muted" measure className="mt-4">
-            A selection of the studies running in our laboratories and the analyses we have completed. Client data are never shown on this page.
+            A selection of the studies running in our laboratories and the analyses we have
+            completed. Client data are never shown on this page.
           </Text>
         </div>
       </header>
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <ProjectGroup status="Running" projects={projects.filter((project) => project.status === 'Running')} />
-        <ProjectGroup status="Completed" projects={projects.filter((project) => project.status === 'Completed')} />
+        <ProjectGroup
+          status="Running"
+          projects={projects.filter((project) => project.status === 'Running')}
+        />
+        <ProjectGroup
+          status="Completed"
+          projects={projects.filter((project) => project.status === 'Completed')}
+        />
         <p className="mt-12 border-t border-border pt-6 text-body-sm text-muted">
           <AppLink href="/enquiry">Make an Enquiry</AppLink>
         </p>

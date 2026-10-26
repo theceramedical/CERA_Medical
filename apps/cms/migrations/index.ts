@@ -52,6 +52,6 @@ export const migrations = [
   {
     up: migration_20261026_103442_projects_catalogue.up,
     down: migration_20261026_103442_projects_catalogue.down,
-    name: '20261026_103442_projects_catalogue'
+    name: '20261026_103442_projects_catalogue',
   },
 ];

@@ -1,11 +1,7 @@
 import { Text } from '@cera/ui/typography';
 
 import { AppLink } from './link.tsx';
-import {
-  FOOTER_COMPANY_NAV,
-  FOOTER_POLICY_NAV,
-  FOOTER_SERVICE_NAV,
-} from './navigation.ts';
+import { FOOTER_COMPANY_NAV, FOOTER_POLICY_NAV, FOOTER_SERVICE_NAV } from './navigation.ts';
 import { SiteWordmark } from './site-wordmark.tsx';
 
 export function SiteFooter() {
@@ -22,8 +18,13 @@ export function SiteFooter() {
         <FooterNav heading="Company" items={FOOTER_COMPANY_NAV} />
         <FooterNav heading="Policies" items={FOOTER_POLICY_NAV} />
         <div>
-          <h2 className="text-caption font-semibold tracking-[0.12em] text-heading uppercase">Contact</h2>
-          <AppLink href="mailto:contact@ceramedical.org" className="mt-4 inline-flex min-h-11 items-center">
+          <h2 className="text-caption font-semibold tracking-[0.12em] text-heading uppercase">
+            Contact
+          </h2>
+          <AppLink
+            href="mailto:contact@ceramedical.org"
+            className="mt-4 inline-flex min-h-11 items-center"
+          >
             contact@ceramedical.org
           </AppLink>
         </div>
@@ -46,7 +47,9 @@ function FooterNav({
 }) {
   return (
     <nav aria-label={heading}>
-      <h2 className="text-caption font-semibold tracking-[0.12em] text-heading uppercase">{heading}</h2>
+      <h2 className="text-caption font-semibold tracking-[0.12em] text-heading uppercase">
+        {heading}
+      </h2>
       <ul className="mt-3 list-none space-y-1 p-0">
         {items.map((item) => (
           <li key={item.href}>

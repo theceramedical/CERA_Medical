@@ -211,7 +211,9 @@ async function upsert(
   payload: Payload,
   collection: 'pages' | 'policies' | 'service-presentations' | 'posts' | 'projects',
   slug: string,
-  data: RequiredDataFromCollectionSlug<'pages' | 'policies' | 'service-presentations' | 'posts' | 'projects'>,
+  data: RequiredDataFromCollectionSlug<
+    'pages' | 'policies' | 'service-presentations' | 'posts' | 'projects'
+  >,
 ): Promise<void> {
   const found = await payload.find({
     collection,
@@ -336,6 +338,7 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       'My organisation owns these data or is authorised to share them with CERA Medical for analysis.',
       'The data were collected with the consent and approvals required for their use in analysis and reporting.',
       'The dataset has been de-identified and contains no names, national identity numbers, medical record numbers, telephone numbers, addresses or household coordinates, or, where identifiers are needed for the analysis, a data sharing agreement will be signed before any data are transferred.',
+      'Where data include sequencing reads from human samples, CERA Medical removes human genetic material during quality control and does not analyse it for any other purpose.',
       "CERA Medical may use the data only for the agreed analysis and report, will follow my organisation's data protection requirements, and will return or delete the data as set out in the Data Retention Policy or in the data sharing agreement.",
     ].map((statement) => ({ statement })),
   };
@@ -447,10 +450,9 @@ export async function bootstrapClientContent(payload: Payload): Promise<void> {
       slug: 'biomedical-data-analysis',
       title: 'Biomedical Data Analysis',
       serviceId: 'biomedical-data-analysis',
-      excerpt:
-        'Metagenomic, health and omics data analysed through to publication-ready results.',
+      excerpt: 'Metagenomic, health and omics data analysed through to publication-ready results.',
       intro:
-        'We analyse biomedical data from raw files through to publication-ready figures, tables and results text, with metagenomics as our speciality. Data are supplied de-identified, remain the client\'s property, are kept confidential and are deleted in line with our Data Retention Policy.',
+        "We analyse biomedical data from raw files through to publication-ready figures, tables and results text, with metagenomics as our speciality. Data are supplied de-identified, remain the client's property, are kept confidential and are deleted in line with our Data Retention Policy.",
     },
   ] as const;
   for (const service of services) {

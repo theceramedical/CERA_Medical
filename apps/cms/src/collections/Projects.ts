@@ -18,9 +18,17 @@ export const Projects: CollectionConfig = publishable({
   labels: { singular: 'Project', plural: 'Projects' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'projectStatus', 'sortOrder', 'featuredOnHome', '_status'],
+    defaultColumns: [
+      'title',
+      'category',
+      'projectStatus',
+      'sortOrder',
+      'featuredOnHome',
+      '_status',
+    ],
     group: 'Content',
-    description: 'Public project cards for Our Projects. Keep client data and unpublished articles off this collection.',
+    description:
+      'Public project cards for Our Projects. Keep client data and unpublished articles off this collection.',
     livePreview: {
       url: ({ data }) => previewUrl(`/projects#${asString(data.slug)}`),
       breakpoints: [...PREVIEW_BREAKPOINTS],
@@ -33,7 +41,9 @@ export const Projects: CollectionConfig = publishable({
       type: 'textarea',
       required: true,
       maxLength: 1200,
-      admin: { description: 'Public project description. Do not include client or participant data.' },
+      admin: {
+        description: 'Public project description. Do not include client or participant data.',
+      },
     },
     {
       name: 'category',
@@ -58,7 +68,10 @@ export const Projects: CollectionConfig = publishable({
       name: 'featuredOnHome',
       type: 'checkbox',
       defaultValue: false,
-      admin: { position: 'sidebar', description: 'Include this published project in the homepage selection.' },
+      admin: {
+        position: 'sidebar',
+        description: 'Include this published project in the homepage selection.',
+      },
     },
     { name: 'image', type: 'relationship', relationTo: 'media' },
     { name: 'imageAlt', type: 'text', maxLength: 300 },

@@ -37,7 +37,8 @@ function serviceConsent(
       ? 'sequencingDataConsent'
       : serviceId === 'preclinical-studies' || serviceId === 'molecular-research'
         ? 'samplesCompoundsConsent'
-        : serviceId === 'biomedical-omics-data-analysis' ||
+        : serviceId === 'biomedical-data-analysis' ||
+            serviceId === 'biomedical-omics-data-analysis' ||
             serviceId === 'evidence-synthesis-technical-reports'
           ? 'healthDataConsent'
           : null;
@@ -74,6 +75,7 @@ function serviceConsent(
               'My organisation owns these data or is authorised to share them with CERA Medical for analysis.',
               'The data were collected with the consent and approvals required for their use in analysis and reporting.',
               'The dataset has been de-identified and contains no names, national identity numbers, medical record numbers, telephone numbers, addresses or household coordinates, or, where identifiers are needed for the analysis, a data sharing agreement will be signed before any data are transferred.',
+              'Where data include sequencing reads from human samples, CERA Medical removes human genetic material during quality control and does not analyse it for any other purpose.',
               "CERA Medical may use the data only for the agreed analysis and report, will follow my organisation's data protection requirements, and will return or delete the data as set out in the Data Retention Policy or in the data sharing agreement.",
             ];
 

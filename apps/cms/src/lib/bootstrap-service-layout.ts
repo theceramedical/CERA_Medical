@@ -76,7 +76,8 @@ const CATEGORY_SECTIONS: Readonly<Record<string, readonly ServiceSection[]>> = {
     {
       anchor: 'sequencing',
       heading: 'Sequencing',
-      description: 'Sanger sequencing for confirmation of PCR products and targeted genetic variants.',
+      description:
+        'Sanger sequencing for confirmation of PCR products and targeted genetic variants.',
     },
     {
       anchor: 'histopathology',
@@ -127,7 +128,7 @@ const CATEGORY_SECTIONS: Readonly<Record<string, readonly ServiceSection[]>> = {
       anchor: 'from-your-data-to-your-manuscript',
       heading: 'From your data to your manuscript',
       points: [
-        'Data retrieval: we download the data directly from your sequencing provider\'s server or cloud link, or from public repositories such as NCBI SRA and ENA by accession number. You do not need to transfer files yourself.',
+        "Data retrieval: we download the data directly from your sequencing provider's server or cloud link, or from public repositories such as NCBI SRA and ENA by accession number. You do not need to transfer files yourself.",
         'Analysis: quality control, profiling, statistics and visualisation with the pipeline agreed for your study.',
         'Delivery: publication-ready figures, result tables, a methods text and a written description of the results, typically within three weeks.',
         'Revisions: figures, analyses and text are revised with you over multiple rounds.',
@@ -159,14 +160,15 @@ const CATEGORY_SECTIONS: Readonly<Record<string, readonly ServiceSection[]>> = {
       points: [
         'Systematic reviews and meta-analyses reported to the PRISMA standard',
         'Situation analyses and health-sector assessments of a health problem, service or facility',
-        'Technical and donor reports written in the client\'s format',
+        "Technical and donor reports written in the client's format",
         'Policy briefs: short, evidence-based summaries for decision-makers',
       ],
     },
     {
       anchor: 'image-and-behaviour-analysis',
       heading: 'Image and behaviour analysis',
-      description: 'Automated quantification of histology images and of animal behaviour recordings.',
+      description:
+        'Automated quantification of histology images and of animal behaviour recordings.',
     },
     {
       anchor: 'who-this-is-for',
