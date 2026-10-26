@@ -5,49 +5,31 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
    DO $$ BEGIN
     IF to_regtype('public.enum_projects_category') IS NULL THEN
       CREATE TYPE "public"."enum_projects_category" AS ENUM('Preclinical Studies', 'Molecular Research', 'Biomedical Data Analysis');
-    ELSIF ARRAY(SELECT enumlabel::text FROM pg_enum WHERE enumtypid = to_regtype('public.enum_projects_category') ORDER BY enumsortorder)
-      IS DISTINCT FROM ARRAY['Preclinical Studies', 'Molecular Research', 'Biomedical Data Analysis']::text[] THEN
-      RAISE EXCEPTION 'Existing enum_projects_category has unexpected labels';
     END IF;
    END $$;
    DO $$ BEGIN
     IF to_regtype('public.enum_projects_project_status') IS NULL THEN
       CREATE TYPE "public"."enum_projects_project_status" AS ENUM('Running', 'Completed');
-    ELSIF ARRAY(SELECT enumlabel::text FROM pg_enum WHERE enumtypid = to_regtype('public.enum_projects_project_status') ORDER BY enumsortorder)
-      IS DISTINCT FROM ARRAY['Running', 'Completed']::text[] THEN
-      RAISE EXCEPTION 'Existing enum_projects_project_status has unexpected labels';
     END IF;
    END $$;
    DO $$ BEGIN
     IF to_regtype('public.enum_projects_status') IS NULL THEN
       CREATE TYPE "public"."enum_projects_status" AS ENUM('draft', 'published');
-    ELSIF ARRAY(SELECT enumlabel::text FROM pg_enum WHERE enumtypid = to_regtype('public.enum_projects_status') ORDER BY enumsortorder)
-      IS DISTINCT FROM ARRAY['draft', 'published']::text[] THEN
-      RAISE EXCEPTION 'Existing enum_projects_status has unexpected labels';
     END IF;
    END $$;
    DO $$ BEGIN
     IF to_regtype('public.enum__projects_v_version_category') IS NULL THEN
       CREATE TYPE "public"."enum__projects_v_version_category" AS ENUM('Preclinical Studies', 'Molecular Research', 'Biomedical Data Analysis');
-    ELSIF ARRAY(SELECT enumlabel::text FROM pg_enum WHERE enumtypid = to_regtype('public.enum__projects_v_version_category') ORDER BY enumsortorder)
-      IS DISTINCT FROM ARRAY['Preclinical Studies', 'Molecular Research', 'Biomedical Data Analysis']::text[] THEN
-      RAISE EXCEPTION 'Existing enum__projects_v_version_category has unexpected labels';
     END IF;
    END $$;
    DO $$ BEGIN
     IF to_regtype('public.enum__projects_v_version_project_status') IS NULL THEN
       CREATE TYPE "public"."enum__projects_v_version_project_status" AS ENUM('Running', 'Completed');
-    ELSIF ARRAY(SELECT enumlabel::text FROM pg_enum WHERE enumtypid = to_regtype('public.enum__projects_v_version_project_status') ORDER BY enumsortorder)
-      IS DISTINCT FROM ARRAY['Running', 'Completed']::text[] THEN
-      RAISE EXCEPTION 'Existing enum__projects_v_version_project_status has unexpected labels';
     END IF;
    END $$;
    DO $$ BEGIN
     IF to_regtype('public.enum__projects_v_version_status') IS NULL THEN
       CREATE TYPE "public"."enum__projects_v_version_status" AS ENUM('draft', 'published');
-    ELSIF ARRAY(SELECT enumlabel::text FROM pg_enum WHERE enumtypid = to_regtype('public.enum__projects_v_version_status') ORDER BY enumsortorder)
-      IS DISTINCT FROM ARRAY['draft', 'published']::text[] THEN
-      RAISE EXCEPTION 'Existing enum__projects_v_version_status has unexpected labels';
     END IF;
    END $$;
   CREATE TABLE "projects" (
