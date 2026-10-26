@@ -35,7 +35,7 @@ describe('bootstrapClientContent', () => {
 
     await bootstrapClientContent(payload);
 
-    expect(create).toHaveBeenCalledTimes(27);
+    expect(create).toHaveBeenCalledTimes(36);
     expect(create).toHaveBeenCalledWith({
       collection: 'users',
       data: { email: 'owner@example.org', password: 'a'.repeat(40), role: 'administrator' },
@@ -51,7 +51,7 @@ describe('bootstrapClientContent', () => {
       .map((call) => call[0] as { collection: string; data: Record<string, unknown> })
       .filter((record) => record.collection !== 'users');
     expect(records.filter((record) => record.collection === 'service-presentations')).toHaveLength(
-      5,
+      3,
     );
     const servicePresentations = records.filter(
       (record) => record.collection === 'service-presentations',
@@ -63,8 +63,9 @@ describe('bootstrapClientContent', () => {
         return (
           Array.isArray(layout) &&
           layout.length > 0 &&
-          layout[0]?.blockType === 'serviceHero' &&
-          layout.some((block) => block?.blockType === 'serviceEnquiryAside')
+          layout[0]?.blockType === 'serviceSections' &&
+          Array.isArray(layout[0]?.sections) &&
+          layout[0].sections.length > 0
         );
       }),
     ).toBe(true);
@@ -109,11 +110,21 @@ describe('bootstrapClientContent', () => {
     expect(
       records.find((record) => record.data.slug === 'privacy-policy')?.data.effectiveDate,
     ).toBe('2026-10-03');
-    const publishedRecords = records.filter((record) => record.collection !== 'categories');
+    const publishedRecords = records.filter(
+      (record) =>
+        record.collection !== 'categories' &&
+        record.collection !== 'projects' &&
+        record.collection !== 'posts',
+    );
     expect(
       publishedRecords.every(
         (record) => record.data.fixture === false && record.data._status === 'published',
       ),
+    ).toBe(true);
+    expect(
+      records
+        .filter((record) => record.collection === 'projects' || record.collection === 'posts')
+        .every((record) => record.data._status === 'draft'),
     ).toBe(true);
     expect(
       records.every(
