@@ -48,12 +48,16 @@ function presentation(slug: string, noIndex = false): ContentDocument {
 }
 
 describe('indexableServiceSlugs', () => {
-  it('includes catalogue services and drops CMS noIndex', () => {
+  it('includes only the approved service categories and drops CMS noIndex', () => {
     const slugs = indexableServiceSlugs(
-      [publicService('new-assay')],
-      [presentation('new-assay'), presentation('cms-only'), presentation('hidden', true)],
+      [publicService('molecular-research')],
+      [
+        presentation('molecular-research'),
+        presentation('biomedical-data-analysis'),
+        presentation('hidden', true),
+      ],
     );
-    expect(slugs).toEqual(['cms-only', 'new-assay']);
+    expect(slugs).toEqual(['biomedical-data-analysis', 'molecular-research']);
   });
 });
 

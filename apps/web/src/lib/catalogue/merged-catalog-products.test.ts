@@ -24,18 +24,10 @@ const publishedProduct: PublicProduct = {
 describe('public product listing', () => {
   beforeEach(() => listPublicProducts.mockReset());
 
-  it('shows the catalogue when the API returns none', async () => {
+  it('does not expose unapproved prototype catalogue entries when the API is empty', async () => {
     listPublicProducts.mockResolvedValue({ items: [], degraded: true });
     const products = await listMergedCatalogProducts();
-    expect(products.map((product) => product.sku)).toEqual([
-      'CR-CEL-3091',
-      'CR-CEL-8402',
-      'CR-MOL-1021',
-      'CR-MOL-2045',
-      'CR-MOL-3012',
-      'CR-PRE-5510',
-      'CR-REG-1180',
-    ]);
+    expect(products).toEqual([]);
   });
 
   it('shows public records without inferring price or stock', async () => {
@@ -45,12 +37,12 @@ describe('public product listing', () => {
       expect.objectContaining({
         sku: 'REAL-001',
         title: 'Published product',
-        price: 'Price on enquiry',
         listPriceMinor: null,
+        checkoutEnabled: false,
         inStock: null,
         specs: [],
       }),
     );
-    expect(products.some((product) => product.sku === 'CR-MOL-1021')).toBe(true);
+    expect(products.some((product) => product.sku === 'CR-MOL-1021')).toBe(false);
   });
 });

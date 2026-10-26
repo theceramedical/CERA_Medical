@@ -178,12 +178,15 @@ describe('session presence', () => {
     expect(response.headers.get('location')).toBeNull();
   });
 
-  it.each(['/', '/services', '/articles/heart-health', '/contact'])(
-    'leaves the public route %s alone',
-    (path) => {
-      expect(proxy(requestFor(path)).status).toBe(200);
-    },
-  );
+  it.each(['/', '/services', '/contact'])('leaves the public route %s alone', (path) => {
+    expect(proxy(requestFor(path)).status).toBe(200);
+  });
+
+  it('redirects the retired articles route to projects', () => {
+    const response = proxy(requestFor('/articles/heart-health'));
+    expect(response.status).toBe(301);
+    expect(response.headers.get('location')).toBe('https://cera.example/projects');
+  });
 
   it('does not treat a route that merely starts with the same letters as protected', () => {
     // `/accounts-payable` is not under `/account`. Prefix matching without the boundary check is

@@ -3,23 +3,23 @@ import { describe, expect, it } from 'vitest';
 import { MAIN_NAV, withProductsNav } from './navigation.ts';
 
 describe('main nav', () => {
-  it('includes Products after Services', () => {
+  it('includes the approved top-level destinations', () => {
     expect(MAIN_NAV.map((item) => item.href)).toEqual([
       '/',
       '/services',
       '/products',
-      '/articles',
+      '/projects',
       '/about',
       '/contact',
     ]);
   });
 
-  it('injects Products when CMS header omits it', () => {
+  it('preserves caller-provided navigation items', () => {
     const merged = withProductsNav([
       { href: '/', label: 'Home' },
       { href: '/services', label: 'Services' },
       { href: '/articles', label: 'Research Updates' },
     ]);
-    expect(merged.map((item) => item.href)).toEqual(['/', '/services', '/products', '/articles']);
+    expect(merged.map((item) => item.href)).toEqual(['/', '/services', '/articles']);
   });
 });
