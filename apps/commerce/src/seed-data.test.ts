@@ -8,13 +8,11 @@ import {
 } from './seed-data.js';
 
 describe('CERA catalogue seed data', () => {
-  it('contains the five client-provided research services', () => {
+  it('contains the three client-approved research service categories', () => {
     expect(SEED_SERVICES.map((service) => service.slug)).toEqual([
       'preclinical-studies',
       'molecular-research',
-      'metagenomic-data-analysis',
-      'biomedical-omics-data-analysis',
-      'evidence-synthesis-technical-reports',
+      'biomedical-data-analysis',
     ]);
     expect(SEED_SERVICES.every((service) => service.enabled && service.enquiryEnabled)).toBe(true);
   });
