@@ -75,3 +75,6 @@ next-env.d.ts
 # Local scratch
 .scratch/
 tmp/
+
+.cursor/
+nimbalyst-local/

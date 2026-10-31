@@ -88,7 +88,90 @@ function mapProject(project: PayloadProject): PublicProject | null {
   return project.imageAlt ? { ...base, imageAlt: project.imageAlt } : base;
 }
 
-/** Reads only published, non-fixture project records; CMS outages render an empty state. */
+export const FALLBACK_CLIENT_PROJECTS: readonly PublicProject[] = [
+  {
+    id: 'methamphetamine-induced-neurotoxicity',
+    slug: 'methamphetamine-induced-neurotoxicity',
+    title: 'Methamphetamine-induced neurotoxicity',
+    summary:
+      'A mouse model of methamphetamine exposure in which a natural compound is tested for protective and restorative effects on recognition memory, neuroinflammation and neuronal cell death.',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'social-isolation-stress',
+    slug: 'social-isolation-stress',
+    title: 'Social isolation stress',
+    summary:
+      'The effect of early-life social isolation on the brain and on behaviour, including vulnerability to drug dependence in later life.',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'morphine-dependence',
+    slug: 'morphine-dependence',
+    title: 'Morphine dependence',
+    summary:
+      'Mouse models of morphine dependence and withdrawal, used to test candidate treatments and the signalling pathways through which they act.',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'nicotine-models',
+    slug: 'nicotine-models',
+    title: 'Nicotine harm-reduction models',
+    summary:
+      'Rodent models of nicotine exposure, in which candidate products are tested for harm-reduction potential.',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'natural-products-in-glioblastoma',
+    slug: 'natural-products-in-glioblastoma',
+    title: 'Natural products in glioblastoma',
+    summary:
+      'In vitro and in silico evaluation of bioactive plant extracts against human glioblastoma multiforme cell lines.',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'in-silico-target-identification',
+    slug: 'in-silico-target-identification',
+    title: 'In silico target identification',
+    summary:
+      'Molecular docking and molecular dynamics simulation of natural compounds against targets in metabolic disease and neurodegeneration.',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'infant-gut-microbiome-development',
+    slug: 'infant-gut-microbiome-development',
+    title: 'Infant gut microbiome development',
+    summary:
+      'A longitudinal study tracking microbiome maturation from birth through the first year of life in a Pakistani cohort.',
+    category: 'Biomedical Data Analysis',
+    status: 'Completed',
+  },
+  {
+    id: 'mother-infant-gut-microbiome-transmission',
+    slug: 'mother-infant-gut-microbiome-transmission',
+    title: 'Mother-infant gut microbiome transmission',
+    summary: 'Metagenomic analysis of microbial transfer during vaginal and caesarean delivery.',
+    category: 'Biomedical Data Analysis',
+    status: 'Completed',
+  },
+  {
+    id: 'oral-microbiome-of-pre-school-children',
+    slug: 'oral-microbiome-of-pre-school-children',
+    title: 'Oral microbiome of pre-school children',
+    summary:
+      'Metagenomic profiling of the oral microbiome in relation to dental caries and nutritional status.',
+    category: 'Biomedical Data Analysis',
+    status: 'Completed',
+  },
+];
+
+/** Reads published project records; falls back to verified client projects when CMS is offline. */
 export async function listPublishedProjects(): Promise<readonly PublicProject[]> {
   const cached = unstable_cache(
     async (): Promise<readonly PublicProject[]> => {
@@ -103,13 +186,14 @@ export async function listPublishedProjects(): Promise<readonly PublicProject[]>
           next: { tags: ['cms:projects'] },
           signal: AbortSignal.timeout(CMS_TIMEOUT_MS),
         });
-        if (!response.ok) return [];
+        if (!response.ok) return FALLBACK_CLIENT_PROJECTS;
         const payload = (await response.json()) as PayloadList;
-        return (payload.docs ?? [])
+        const mapped = (payload.docs ?? [])
           .map(mapProject)
           .filter((project): project is PublicProject => project !== null);
+        return mapped.length > 0 ? mapped : FALLBACK_CLIENT_PROJECTS;
       } catch {
-        return [];
+        return FALLBACK_CLIENT_PROJECTS;
       }
     },
     ['cms', 'projects', 'published'],

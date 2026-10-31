@@ -1,6 +1,10 @@
 import { AppButtonLink } from './link.tsx';
 
-/** Desktop header auth actions — rendered once (mobile uses {@link MobileNav}). */
+/**
+ * Desktop header auth actions.
+ * Per October 2026 revision: unauthenticated public visitors see only "Make an Enquiry".
+ * Authenticated visitors see their account / staff portal links.
+ */
 export function SiteHeaderAuthActions({
   signedIn,
   staff,
@@ -23,9 +27,5 @@ export function SiteHeaderAuthActions({
     );
   }
 
-  return (
-    <AppButtonLink href="/auth/sign-in?next=/account" variant="outline" size="sm">
-      Sign In
-    </AppButtonLink>
-  );
+  return null;
 }

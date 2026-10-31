@@ -86,7 +86,37 @@ function mapProject(project: PayloadProject): FeaturedProjectCard | null {
   return project.imageAlt ? { ...card, imageAlt: project.imageAlt } : card;
 }
 
-/** Published, homepage-selected project cards. CMS failures intentionally degrade to an empty selection. */
+export const FALLBACK_FEATURED_PROJECTS: readonly FeaturedProjectCard[] = [
+  {
+    id: 'methamphetamine-induced-neurotoxicity',
+    title: 'Methamphetamine-induced neurotoxicity',
+    summary:
+      'A mouse model of methamphetamine exposure in which a natural compound is tested for protective and restorative effects on recognition memory, neuroinflammation and neuronal cell death.',
+    href: '/projects#methamphetamine-induced-neurotoxicity',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+  {
+    id: 'infant-gut-microbiome-development',
+    title: 'Infant gut microbiome development',
+    summary:
+      'A longitudinal study tracking microbiome maturation from birth through the first year of life in a Pakistani cohort.',
+    href: '/projects#infant-gut-microbiome-development',
+    category: 'Biomedical Data Analysis',
+    status: 'Completed',
+  },
+  {
+    id: 'natural-products-in-glioblastoma',
+    title: 'Natural products in glioblastoma',
+    summary:
+      'In vitro and in silico evaluation of bioactive plant extracts against human glioblastoma multiforme cell lines.',
+    href: '/projects#natural-products-in-glioblastoma',
+    category: 'Preclinical Studies',
+    status: 'Running',
+  },
+];
+
+/** Published, homepage-selected project cards. Falls back to verified client projects when CMS is offline. */
 export async function getFeaturedProjects(limit?: number): Promise<readonly FeaturedProjectCard[]> {
   const boundedLimit = positiveLimit(limit);
   if (boundedLimit === 0) return [];
@@ -106,13 +136,14 @@ export async function getFeaturedProjects(limit?: number): Promise<readonly Feat
           next: { tags: ['cms:projects'] },
           signal: AbortSignal.timeout(CMS_TIMEOUT_MS),
         });
-        if (!response.ok) return [];
+        if (!response.ok) return FALLBACK_FEATURED_PROJECTS.slice(0, boundedLimit);
         const payload = (await response.json()) as PayloadList;
-        return (payload.docs ?? [])
+        const mapped = (payload.docs ?? [])
           .map(mapProject)
           .filter((project): project is FeaturedProjectCard => project !== null);
+        return mapped.length > 0 ? mapped : FALLBACK_FEATURED_PROJECTS.slice(0, boundedLimit);
       } catch {
-        return [];
+        return FALLBACK_FEATURED_PROJECTS.slice(0, boundedLimit);
       }
     },
     ['cms', 'projects', 'featured', String(boundedLimit)],

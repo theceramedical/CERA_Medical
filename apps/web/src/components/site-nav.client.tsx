@@ -208,12 +208,8 @@ export function MobileNav({
                       Your account
                     </ButtonLink>
                   </>
-                ) : (
-                  <ButtonLink href="/auth/sign-in?next=/account" variant="outline" fullWidth>
-                    Sign In
-                  </ButtonLink>
-                )}
-                <ButtonLink as={NextLink} href="/enquiry" variant="accent" fullWidth>
+                ) : null}
+                <ButtonLink as={NextLink} href="/contact#contact-form" variant="accent" fullWidth>
                   Make an Enquiry
                 </ButtonLink>
               </div>

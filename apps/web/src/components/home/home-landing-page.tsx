@@ -1,9 +1,10 @@
 import { Heading, Text } from '@cera/ui/typography';
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Microscope } from 'lucide-react';
+import { ArrowRight, Building2, Cpu, Dna, Microscope } from 'lucide-react';
 
 import type { PublicProduct } from '@cera/contracts/projections';
 
 import { FacilityMedia } from '../facility-media.tsx';
+import { LabMouseIcon } from '../icons/lab-mouse-icon.tsx';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
 import type { FeaturedProjectCard } from '../../lib/projects/getFeaturedProjects.ts';
@@ -67,30 +68,36 @@ export interface HomeLandingCopy {
 
 export const DEFAULT_HOME_LANDING_COPY: HomeLandingCopy = {
   hero: {
-    eyebrow: 'Biomedical research and development',
+    eyebrow: 'Biomedical Research and Development',
     headlinePrimary: 'Research that moves',
     headlineAccent: 'health forward',
-    body: 'CERA Medical is an SECP-registered biomedical research and development company based in Haripur, Pakistan. We carry out preclinical and molecular laboratory studies and analyse biomedical and metagenomic data through to publication-ready results.',
-    primaryLabel: 'Explore Services',
+    body: 'CERA Medical is an SECP-registered biomedical research and development company based in Haripur, Pakistan. We carry out specialized preclinical in vivo rodent and animal studies, molecular genetics work, and analyse biomedical and metagenomic data through to publication-ready results.',
+    primaryLabel: 'Explore In Vivo & Lab Services',
     primaryHref: '/services',
-    secondaryLabel: 'Make an Enquiry',
+    secondaryLabel: 'Request Preclinical Scoping',
     secondaryHref: '/contact#contact-form',
   },
   services: {
-    eyebrow: 'Research services',
+    eyebrow: 'Research Divisions',
     heading: 'Our Services',
-    body: '',
+    body: 'Three integrated research divisions covering in vivo animal models, molecular diagnostics, and publication-ready bioinformatic analysis.',
     groups: [
       {
         number: '01',
         title: 'Preclinical Studies',
         description:
-          'Testing candidate treatments in animal models, in cells and by computer simulation.',
+          'Specialized animal models of disease, in vivo behavioural and drug testing in our Animal House, cell culture, and GPU simulations.',
         href: '/services/preclinical-studies',
         chips: [
-          { label: 'In vivo studies', href: '/services/preclinical-studies#in-vivo-studies' },
-          { label: 'In vitro studies', href: '/services/preclinical-studies#in-vitro-studies' },
-          { label: 'In silico studies', href: '/services/preclinical-studies#in-silico-studies' },
+          {
+            label: 'In vivo rodent & mouse models',
+            href: '/services/preclinical-studies#in-vivo-studies',
+          },
+          { label: 'In vitro cell assays', href: '/services/preclinical-studies#in-vitro-studies' },
+          {
+            label: 'In silico GPU dynamics',
+            href: '/services/preclinical-studies#in-silico-studies',
+          },
         ],
       },
       {
@@ -140,7 +147,7 @@ export const DEFAULT_HOME_LANDING_COPY: HomeLandingCopy = {
   projects: {
     eyebrow: 'Research in practice',
     heading: 'Our Projects',
-    body: 'Studies running in our laboratories and analyses we have completed.',
+    body: 'Studies running in our animal house and molecular laboratories, alongside completed metagenomic cohorts.',
     viewAllLabel: 'View all projects',
     viewAllHref: '/projects',
     emptyText: 'Project features will appear here when published.',
@@ -155,17 +162,17 @@ export const DEFAULT_HOME_LANDING_COPY: HomeLandingCopy = {
     emptyText: 'View the catalogue for currently listed research products.',
   },
   howWeWork: {
-    eyebrow: 'How we work',
-    heading: 'A clear path from scope to results',
-    body: 'Every project starts with a written scope and protocol and ends with documented results and revision rounds. See how we work.',
-    linkLabel: 'See the Methodology',
+    eyebrow: 'Methodology & Ethics',
+    heading: 'A disciplined path from protocol to publication',
+    body: 'Every project starts with an agreed written scope and protocol, animal ethics review where in vivo models are involved, and documented revision rounds.',
+    linkLabel: 'See our Methodology',
     href: '/methodology',
   },
   cta: {
-    eyebrow: 'Start a conversation',
-    heading: 'Ready to discuss your study?',
-    body: 'Tell us about your samples, compounds or data. We reply within three working days.',
-    label: 'Make an Enquiry',
+    eyebrow: 'Preclinical & Study Scoping',
+    heading: 'Ready to scope your in vivo or molecular study?',
+    body: 'Tell us about your candidate compounds, animal model specifications, or sequencing datasets. We reply within three working days.',
+    label: 'Start Study Scoping',
     href: '/contact#contact-form',
   },
 };
@@ -183,72 +190,163 @@ export function HomeLandingPage({
     <main>
       <section
         aria-labelledby="home-heading"
-        className="relative isolate overflow-hidden bg-surface-tint"
+        className="relative isolate overflow-hidden border-b border-border bg-gradient-to-b from-surface-tint via-surface to-surface-tint-2"
       >
-        <div className="mx-auto grid max-w-site items-center gap-10 px-6 py-14 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:gap-16 lg:py-24">
+        <div className="relative mx-auto grid max-w-site items-center gap-12 px-6 py-14 sm:py-20 md:px-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:gap-16 lg:py-24">
           <div className="relative z-10 max-w-3xl">
-            <p className="mb-5 inline-flex items-center gap-2 text-eyebrow font-semibold tracking-[0.16em] text-accent uppercase">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-3.5 py-1 text-eyebrow font-semibold tracking-[0.16em] text-accent uppercase shadow-2xs">
               <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
               {copy.hero.eyebrow}
-            </p>
+            </div>
+
             <Heading
               id="home-heading"
               level={1}
               size="display-1"
-              className="max-w-[13ch] text-balance tracking-tight"
+              className="max-w-[14ch] text-balance tracking-tight"
             >
               {copy.hero.headlinePrimary}{' '}
               <span className="text-primary">{copy.hero.headlineAccent}</span>
             </Heading>
+
             <Text size="body-lg" tone="muted" measure className="mt-6 max-w-2xl leading-relaxed">
               {copy.hero.body}
             </Text>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <AppButtonLink
-                href={copy.hero.primaryHref}
-                variant="primary"
-                size="lg"
-                iconEnd={<ArrowRight size={17} aria-hidden="true" />}
-              >
-                {copy.hero.primaryLabel}
-              </AppButtonLink>
-              <AppButtonLink href={copy.hero.secondaryHref} variant="outline" size="lg">
-                {copy.hero.secondaryLabel}
-              </AppButtonLink>
+
+            {/* Action buttons with touching laboratory research mouse badge */}
+            <div className="mt-8 flex flex-col gap-3">
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/25 bg-surface px-3.5 py-1.5 shadow-xs">
+                <span className="flex size-6 items-center justify-center rounded-full bg-primary-50 text-primary">
+                  <LabMouseIcon size={15} />
+                </span>
+                <span className="text-caption font-semibold tracking-tight text-foreground">
+                  In Vivo Animal Models & Mus Musculus Research Facility
+                </span>
+                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-bold text-accent uppercase">
+                  Animal House
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <AppButtonLink
+                  href={copy.hero.primaryHref}
+                  variant="primary"
+                  size="lg"
+                  iconStart={
+                    <LabMouseIcon
+                      size={18}
+                      className="transition-transform group-hover:scale-110"
+                    />
+                  }
+                  iconEnd={<ArrowRight size={17} aria-hidden="true" />}
+                >
+                  {copy.hero.primaryLabel}
+                </AppButtonLink>
+                <AppButtonLink
+                  href={copy.hero.secondaryHref}
+                  variant="outline"
+                  size="lg"
+                  iconEnd={<ArrowRight size={16} aria-hidden="true" />}
+                >
+                  {copy.hero.secondaryLabel}
+                </AppButtonLink>
+              </div>
             </div>
-            <div className="mt-12 flex items-center gap-3 border-t border-border pt-5 text-caption font-medium text-muted">
-              <span className="flex size-9 items-center justify-center rounded-full border border-border bg-surface text-primary">
-                <Microscope size={17} aria-hidden="true" />
-              </span>
-              <span>Haripur, Pakistan</span>
-              <span aria-hidden="true" className="text-border">
-                /
-              </span>
-              <span>Research and development</span>
+
+            {/* 4 Pillars research capability strip */}
+            <div className="mt-12 grid grid-cols-2 gap-4 border-t border-border pt-6 sm:grid-cols-4">
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary-50 text-primary">
+                  <LabMouseIcon size={17} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-caption font-semibold text-heading">In Vivo Models</div>
+                  <div className="truncate text-[0.72rem] text-muted">Mice & Rodents</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary-50 text-primary">
+                  <Microscope size={17} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-caption font-semibold text-heading">Molecular Lab</div>
+                  <div className="truncate text-[0.72rem] text-muted">Sanger & RT-qPCR</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary-50 text-primary">
+                  <Cpu size={17} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-caption font-semibold text-heading">Tesla V100 GPU</div>
+                  <div className="truncate text-[0.72rem] text-muted">In Silico Dynamics</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary-50 text-primary">
+                  <Building2 size={17} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-caption font-semibold text-heading">SECP Registered</div>
+                  <div className="truncate text-[0.72rem] text-muted">PAF-IAST Haripur</div>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Focal Research Modality Graphic */}
           <div aria-hidden="true" className="relative mx-auto aspect-square w-full max-w-[32rem]">
-            <div className="absolute inset-[7%] rounded-full border border-primary/15" />
-            <div className="absolute inset-[18%] rounded-full border border-primary/20" />
-            <div className="absolute inset-[30%] rounded-full border border-accent/25" />
-            <div className="absolute inset-[8%] rotate-45 rounded-[2.5rem] border border-primary/10" />
-            <div className="absolute inset-[18%] -rotate-[30deg] rounded-[2.5rem] border border-accent/15" />
-            <div className="absolute inset-[28%] flex flex-col items-center justify-center rounded-full bg-primary text-on-primary shadow-lg">
-              <span className="font-wordmark text-5xl font-bold tracking-tight sm:text-6xl">
+            <div className="absolute inset-[3%] rounded-full border border-dashed border-primary/20" />
+            <div className="absolute inset-[14%] rounded-full border border-primary/25" />
+            <div className="absolute inset-[26%] rounded-full border border-accent/30" />
+            <div className="absolute inset-[10%] rotate-45 rounded-[3rem] border border-primary/10" />
+            <div className="absolute inset-[20%] -rotate-[35deg] rounded-[3rem] border border-accent/15" />
+
+            {/* Central emblem */}
+            <div className="absolute inset-[28%] flex flex-col items-center justify-center rounded-full bg-primary text-on-primary shadow-xl">
+              <span className="font-wordmark text-4xl font-extrabold tracking-tight sm:text-5xl">
                 CERA
               </span>
-              <span className="mt-2 text-[0.65rem] font-semibold tracking-[0.3em] text-on-primary/80 uppercase">
+              <span className="mt-1 text-[0.65rem] font-semibold tracking-[0.32em] text-on-primary/85 uppercase">
                 Medical
               </span>
+              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-on-primary/15 px-2.5 py-0.5 text-[0.6rem] font-medium text-on-primary">
+                <LabMouseIcon size={11} />
+                Research Institute
+              </span>
             </div>
-            <div className="absolute top-[13%] left-[18%] size-3 rounded-full bg-accent ring-8 ring-accent/10" />
-            <div className="absolute right-[15%] bottom-[22%] size-2.5 rounded-full bg-primary ring-8 ring-primary/10" />
-            <div className="absolute right-[12%] top-[30%] flex size-10 items-center justify-center rounded-xl border border-border bg-surface text-accent shadow-sm">
-              <ArrowUpRight size={19} />
+
+            {/* Floating Scientific Node 1: In Vivo Animal House */}
+            <div className="absolute -top-1 right-[8%] flex items-center gap-2.5 rounded-xl border border-primary/25 bg-surface p-2.5 shadow-md">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-primary-50 text-primary">
+                <LabMouseIcon size={20} />
+              </span>
+              <div>
+                <div className="text-caption font-bold text-heading">In Vivo Facility</div>
+                <div className="text-[0.65rem] text-muted">Mus musculus models</div>
+              </div>
             </div>
-            <div className="absolute bottom-[9%] left-[24%] flex size-10 items-center justify-center rounded-xl border border-border bg-surface text-primary shadow-sm">
-              <ArrowDownRight size={19} />
+
+            {/* Floating Scientific Node 2: Molecular & Histology */}
+            <div className="absolute bottom-[8%] -left-2 flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2.5 shadow-md">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-teal-50 text-accent">
+                <Dna size={18} />
+              </span>
+              <div>
+                <div className="text-caption font-bold text-heading">Genomics & Sanger</div>
+                <div className="text-[0.65rem] text-muted">PAF-IAST Labs</div>
+              </div>
+            </div>
+
+            {/* Floating Scientific Node 3: GPU Cluster */}
+            <div className="absolute right-[4%] bottom-[12%] flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2.5 shadow-md">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-primary-50 text-primary">
+                <Cpu size={18} />
+              </span>
+              <div>
+                <div className="text-caption font-bold text-heading">NVIDIA V100 GPU</div>
+                <div className="text-[0.65rem] text-muted">Molecular dynamics</div>
+              </div>
             </div>
           </div>
         </div>
@@ -270,11 +368,19 @@ export function HomeLandingPage({
             {copy.services.groups.map((group) => (
               <article
                 key={group.number}
-                className="flex min-w-0 flex-col border-t-2 border-primary bg-surface-subtle p-5 sm:p-6"
+                className="flex min-w-0 flex-col border-t-2 border-primary bg-surface-subtle p-5 sm:p-6 shadow-2xs transition-shadow hover:shadow-xs"
               >
-                <span className="font-wordmark text-sm font-semibold tracking-[0.14em] text-accent">
-                  {group.number}
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-wordmark text-sm font-semibold tracking-[0.14em] text-accent">
+                    {group.number}
+                  </span>
+                  {group.number === '01' ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary-50 px-2.5 py-0.5 text-[0.7rem] font-bold text-primary">
+                      <LabMouseIcon size={13} />
+                      Animal House
+                    </span>
+                  ) : null}
+                </div>
                 <Heading level={3} size="h4" className="mt-4">
                   {group.title}
                 </Heading>
@@ -286,8 +392,11 @@ export function HomeLandingPage({
                     <li key={chip.label}>
                       <AppLink
                         href={chip.href}
-                        className="inline-flex min-h-9 items-center rounded-sm border border-border bg-surface px-3 py-1 text-caption font-medium text-primary no-underline transition-colors hover:border-primary hover:bg-primary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-sm border border-border bg-surface px-3 py-1 text-caption font-medium text-primary no-underline transition-colors hover:border-primary hover:bg-primary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                       >
+                        {group.number === '01' && chip.label.toLowerCase().includes('in vivo') ? (
+                          <LabMouseIcon size={13} />
+                        ) : null}
                         {chip.label}
                       </AppLink>
                     </li>
@@ -298,7 +407,14 @@ export function HomeLandingPage({
                   className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold no-underline"
                 >
                   Explore {group.title}
-                  <ArrowRight size={16} aria-hidden="true" />
+                  {group.number === '01' ? (
+                    <LabMouseIcon
+                      size={16}
+                      className="text-primary transition-transform group-hover:scale-110"
+                    />
+                  ) : (
+                    <ArrowRight size={16} aria-hidden="true" />
+                  )}
                 </AppLink>
               </article>
             ))}
@@ -358,6 +474,17 @@ export function HomeLandingPage({
                       {project.status ? (
                         <span className="rounded-sm border border-border px-2 py-0.5 text-caption text-muted">
                           {project.status}
+                        </span>
+                      ) : null}
+                      {project.category === 'Preclinical Studies' ||
+                      project.title.toLowerCase().includes('neurotoxicity') ||
+                      project.title.toLowerCase().includes('morphine') ||
+                      project.title.toLowerCase().includes('stress') ||
+                      project.title.toLowerCase().includes('nicotine') ||
+                      project.title.toLowerCase().includes('gut-induced') ? (
+                        <span className="inline-flex items-center gap-1 rounded-sm border border-primary/20 bg-primary-50 px-2 py-0.5 text-caption font-semibold text-primary">
+                          <LabMouseIcon size={12} />
+                          Mouse Model
                         </span>
                       ) : null}
                     </div>
@@ -477,6 +604,48 @@ export function HomeLandingPage({
       </section>
 
       <section
+        aria-label="Institutional Collaborations"
+        className="border-y border-border bg-surface-subtle py-10"
+      >
+        <div className="mx-auto max-w-site px-6 md:px-10">
+          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+            <span className="text-caption font-semibold tracking-[0.14em] text-muted uppercase">
+              Institutional Collaborations & Partners
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/images/partners/vet-tec.jpg"
+                  alt="Vet Tec Health Care"
+                  className="h-8 w-auto object-contain opacity-85 transition-opacity hover:opacity-100"
+                  loading="lazy"
+                />
+                <span className="text-caption font-medium text-heading">Vet Tec Health Care</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/images/partners/sequel-pharma.png"
+                  alt="Sequel Pharma"
+                  className="h-7 w-auto object-contain opacity-85 transition-opacity hover:opacity-100"
+                  loading="lazy"
+                />
+                <span className="text-caption font-medium text-heading">Sequel Pharma</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/images/partners/dost-kp.png"
+                  alt="DG Science & Technology KP"
+                  className="h-7 w-auto object-contain opacity-85 transition-opacity hover:opacity-100"
+                  loading="lazy"
+                />
+                <span className="text-caption font-medium text-heading">DG Science & Tech KP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
         aria-labelledby="contact-cta-heading"
         className="bg-primary py-14 text-on-primary sm:py-16"
       >
@@ -499,6 +668,9 @@ export function HomeLandingPage({
             href={copy.cta.href}
             variant="on-dark"
             size="lg"
+            iconStart={
+              <LabMouseIcon size={19} className="transition-transform group-hover:scale-110" />
+            }
             iconEnd={<ArrowRight size={17} aria-hidden="true" />}
           >
             {copy.cta.label}
