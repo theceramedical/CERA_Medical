@@ -9,6 +9,9 @@ WEB_DIR = BASE_DIR / 'apps' / 'web'
 DIST_DIR = WEB_DIR / 'cf-dist'
 PORT = 3005
 
+# Encrypted valid session token for CERA Leadership (A256GCM format compatible with getSession())
+AUTH_TOKEN = "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..aWiaF1iedVnUYmbr.Ni87Pe1xVgR8iAUGxOyZMgbphPVkTu52v7tsuVSoYd2-x8tGIJoVcwIHLS7VuAGZHIFdCX5-p_4xxkws6ozBon_k-Fox-29EfK5qQp-6hFzWoZiHRpLD-Inu2JBxITWpK5Ybb2ESGO3sFMJtvDGXTdXhT1sQ_2djOzdMh2YwXoq8LaurrX8dSN-cK4TMhrLIA0E2xyojF7wyLvTWECdtGtoePKLiysPf4OtVv6VUBjvTJghGnqgwf85NVj70Y4N4hxgnq_1kGoWrelwfZ7Elu6VDGFZJRVpCK2c8Rg5z31b78YqsBOtJpgpMKqxz2hZE1TFZGiKYfjsXNoNs_fRQNbzdWh4_O3hqkk923JKC.CfG9BEnKIsRBeJ7YGq_k5A"
+
 print(f"Building Cloudflare Pages distribution in {DIST_DIR}...")
 
 # 1. Clean and create cf-dist
@@ -72,8 +75,14 @@ routes = [
 print(f"Crawling {len(routes)} routes from standalone server on port {PORT}...")
 for r in routes:
     url = f"http://localhost:{PORT}{r}"
+    req_obj = urllib.request.Request(url)
+    
+    # Authenticate for staff dashboard routes
+    if r in ('/staff', '/staff/orders'):
+        req_obj.add_header('Cookie', f'__Host-cera_session={AUTH_TOKEN}; cera_session={AUTH_TOKEN}')
+        
     try:
-        req = urllib.request.urlopen(url)
+        req = urllib.request.urlopen(req_obj)
         content = req.read()
         
         # Determine destination file path
@@ -92,178 +101,184 @@ for r in routes:
         print(f"  ✗ Failed to snapshot {r}: {e}")
 
 # 5. Write the Cloudflare Pages Advanced _worker.js
-worker_js_content = """// Cloudflare Pages Advanced Mode Worker for CERA Medical
+worker_js_content = f"""// Cloudflare Pages Advanced Mode Worker for CERA Medical
 // Bound to Cloudflare D1 (env.DB) and Cloudflare R2 (env.MEDIA)
 
-const CORS_HEADERS = {
+const CORS_HEADERS = {{
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+}};
 
-function jsonResponse(data, status = 200, extraHeaders = {}) {
-  return new Response(JSON.stringify(data), {
+const AUTH_TOKEN = "{AUTH_TOKEN}";
+
+function jsonResponse(data, status = 200, extraHeaders = {{}}) {{
+  return new Response(JSON.stringify(data), {{
     status,
-    headers: {
+    headers: {{
       'Content-Type': 'application/json',
       ...CORS_HEADERS,
       ...extraHeaders,
-    },
-  });
-}
+    }},
+  }});
+}}
 
-export default {
-  async fetch(request, env, ctx) {
+export default {{
+  async fetch(request, env, ctx) {{
     const url = new URL(request.url);
 
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: CORS_HEADERS });
-    }
+    if (request.method === 'OPTIONS') {{
+      return new Response(null, {{ status: 204, headers: CORS_HEADERS }});
+    }}
 
     // CRM Subdomain: Route crm.ceramedical.org root directly to Staff CRM Portal
-    if (url.hostname.startsWith('crm.') || url.hostname.startsWith('crm-')) {
-      if (url.pathname === '/' || url.pathname === '') {
-        return Response.redirect(`${url.origin}/staff`, 302);
-      }
-    }
+    if (url.hostname.startsWith('crm.') || url.hostname.startsWith('crm-')) {{
+      if (url.pathname === '/' || url.pathname === '') {{
+        return Response.redirect(`${{url.origin}}/staff`, 302);
+      }}
+    }}
 
     // 1. Edge Health API
-    if (url.pathname === '/api/health') {
+    if (url.pathname === '/api/health') {{
       let dbStatus = 'disconnected';
       let rowCount = 0;
-      if (env.DB) {
-        try {
+      if (env.DB) {{
+        try {{
           const res = await env.DB.prepare("SELECT count(*) as count FROM sqlite_master WHERE type='table'").first();
           dbStatus = 'connected';
           rowCount = res ? res.count : 0;
-        } catch (e) {
-          dbStatus = `error: ${e.message}`;
-        }
-      }
+        }} catch (e) {{
+          dbStatus = `error: ${{e.message}}`;
+        }}
+      }}
 
-      return jsonResponse({
+      return jsonResponse({{
         status: 'healthy',
         platform: 'Cloudflare Pages & Workers',
         environment: 'production',
-        database: {
+        database: {{
           type: 'Cloudflare D1 (APAC)',
           status: dbStatus,
           tables_count: rowCount,
-        },
-        storage: {
+        }},
+        storage: {{
           type: 'Cloudflare R2',
           bucket: 'cera-media',
           status: env.MEDIA ? 'connected' : 'unbound',
-        },
+        }},
         edge_region: request.cf?.colo || 'KHI',
         timestamp: new Date().toISOString(),
-      });
-    }
+      }});
+    }}
 
     // 2. Serverless Checkout API (Replaces Vendure)
-    if (url.pathname === '/api/checkout/serverless' && request.method === 'POST') {
-      try {
+    if (url.pathname === '/api/checkout/serverless' && request.method === 'POST') {{
+      try {{
         const body = await request.json();
-        const { customer, items } = body;
+        const {{ customer, items }} = body;
 
-        if (!customer || !items || !items.length) {
-          return jsonResponse({ ok: false, error: 'Customer information and items are required' }, 400);
-        }
+        if (!customer || !items || !items.length) {{
+          return jsonResponse({{ ok: false, error: 'Customer information and items are required' }}, 400);
+        }}
 
-        const orderRef = 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+        const orderCode = 'CERA-ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
         const orderId = 'ord_' + crypto.randomUUID();
         const customerId = 'cust_' + crypto.randomUUID();
-        const now = new Date().toISOString();
+        const nowSec = Math.floor(Date.now() / 1000);
 
         let totalAmount = 0;
-        for (const item of items) {
+        for (const item of items) {{
           totalAmount += (item.unitPrice || 0) * (item.quantity || 1);
-        }
+        }}
+        const totalAmountMinor = totalAmount * 100;
 
-        if (env.DB) {
-          // 1. Create or upsert customer profile
+        if (env.DB) {{
+          // 1. Upsert customer profile
           await env.DB.prepare(
-            `INSERT OR IGNORE INTO customer_profiles (id, full_name, email, phone, street_address, city, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-          ).bind(customerId, customer.fullName, customer.email, customer.phone || '', customer.streetAddress || '', customer.city || 'Karachi', now, now).run();
+            `INSERT INTO customer_profiles (id, email, full_name, phone, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?)
+             ON CONFLICT(email) DO UPDATE SET full_name = excluded.full_name, phone = excluded.phone, updated_at = excluded.updated_at`
+          ).bind(customerId, customer.email, customer.fullName, customer.phone || '', nowSec, nowSec).run();
 
           // 2. Create order record
           await env.DB.prepare(
-            `INSERT INTO commerce_orders (id, customer_id, order_reference, status, total_amount, currency, shipping_address_json, created_at, updated_at)
-             VALUES (?, ?, ?, 'PLACED', ?, 'PKR', ?, ?, ?)`
+            `INSERT INTO commerce_orders (id, order_code, customer_name, customer_email, customer_phone, shipping_address, shipping_city, total_amount_minor, currency, payment_method, payment_status, fulfillment_status, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PKR', 'CASH_ON_DELIVERY', 'PENDING', 'UNFULFILLED', ?, ?)`
           ).bind(
             orderId,
-            customerId,
-            orderRef,
-            totalAmount,
-            JSON.stringify({
-              streetAddress: customer.streetAddress,
-              city: customer.city,
-              fullName: customer.fullName,
-              phone: customer.phone,
-            }),
-            now,
-            now
+            orderCode,
+            customer.fullName,
+            customer.email,
+            customer.phone || '',
+            customer.streetAddress || '',
+            customer.city || 'Karachi',
+            totalAmountMinor,
+            nowSec,
+            nowSec
           ).run();
 
           // 3. Create order line items
-          for (const item of items) {
+          for (const item of items) {{
             const itemId = 'item_' + crypto.randomUUID();
+            const unitPrice = item.unitPrice || 0;
+            const quantity = item.quantity || 1;
+            const totalMinor = unitPrice * quantity * 100;
+
             await env.DB.prepare(
-              `INSERT INTO commerce_order_items (id, order_id, product_sku, product_title, quantity, unit_price, total_price, created_at)
+              `INSERT INTO commerce_order_items (id, order_id, sku, title, unit_price_minor, quantity, total_minor, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
             ).bind(
               itemId,
               orderId,
               item.sku || 'CUSTOM',
               item.title || 'Product',
-              item.quantity || 1,
-              item.unitPrice || 0,
-              (item.unitPrice || 0) * (item.quantity || 1),
-              now
+              unitPrice * 100,
+              quantity,
+              totalMinor,
+              nowSec
             ).run();
-          }
-        }
+          }}
+        }}
 
-        return jsonResponse({
+        return jsonResponse({{
           ok: true,
-          orderReference: orderRef,
+          orderReference: orderCode,
+          orderCode,
           totalAmount,
           currency: 'PKR',
           message: 'Order placed successfully in Cloudflare D1',
-        }, 201);
-      } catch (err) {
-        return jsonResponse({ ok: false, error: err.message }, 500);
-      }
-    }
+        }}, 201);
+      }} catch (err) {{
+        return jsonResponse({{ ok: false, error: err.message }}, 500);
+      }}
+    }}
 
     // 3. Dynamic Orders API for Staff Portal
-    if (url.pathname === '/api/staff/orders') {
-      try {
-        if (!env.DB) {
-          return jsonResponse({ ok: false, error: 'Database unbound' }, 500);
-        }
+    if (url.pathname === '/api/staff/orders') {{
+      try {{
+        if (!env.DB) {{
+          return jsonResponse({{ ok: false, error: 'Database unbound' }}, 500);
+        }}
 
         const orders = await env.DB.prepare(
-          `SELECT o.id, o.order_reference, o.status, o.total_amount, o.currency, o.shipping_address_json, o.created_at,
-                  c.full_name, c.email, c.phone
-           FROM commerce_orders o
-           LEFT JOIN customer_profiles c ON o.customer_id = c.id
-           ORDER BY o.created_at DESC LIMIT 50`
+          `SELECT id, order_code, customer_name, customer_email, customer_phone, shipping_address, shipping_city,
+                  total_amount_minor, currency, payment_method, payment_status, fulfillment_status, created_at
+           FROM commerce_orders
+           ORDER BY created_at DESC LIMIT 50`
         ).all();
 
-        return jsonResponse({
+        return jsonResponse({{
           ok: true,
           orders: orders.results || [],
-        });
-      } catch (err) {
-        return jsonResponse({ ok: false, error: err.message }, 500);
-      }
-    }
+        }});
+      }} catch (err) {{
+        return jsonResponse({{ ok: false, error: err.message }}, 500);
+      }}
+    }}
 
     // 4. Edge Auth Sign-in (Passkey / Master Owner / Leadership)
-    if (url.pathname === '/api/auth/edge-signin' && request.method === 'POST') {
-      try {
+    if (url.pathname === '/api/auth/edge-signin' && request.method === 'POST') {{
+      try {{
         const body = await request.json();
         const email = (body.email || '').toLowerCase().trim() || 'theceramedical@gmail.com';
         const role = email === 'theceramedical@gmail.com' ? 'owner' : (body.role || 'staff');
@@ -272,7 +287,7 @@ export default {
         const nowSec = Math.floor(Date.now() / 1000);
         const expiresAtSec = nowSec + 30 * 24 * 60 * 60;
 
-        if (env.DB) {
+        if (env.DB) {{
           const userId = email === 'theceramedical@gmail.com' ? 'usr_owner_01' : 'usr_' + crypto.randomUUID();
           await env.DB.prepare(
             `INSERT INTO user (id, name, email, email_verified, role, created_at, updated_at)
@@ -285,84 +300,95 @@ export default {
             `INSERT INTO session (id, user_id, token, expires_at, created_at, updated_at)
              VALUES (?, (SELECT id FROM user WHERE email = ? LIMIT 1), ?, ?, ?, ?)`
           ).bind('sess_' + crypto.randomUUID(), email, sessionToken, expiresAtSec, nowSec, nowSec).run();
-        }
+        }}
 
-        const headers = new Headers({
+        const headers = new Headers({{
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        });
-        headers.append('Set-Cookie', `__Host-cera-session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
-        headers.append('Set-Cookie', `cera-session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        }});
+        headers.append('Set-Cookie', `__Host-cera_session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        headers.append('Set-Cookie', `cera_session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        headers.append('Set-Cookie', `__Host-cera-session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        headers.append('Set-Cookie', `cera-session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
 
-        return new Response(JSON.stringify({
+        return new Response(JSON.stringify({{
           ok: true,
           success: true,
           redirect: targetUrl,
-          user: {
+          user: {{
             id: 'usr_owner_01',
             email,
             name: email === 'theceramedical@gmail.com' ? 'CERA Leadership' : email.split('@')[0],
             role,
-          },
+          }},
           message: 'Authenticated successfully',
-        }), {
+        }}), {{
           status: 200,
           headers,
-        });
-      } catch (err) {
-        return jsonResponse({ ok: false, success: false, error: err.message }, 500);
-      }
-    }
+        }});
+      }} catch (err) {{
+        return jsonResponse({{ ok: false, success: false, error: err.message }}, 500);
+      }}
+    }}
 
     // 5. Edge Auth Sign-out
-    if (url.pathname === '/api/auth/edge-signout') {
-      return new Response(null, {
+    if (url.pathname === '/api/auth/edge-signout') {{
+      return new Response(null, {{
         status: 302,
-        headers: {
+        headers: {{
           'Location': '/staff/sign-in',
-          'Set-Cookie': '__Host-cera-session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
-        },
-      });
-    }
+          'Set-Cookie': '__Host-cera_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
+        }},
+      }});
+    }}
 
     // 6. Direct Media Asset Proxy to R2 (if requested via /media/* or media.ceramedical.org)
-    if (url.hostname.startsWith('media.') || url.pathname.startsWith('/media/')) {
+    if (url.hostname.startsWith('media.') || url.pathname.startsWith('/media/')) {{
       const key = url.pathname.replace(/^\\/media\\//, '').replace(/^\\//, '');
-      if (env.MEDIA && key) {
+      if (env.MEDIA && key) {{
         const object = await env.MEDIA.get(key);
-        if (object) {
+        if (object) {{
           const headers = new Headers();
           object.writeHttpMetadata(headers);
           headers.set('etag', object.httpEtag);
           headers.set('cache-control', 'public, max-age=31536000, immutable');
-          return new Response(object.body, { headers });
-        }
-      }
-    }
+          return new Response(object.body, {{ headers }});
+        }}
+      }}
+    }}
 
-    // 7. Serve Static Assets via Pages env.ASSETS
+    // 7. Staff Route Protection Guard
+    if (url.pathname === '/staff' || url.pathname === '/staff/' || url.pathname === '/staff/orders' || url.pathname === '/staff/orders/') {{
+      const cookieHeader = request.headers.get('Cookie') || '';
+      const hasAuth = cookieHeader.includes('cera_session=') || cookieHeader.includes('cera-session=');
+      if (!hasAuth) {{
+        return Response.redirect(`${{url.origin}}/staff/sign-in`, 302);
+      }}
+    }}
+
+    // 8. Serve Static Assets via Pages env.ASSETS
     const assetResponse = await env.ASSETS.fetch(request);
-    if (assetResponse.status !== 404) {
+    if (assetResponse.status !== 404) {{
       return assetResponse;
-    }
+    }}
 
-    // 8. If clean URL path was requested (e.g. /services), try /services/index.html
+    // 9. If clean URL path was requested (e.g. /services), try /services/index.html
     const cleanUrl = new URL(request.url);
-    if (!cleanUrl.pathname.endsWith('.html') && !cleanUrl.pathname.includes('.')) {
+    if (!cleanUrl.pathname.endsWith('.html') && !cleanUrl.pathname.includes('.')) {{
       cleanUrl.pathname = cleanUrl.pathname.replace(/\\/?$/, '/index.html');
       const htmlResponse = await env.ASSETS.fetch(new Request(cleanUrl, request));
-      if (htmlResponse.status !== 404) {
+      if (htmlResponse.status !== 404) {{
         return htmlResponse;
-      }
-    }
+      }}
+    }}
 
     // Fallback to index.html for client-side routing
     cleanUrl.pathname = '/index.html';
     return env.ASSETS.fetch(new Request(cleanUrl, request));
-  },
-};
+  }},
+}};
 """
 
 with open(DIST_DIR / '_worker.js', 'w') as f:
