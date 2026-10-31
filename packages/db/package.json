@@ -26,6 +26,7 @@
     "test": "vitest run",
     "test:unit": "vitest run",
     "generate": "drizzle-kit generate",
+    "studio:d1": "drizzle-kit studio --config drizzle.d1.config.ts",
     "migrate": "node --experimental-strip-types src/migrate.ts",
     "migrate:status": "node --experimental-strip-types src/migrate.ts --status",
     "drift": "drizzle-kit check",

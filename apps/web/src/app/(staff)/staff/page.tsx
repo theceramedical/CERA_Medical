@@ -20,9 +20,17 @@ export default async function StaffQueuePage() {
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
         <div className="flex flex-col justify-between gap-4 border-b border-border pb-8 sm:flex-row sm:items-end">
           <Text tone="muted">Review, assign and progress incoming research requests.</Text>
-          <AppLink href="/staff/deliveries" className="inline-flex items-center gap-2 font-medium">
-            <Send aria-hidden className="size-4" /> Integration deliveries
-          </AppLink>
+          <div className="flex flex-wrap items-center gap-4">
+            <AppLink href="/staff/orders" className="inline-flex items-center gap-2 font-medium">
+              Product orders
+            </AppLink>
+            <AppLink
+              href="/staff/deliveries"
+              className="inline-flex items-center gap-2 font-medium"
+            >
+              <Send aria-hidden className="size-4" /> Integration deliveries
+            </AppLink>
+          </div>
         </div>
         {items.length === 0 ? (
           <EmptyState
