@@ -44,6 +44,7 @@
     "seed:reset": "pnpm --filter @cera/db seed:reset",
     "seed:cms": "pnpm --filter cms seed",
     "health": "bash infra/scripts/health-check.sh",
+    "deploy:cloudflare": "python3 scripts/prepare-cloudflare-pages.py && npx wrangler pages deploy apps/web/cf-dist --project-name=cera-web --commit-dirty=true",
     "smoke": "bash infra/scripts/smoke-test.sh",
     "reconcile": "pnpm --filter worker reconcile",
     "stack:up": "docker compose -f compose.yaml -f infra/compose/compose.local.yaml up -d",

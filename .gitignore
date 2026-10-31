@@ -78,3 +78,5 @@ tmp/
 
 .cursor/
 nimbalyst-local/
+.wrangler/
+apps/web/cf-dist/
