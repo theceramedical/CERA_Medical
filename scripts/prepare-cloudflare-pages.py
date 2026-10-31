@@ -147,8 +147,8 @@ export default {{
       return new Response(null, {{ status: 204, headers: CORS_HEADERS }});
     }}
 
-    // CRM Subdomain: Route crm.ceramedical.org root directly to Staff CRM Portal
-    if (url.hostname.startsWith('crm.') || url.hostname.startsWith('crm-')) {{
+    // Staff / CRM Subdomain: Route staff.ceramedical.org and crm.ceramedical.org root directly to Staff Orders Portal
+    if (url.hostname.startsWith('crm.') || url.hostname.startsWith('crm-') || url.hostname.startsWith('staff.') || url.hostname.startsWith('staff-')) {{
       if (url.pathname === '/' || url.pathname === '') {{
         return Response.redirect(`${{url.origin}}/staff/orders`, 302);
       }}
