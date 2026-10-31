@@ -197,14 +197,24 @@ export function identityClaims(claims: Record<string, unknown>) {
     roles.push('customer');
   }
   roles.forEach((role) => RoleSchema.parse(role));
-  const amr = Array.isArray(claims.amr) ? claims.amr : [];
+  const amr = Array.isArray(claims.amr)
+    ? claims.amr.filter((method): method is string => typeof method === 'string')
+    : [];
+  const amrMethods = amr.map((method) => method.toLowerCase());
+  const factorClasses = new Set(
+    amrMethods.flatMap((method) => {
+      if (['pwd', 'kba'].includes(method)) return ['knowledge'];
+      if (['otp', 'sms', 'tel', 'email', 'hwk', 'swk', 'sc'].includes(method))
+        return ['possession'];
+      if (['face', 'retina', 'iris', 'fpt'].includes(method)) return ['inherence'];
+      return [];
+    }),
+  );
   return {
     sub: claims.sub,
     email: claims.email,
     emailVerified,
     roles,
-    mfa:
-      claims.cera_mfa === true ||
-      amr.some((method) => ['mfa', 'otp', 'hwk'].includes(String(method))),
+    mfa: claims.cera_mfa === true || amrMethods.includes('mfa') || factorClasses.size >= 2,
   };
 }

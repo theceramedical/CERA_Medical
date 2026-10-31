@@ -39,7 +39,7 @@ export default async function VerifyEmailPage({
       aside={
         <AuthPanelIntro
           heading="Already verified?"
-          body="After you confirm the address with Google, Microsoft, or your email provider, use Sign in again on this page so CERA refreshes your account."
+          body="After you confirm the address with your email or sign-in provider, use Sign in again on this page so CERA refreshes your account."
         />
       }
     >

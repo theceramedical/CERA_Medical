@@ -91,8 +91,8 @@ export function VerifyEmailGuidance({
         </AppButtonLink>
       </div>
       <Text size="body-sm" tone="muted">
-        Email/password sign-in? Use the same address on the sign-in page and complete verification
-        in the CERA sign-in screen if prompted.
+        If your sign-in provider has a separate email confirmation step, complete it there, then
+        sign in again to refresh your account.
       </Text>
     </div>
   );

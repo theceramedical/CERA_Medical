@@ -11,7 +11,7 @@ describe('auth error copy', () => {
   it('distinguishes expired attempts, MFA, provider, and service errors', () => {
     expect(authErrorCopy('expired').title).toContain('expired');
     expect(authErrorCopy('mfa').title).toContain('multi-factor');
-    expect(authErrorCopy('provider').lede).toContain('Authentik');
+    expect(authErrorCopy('provider').lede).toContain('identity provider');
     expect(authErrorCopy('unavailable').title).toContain('temporarily unavailable');
   });
 

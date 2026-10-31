@@ -31,5 +31,6 @@ export function assertStaffPortalSession(
   const { returnTo } = options;
   if (session === null) redirect(signInPath(returnTo));
   if (!sessionHasStaffRole(session)) redirect('/auth/error?reason=access');
+  if (!session.mfa) redirect('/auth/error?reason=mfa');
   return session;
 }

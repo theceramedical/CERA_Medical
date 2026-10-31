@@ -34,7 +34,7 @@ Vinext's `kvDataAdapter()` stores ISR responses and cached fetch/`unstable_cache
 
 ## Identity and access
 
-Register both customer and staff OIDC clients with the callback URI above. The callback validates state, nonce, PKCE, verified email and provider groups. Staff sessions are rejected unless the identity has a CERA staff role and a verified MFA claim. The app verifies the sealed session and role again on every staff API request. Cloudflare Access may be used as an additional network gate, but it does not replace the CERA session or role checks.
+Register both customer and staff OIDC clients with the callback URI above. The callback validates state, nonce, PKCE, verified email and provider groups. Staff sessions are rejected unless the identity has a CERA staff role and trusted MFA evidence: an explicit `cera_mfa: true` claim, an `amr` value of `mfa`, or at least two distinct factor classes. A single `otp` or hardware-key `amr` value does not prove two factors. The app verifies the sealed session, role, and MFA again on every staff API request and staff page. Cloudflare Access may be used as an additional network gate, but it does not replace the CERA session or role checks.
 
 Do not accept request-supplied role, email, or identity values as credentials. The removed precomputed token remains in earlier Git history: revoke/rotate the production session secret and invalidate sessions created with it. This repository change does not rotate live secrets or rewrite history.
 

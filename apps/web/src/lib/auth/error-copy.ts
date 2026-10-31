@@ -23,7 +23,7 @@ const errors: Record<string, AuthErrorCopy> = {
   identity: {
     title: 'Your identity could not be verified',
     lede: 'The identity provider did not return the account details CERA needs.',
-    plan: 'Check that your Authentik account has a verified email address. If it still fails, contact the CERA administrator.',
+    plan: 'Check that your sign-in account has a verified email address. If it still fails, contact the CERA administrator.',
   },
   email_unverified: {
     title: 'Verify your email to use the portal',
@@ -32,12 +32,12 @@ const errors: Record<string, AuthErrorCopy> = {
   },
   mfa: {
     title: 'Staff sign-in requires multi-factor authentication',
-    lede: 'Your account has a staff role, but Authentik did not confirm a second factor for this sign-in.',
-    plan: 'Complete the configured authenticator step in Authentik, then try again. Contact the CERA administrator if you need help setting it up.',
+    lede: 'Your account has a staff role, but the identity provider did not confirm a second factor for this sign-in.',
+    plan: 'Complete the required second-factor step with your identity provider, then try again. Contact the CERA administrator if you need help setting it up.',
   },
   provider: {
     title: 'The identity provider could not complete sign-in',
-    lede: 'CERA could not finish exchanging the sign-in response with Authentik.',
+    lede: 'CERA could not finish exchanging the sign-in response with your identity provider.',
     plan: 'Start again from the sign-in page. If this keeps happening, contact the CERA administrator.',
   },
   unavailable: {

@@ -106,4 +106,19 @@ describe('OIDC boundary', () => {
     });
     expect(c.roles).toEqual(['customer']);
   });
+
+  it('requires trusted multi-factor evidence instead of treating one factor as MFA', () => {
+    const base = {
+      sub: 'staff-1',
+      email: 'staff@example.test',
+      email_verified: true,
+      groups: ['cera-administrators'],
+    };
+
+    expect(identityClaims({ ...base, amr: ['otp'] }).mfa).toBe(false);
+    expect(identityClaims({ ...base, amr: ['hwk'] }).mfa).toBe(false);
+    expect(identityClaims({ ...base, amr: ['pwd', 'otp'] }).mfa).toBe(true);
+    expect(identityClaims({ ...base, amr: ['mfa'] }).mfa).toBe(true);
+    expect(identityClaims({ ...base, cera_mfa: true }).mfa).toBe(true);
+  });
 });
