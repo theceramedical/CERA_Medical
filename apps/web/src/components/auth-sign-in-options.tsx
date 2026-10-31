@@ -2,17 +2,7 @@
 
 import { Button } from '@cera/ui/button';
 import { Text } from '@cera/ui/typography';
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  KeyRound,
-  Loader2,
-  Lock,
-  ShieldCheck,
-  Sparkles,
-  UserCheck,
-} from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Sparkles, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 
 import { startOidcNavigation } from '../lib/auth/start-oidc-navigation.ts';
@@ -125,50 +115,6 @@ export function AuthSignInOptions({
         </div>
       ) : null}
 
-      {/* 1. Master Leadership One-Click Direct Sign-In (Staff Mode or when master email recognized) */}
-      {isStaffPortal || isMasterTyped ? (
-        <div className="relative overflow-hidden rounded-xl border-2 border-primary/30 bg-surface-tint p-4 sm:p-5 shadow-sm transition-all hover:border-primary/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-eyebrow font-bold tracking-wider text-primary uppercase">
-              <ShieldCheck size={18} />
-              CERA Master Leadership
-            </div>
-            <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary">
-              <Lock size={11} /> Cloudflare Edge Passkey
-            </span>
-          </div>
-
-          <Text size="body-sm" tone="muted" className="mt-2 leading-relaxed">
-            Instant administrative access for{' '}
-            <span className="font-semibold text-heading">{MASTER_EMAIL}</span>. No password
-            required.
-          </Text>
-
-          <Button
-            type="button"
-            variant="primary"
-            className="mt-4 w-full justify-center gap-2 font-semibold shadow-xs"
-            disabled={loading || success}
-            onClick={() => {
-              void handleEdgeSignIn(MASTER_EMAIL);
-            }}
-          >
-            {loading && (!trimmedEmail || isMasterTyped) ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Signing in as CERA Leadership...
-              </>
-            ) : (
-              <>
-                <KeyRound size={16} />
-                Sign in as CERA Leadership
-                <ArrowRight size={15} className="ml-1" />
-              </>
-            )}
-          </Button>
-        </div>
-      ) : null}
-
       {/* Social Providers (Google SSO, etc.) */}
       {socialProviders.map((provider) => (
         <Button
@@ -185,14 +131,15 @@ export function AuthSignInOptions({
         </Button>
       ))}
 
-      {/* Divider */}
-      <div className="flex items-center gap-3 py-1" aria-hidden="true">
-        <div className="h-px flex-1 bg-border" />
-        <Text size="body-sm" tone="muted" as="span">
-          {isStaffPortal ? 'or sign in with team email' : 'or continue with email'}
-        </Text>
-        <div className="h-px flex-1 bg-border" />
-      </div>
+      {socialProviders.length > 0 ? (
+        <div className="flex items-center gap-3 py-1" aria-hidden="true">
+          <div className="h-px flex-1 bg-border" />
+          <Text size="body-sm" tone="muted" as="span">
+            {isStaffPortal ? 'or sign in with team email' : 'or continue with email'}
+          </Text>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+      ) : null}
 
       {/* Unified Form Supporting Enter Key & Instant Email Submit */}
       <form
@@ -228,7 +175,7 @@ export function AuthSignInOptions({
             id="staff-email-input"
             type="email"
             autoComplete="email"
-            placeholder={isStaffPortal ? 'theceramedical@gmail.com' : 'name@example.com'}
+            placeholder={isStaffPortal ? 'staff@ceramedical.org' : 'name@example.com'}
             value={emailInput}
             onChange={(e) => setEmailInput(e.target.value)}
             disabled={loading || success}
@@ -254,7 +201,7 @@ export function AuthSignInOptions({
 
         <Button
           type="submit"
-          variant={isStaffPortal ? 'outline' : 'primary'}
+          variant="primary"
           className="w-full justify-center gap-2"
           data-testid="oidc-sign-in-continue"
           disabled={loading || success}
