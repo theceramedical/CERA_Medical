@@ -12,11 +12,13 @@ export const metadata: Metadata = {
 export default function StaffOrdersPage() {
   return (
     <>
-      <PageHeader
-        title="Product Orders & Fulfillment"
-        lede="Review incoming natural wellness orders, print dispatch packing slips, and update courier tracking."
-      />
-      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
+      <div className="print:hidden">
+        <PageHeader
+          title="Product Orders & Fulfillment"
+          lede="Review incoming natural wellness orders, print dispatch packing slips, and update courier tracking."
+        />
+      </div>
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16 print:m-0 print:max-w-none print:p-0">
         <OrdersFulfillmentView totalSkus={VERIFIED_PORTFOLIO_PRODUCTS.length} />
       </div>
     </>

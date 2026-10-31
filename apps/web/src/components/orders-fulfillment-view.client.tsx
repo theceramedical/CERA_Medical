@@ -674,7 +674,7 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
 
       {/* PAKISTANI COURIER PARCEL PACKING SLIP & INVOICE MODAL */}
       {selectedSlipOrder ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs print:static print:p-0 print:bg-transparent">
+        <div className="cera-print-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs print:static print:bg-white print:p-0 print:m-0">
           {/* Print CSS Injection to guarantee 100% single-page isolation with ZERO background clutter */}
           <style
             dangerouslySetInnerHTML={{
@@ -682,42 +682,55 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
             @media print {
               @page {
                 size: A4 portrait;
-                margin: 6mm;
+                margin: 5mm;
               }
               html, body {
                 margin: 0 !important;
                 padding: 0 !important;
                 background: white !important;
                 color: black !important;
-                height: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
               }
-              body * {
-                visibility: hidden !important;
+              header, nav, footer, aside, .print\\:hidden {
+                display: none !important;
               }
-              #pakistan-courier-invoice,
-              #pakistan-courier-invoice * {
-                visibility: visible !important;
+              .cera-print-modal-overlay {
+                position: static !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                width: 100% !important;
+                min-height: auto !important;
+              }
+              .cera-print-modal-container {
+                max-height: none !important;
+                max-width: none !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
               }
               #pakistan-courier-invoice {
-                position: fixed !important;
-                left: 0 !important;
-                top: 0 !important;
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 margin: 0 !important;
-                padding: 4mm !important;
+                padding: 0 !important;
                 box-sizing: border-box !important;
                 background: white !important;
-                display: block !important;
-                page-break-after: avoid !important;
                 page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                page-break-after: avoid !important;
               }
             }
           `,
             }}
           />
 
-          <div className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white text-neutral-900 shadow-2xl print:max-h-none print:w-full print:max-w-none print:rounded-none print:shadow-none print:border-none print:m-0 print:p-0">
+          <div className="cera-print-modal-container relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white text-neutral-900 shadow-2xl print:max-h-none print:w-full print:max-w-none print:rounded-none print:shadow-none print:border-none print:m-0 print:p-0">
             {/* Modal Action Header (Hidden in Print) */}
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-6 py-3.5 print:hidden">
               <div className="flex items-center gap-2 text-sm font-bold text-neutral-800">
