@@ -270,7 +270,7 @@ export default {{
     }}
 
     // 3. Dynamic Orders API for Staff Portal
-    if (url.pathname === '/api/staff/orders') {{
+    if (url.pathname === '/api/staff/orders' && request.method === 'GET') {{
       try {{
         if (!env.DB) {{
           return jsonResponse({{ ok: false, error: 'Database unbound' }}, 500);
@@ -278,7 +278,7 @@ export default {{
 
         const orders = await env.DB.prepare(
           `SELECT id, order_code, customer_name, customer_email, customer_phone, shipping_address, shipping_city,
-                  total_amount_minor, currency, payment_method, payment_status, fulfillment_status, created_at
+                  total_amount_minor, currency, payment_method, payment_status, fulfillment_status, courier_name, tracking_number, created_at
            FROM commerce_orders
            ORDER BY created_at DESC LIMIT 50`
         ).all();
@@ -286,6 +286,49 @@ export default {{
         return jsonResponse({{
           ok: true,
           orders: orders.results || [],
+        }});
+      }} catch (err) {{
+        return jsonResponse({{ ok: false, error: err.message }}, 500);
+      }}
+    }}
+
+    // 3b. Update Order Tracking and Fulfillment Status
+    if (url.pathname === '/api/staff/orders/update' || (url.pathname === '/api/staff/orders' && request.method === 'POST')) {{
+      try {{
+        if (!env.DB) {{
+          return jsonResponse({{ ok: false, error: 'Database unbound' }}, 500);
+        }}
+
+        const body = await request.json();
+        const {{ orderId, orderCode, status, courierName, trackingNumber }} = body;
+
+        if (!orderId && !orderCode) {{
+          return jsonResponse({{ ok: false, error: 'orderId or orderCode required' }}, 400);
+        }}
+
+        const nowSec = Math.floor(Date.now() / 1000);
+        await env.DB.prepare(
+          `UPDATE commerce_orders
+           SET fulfillment_status = COALESCE(?, fulfillment_status),
+               courier_name = COALESCE(?, courier_name),
+               tracking_number = COALESCE(?, tracking_number),
+               updated_at = ?
+           WHERE id = ? OR order_code = ?`
+        ).bind(
+          status || null,
+          courierName || null,
+          trackingNumber || null,
+          nowSec,
+          orderId || '',
+          orderCode || ''
+        ).run();
+
+        return jsonResponse({{
+          ok: true,
+          message: 'Order status and tracking updated successfully in Cloudflare D1',
+          status,
+          courierName,
+          trackingNumber,
         }});
       }} catch (err) {{
         return jsonResponse({{ ok: false, error: err.message }}, 500);
