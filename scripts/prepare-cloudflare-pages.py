@@ -155,7 +155,7 @@ export default {{
     }}
 
     // 1. Edge Health API
-    if (url.pathname === '/api/health') {{
+    if (url.pathname === '/api/health' || url.pathname === '/health/ready' || url.pathname === '/health' || url.pathname === '/health/live') {{
       let dbStatus = 'disconnected';
       let rowCount = 0;
       if (env.DB) {{
