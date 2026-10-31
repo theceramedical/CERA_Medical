@@ -85,6 +85,11 @@ const EXAMPLE_ONLY = new Set([
   'GLITCHTIP_MAX_EVENT_LIFE_DAYS',
   'MINIO_ROOT_USER',
   'MINIO_ROOT_PASSWORD',
+  // Cloudflare Worker bindings are read directly by Worker route handlers, not
+  // by the Node service environment schemas in this package.
+  'ENQUIRY_CONSENT_VERSION',
+  'ENQUIRY_RATE_LIMIT_SALT',
+  'RESEND_FROM_EMAIL',
   // Per-service port aliases. Each schema reads PORT; Compose maps these to it.
   'API_PORT',
   'CMS_PORT',
