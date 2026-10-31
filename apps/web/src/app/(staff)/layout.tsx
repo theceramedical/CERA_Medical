@@ -1,6 +1,6 @@
 import { SkipLink } from '@cera/ui/skip-link';
 import { Text } from '@cera/ui/typography';
-import { LogOut } from 'lucide-react';
+import { ClipboardList, LogOut, Package, Truck } from 'lucide-react';
 
 import { AppLink } from '../../components/link.tsx';
 import { SiteWordmark } from '../../components/site-wordmark.tsx';
@@ -30,23 +30,44 @@ export default function StaffLayout({ children }: { readonly children: ReactNode
       <SkipLink targetId="main" />
 
       <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-4 sm:px-6 md:px-10">
-          <SiteWordmark />
+        <div className="mx-auto flex h-20 max-w-site items-center justify-between gap-4 px-4 sm:px-6 md:px-10">
+          <div className="flex items-center gap-4">
+            <SiteWordmark />
+            <span className="hidden h-5 w-px bg-border sm:block" />
+            <Text size="eyebrow" tone="muted" className="hidden sm:inline">
+              Staff Console
+            </Text>
+          </div>
 
-          {/*
-           * Labelling the console visibly, so someone with both this and the public site open knows
-           * which is which at a glance. It is a `Text`, not a heading: the page's own `h1` says what
-           * the page is, and a heading here would take that level.
-           */}
-          <Text size="eyebrow" tone="muted">
-            Staff console
-          </Text>
-          <AppLink
-            href="/auth/signout?audience=staff"
-            className="ml-auto inline-flex items-center gap-2 text-sm"
-          >
-            <LogOut aria-hidden className="size-4" /> Sign out
-          </AppLink>
+          <nav className="flex items-center gap-1 sm:gap-2">
+            <AppLink
+              href="/staff/orders"
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-muted transition-colors hover:bg-surface-tint hover:text-heading"
+            >
+              <Package size={14} /> Orders & Dispatch
+            </AppLink>
+            <AppLink
+              href="/staff"
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-muted transition-colors hover:bg-surface-tint hover:text-heading"
+            >
+              <ClipboardList size={14} /> Enquiry CRM
+            </AppLink>
+            <AppLink
+              href="/staff/deliveries"
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-muted transition-colors hover:bg-surface-tint hover:text-heading"
+            >
+              <Truck size={14} /> Deliveries
+            </AppLink>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <AppLink
+              href="/auth/signout?audience=staff"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-heading"
+            >
+              <LogOut aria-hidden size={13} /> Sign out
+            </AppLink>
+          </div>
         </div>
       </header>
 
