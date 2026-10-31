@@ -4,6 +4,7 @@ import { cn } from '@cera/ui/cn';
 import { ArrowRight, BarChart3, ChevronDown, Dna } from 'lucide-react';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import { LabMouseIcon } from './icons/lab-mouse-icon.tsx';
 import { isCurrent } from './navigation.ts';
@@ -25,6 +26,174 @@ const SERVICE_META: Record<string, { desc: string; icon: typeof Dna }> = {
   },
 };
 
+function DesktopNavDropdown({
+  item,
+  current,
+  linkClass,
+}: {
+  readonly item: NavItem;
+  readonly current: boolean;
+  readonly linkClass: (current: boolean) => string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLLIElement | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onEnter = () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setIsOpen(true);
+    };
+
+    const onLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        setIsOpen(false);
+      }, 150);
+    };
+
+    const onClickOutside = (e: MouseEvent) => {
+      if (!el.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    el.addEventListener('mouseenter', onEnter);
+    el.addEventListener('mouseleave', onLeave);
+    document.addEventListener('click', onClickOutside);
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      el.removeEventListener('mouseenter', onEnter);
+      el.removeEventListener('mouseleave', onLeave);
+      document.removeEventListener('click', onClickOutside);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+
+  return (
+    <li ref={containerRef} className="relative">
+      <NextLink
+        href={item.href}
+        aria-current={current ? 'page' : undefined}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(false)}
+        className={cn(
+          linkClass(current),
+          'gap-1.5 transition-colors',
+          isOpen ? 'text-primary' : '',
+        )}
+      >
+        <span>{item.label}</span>
+        <ChevronDown
+          aria-hidden="true"
+          size={15}
+          className={cn(
+            'text-muted transition-transform duration-200',
+            isOpen ? 'rotate-180 text-primary' : '',
+          )}
+        />
+      </NextLink>
+
+      <div
+        className={cn(
+          'absolute top-full left-0 z-50 pt-2 transition-all duration-150',
+          isOpen
+            ? 'visible pointer-events-auto opacity-100'
+            : 'invisible pointer-events-none opacity-0',
+        )}
+      >
+        <div className="w-[26rem] rounded-xl border border-border bg-surface p-3 shadow-xl ring-1 ring-black/5">
+          <div className="mb-2 flex items-center justify-between border-b border-border/60 px-3 py-2 text-caption">
+            <span className="font-semibold tracking-[0.12em] text-accent uppercase">
+              Research Pillars
+            </span>
+            <NextLink
+              href="/services"
+              className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+              onClick={() => setIsOpen(false)}
+            >
+              All Services
+              <ArrowRight size={13} aria-hidden="true" />
+            </NextLink>
+          </div>
+
+          <ul className="list-none space-y-1.5 p-0">
+            {item.children?.map((child) => {
+              const meta = SERVICE_META[child.href];
+              const IconComponent = meta?.icon ?? Dna;
+              const isPreclinical = child.href.includes('preclinical');
+              return (
+                <li key={child.href}>
+                  <NextLink
+                    href={child.href}
+                    onClick={() => setIsOpen(false)}
+                    className="group/item flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-surface-tint"
+                  >
+                    <span
+                      className={cn(
+                        'flex size-9 shrink-0 items-center justify-center rounded-lg border transition-colors',
+                        isPreclinical
+                          ? 'border-primary/30 bg-primary-50 text-primary group-hover/item:bg-primary group-hover/item:text-on-primary'
+                          : 'border-accent/30 bg-accent-fill/10 text-accent group-hover/item:bg-accent-fill group-hover/item:text-on-accent',
+                      )}
+                    >
+                      <IconComponent size={18} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-body-sm font-semibold text-heading group-hover/item:text-primary">
+                          {child.label}
+                        </span>
+                        {isPreclinical ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-[0.65rem] font-bold text-primary">
+                            <LabMouseIcon size={11} />
+                            In Vivo
+                          </span>
+                        ) : null}
+                      </div>
+                      {meta?.desc ? (
+                        <p className="mt-0.5 text-caption leading-relaxed text-muted line-clamp-2">
+                          {meta.desc}
+                        </p>
+                      ) : null}
+                    </div>
+                  </NextLink>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="mt-2 flex items-center justify-between rounded-lg border border-border/60 bg-surface-subtle p-2.5">
+            <div className="flex items-center gap-2 text-caption text-muted">
+              <LabMouseIcon size={15} className="text-primary" />
+              <span>SPF Animal House facility ready</span>
+            </div>
+            <NextLink
+              href="/contact#contact-form"
+              onClick={() => setIsOpen(false)}
+              className="inline-flex items-center gap-1 text-caption font-semibold text-accent hover:underline"
+            >
+              Request Scoping
+              <ArrowRight size={12} aria-hidden="true" />
+            </NextLink>
+          </div>
+        </div>
+      </div>
+    </li>
+  );
+}
+
 export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] }) {
   const pathname = usePathname();
 
@@ -42,100 +211,12 @@ export function DesktopNavLinks({ items }: { readonly items: readonly NavItem[] 
 
         if (item.children && item.children.length > 0) {
           return (
-            <li key={item.href} className="group relative">
-              <NextLink
-                href={item.href}
-                aria-current={current ? 'page' : undefined}
-                aria-haspopup="true"
-                className={cn(
-                  linkClass(current),
-                  'gap-1.5 transition-colors group-hover:text-primary',
-                )}
-              >
-                <span>{item.label}</span>
-                <ChevronDown
-                  aria-hidden="true"
-                  size={15}
-                  className="text-muted transition-transform duration-200 group-hover:rotate-180 group-hover:text-primary"
-                />
-              </NextLink>
-
-              <div className="invisible pointer-events-none absolute top-full left-0 z-50 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-                <div className="w-[26rem] rounded-xl border border-border bg-surface p-3 shadow-xl ring-1 ring-black/5">
-                  <div className="mb-2 flex items-center justify-between border-b border-border/60 px-3 py-2 text-caption">
-                    <span className="font-semibold tracking-[0.12em] text-accent uppercase">
-                      Research Pillars
-                    </span>
-                    <NextLink
-                      href="/services"
-                      className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
-                    >
-                      All Services
-                      <ArrowRight size={13} aria-hidden="true" />
-                    </NextLink>
-                  </div>
-
-                  <ul className="list-none space-y-1.5 p-0">
-                    {item.children.map((child) => {
-                      const meta = SERVICE_META[child.href];
-                      const IconComponent = meta?.icon ?? Dna;
-                      const isPreclinical = child.href.includes('preclinical');
-                      return (
-                        <li key={child.href}>
-                          <NextLink
-                            href={child.href}
-                            className="group/item flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-surface-tint"
-                          >
-                            <span
-                              className={cn(
-                                'flex size-9 shrink-0 items-center justify-center rounded-lg border transition-colors',
-                                isPreclinical
-                                  ? 'border-primary/30 bg-primary-50 text-primary group-hover/item:bg-primary group-hover/item:text-on-primary'
-                                  : 'border-accent/30 bg-accent-fill/10 text-accent group-hover/item:bg-accent-fill group-hover/item:text-on-accent',
-                              )}
-                            >
-                              <IconComponent size={18} />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-body-sm font-semibold text-heading group-hover/item:text-primary">
-                                  {child.label}
-                                </span>
-                                {isPreclinical ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-[0.65rem] font-bold text-primary">
-                                    <LabMouseIcon size={11} />
-                                    In Vivo
-                                  </span>
-                                ) : null}
-                              </div>
-                              {meta?.desc ? (
-                                <p className="mt-0.5 text-caption leading-relaxed text-muted line-clamp-2">
-                                  {meta.desc}
-                                </p>
-                              ) : null}
-                            </div>
-                          </NextLink>
-                        </li>
-                      );
-                    })}
-                  </ul>
-
-                  <div className="mt-2 flex items-center justify-between rounded-lg border border-border/60 bg-surface-subtle p-2.5">
-                    <div className="flex items-center gap-2 text-caption text-muted">
-                      <LabMouseIcon size={15} className="text-primary" />
-                      <span>SPF Animal House facility ready</span>
-                    </div>
-                    <NextLink
-                      href="/contact#contact-form"
-                      className="inline-flex items-center gap-1 text-caption font-semibold text-accent hover:underline"
-                    >
-                      Request Scoping
-                      <ArrowRight size={12} aria-hidden="true" />
-                    </NextLink>
-                  </div>
-                </div>
-              </div>
-            </li>
+            <DesktopNavDropdown
+              key={item.href}
+              item={item}
+              current={current}
+              linkClass={linkClass}
+            />
           );
         }
 
