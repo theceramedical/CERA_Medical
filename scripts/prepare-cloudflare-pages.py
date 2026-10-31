@@ -279,7 +279,15 @@ export default {{
     // 4. Edge Auth Sign-in (Passkey / Master Owner / Leadership)
     if (url.pathname === '/api/auth/edge-signin' && request.method === 'POST') {{
       try {{
-        const body = await request.json();
+        let body = {{}};
+        const contentType = request.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {{
+          body = await request.json();
+        }} else if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {{
+          const formData = await request.formData();
+          body = Object.fromEntries(formData.entries());
+        }}
+
         const email = (body.email || '').toLowerCase().trim() || 'theceramedical@gmail.com';
         const role = email === 'theceramedical@gmail.com' ? 'owner' : (body.role || 'staff');
         const targetUrl = body.next || (role === 'customer' ? '/account' : '/staff');
@@ -310,13 +318,22 @@ export default {{
         }});
         headers.append('Set-Cookie', `__Host-cera_session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
         headers.append('Set-Cookie', `cera_session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        headers.append('Set-Cookie', `cera_session=${{sessionToken}}; Domain=.ceramedical.org; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
         headers.append('Set-Cookie', `__Host-cera-session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
         headers.append('Set-Cookie', `cera-session=${{sessionToken}}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        headers.append('Set-Cookie', `cera-session=${{sessionToken}}; Domain=.ceramedical.org; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+
+        // If standard browser form post, redirect directly with Set-Cookie
+        if (contentType.includes('application/x-www-form-urlencoded')) {{
+          headers.set('Location', targetUrl);
+          return new Response(null, {{ status: 302, headers }});
+        }}
 
         return new Response(JSON.stringify({{
           ok: true,
           success: true,
           redirect: targetUrl,
+          sessionToken,
           user: {{
             id: 'usr_owner_01',
             email,
@@ -360,11 +377,11 @@ export default {{
     }}
 
     // 7. Staff Route Protection Guard
-    if (url.pathname === '/staff' || url.pathname === '/staff/' || url.pathname === '/staff/orders' || url.pathname === '/staff/orders/') {{
+    if (url.pathname.startsWith('/staff') && !url.pathname.startsWith('/staff/sign-in')) {{
       const cookieHeader = request.headers.get('Cookie') || '';
-      const hasAuth = cookieHeader.includes('cera_session=') || cookieHeader.includes('cera-session=');
+      const hasAuth = cookieHeader.includes('cera_session=') || cookieHeader.includes('cera-session=') || cookieHeader.includes('__Host-cera');
       if (!hasAuth) {{
-        return Response.redirect(`${{url.origin}}/staff/sign-in`, 302);
+        return Response.redirect(`${{url.origin}}/staff/sign-in?next=${{encodeURIComponent(url.pathname)}}`, 302);
       }}
     }}
 

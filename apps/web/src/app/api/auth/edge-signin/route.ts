@@ -40,9 +40,13 @@ export async function POST(request: Request): Promise<NextResponse> {
         role: user.role,
       },
       redirect: targetUrl,
+      sessionToken: token,
     });
 
-    response.cookies.set(SESSION_COOKIE_NAME, token, edgeSessionCookieOptions(user.role));
+    const cookieOpts = edgeSessionCookieOptions(user.role);
+    response.cookies.set(SESSION_COOKIE_NAME, token, cookieOpts);
+    response.cookies.set('cera_session', token, { ...cookieOpts, name: 'cera_session' });
+    response.cookies.set('cera-session', token, { ...cookieOpts, name: 'cera-session' });
 
     return response;
   } catch (error) {
