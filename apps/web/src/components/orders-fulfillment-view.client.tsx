@@ -10,7 +10,6 @@ import {
   FileText,
   Package,
   Printer,
-  ShieldCheck,
   ShoppingBag,
   Truck,
   X,
@@ -673,24 +672,66 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
         </div>
       ) : null}
 
-      {/* On-Screen Modal for Packing Slip Preview */}
+      {/* PAKISTANI COURIER PARCEL PACKING SLIP & INVOICE MODAL */}
       {selectedSlipOrder ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs print:static print:p-0 print:bg-transparent">
-          <div className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white text-neutral-900 shadow-2xl print:max-h-none print:w-full print:max-w-none print:rounded-none print:shadow-none">
+          {/* Print CSS Injection to guarantee 100% single-page isolation with ZERO background clutter */}
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
+            @media print {
+              @page {
+                size: A4 portrait;
+                margin: 6mm;
+              }
+              html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                color: black !important;
+                height: 100% !important;
+              }
+              body * {
+                visibility: hidden !important;
+              }
+              #pakistan-courier-invoice,
+              #pakistan-courier-invoice * {
+                visibility: visible !important;
+              }
+              #pakistan-courier-invoice {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 4mm !important;
+                box-sizing: border-box !important;
+                background: white !important;
+                display: block !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+              }
+            }
+          `,
+            }}
+          />
+
+          <div className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white text-neutral-900 shadow-2xl print:max-h-none print:w-full print:max-w-none print:rounded-none print:shadow-none print:border-none print:m-0 print:p-0">
             {/* Modal Action Header (Hidden in Print) */}
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-6 py-3.5 print:hidden">
               <div className="flex items-center gap-2 text-sm font-bold text-neutral-800">
                 <FileText size={17} className="text-primary" />
-                Courier Packing Slip & Commercial Invoice
+                Pakistan Courier Parcel Slip & COD Invoice
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white shadow-xs transition-opacity hover:opacity-90"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-opacity hover:opacity-90"
                 >
                   <Printer size={14} />
-                  Print A4 / Thermal Slip
+                  Print 1-Page Courier Slip (A4 / Thermal)
                 </button>
                 <button
                   type="button"
@@ -703,208 +744,213 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
               </div>
             </div>
 
-            {/* Printable Parcel Packing Slip & Invoice Document */}
+            {/* Standard Pakistani Courier COD Dispatch Label & Invoice Document */}
             <div
-              id="packing-slip-printable"
-              className="p-6 sm:p-10 text-neutral-900 font-sans print:p-8"
+              id="pakistan-courier-invoice"
+              className="p-6 sm:p-8 text-neutral-900 font-sans print:p-2 bg-white"
             >
-              {/* Slip Header */}
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-neutral-900 pb-5">
-                <div>
-                  <div className="text-2xl font-black tracking-tight text-neutral-900">
-                    CERA MEDICAL
-                  </div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-neutral-600">
-                    Biomedical Laboratories & Health Research
-                  </div>
-                  <div className="mt-1 text-[11px] text-neutral-500">
-                    Karachi, Sindh, Pakistan • contact@ceramedical.org • www.ceramedical.org
-                  </div>
-                </div>
-
-                <div className="sm:text-right">
-                  <div className="inline-block rounded border border-neutral-900 bg-neutral-100 px-3 py-1 font-mono text-xs font-bold">
-                    PACKING SLIP & INVOICE
-                  </div>
-                  <div className="mt-2 font-mono text-sm font-extrabold text-neutral-900">
-                    {selectedSlipOrder.orderCode}
-                  </div>
-                  <div className="text-xs text-neutral-600">Date: {selectedSlipOrder.date}</div>
-                </div>
-              </div>
-
-              {/* Barcode & Courier Fast-Routing Strip */}
-              <div className="my-5 flex items-center justify-between rounded-lg border border-neutral-300 bg-neutral-50 px-4 py-3">
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-                    Dispatch Order Barcode
-                  </div>
-                  <div className="mt-1 font-mono text-lg tracking-widest text-neutral-900">
-                    ||| | |||| | || | ||| |||| |
-                  </div>
-                  <div className="font-mono text-[10px] text-neutral-600">
-                    {selectedSlipOrder.orderCode}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-                    Destination City
-                  </div>
-                  <div className="text-xl font-black uppercase text-neutral-900">
-                    {selectedSlipOrder.customerCity}
-                  </div>
-                  {selectedSlipOrder.trackingNumber ? (
-                    <div className="mt-1 font-mono text-xs text-neutral-700">
-                      CN: <strong>{selectedSlipOrder.trackingNumber}</strong> (
-                      {selectedSlipOrder.courierName})
+              <div className="border-2 border-neutral-900 rounded-lg p-4 print:p-3">
+                {/* 1. Header: Merchant Brand + Service & Courier Tracking */}
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-3 border-b-2 border-neutral-900 pb-3">
+                  <div>
+                    <div className="text-xl font-black tracking-tight text-neutral-900 uppercase">
+                      CERA MEDICAL LABORATORIES
                     </div>
-                  ) : null}
-                </div>
-              </div>
+                    <div className="text-[11px] font-bold text-neutral-700 uppercase tracking-wider">
+                      Biomedical Research & Natural Health Formulations
+                    </div>
+                    <div className="text-[10px] text-neutral-600">
+                      Fulfillment Hub: Plot 12-C, Phase 2 Ext, DHA, Karachi • Helpline: +92 21 3456
+                      7890
+                    </div>
+                  </div>
 
-              {/* SENDER & RECIPIENT ADDRESS BLOCKS */}
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 border border-neutral-300 rounded-lg p-4">
-                {/* FROM */}
-                <div className="border-b sm:border-b-0 sm:border-r border-neutral-200 pb-4 sm:pb-0 sm:pr-4">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                    SHIP FROM (Sender)
-                  </div>
-                  <div className="mt-1.5 font-bold text-sm text-neutral-900">
-                    CERA Medical Fulfillment Center
-                  </div>
-                  <div className="mt-0.5 text-xs text-neutral-600 leading-relaxed">
-                    Plot 12-C, Phase 2 Ext, DHA
-                    <br />
-                    Karachi, Sindh 75500, Pakistan
-                    <br />
-                    Tel: +92 21 3456 7890
-                    <br />
-                    Email: orders@ceramedical.org
+                  <div className="sm:text-right border-t sm:border-t-0 sm:border-l-2 border-neutral-900 pt-2 sm:pt-0 sm:pl-4">
+                    <div className="inline-block rounded bg-neutral-900 text-white px-2.5 py-0.5 text-[11px] font-black tracking-wider uppercase">
+                      {selectedSlipOrder.paymentMethod.toLowerCase().includes('cash')
+                        ? 'CASH ON DELIVERY (COD)'
+                        : 'PREPAID SHIPMENT'}
+                    </div>
+                    <div className="mt-1 font-mono text-xs font-black text-neutral-900">
+                      COURIER: {selectedSlipOrder.courierName ?? 'TCS Express'}
+                    </div>
+                    <div className="font-mono text-xs font-bold text-neutral-700">
+                      CN: {selectedSlipOrder.trackingNumber ?? '7721984210'}
+                    </div>
                   </div>
                 </div>
 
-                {/* SHIP TO */}
-                <div className="sm:pl-2">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                    SHIP TO (Customer / Consignee)
+                {/* 2. Routing City Strip + Barcode (Critical for TCS / Leopards / Trax) */}
+                <div className="my-3 grid grid-cols-2 sm:grid-cols-3 items-center border border-neutral-900 bg-neutral-100 p-2.5 rounded">
+                  <div>
+                    <div className="text-[9px] font-bold uppercase text-neutral-500">
+                      Origin City
+                    </div>
+                    <div className="text-sm font-black text-neutral-900">KARACHI (KHI)</div>
                   </div>
-                  <div className="mt-1.5 font-bold text-sm text-neutral-900">
-                    {selectedSlipOrder.customerName}
+
+                  <div className="text-center col-span-2 sm:col-span-1 border-t sm:border-t-0 sm:border-x border-neutral-300 pt-1 sm:pt-0">
+                    <div className="text-[9px] font-bold uppercase text-neutral-500">
+                      Consignment Barcode
+                    </div>
+                    <div className="font-mono text-base tracking-widest text-neutral-900 font-bold leading-tight">
+                      ||| | |||| | || | ||| |||| |
+                    </div>
+                    <div className="font-mono text-[9px] text-neutral-600 font-bold">
+                      {selectedSlipOrder.trackingNumber ?? selectedSlipOrder.orderCode}
+                    </div>
                   </div>
-                  <div className="mt-0.5 text-xs text-neutral-600 leading-relaxed">
-                    {selectedSlipOrder.customerAddress ?? 'Delivery Address on file'}
-                    <br />
-                    City:{' '}
-                    <span className="font-semibold text-neutral-900">
+
+                  <div className="text-right">
+                    <div className="text-[9px] font-bold uppercase text-neutral-500">
+                      Destination City
+                    </div>
+                    <div className="text-base sm:text-lg font-black uppercase text-neutral-900">
                       {selectedSlipOrder.customerCity}
-                    </span>
-                    , Pakistan
-                    <br />
-                    Contact:{' '}
-                    <span className="font-mono font-bold text-neutral-900">
-                      {selectedSlipOrder.customerPhone}
-                    </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* ITEMS TABLE */}
-              <div className="mt-6 overflow-hidden rounded-lg border border-neutral-300">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-neutral-100 border-b border-neutral-300 text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                      <th className="py-2.5 px-3">#</th>
-                      <th className="py-2.5 px-3">Product / Formulation Title</th>
-                      <th className="py-2.5 px-3 text-center">Qty</th>
-                      <th className="py-2.5 px-3 text-right">Unit Price</th>
-                      <th className="py-2.5 px-3 text-right">Total (PKR)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-neutral-200">
-                    {selectedSlipOrder.items.map((item, idx) => (
-                      <tr key={item.title}>
-                        <td className="py-3 px-3 text-neutral-500 font-mono">{idx + 1}</td>
-                        <td className="py-3 px-3 font-semibold text-neutral-900">
-                          {item.title}
-                          <div className="text-[10px] font-normal text-neutral-500">
-                            Laboratory Sealed • Quality Checked Batch
-                          </div>
-                        </td>
-                        <td className="py-3 px-3 text-center font-bold text-neutral-900">
-                          {item.quantity}
-                        </td>
-                        <td className="py-3 px-3 text-right text-neutral-600">
-                          {item.unitPrice ? `PKR ${item.unitPrice.toLocaleString()}` : '—'}
-                        </td>
-                        <td className="py-3 px-3 text-right font-bold text-neutral-900">
-                          {item.unitPrice
-                            ? `PKR ${(item.unitPrice * item.quantity).toLocaleString()}`
-                            : selectedSlipOrder.totalPkr}
-                        </td>
+                {/* 3. Shipper & Consignee 2-Column Details */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 border border-neutral-900 rounded divide-y sm:divide-y-0 sm:divide-x divide-neutral-900 text-xs">
+                  {/* SHIPPER */}
+                  <div className="p-3 bg-neutral-50/50">
+                    <div className="text-[10px] font-black uppercase tracking-wider text-neutral-600">
+                      SHIPPER (Return If Undelivered):
+                    </div>
+                    <div className="mt-1 font-bold text-neutral-900">
+                      CERA Medical Fulfillment Hub
+                    </div>
+                    <div className="mt-0.5 text-neutral-700 leading-tight text-[11px]">
+                      Plot 12-C, Phase 2 Ext, Commercial Area, DHA
+                      <br />
+                      Karachi, Sindh 75500, Pakistan
+                      <br />
+                      <strong>Contact:</strong> 021-34567890 / 0300-5551234
+                    </div>
+                  </div>
+
+                  {/* CONSIGNEE (CUSTOMER) */}
+                  <div className="p-3 bg-neutral-50/50">
+                    <div className="text-[10px] font-black uppercase tracking-wider text-neutral-600">
+                      CONSIGNEE (Customer Delivery):
+                    </div>
+                    <div className="mt-1 font-extrabold text-sm text-neutral-900">
+                      {selectedSlipOrder.customerName}
+                    </div>
+                    <div className="mt-1 text-neutral-800 leading-tight text-[11px]">
+                      <strong>Address:</strong>{' '}
+                      {selectedSlipOrder.customerAddress ?? 'Delivery Address on file'}
+                      <br />
+                      <strong>City:</strong>{' '}
+                      <span className="font-bold uppercase">{selectedSlipOrder.customerCity}</span>,
+                      Pakistan
+                      <br />
+                      <span className="inline-block mt-1 bg-yellow-100 border border-neutral-400 px-1.5 py-0.5 rounded font-mono font-black text-xs text-neutral-900">
+                        📞 Phone: {selectedSlipOrder.customerPhone}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Order Information Strip */}
+                <div className="my-2 flex flex-wrap items-center justify-between border-y border-neutral-300 py-1.5 text-[11px] text-neutral-700">
+                  <div>
+                    Order Ref:{' '}
+                    <strong className="font-mono text-neutral-900">
+                      {selectedSlipOrder.orderCode}
+                    </strong>
+                  </div>
+                  <div>
+                    Booking Date: <strong>{selectedSlipOrder.date}</strong>
+                  </div>
+                  <div>
+                    Total Pieces:{' '}
+                    <strong>
+                      {selectedSlipOrder.items.reduce((s, i) => s + i.quantity, 0)} Pcs
+                    </strong>
+                  </div>
+                </div>
+
+                {/* 5. Products Table */}
+                <div className="border border-neutral-900 rounded overflow-hidden">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-neutral-100 border-b border-neutral-900 font-bold uppercase text-[10px] text-neutral-800">
+                        <th className="py-1.5 px-2 w-8">#</th>
+                        <th className="py-1.5 px-2">Item Description & Product Title</th>
+                        <th className="py-1.5 px-2 text-center w-14">Qty</th>
+                        <th className="py-1.5 px-2 text-right w-24">Price (PKR)</th>
+                        <th className="py-1.5 px-2 text-right w-24">Total (PKR)</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-300 text-[11px]">
+                      {selectedSlipOrder.items.map((item, idx) => (
+                        <tr key={item.title}>
+                          <td className="py-1.5 px-2 text-neutral-600 font-mono">{idx + 1}</td>
+                          <td className="py-1.5 px-2 font-semibold text-neutral-900">
+                            {item.title}
+                          </td>
+                          <td className="py-1.5 px-2 text-center font-bold">{item.quantity}</td>
+                          <td className="py-1.5 px-2 text-right text-neutral-700">
+                            {item.unitPrice ? `PKR ${item.unitPrice.toLocaleString()}` : '—'}
+                          </td>
+                          <td className="py-1.5 px-2 text-right font-bold text-neutral-900">
+                            {item.unitPrice
+                              ? `PKR ${(item.unitPrice * item.quantity).toLocaleString()}`
+                              : selectedSlipOrder.totalPkr}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-              {/* PAYMENT SUMMARY & COD HIGHLIGHT */}
-              <div className="mt-6 flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div className="flex-1 rounded-lg border-2 border-neutral-900 bg-neutral-50 p-4">
-                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-700">
-                    <ShieldCheck size={16} className="text-emerald-700" />
-                    Payment Method
+                {/* 6. Standard Pakistani COD Highlight Block (Crucial for Couriers & Riders) */}
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+                  <div className="border-2 border-neutral-900 rounded p-2.5 bg-neutral-50 flex flex-col justify-between">
+                    <div>
+                      <div className="text-[10px] font-black uppercase tracking-wider text-neutral-800">
+                        RIDER CASH COLLECTION NOTICE
+                      </div>
+                      <div className="mt-1 text-[11px] text-neutral-700 leading-tight">
+                        {selectedSlipOrder.paymentMethod.toLowerCase().includes('cash')
+                          ? '⚠️ CASH ON DELIVERY: Please collect the full COD cash amount shown on the right before parcel handover. Do not deliver without receiving payment.'
+                          : '✓ PREPAID ORDER: Payment already verified online. Zero cash collection required from consignee.'}
+                      </div>
+                    </div>
+                    <div className="mt-2 text-[10px] text-neutral-500 italic">
+                      Special Courier Note: Fragile botanical health extract. Handle with care.
+                    </div>
                   </div>
-                  <div className="mt-1 text-sm font-bold text-neutral-900">
-                    {selectedSlipOrder.paymentMethod}
-                  </div>
-                  <div className="mt-2 text-[11px] text-neutral-600 leading-normal">
-                    {selectedSlipOrder.paymentMethod.toLowerCase().includes('cash')
-                      ? '⚠️ COURIER NOTICE: Please collect the exact total cash amount shown on the right prior to handing over parcel.'
-                      : '✓ PAYMENT VERIFIED: Pre-paid transaction. Do not collect any amount from customer upon delivery.'}
+
+                  <div className="border-2 border-neutral-900 bg-neutral-100 rounded p-3 text-center sm:text-right flex flex-col justify-center">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-700">
+                      COD AMOUNT TO COLLECT:
+                    </div>
+                    <div className="text-2xl font-black text-neutral-900 font-mono tracking-tight mt-0.5">
+                      {selectedSlipOrder.totalPkr}/-
+                    </div>
+                    <div className="text-[10px] font-bold text-neutral-600 uppercase mt-0.5">
+                      (Courier Shipping Fee Included)
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-full sm:w-64 rounded-lg border-2 border-neutral-900 bg-white p-4">
-                  <div className="flex justify-between text-xs text-neutral-600 pb-1.5">
-                    <span>Subtotal:</span>
-                    <span className="font-semibold text-neutral-900">
-                      {selectedSlipOrder.totalPkr}
-                    </span>
+                {/* 7. Footer Signatures Strip */}
+                <div className="mt-3 pt-2 border-t border-neutral-400 grid grid-cols-2 gap-4 text-[10px] text-neutral-600">
+                  <div>
+                    <div className="border-b border-neutral-400 pb-1 w-40 font-mono text-neutral-400">
+                      Rider Signature & Stamp
+                    </div>
+                    <div className="mt-0.5 text-[9px]">Delivered By / CN Booking Agent</div>
                   </div>
-                  <div className="flex justify-between text-xs text-neutral-600 pb-2 border-b border-neutral-200">
-                    <span>Shipping Courier:</span>
-                    <span className="font-semibold text-emerald-700">FREE / INCLUDED</span>
-                  </div>
-                  <div className="mt-2 flex justify-between items-baseline">
-                    <span className="text-xs font-bold text-neutral-900">Total Due:</span>
-                    <span className="text-lg font-black text-neutral-900">
-                      {selectedSlipOrder.totalPkr}
-                    </span>
-                  </div>
-                </div>
-              </div>
 
-              {/* HANDLING INSTRUCTIONS & VERIFICATION SIGNATURE */}
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-neutral-300 pt-4 text-[11px] text-neutral-500">
-                <div>
-                  <div className="font-bold uppercase text-neutral-700">
-                    Handling & Courier Instructions:
-                  </div>
-                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
-                    <li>Fragile natural health extract bottles — handle with care.</li>
-                    <li>Do not expose to direct heat or sunlight above 35°C.</li>
-                    <li>
-                      In case of delivery issue, contact: <strong>+92 300 5551234</strong>.
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="sm:text-right flex flex-col justify-end">
-                  <div className="inline-block sm:ml-auto w-48 border-b border-neutral-400 pb-1 text-center font-mono text-[10px] text-neutral-400">
-                    Authorized Inspection Signature
-                  </div>
-                  <div className="mt-1 text-[10px] text-neutral-400">
-                    Verified CERA Quality Assurance Team
+                  <div className="text-right">
+                    <div className="border-b border-neutral-400 pb-1 ml-auto w-40 font-mono text-neutral-400 text-center">
+                      Consignee Signature
+                    </div>
+                    <div className="mt-0.5 text-[9px]">Received in Good Condition</div>
                   </div>
                 </div>
               </div>
