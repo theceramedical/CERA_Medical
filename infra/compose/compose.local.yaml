@@ -8,9 +8,8 @@
 #   - MinIO standing in for Cloudflare R2
 #   - Mailpit standing in for Resend
 #
-# None of this exists in the staging or production overlays. The stand-ins sit
-# behind the same StoragePort and EmailPort interfaces as the live providers, so
-# switching is an environment change (see docs/runbooks/prerequisites.md).
+# These local stand-ins support application development and are not part of the
+# Cloudflare Worker deployment.
 # =============================================================================
 
 volumes:

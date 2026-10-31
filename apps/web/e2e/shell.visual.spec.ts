@@ -11,7 +11,7 @@ import type { Page } from '@playwright/test';
  * how anything looks, and did I mean to". It is *not* a fidelity check against the reference image - a
  * machine cannot tell whether a 6px difference in section padding is a defect or a decision. The
  * comparison against the reference is done by eye at 1280 and written up in
- * `.planning/phase-04-web-shell-homepage.md`; these baselines then hold that agreed result still.
+ * in the review record; these baselines then hold the agreed result still.
  *
  * Which means the baselines are only worth committing if they are stable. Fonts, animation, and lazily
  * loaded images all make a screenshot differ from itself between runs, and a suite that fails at random

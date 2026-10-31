@@ -4,6 +4,10 @@ import { SESSION_COOKIE_NAME } from '@cera/contracts/session';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import { handleCloudflareOpsApi } from '../cloudflare/ops-api.ts';
+import { handleCloudflarePortalApi } from '../cloudflare/portal-api.ts';
+import { getCloudflareDatabase } from '../cloudflare/runtime.ts';
+
 import { jsonBodyForApiRequest } from './api-request-body.ts';
 import {
   apiPathRequiresVerifiedEmail,
@@ -25,17 +29,34 @@ export async function authenticatedApi<T>(
 
   const session = await getSession();
   const portalOptions = returnTo === undefined ? {} : { returnTo };
-  if (path.startsWith('/v1/ops/')) {
-    assertStaffPortalSession(session, portalOptions);
-  } else {
-    assertCustomerPortalSession(session, {
-      ...portalOptions,
-      emailVerified: apiPathRequiresVerifiedEmail(path),
-    });
-  }
+  const authenticatedSession = path.startsWith('/v1/ops/')
+    ? assertStaffPortalSession(session, portalOptions)
+    : assertCustomerPortalSession(session, {
+        ...portalOptions,
+        emailVerified: apiPathRequiresVerifiedEmail(path),
+      });
 
   const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
   if (!token) redirect(signIn);
+
+  if (await getCloudflareDatabase()) {
+    const result = path.startsWith('/v1/ops/')
+      ? await handleCloudflareOpsApi(
+          path,
+          options.method ?? 'GET',
+          options.body,
+          authenticatedSession,
+        )
+      : await handleCloudflarePortalApi(
+          path,
+          options.method ?? 'GET',
+          options.body,
+          authenticatedSession,
+        );
+    if (result === null)
+      throw new Error('This operation is not available on the Cloudflare runtime.');
+    return result as T;
+  }
 
   const api = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL;
   if (!api) throw new Error('API is not configured');

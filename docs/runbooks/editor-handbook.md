@@ -44,7 +44,7 @@ Keep these bookmarks in a browser folder named CERA Operations.
 
 ### Set up your browser
 
-1. Create the CERA Operations bookmark folder and add the links above. Keep a separate folder for Hetzner, Cloudflare, Resend and UptimeRobot.
+1. Create the CERA Operations bookmark folder and add the links above. Keep provider administration links separate from daily work.
 2. Store the correct login for each system in your password manager. An Authentik password is not automatically a Payload or Vendure password.
 3. Use your owner/staff account for administration. Use a separate customer account or private browser window when checking the customer journey.
 
@@ -203,7 +203,7 @@ For a new image, select the replacement asset in each relevant content record an
 
 ### Storage in this handover
 
-R2 is deferred. Treat uploaded media as dependent on the production server’s local storage until the technical administrator confirms migration. Confirm that media files, databases and configuration are covered by recovery procedures.
+Production media uses the configured Cloudflare R2 bucket. Keep original approved assets in the company content archive as well.
 
 ### Logo changes
 
@@ -321,7 +321,7 @@ Store passwords, recovery codes and ownership details in a password manager. Do 
 
 Before taking over alone, sign in to every system in the directory and verify your actual role. Confirm access to the recovery inbox, hosting billing, domain renewal, monitoring notifications and a technical support contact.
 
-## Monitoring and backups
+## Monitoring and recovery
 
 Know what is healthy and what can actually be recovered.
 
@@ -331,19 +331,9 @@ Know what is healthy and what can actually be recovered.
 2. Check its URL, latest status and recent incidents. Verify that the intended notification contact is attached and confirmed.
 3. Use the service’s notification-test control when available and confirm receipt. Then follow the troubleshooting procedure if the website is down.
 
-### Review server backups
-
-1. Open Hetzner Console → the CeraMedical project → **Servers** → **CERA-Production**.
-2. Open the server’s **Backups** tab. Confirm backups are enabled and that recent successful backup entries exist.
-3. Keep a record of the latest backup date. Arrange a recovery exercise with the technical administrator using a separate safe target; do not restore over the live server as a test.
-
-### What still needs confirmation
-
-You reported enabling Hetzner backups. This guide does not independently verify the current backup history. A server backup is different from an application-consistent database export; ask the technical administrator to confirm database, local media and secret/configuration recovery.
-
 ### When to escalate
 
-Escalate missing backups, persistent delivery failures, full-disk alerts, repeated login errors or unexplained catalogue changes. Server restarts, restores, DNS changes and container upgrades belong in a planned technical intervention, not ordinary content editing.
+Escalate persistent delivery failures, repeated login errors, unavailable pages or unexplained catalogue changes. Cloudflare account, DNS, database recovery and access changes belong with the technical administrator, not ordinary content editing.
 
 ## When something goes wrong
 
@@ -411,7 +401,7 @@ Check every image, its text and its order on desktop and mobile. Click an image 
 
 ### Limits and ownership
 
-Each gallery accepts up to 40 images. Media accepts PNG, JPEG, WebP and AVIF files, with a 10 MB per-file limit. Uploads use the configured storage, including local server storage while R2 is deferred. Keep original images separately.
+Each gallery accepts up to 40 images. Media accepts PNG, JPEG, WebP and AVIF files, with a 10 MB per-file limit. Uploads use the configured Cloudflare R2 storage. Keep original images separately.
 
 ## Manage the About page and team
 
@@ -441,13 +431,12 @@ A private access register for Habab to complete in the company password manager.
 - **Payload CMS:** https://admin.ceramedical.org/admin · CMS administrator. Initial values: CMS_BOOTSTRAP_ADMIN_EMAIL / CMS_BOOTSTRAP_ADMIN_PASSWORD.
 - **Vendure:** https://catalogue.ceramedical.org/dashboard · catalogue/order administrator. Initial values: SUPERADMIN_USERNAME / SUPERADMIN_PASSWORD.
 - **Authentik:** https://auth.ceramedical.org/if/admin/ · identity administrator. Initial values: AUTHENTIK_BOOTSTRAP_EMAIL / AUTHENTIK_BOOTSTRAP_PASSWORD.
-- **ERPNext CRM:** https://crm.ceramedical.org · provisioned administrator; initial password may be /opt/frappe_docker/.admin-initial on VPS.
-- **Cloudflare, Resend, Hetzner, UptimeRobot:** Use owner login and recovery stored in the company password manager. API tokens are integration credentials.
+- **Cloudflare:** Use the owner login and recovery stored in the company password manager. API tokens are integration credentials.
 
 ### Provision and protect access
 
-Have the technical administrator create Habab’s named staff, CMS, Vendure and CRM accounts, then transfer current credentials directly into the company password manager. Production config is /opt/cera/.env; the protected VPS helper is /opt/cera/infra/scripts/export-operator-credentials.sh. Bootstrap values may be stale after password changes. Change temporary passwords at first sign-in and record each account’s URL, recovery method and owner. Do not share Saad’s personal login or a generic root account.
+Have the technical administrator create named accounts with only the needed access, then record recovery details in the company password manager. Do not share personal logins or generic administrator credentials.
 
 ### Keep secrets out of this PDF
 
-This handbook contains no live passwords, API tokens, database credentials, OIDC secrets or signing keys. Never commit or email the export-helper output, .env file or recovery codes.
+This handbook contains no live passwords, API tokens, database credentials or signing keys. Never commit or email secrets or recovery codes.

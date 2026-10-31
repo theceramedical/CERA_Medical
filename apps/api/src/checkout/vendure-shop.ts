@@ -275,8 +275,7 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         countryCode: string;
         deliveryAddress: DeliveryAddress;
         billingAddress: DeliveryAddress;
-        paymentMethod: 'cod' | 'safepay' | 'test';
-        safepayTracker?: string | undefined;
+        paymentMethod: 'cod' | 'test';
       },
     ): Promise<{ orderCode: string; token: string | null }> {
       const address = {
@@ -366,17 +365,9 @@ export function createVendureShopClient(shopApiUrl: string, fetchImpl: typeof fe
         { state: 'ArrangingPayment' },
       );
 
-      const paymentCode =
-        input.paymentMethod === 'cod'
-          ? 'cera-cod'
-          : input.paymentMethod === 'safepay'
-            ? 'cera-safepay'
-            : 'cera-test-payment';
+      const paymentCode = input.paymentMethod === 'cod' ? 'cera-cod' : 'cera-test-payment';
 
       const metadata: Record<string, string> = {};
-      if (input.paymentMethod === 'safepay' && input.safepayTracker !== undefined) {
-        metadata.safepayTracker = input.safepayTracker;
-      }
 
       const payment = await post<{ addPaymentToOrder: { __typename: string; code?: string } }>(
         { token },
@@ -419,7 +410,7 @@ interface VendureOrder {
 
 function mapOrder(order: VendureOrder): Cart {
   // The storefront and payment contract quote in PKR. A Vendure channel left
-  // on its USD default must never reach Safepay with an unchanged numeric total.
+  // on its USD default must never reach checkout with an unchanged numeric total.
   if (order.currencyCode !== 'PKR') {
     throw new ApiError('upstream_unavailable', {
       internalDetail: `Vendure cart currency ${order.currencyCode} is not PKR`,

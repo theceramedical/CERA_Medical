@@ -57,9 +57,6 @@ function schemaKeys(schema: unknown): string[] {
  */
 const EXAMPLE_ONLY = new Set([
   // Consumed by Docker Compose and the Postgres init script, never by app code.
-  // Used by the production Caddy edge and deployment health checks, not app code.
-  'CADDY_ACME_EMAIL',
-  'CERA_DOMAIN',
   'POSTGRES_HOST',
   'POSTGRES_PORT',
   'POSTGRES_SUPERUSER',
@@ -88,10 +85,6 @@ const EXAMPLE_ONLY = new Set([
   'GLITCHTIP_MAX_EVENT_LIFE_DAYS',
   'MINIO_ROOT_USER',
   'MINIO_ROOT_PASSWORD',
-  // Read by infra/scripts/backup.sh, not by any service.
-  'BACKUP_AGE_PUBLIC_KEY',
-  'BACKUP_RETENTION_DAYS',
-  'BACKUP_TARGET_DIR',
   // Per-service port aliases. Each schema reads PORT; Compose maps these to it.
   'API_PORT',
   'CMS_PORT',

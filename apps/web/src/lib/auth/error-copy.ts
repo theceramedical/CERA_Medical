@@ -5,6 +5,11 @@ export interface AuthErrorCopy {
 }
 
 const errors: Record<string, AuthErrorCopy> = {
+  configuration: {
+    title: 'Secure sign-in is not ready yet',
+    lede: 'CERA is still configuring its account sign-in service.',
+    plan: 'You can still contact CERA without signing in. Please try again later if you need an account.',
+  },
   access: {
     title: 'Your account does not have CERA access yet',
     lede: 'Your identity provider sign-in succeeded, but this account is not assigned a CERA role.',

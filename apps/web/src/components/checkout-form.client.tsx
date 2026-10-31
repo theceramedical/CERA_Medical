@@ -7,28 +7,21 @@ import { useState } from 'react';
 
 import type { DeliveryAddress } from '@cera/contracts';
 
-import {
-  CHECKOUT_CONTACT_STORAGE_KEY,
-  completeCheckout,
-  startSafepayCheckout,
-  type CheckoutPaymentMethod,
-} from '../lib/cart-client.ts';
+import { completeCheckout, type CheckoutPaymentMethod } from '../lib/cart-client.ts';
 
 import { AppLink } from './link.tsx';
 
 export function CheckoutForm({
   customerEmail,
   cartTotalLabel,
-  showTestPayment,
 }: {
   readonly customerEmail: string;
   readonly cartTotalLabel: string;
-  readonly showTestPayment: boolean;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>('safepay');
+  const paymentMethod: CheckoutPaymentMethod = 'cod';
   const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(true);
 
   return (
@@ -41,7 +34,6 @@ export function CheckoutForm({
         const form = event.currentTarget;
         const data = new FormData(form);
         const nameRaw = data.get('fullName');
-        const methodRaw = data.get('paymentMethod');
         if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {
           setError('Enter your full name.');
           setPending(false);
@@ -71,41 +63,11 @@ export function CheckoutForm({
               postalCode: field('billingPostalCode'),
               phoneNumber: field('billingPhoneNumber'),
             };
-        const method =
-          methodRaw === 'cod' || methodRaw === 'safepay' || methodRaw === 'test'
-            ? methodRaw
-            : paymentMethod;
-
-        if (method === 'safepay') {
-          const origin = window.location.origin;
-          const contact = { email, fullName, deliveryAddress, billingAddress };
-          try {
-            sessionStorage.setItem(CHECKOUT_CONTACT_STORAGE_KEY, JSON.stringify(contact));
-          } catch {
-            /* ignore quota errors */
-          }
-          void startSafepayCheckout({
-            email,
-            fullName,
-            deliveryAddress,
-            redirectUrl: `${origin}/checkout/return`,
-            cancelUrl: `${origin}/checkout`,
-          })
-            .then(({ checkoutUrl }) => {
-              window.location.assign(checkoutUrl);
-            })
-            .catch(() => {
-              setError('Could not start Safepay checkout. Try COD or contact us.');
-              setPending(false);
-            });
-          return;
-        }
-
         void completeCheckout({
           email,
           fullName,
           countryCode: 'PK',
-          paymentMethod: method,
+          paymentMethod,
           deliveryAddress,
           billingAddress,
         })
@@ -124,37 +86,9 @@ export function CheckoutForm({
           Payment method
         </Text>
         <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            name="paymentMethod"
-            value="safepay"
-            checked={paymentMethod === 'safepay'}
-            onChange={() => setPaymentMethod('safepay')}
-          />
-          <Text size="body-sm">Pay online (Safepay)</Text>
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            name="paymentMethod"
-            value="cod"
-            checked={paymentMethod === 'cod'}
-            onChange={() => setPaymentMethod('cod')}
-          />
+          <input type="radio" name="paymentMethod" value="cod" checked readOnly />
           <Text size="body-sm">Cash on delivery</Text>
         </label>
-        {showTestPayment ? (
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="test"
-              checked={paymentMethod === 'test'}
-              onChange={() => setPaymentMethod('test')}
-            />
-            <Text size="body-sm">Test payment (development)</Text>
-          </label>
-        ) : null}
       </fieldset>
       <label className="block">
         <Text size="body-sm" className="mb-1 font-medium">
@@ -264,15 +198,11 @@ export function CheckoutForm({
         </Text>
       ) : null}
       <Button type="submit" variant="primary" disabled={pending} className="w-full justify-center">
-        {pending
-          ? 'Processing…'
-          : paymentMethod === 'safepay'
-            ? 'Continue to Safepay'
-            : 'Confirm order'}
+        {pending ? 'Processing…' : 'Confirm order'}
       </Button>
       <Text size="body-sm" tone="muted">
-        Online payments are processed on Safepay&apos;s secure hosted page. COD orders are confirmed
-        without prepayment. <AppLink href="/contact">Need help?</AppLink>
+        Cash on delivery is the only available payment method.{' '}
+        <AppLink href="/contact">Need help?</AppLink>
       </Text>
     </form>
   );

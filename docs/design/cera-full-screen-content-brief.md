@@ -1,10 +1,8 @@
 # CERA Medical — full screen & content brief
 
-> **Most complete copy-paste doc:** [`.planning/ALL-SCREENS-AND-CONTENT.md`](../../.planning/ALL-SCREENS-AND-CONTENT.md) — every screen with full on-page text, forms, policies, and account/staff UI.
-
 **Purpose:** Single reference for redesign tools (Stitch, Figma, etc.) with every public tier, route, section order, and copy as implemented in the codebase (October 2026).
 
-**Canonical design system:** [`.planning/design-language.md`](../../.planning/design-language.md) — colours, type scale, layout grids, component specs. This document focuses on **product context, tiers, screens, and text**.
+This document focuses on product context, tiers, screens, and text. Visual tokens and components are maintained in `packages/ui`.
 
 **Production site:** `https://www.ceramedical.org` (use `www`; apex redirects for cookies/canonical).
 
@@ -16,14 +14,14 @@
 
 CERA Medical is a **biomedical research and development** company (Haripur, Pakistan). The digital platform:
 
-| Does                                                               | Does not                                  |
-| ------------------------------------------------------------------ | ----------------------------------------- |
-| Presents five research service lines                               | Take payments online                      |
-| Publishes research updates / articles                              | Store clinical records on the public site |
-| Captures **project enquiries** (forms)                             | Replace formal project contracts          |
-| Lets customers **sign in** (OIDC via Authentik) to track enquiries | Offer consumer “patient portal” care      |
+| Does                                             | Does not                                  |
+| ------------------------------------------------ | ----------------------------------------- |
+| Presents research services and eligible products | Provide clinical care                     |
+| Publishes research updates / articles            | Store clinical records on the public site |
+| Captures **project enquiries** (forms)           | Replace formal project contracts          |
+| Supports customer and staff account flows        | Offer consumer “patient portal” care      |
 
-**Back office (not visual design targets for marketing):** Payload CMS (content), Vendure (service catalogue), Fastify API, worker → ERPNext CRM, PostgreSQL, object storage for media.
+**Production runtime:** Cloudflare Worker, D1 application records, and R2 media storage.
 
 **Audience:** Universities, biotech R&D, health/public-sector research teams — **not** direct-to-consumer clinical patients.
 
@@ -370,7 +368,7 @@ Link: full FAQs page.
 | Navigation                  | `apps/web/src/components/navigation.ts`                                    |
 | Catalogue seed              | `apps/commerce/src/seed-data.ts`                                           |
 | Enquiry form                | `apps/web/src/components/enquiry-form.client.tsx`                          |
-| Design authority            | `.planning/design-language.md`                                             |
+| Design system               | `packages/ui/src/styles/` and `packages/ui/src/`                           |
 | CMS bootstrap / client copy | `apps/cms/src/content/client-website-content.json`, `bootstrap-content.ts` |
 
 ---

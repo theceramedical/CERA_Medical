@@ -7,15 +7,7 @@ import { Heading, Text } from '@cera/ui/typography';
 import { VisuallyHidden } from '@cera/ui/visually-hidden';
 import { useId, useState } from 'react';
 
-/**
- * The footer newsletter block (design-language.md section 5.9).
- *
- * **There is no backend yet, and the form says so rather than pretending.** Submitting reports that
- * subscriptions are not open. That is a deliberate choice over the two alternatives: a form that
- * silently discards an address is a lie, and a disabled control with no explanation reads as broken.
- * The shape is final, so Phase 10 replaces one function body with a server action and the
- * accessibility behaviour - the label, the error wiring, the live region - is already proved.
- */
+/** Footer subscription uses double opt-in; the address is not subscribed until confirmation. */
 export function NewsletterForm() {
   const [email, setEmail] = useState('');
   /**
@@ -28,6 +20,7 @@ export function NewsletterForm() {
    */
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const noticeId = useId();
 
   return (
@@ -42,7 +35,28 @@ export function NewsletterForm() {
         }
 
         setError(null);
-        setNotice('Subscriptions are not open yet. Nothing has been sent or stored.');
+        setPending(true);
+        void fetch('/api/newsletter/subscribe', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email: email.trim() }),
+        })
+          .then((response) => {
+            if (!response.ok)
+              throw new Error('The confirmation email could not be sent. Try again later.');
+            setNotice(
+              'Check your inbox for a confirmation link. You are subscribed only after confirming your address.',
+            );
+            setEmail('');
+          })
+          .catch((reason: unknown) => {
+            setError(
+              reason instanceof Error
+                ? reason.message
+                : 'Subscription could not be started. Try again later.',
+            );
+          })
+          .finally(() => setPending(false));
       }}
       className="flex flex-col gap-3"
     >
@@ -80,8 +94,8 @@ export function NewsletterForm() {
             className="sm:flex-1"
           />
 
-          <Button type="submit" variant="primary">
-            Subscribe
+          <Button type="submit" variant="primary" disabled={pending}>
+            {pending ? 'Sending…' : 'Subscribe'}
           </Button>
         </div>
       </Field>

@@ -6,10 +6,8 @@
  * it is a directive the browser ignores, or a page that renders with its scripts blocked. Neither
  * is visible from a passing build, so the policy needs tests that read it.
  *
- * Phase 13 adds the edge layer in the Caddyfile. The two are not duplicates: Caddy owns the
- * headers that describe the *transport* (HSTS, which is only meaningful on a connection Caddy
- * terminates and this process cannot observe), and this owns the ones that describe the
- * *document*. Setting HSTS from here would be a guess about a hop we are behind.
+ * Cloudflare owns edge transport settings; this policy describes the document. HSTS is configured
+ * at the edge because this renderer cannot observe the visitor's original TLS connection.
  */
 
 /** A per-request nonce for the CSP, and the policy that carries it. */

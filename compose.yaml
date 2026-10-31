@@ -1,16 +1,13 @@
 # =============================================================================
 # CERA Medical - base Compose file
 # =============================================================================
-# This file is production-safe by default. Development conveniences (host port
-# publishing, bind mounts, MinIO, Mailpit) live in the local overlay so they
-# cannot leak into a deployed environment:
+# Shared local development services. Host ports and local stand-ins are added
+# by the development overlay:
 #
 #   local       docker compose -f compose.yaml -f infra/compose/compose.local.yaml up -d
-#   staging     docker compose -f compose.yaml -f infra/compose/compose.staging.yaml up -d
-#   production  docker compose -f compose.yaml -f infra/compose/compose.production.yaml up -d
 #
 # Two networks. `cera-private` is internal, so PostgreSQL and Valkey have no
-# route off the host regardless of overlay (PRD INF-901).
+# route off the local host network.
 # =============================================================================
 
 name: cera

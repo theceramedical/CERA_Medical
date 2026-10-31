@@ -16,6 +16,7 @@ import {
 } from '../../../lib/auth/oidc.ts';
 import { isStaffReturnTo, safeReturnTo } from '../../../lib/auth/return-to.ts';
 import { rolesIncludeStaff } from '../../../lib/auth/staff-roles.ts';
+import { getCloudflareDatabase } from '../../../lib/cloudflare/runtime.ts';
 import { siteUrl } from '../../../lib/site-url.ts';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -95,6 +96,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       errorReason = 'access';
       throw new Error('Customer identity cannot enter the staff workspace');
     }
+    if (staffTarget && !identity.mfa) {
+      errorReason = 'access';
+      throw new Error('Staff sign-in requires a verified multi-factor claim');
+    }
     if (!staffTarget && staff && !identity.roles.includes('customer')) {
       handshake.next = '/staff';
     }
@@ -106,6 +111,45 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       exp,
       absoluteExp: now + (staff ? 8 * 60 * 60 : 7 * 24 * 60 * 60),
     };
+    const db = await getCloudflareDatabase();
+    if (db) {
+      const displayName = identity.email.split('@')[0] ?? 'Customer';
+      const role = staff
+        ? (identity.roles.find((item) => item !== 'customer') ?? 'staff')
+        : 'customer';
+      await db.batch([
+        db
+          .prepare(
+            `INSERT INTO user (id, name, email, email_verified, role, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(id) DO UPDATE SET name = excluded.name, email = excluded.email,
+            email_verified = excluded.email_verified, role = excluded.role, updated_at = excluded.updated_at`,
+          )
+          .bind(
+            identity.sub,
+            displayName,
+            identity.email.toLowerCase(),
+            identity.emailVerified ? 1 : 0,
+            role,
+            now,
+            now,
+          ),
+        db
+          .prepare(
+            `INSERT INTO customer_profiles (id, user_id, email, full_name, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?)
+          ON CONFLICT(user_id) DO UPDATE SET email = excluded.email, full_name = excluded.full_name, updated_at = excluded.updated_at`,
+          )
+          .bind(
+            crypto.randomUUID(),
+            identity.sub,
+            identity.email.toLowerCase(),
+            displayName,
+            now,
+            now,
+          ),
+      ]);
+    }
     response = NextResponse.redirect(new URL(safeReturnTo(handshake.next), siteUrl()));
     response.cookies.set(SESSION_COOKIE_NAME, await sealHandshake(claims), {
       httpOnly: true,

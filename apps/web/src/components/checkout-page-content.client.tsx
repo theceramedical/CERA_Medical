@@ -54,7 +54,6 @@ export function CheckoutPageContent({ customerEmail }: { readonly customerEmail:
     <CheckoutForm
       customerEmail={customerEmail}
       cartTotalLabel={formatCartMoney(cart.totalMinor, cart.currencyCode)}
-      showTestPayment={process.env.NODE_ENV !== 'production'}
     />
   );
 }

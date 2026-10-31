@@ -151,9 +151,9 @@ test('the response carries the rest of the security headers', async ({ page }) =
   /**
    * No HSTS from the application, on purpose.
    *
-   * Caddy terminates TLS and owns transport headers (Phase 13). Two sources for `Strict-Transport-Security`
-   * is how a `max-age` of 31536000 ends up shadowed by a stale one of 0, and the application cannot know
-   * whether it is being served over HTTPS in the first place.
+   * Cloudflare owns transport headers. Two sources for `Strict-Transport-Security` is how a `max-age`
+   * of 31536000 ends up shadowed by a stale one of 0, and the renderer cannot know whether the visitor
+   * connected over HTTPS in the first place.
    */
   expect(headers['strict-transport-security']).toBeUndefined();
 });

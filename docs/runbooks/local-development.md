@@ -10,11 +10,7 @@ corepack enable
 pnpm install
 cp .env.example .env    # then fill in the placeholders
 pnpm stack:up
-pnpm health
 ```
-
-`pnpm health` should report every infrastructure check passing and the applications as `SKIP` until you
-start them with `pnpm dev`.
 
 ## Daily loop
 
@@ -74,7 +70,7 @@ pnpm stack:reset && pnpm stack:up
 Check that `-ip.bind=0.0.0.0` is still present in the Compose command. Without it SeaweedFS binds only
 to loopback inside the container, Docker forwards published ports to the container's bridge IP, and the
 endpoint is unreachable from the host. The logs look entirely normal, which is what makes this one
-expensive. See [ADR-008](../../.planning/adr/ADR-008-local-s3-seaweedfs-over-minio.md).
+expensive. SeaweedFS is the local S3-compatible service used by the development stack.
 
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:9001/   # expect 200

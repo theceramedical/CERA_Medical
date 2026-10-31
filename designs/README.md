@@ -58,15 +58,15 @@ Marketing routes render **`CmsPageUnavailable`** when the matching `pages/*` doc
 
 CERA does **not** run a cart/checkout storefront. The “commerce” stack is:
 
-| Layer                                                  | Role                                                                                |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| **Vendure** (`apps/commerce`, `:3002` / `catalogue.*`) | Service **products**: slug, price display, enquiry flags, availability              |
-| **`apps/api`**                                         | Public catalogue API (server-side Shop API; checkout mutations blocked per ADR-005) |
-| **`/services` + `/services/[slug]`**                   | Stitch-style **product pages**: CMS layout blocks + Vendure fields + enquiry CTA    |
-| **`/services/[slug]/enquiry`**                         | Conversion (quote/scoping), not payment                                             |
+| Layer                                                  | Role                                                                   |
+| ------------------------------------------------------ | ---------------------------------------------------------------------- |
+| **Vendure** (`apps/commerce`, `:3002` / `catalogue.*`) | Service **products**: slug, price display, enquiry flags, availability |
+| **Cloudflare Worker**                                  | Full-stack web runtime with D1-backed customer and staff operations    |
+| **`/services` + `/services/[slug]`**                   | Stitch-style **service pages** with an enquiry action                  |
+| **`/products` + cart**                                 | Product catalogue and eligible checkout flow                           |
 
 Product page CMS blocks on **service presentations**: `featureGrid`, `processSteps`, `keyValueList`, `serviceEnquiryAside`, `serviceSidebarCard`, etc. Bootstrap seeds full layouts for molecular and preclinical Stitch exports.
 
 ## Content brief
 
-See `.planning/ALL-SCREENS-AND-CONTENT.md` for all copy.
+Route copy and page structure are maintained alongside the current web application source.

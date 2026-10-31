@@ -6,6 +6,7 @@ import { resolveOidcSocialProviderForReturnTarget } from '../../../lib/auth/oidc
 import {
   createHandshakeSecrets,
   createPkce,
+  oidcConfigured,
   oidcClientId,
   oidcConfiguration,
   registeredOidcRedirectUri,
@@ -25,6 +26,9 @@ export async function GET(request: Request): Promise<NextResponse> {
       url.searchParams.get('provider'),
       isStaffReturnTo(next),
     );
+    if (!oidcConfigured(audience)) {
+      return NextResponse.redirect(new URL('/auth/error?reason=configuration', siteUrl()));
+    }
     const { state, nonce } = createHandshakeSecrets();
     const pkce = createPkce();
     const refreshVerification =

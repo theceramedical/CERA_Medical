@@ -46,7 +46,7 @@ export const VERIFIED_PORTFOLIO_PRODUCTS: readonly CatalogProduct[] = [
     packLabel: '100ml Spray Bottle',
     price: 'PKR 600',
     listPriceMinor: 60000,
-    checkoutEnabled: false,
+    checkoutEnabled: true,
     inStock: true,
     fulfillment: 'physical',
     ingredients: [
@@ -78,7 +78,7 @@ export const VERIFIED_PORTFOLIO_PRODUCTS: readonly CatalogProduct[] = [
     packLabel: '60ml Dropper Bottle',
     price: 'PKR 1,400',
     listPriceMinor: 140000,
-    checkoutEnabled: false,
+    checkoutEnabled: true,
     inStock: true,
     fulfillment: 'physical',
     ingredients: [
@@ -111,7 +111,7 @@ export const VERIFIED_PORTFOLIO_PRODUCTS: readonly CatalogProduct[] = [
     packLabel: 'Pocket Inhaler',
     price: 'PKR 200',
     listPriceMinor: 20000,
-    checkoutEnabled: false,
+    checkoutEnabled: true,
     inStock: true,
     fulfillment: 'physical',
     ingredients: ['Menthol', 'Thyme extract', 'Eucalyptus oil', 'Green tea extract aroma'],

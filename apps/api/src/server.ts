@@ -61,8 +61,8 @@ const loggerOptions = {
 };
 
 const app = Fastify({
-  // Trusting the proxy is what makes request IPs correct behind Caddy, and the
-  // rate limiter in Phase 08 depends on that being right.
+  // Trusting the configured reverse proxy makes request IPs correct for rate
+  // limiting in local application-server workflows.
   trustProxy: true,
   disableRequestLogging: false,
   logger: loggerOptions,

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { AuthSignInOptions } from '../../../../components/auth-sign-in-options.tsx';
 import { AppLink } from '../../../../components/link.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
+import { oidcConfigured } from '../../../../lib/auth/oidc.ts';
 import { sessionHasStaffRole } from '../../../../lib/auth/portal-access.ts';
 import { safeReturnTo, isStaffReturnTo } from '../../../../lib/auth/return-to.ts';
 import { getSession } from '../../../../lib/auth/session.ts';
@@ -60,6 +61,7 @@ export default async function StaffSignInPage({
               socialProviders={[]}
               mode="sign-in"
               audience="staff"
+              configured={oidcConfigured('staff')}
             />
           </section>
 

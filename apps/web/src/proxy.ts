@@ -23,8 +23,9 @@ import type { NextRequest } from 'next/server';
  *
  * **It is not an authorisation boundary,** and nothing here should ever be mistaken for one. It
  * checks that a session cookie is *present*; it does not open the seal, verify the signature,
- * check expiry, or look at roles. A forged cookie of the right name passes this and is rejected by
- * `apps/api`, which is where the decision is made, per request, against the record being touched.
+ * check expiry, or look at roles. A forged cookie of the right name passes this and must be
+ * rejected by the page-level session guards and Cloudflare API handlers, which verify the sealed
+ * session and role for each operation.
  * ADR-004 records why: Auth.js v5 carried GHSA-8fpg-xm3f-6cx3, a middleware fail-open, and the
  * lesson is not "write the check more carefully" but "do not put the check here at all".
  */
@@ -38,13 +39,13 @@ import type { NextRequest } from 'next/server';
  */
 const AUTHENTICATED_PREFIXES = ['/account', '/staff'] as const;
 
-/** Where an unauthenticated visitor is sent. Phase 09 implements the handler. */
+/** Where an unauthenticated visitor is sent. The page and API layers validate identity. */
 const SIGN_IN_PATH = '/auth/sign-in';
 
 /**
  * The parameter carrying where to return to after signing in.
  *
- * Validated on the way back out in Phase 09, not merely round-tripped: a `?next=` that accepts an
+ * Validated on the way back out by the sign-in handler, not merely round-tripped: a `?next=` that accepts an
  * absolute URL is an open redirect, which is how a phishing link gets to wear our domain. Only a
  * path originating from this request is ever written into it here.
  */
@@ -181,8 +182,8 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
 }
 
 /**
- * `__Host-` session cookies are host-only. Caddy enforces www at the edge; the application also
- * enforces it to prevent a direct-origin or future proxy route from splitting a user's session.
+ * `__Host-` session cookies are host-only. The application also enforces the canonical host to
+ * prevent alternate routes from splitting a user's session.
  */
 function canonicalRedirect(request: NextRequest): NextResponse | null {
   const raw = process.env.NEXT_PUBLIC_SITE_URL;

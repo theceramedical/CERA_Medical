@@ -21,7 +21,9 @@ function audienceEnv(
   key: 'ISSUER' | 'CLIENT_ID' | 'CLIENT_SECRET' | 'REDIRECT_URI',
 ) {
   const value = process.env[`OIDC_${audience.toUpperCase()}_${key}`];
-  return value?.length ? value : process.env[`OIDC_${key}`];
+  if (value?.trim()) return value.trim();
+  const shared = process.env[`OIDC_${key}`];
+  return shared?.trim() ? shared.trim() : undefined;
 }
 
 /** Registered redirect URI (no query) — must match Authentik and the authorize request. */
@@ -84,9 +86,54 @@ export function oidcIssuer(audience: OidcAudience = 'customer'): string | undefi
 export function oidcClientId(audience: OidcAudience = 'customer'): string | undefined {
   return audienceEnv(audience, 'CLIENT_ID');
 }
+/** Whether this audience can start a sealed OIDC flow in the current environment. */
+export function oidcConfigured(audience: OidcAudience = 'customer'): boolean {
+  const issuerValue = audienceEnv(audience, 'ISSUER');
+  const clientId = audienceEnv(audience, 'CLIENT_ID');
+  const clientSecret = audienceEnv(audience, 'CLIENT_SECRET');
+  const sessionSecret = Buffer.from(process.env.SESSION_SECRET ?? '', 'base64');
+  if (!issuerValue || !clientId || !clientSecret || sessionSecret.length < 32) return false;
+  if (process.env.CERA_ENV !== 'local') {
+    const prefix = `OIDC_${audience.toUpperCase()}`;
+    const ownClientId = process.env[`${prefix}_CLIENT_ID`]?.trim();
+    const ownClientSecret = process.env[`${prefix}_CLIENT_SECRET`]?.trim();
+    const otherAudience = audience === 'customer' ? 'STAFF' : 'CUSTOMER';
+    const otherClientId = process.env[`OIDC_${otherAudience}_CLIENT_ID`]?.trim();
+    if (!ownClientId || !ownClientSecret || (otherClientId && ownClientId === otherClientId))
+      return false;
+  }
+  try {
+    const issuer = new URL(issuerValue);
+    const localEnvironment = process.env.CERA_ENV === 'local';
+    const localIssuer = localEnvironment && ['localhost', '127.0.0.1'].includes(issuer.hostname);
+    if (
+      (issuer.protocol !== 'https:' && !localIssuer) ||
+      issuer.username ||
+      issuer.password ||
+      issuer.search ||
+      issuer.hash
+    )
+      return false;
+    const redirect = registeredOidcRedirectUri(audience);
+    const localRedirect =
+      localEnvironment && ['localhost', '127.0.0.1'].includes(redirect.hostname);
+    if (
+      (redirect.protocol !== 'https:' && !localRedirect) ||
+      redirect.username ||
+      redirect.password ||
+      redirect.search ||
+      redirect.hash
+    )
+      return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
 export function oidcConfiguration(
   audience: OidcAudience = 'customer',
 ): Promise<oidc.Configuration> {
+  if (!oidcConfigured(audience)) throw new Error('OIDC configuration incomplete');
   const existing = configurations.get(audience);
   if (existing) return existing;
   const issuer = new URL(audienceEnv(audience, 'ISSUER') ?? '');

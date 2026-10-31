@@ -1,14 +1,33 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "cera-web",
-  "compatibility_date": "2026-10-31",
+  "compatibility_date": "2026-10-30",
   "compatibility_flags": ["nodejs_compat"],
-  "pages_build_output_dir": "cf-dist",
+  "workers_dev": false,
+  "kv_namespaces": [
+    {
+      "binding": "VINEXT_KV_CACHE",
+      "id": "4a236bb230d247169297bff21017f38d"
+    }
+  ],
+  "routes": [
+    { "pattern": "ceramedical.org/*", "zone_name": "ceramedical.org" },
+    { "pattern": "www.ceramedical.org/*", "zone_name": "ceramedical.org" },
+    { "pattern": "staff.ceramedical.org/*", "zone_name": "ceramedical.org" },
+    { "pattern": "admin.ceramedical.org/*", "zone_name": "ceramedical.org" },
+    { "pattern": "crm.ceramedical.org/*", "zone_name": "ceramedical.org" }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://www.ceramedical.org",
+    "NEXT_PUBLIC_CHECKOUT_ENABLED": "false",
+    "ENQUIRY_CONSENT_VERSION": "cera-brief-2026-10-03-v1"
+  },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "cera-production-db",
-      "database_id": "00bc7849-2008-428c-8d97-8fab65a3c9d4"
+      "database_id": "00bc7849-2008-428c-8d97-8fab65a3c9d4",
+      "migrations_dir": "../../packages/db/d1"
     }
   ],
   "r2_buckets": [
@@ -16,5 +35,13 @@
       "binding": "MEDIA",
       "bucket_name": "cera-media"
     }
-  ]
+  ],
+  "main": "vinext/server/fetch-handler",
+  "assets": {
+    "directory": "dist/client",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "binding": "ASSETS",
+    "run_worker_first": ["/*", "!/_next/static/*", "!/*/_next/static/*"]
+  }
 }

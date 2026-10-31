@@ -58,7 +58,7 @@ export default async function AccountOrderDetailPage({
           </ul>
         </div>
         <Text size="body-sm" tone="muted">
-          Operations also receive this order in ERPNext (CRM) for fulfilment. For changes,{' '}
+          Your order is recorded for staff fulfilment. For changes,{' '}
           <AppLink href="/contact">contact us</AppLink> and quote order {order.orderCode}.
         </Text>
         <AppLink href="/account/orders">← All orders</AppLink>

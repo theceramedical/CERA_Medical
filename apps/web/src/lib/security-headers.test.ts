@@ -175,7 +175,7 @@ describe('STATIC_SECURITY_HEADERS', () => {
   );
 
   it('does not set HSTS, which belongs to the TLS terminator', () => {
-    // This process sits behind Caddy and cannot tell whether the external hop was HTTPS. Asserting
+    // This renderer cannot tell whether the visitor's original hop was HTTPS. Asserting
     // the absence so that adding it here is a deliberate change rather than a drive-by one.
     expect(Object.keys(STATIC_SECURITY_HEADERS)).not.toContain('Strict-Transport-Security');
   });

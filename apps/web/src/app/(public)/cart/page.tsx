@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
 
 import { CartPageView } from '../../../components/cart-page-view.client.tsx';
+import { AppButtonLink } from '../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
 import { fetchCart } from '../../../lib/cart-client.ts';
 import { checkoutEnabled } from '../../../lib/checkout-enabled.ts';
@@ -17,7 +17,25 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function CartPage() {
-  if (!checkoutEnabled()) notFound();
+  if (!checkoutEnabled()) {
+    return (
+      <>
+        <MarketingPageHeader
+          title="Online ordering is temporarily unavailable"
+          lede="Contact our team to discuss a product or service order."
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Cart' }]}
+        />
+        <div className="mx-auto flex max-w-site flex-wrap gap-3 px-6 py-12 md:px-10 lg:py-16">
+          <AppButtonLink href="/contact#contact-form" variant="primary">
+            Contact our team
+          </AppButtonLink>
+          <AppButtonLink href="/products" variant="outline">
+            Browse products
+          </AppButtonLink>
+        </div>
+      </>
+    );
+  }
 
   let cart;
   try {

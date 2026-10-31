@@ -21,18 +21,25 @@ describe('auth routes use the configured public origin', () => {
 
   it('sends sign-in failures to the public site', async () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', PUBLIC_SITE);
-    vi.stubEnv('OIDC_ISSUER', 'https://auth.ceramedical.org/application/o/cera-production/');
-    vi.stubEnv('OIDC_CLIENT_ID', '');
-    vi.stubEnv('OIDC_CLIENT_SECRET', '');
+    vi.stubEnv(
+      'OIDC_CUSTOMER_ISSUER',
+      'https://auth.ceramedical.org/application/o/cera-production/',
+    );
+    vi.stubEnv('OIDC_CUSTOMER_CLIENT_ID', '');
+    vi.stubEnv('OIDC_CUSTOMER_CLIENT_SECRET', '');
+    vi.stubEnv('SESSION_SECRET', '');
 
     const response = await signin(new Request(`${INTERNAL_ORIGIN}/auth/signin`));
 
-    expect(response.headers.get('location')).toBe(`${PUBLIC_SITE}/auth/error?reason=unavailable`);
+    expect(response.headers.get('location')).toBe(`${PUBLIC_SITE}/auth/error?reason=configuration`);
   });
 
   it('returns after sign-out to the public site', () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', PUBLIC_SITE);
-    vi.stubEnv('OIDC_ISSUER', 'https://auth.ceramedical.org/application/o/cera-production/');
+    vi.stubEnv(
+      'OIDC_CUSTOMER_ISSUER',
+      'https://auth.ceramedical.org/application/o/cera-production/',
+    );
 
     const response = signout();
 

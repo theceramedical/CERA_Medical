@@ -1,7 +1,5 @@
-# Authentik 2026.8.3 - PostgreSQL only (Redis was removed in 2025.10).
-#   docker compose -f compose.yaml -f infra/compose/compose.authentik.yaml up -d
-#
-# Ports 9000/9443 are not published; Caddy proxies auth.<domain> to server:9000.
+# Local Authentik identity-provider services for development.
+# Ports are published by the local overlay only.
 
 services:
   authentik-server:

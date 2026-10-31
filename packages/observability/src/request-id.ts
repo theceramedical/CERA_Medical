@@ -22,8 +22,8 @@ export const REQUEST_ID_HEADER = 'x-request-id';
  * - and one containing 10 kB of text inflates every line of a request until the
  * collector drops them.
  *
- * 12 to 128 characters accommodates a UUID, a W3C trace ID, and Caddy's own
- * generated ids, while rejecting a single character that would be useless for
+ * 12 to 128 characters accommodates a UUID, a W3C trace ID, and edge trace IDs,
+ * while rejecting a single character that would be useless for
  * correlation.
  */
 const SAFE_REQUEST_ID = /^[A-Za-z0-9_-]{12,128}$/;

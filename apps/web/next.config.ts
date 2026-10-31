@@ -7,7 +7,7 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const monorepoRoot = join(rootDir, '../..');
 
 /**
- * The origin media is served from: SeaweedFS locally, Cloudflare R2 in staging and production.
+ * The origin media is served from SeaweedFS locally and Cloudflare R2 when deployed.
  *
  * Derived from `S3_PUBLIC_URL` rather than listing hosts, because the whole point of the
  * adapter arrangement is that real R2 credentials drop in without a code change - and a
@@ -73,9 +73,8 @@ function cmsMediaApiPattern(): {
 /**
  * Next.js configuration for the public site.
  *
- * `standalone` output because Phase 13 ships this as a container behind Caddy. It bundles
- * only the traced dependencies into `.next/standalone`, so the image does not carry a full
- * `node_modules` - the difference is several hundred megabytes per deploy.
+ * The standalone output supports the repository's local Node.js build workflow. Cloudflare
+ * deployment uses the vinext Worker build configured separately in `vite.config.ts`.
  */
 const nextConfig: NextConfig = {
   output: 'standalone',
