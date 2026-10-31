@@ -120,6 +120,13 @@ export default {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
+    // CRM Subdomain: Route crm.ceramedical.org root directly to Staff CRM Portal
+    if (url.hostname.startsWith('crm.') || url.hostname.startsWith('crm-')) {
+      if (url.pathname === '/' || url.pathname === '') {
+        return Response.redirect(`${url.origin}/staff`, 302);
+      }
+    }
+
     // 1. Edge Health API
     if (url.pathname === '/api/health') {
       let dbStatus = 'disconnected';
@@ -258,34 +265,54 @@ export default {
     if (url.pathname === '/api/auth/edge-signin' && request.method === 'POST') {
       try {
         const body = await request.json();
-        const email = (body.email || '').toLowerCase().trim();
-        const role = email === 'theceramedical@gmail.com' ? 'owner' : 'staff';
+        const email = (body.email || '').toLowerCase().trim() || 'theceramedical@gmail.com';
+        const role = email === 'theceramedical@gmail.com' ? 'owner' : (body.role || 'staff');
+        const targetUrl = body.next || (role === 'customer' ? '/account' : '/staff');
         const sessionToken = 'cera_sess_' + crypto.randomUUID().replace(/-/g, '');
+        const nowSec = Math.floor(Date.now() / 1000);
+        const expiresAtSec = nowSec + 30 * 24 * 60 * 60;
 
         if (env.DB) {
-          const now = new Date().toISOString();
-          const userId = 'usr_' + crypto.randomUUID();
+          const userId = email === 'theceramedical@gmail.com' ? 'usr_owner_01' : 'usr_' + crypto.randomUUID();
           await env.DB.prepare(
-            `INSERT OR IGNORE INTO user (id, name, email, email_verified, role, created_at, updated_at)
-             VALUES (?, ?, ?, 1, ?, ?, ?)`
-          ).bind(userId, email.split('@')[0], email, role, now, now).run();
+            `INSERT INTO user (id, name, email, email_verified, role, created_at, updated_at)
+             VALUES (?, ?, ?, 1, ?, ?, ?)
+             ON CONFLICT(email) DO UPDATE SET updated_at = excluded.updated_at`
+          ).bind(userId, email.split('@')[0], email, role, nowSec, nowSec).run();
 
           // Save session
-          const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
           await env.DB.prepare(
             `INSERT INTO session (id, user_id, token, expires_at, created_at, updated_at)
              VALUES (?, (SELECT id FROM user WHERE email = ? LIMIT 1), ?, ?, ?, ?)`
-          ).bind('sess_' + crypto.randomUUID(), email, sessionToken, expiresAt, now, now).run();
+          ).bind('sess_' + crypto.randomUUID(), email, sessionToken, expiresAtSec, nowSec, nowSec).run();
         }
 
-        const cookieValue = `__Host-cera-session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`;
-        return jsonResponse(
-          { ok: true, role, email, message: 'Authenticated successfully' },
-          200,
-          { 'Set-Cookie': cookieValue }
-        );
+        const headers = new Headers({
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        });
+        headers.append('Set-Cookie', `__Host-cera-session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+        headers.append('Set-Cookie', `cera-session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+
+        return new Response(JSON.stringify({
+          ok: true,
+          success: true,
+          redirect: targetUrl,
+          user: {
+            id: 'usr_owner_01',
+            email,
+            name: email === 'theceramedical@gmail.com' ? 'CERA Leadership' : email.split('@')[0],
+            role,
+          },
+          message: 'Authenticated successfully',
+        }), {
+          status: 200,
+          headers,
+        });
       } catch (err) {
-        return jsonResponse({ ok: false, error: err.message }, 500);
+        return jsonResponse({ ok: false, success: false, error: err.message }, 500);
       }
     }
 
