@@ -176,11 +176,11 @@ function publicText(paragraphs: readonly SourceParagraph[]): readonly SourcePara
     }
     if (text.startsWith('Information is stored on [systems located in Pakistan.')) {
       text =
-        'CERA Medical production application data is hosted on a server in Germany. Service providers may process information in other locations; contact us for current provider details.';
+        'CERA Medical production application data is stored using Cloudflare services. Service providers may process information in other locations; contact us for current provider details.';
     }
     if (text.startsWith('[Files are transferred over encrypted connections')) {
       text =
-        'The production application is hosted on a Hetzner server. Provider-level server backups are enabled; off-site Cloudflare R2 backups are not currently configured. Contact us for information about the controls used for a specific service.';
+        'The production application uses Cloudflare services for edge delivery, application data, and media storage. Contact CERA Medical for current information about service-provider retention and recovery controls.';
     }
     if (text.startsWith('Website server logs. Retention:')) {
       text = 'Website server logs are retained for 90 days and then overwritten automatically.';
@@ -191,11 +191,11 @@ function publicText(paragraphs: readonly SourceParagraph[]): readonly SourcePara
     }
     if (text.startsWith('[Product orders and delivery details]')) {
       text =
-        'Product orders and delivery details are not collected because this website does not currently accept product orders.';
+        'Product orders and delivery details are collected when a customer places an order for an eligible product.';
     }
     if (text.startsWith('Backups. Retention: 30 days')) {
       text =
-        'Backups: provider-managed server backups follow the retention cycle configured with the hosting provider; they may retain deleted data until that cycle expires.';
+        'Backups: service providers may retain backup copies for a limited period. Contact CERA Medical for current provider retention details.';
     }
     if (text.startsWith('Electronic files are deleted from working storage')) {
       text = text.replace(

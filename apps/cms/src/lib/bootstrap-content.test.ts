@@ -144,7 +144,7 @@ describe('bootstrapClientContent', () => {
     expect(JSON.stringify(records)).not.toContain('Full text for a page titled');
     expect(JSON.stringify(records)).not.toContain('[Analytics data]');
     expect(JSON.stringify(records)).not.toContain('[30 days]');
-    expect(JSON.stringify(records)).toContain('Germany');
+    expect(JSON.stringify(records)).toContain('Cloudflare');
   });
 
   it('preserves existing editable content instead of overwriting CMS changes', async () => {
