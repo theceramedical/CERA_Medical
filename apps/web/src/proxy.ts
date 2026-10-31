@@ -60,6 +60,13 @@ const LEGACY_SERVICE_TARGETS: Readonly<Record<string, string>> = {
     '/services/biomedical-data-analysis#evidence-synthesis-and-technical-reports',
 };
 
+/** Legacy dashboards now land on their Cloudflare staff-portal replacements. */
+const STAFF_HOST_TARGETS: Readonly<Record<string, string>> = {
+  'admin.ceramedical.org': '/staff',
+  'catalogue.ceramedical.org': '/staff/orders',
+  'crm.ceramedical.org': '/staff',
+};
+
 export function proxy(request: NextRequest): NextResponse {
   const requestId = resolveRequestId(request.headers.get(REQUEST_ID_HEADER));
 
@@ -195,7 +202,20 @@ function canonicalRedirect(request: NextRequest): NextResponse | null {
   } catch {
     return null;
   }
-  if (resolvePublicOrigin(request) === canonical.origin) return null;
+  const publicOrigin = resolvePublicOrigin(request);
+  if (publicOrigin === canonical.origin) return null;
+
+  let publicHostname: string;
+  try {
+    publicHostname = new URL(publicOrigin).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+  const staffTargetPath = STAFF_HOST_TARGETS[publicHostname];
+  if (staffTargetPath !== undefined) {
+    return NextResponse.redirect(new URL(staffTargetPath, canonical), 308);
+  }
+
   const target = new URL(request.nextUrl.pathname, canonical);
   target.search = request.nextUrl.search;
   const response = NextResponse.redirect(target, 308);

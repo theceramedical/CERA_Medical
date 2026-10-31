@@ -15,6 +15,7 @@
     { "pattern": "www.ceramedical.org/*", "zone_name": "ceramedical.org" },
     { "pattern": "staff.ceramedical.org/*", "zone_name": "ceramedical.org" },
     { "pattern": "admin.ceramedical.org/*", "zone_name": "ceramedical.org" },
+    { "pattern": "catalogue.ceramedical.org/*", "zone_name": "ceramedical.org" },
     { "pattern": "crm.ceramedical.org/*", "zone_name": "ceramedical.org" }
   ],
   "vars": {
