@@ -40,9 +40,9 @@ export default async function StaffSignInPage({
         title="CERA staff console"
         lede="A private workspace for the CERA team to review enquiries and manage delivery operations."
       />
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,42rem)_minmax(0,1fr)]">
-          <section className="rounded-xl border border-border bg-surface p-6 shadow-card sm:p-9">
+          <section className="rounded-xl border border-border bg-surface p-4 shadow-card sm:p-9">
             <div className="mb-8 border-b border-border pb-6">
               <Text size="eyebrow" tone="muted">
                 INTERNAL ACCESS
@@ -63,7 +63,7 @@ export default async function StaffSignInPage({
             />
           </section>
 
-          <aside className="rounded-xl bg-primary-900 p-6 text-white sm:p-8">
+          <aside className="rounded-xl bg-primary-900 p-5 text-white sm:p-8">
             <Text size="eyebrow" className="text-white/70">
               STAFF ONLY
             </Text>

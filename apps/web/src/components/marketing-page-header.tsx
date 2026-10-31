@@ -36,7 +36,7 @@ export function MarketingPageHeader({
     <>
       {breadcrumbs !== undefined && breadcrumbs.length > 0 ? (
         <nav aria-label="Breadcrumb" className="border-b border-border bg-surface">
-          <div className="mx-auto max-w-site px-6 py-2.5 md:px-10">
+          <div className="mx-auto max-w-site px-4 py-2.5 sm:px-6 md:px-10">
             <Breadcrumbs items={breadcrumbs} linkAs={AppLink} />
           </div>
         </nav>

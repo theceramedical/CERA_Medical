@@ -123,7 +123,7 @@ export function AuthSignInOptions({
 
       {/* 1. Master Leadership Direct Authorization Card (Staff Mode) */}
       {isStaffPortal ? (
-        <div className="relative overflow-hidden rounded-xl border-2 border-primary/30 bg-surface-tint p-5 shadow-sm transition-all hover:border-primary/50">
+        <div className="relative overflow-hidden rounded-xl border-2 border-primary/30 bg-surface-tint p-4 sm:p-5 shadow-sm transition-all hover:border-primary/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-eyebrow font-bold tracking-wider text-primary uppercase">
               <ShieldCheck size={18} />

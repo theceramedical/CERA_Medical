@@ -19,7 +19,7 @@ export function TeamSection({ document }: { readonly document?: ContentDocument 
   if (publicMembers.length === 0) return null;
   return (
     <section className="border-b border-border bg-surface-tint" aria-labelledby="team-heading">
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         <div className="flex flex-col gap-3">
           <Text size="eyebrow" className="font-semibold tracking-[0.15em] text-accent uppercase">
             Leadership & Research Team

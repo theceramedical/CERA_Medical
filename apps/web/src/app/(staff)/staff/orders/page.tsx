@@ -71,7 +71,7 @@ export default function StaffOrdersPage() {
         title="Product Orders & Fulfillment"
         lede="Review incoming natural wellness orders, print dispatch packing slips, and update courier tracking."
       />
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         {/* Navigation tabs */}
         <div className="flex flex-col justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export default function StaffOrdersPage() {
             return (
               <div
                 key={order.id}
-                className="flex flex-col justify-between rounded-xl border border-border bg-surface p-6 shadow-card transition-all hover:border-primary/40 sm:p-7"
+                className="flex flex-col justify-between rounded-xl border border-border bg-surface p-4 shadow-card transition-all hover:border-primary/40 sm:p-7"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -151,7 +151,7 @@ export default function StaffOrdersPage() {
                   </div>
 
                   <div className="flex flex-col items-start gap-3 sm:items-end">
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <div className="text-caption text-muted">Total Amount</div>
                       <div className="text-h3 font-bold text-heading">{order.totalPkr}</div>
                       <span className="text-caption text-muted">{order.paymentMethod}</span>

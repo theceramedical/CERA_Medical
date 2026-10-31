@@ -371,12 +371,15 @@
   html {
     /* An in-page anchor must not land under the sticky header (WCAG 2.4.11). */
     scroll-padding-top: calc(var(--spacing-header) + var(--spacing) * 4);
+    overflow-x: hidden;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-copy);
     font-family: var(--font-sans);
+    min-width: 320px;
+    overflow-x: hidden;
 
     /* Source Sans 3 is a humanist face with open apertures; antialiasing it sharper than
      * the browser default thins the strokes enough to cost contrast at caption size. The

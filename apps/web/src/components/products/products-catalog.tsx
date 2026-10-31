@@ -32,18 +32,18 @@ export function ProductsCatalog({
   });
 
   return (
-    <div className="mx-auto max-w-site px-6 py-6 md:px-10">
+    <div className="mx-auto max-w-site px-4 py-6 sm:px-6 md:px-10">
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-caption text-muted">
         <AppLink href="/">Home</AppLink>
         <span aria-hidden="true">/</span>
         <span className="font-semibold text-heading">Products & Formulation Portfolio</span>
       </nav>
 
-      <section className="relative mb-8 overflow-hidden rounded-xl border border-border bg-gradient-to-br from-surface via-surface-subtle to-surface-tint p-8 shadow-card">
-        <div className="relative z-10 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+      <section className="relative mb-8 overflow-hidden rounded-xl border border-border bg-gradient-to-br from-surface via-surface-subtle to-surface-tint p-5 sm:p-8 shadow-card">
+        <div className="relative z-10 flex flex-col items-start justify-between gap-6 sm:gap-8 lg:flex-row lg:items-center">
           <div className="max-w-3xl">
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary-50 px-3 py-1 text-caption font-bold text-primary">
+              <span className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-primary/25 bg-primary-50 px-3 py-1 text-caption font-bold text-primary">
                 <LabMouseIcon size={14} />
                 BIOMEDICAL FORMULATIONS & PRECLINICAL REAGENTS
               </span>
@@ -65,6 +65,7 @@ export function ProductsCatalog({
             <AppButtonLink
               href="#catalog-grid"
               variant="primary"
+              className="w-full sm:w-auto justify-center"
               iconStart={<LabMouseIcon size={17} />}
             >
               Browse Portfolio ({products.length})
@@ -73,7 +74,7 @@ export function ProductsCatalog({
         </div>
       </section>
 
-      <section className="mb-8 rounded-xl border border-border bg-surface p-5 shadow-card">
+      <section className="mb-8 rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-card">
         <form method="get" className="mb-4 flex flex-col gap-3 sm:flex-row">
           <div className="relative min-w-0 flex-1">
             <span className="absolute inset-y-0 left-3 flex items-center text-muted">
@@ -98,7 +99,7 @@ export function ProductsCatalog({
         </form>
 
         <div
-          className="flex items-center gap-2 overflow-x-auto border-t border-border/80 pt-4"
+          className="flex items-center gap-2 overflow-x-auto border-t border-border/80 pt-4 touch-pan-x"
           role="tablist"
           aria-label="Product categories"
         >
@@ -185,7 +186,7 @@ export function ProductsCatalog({
                 }`}
               />
 
-              <div className="flex flex-1 flex-col p-6">
+              <div className="flex flex-1 flex-col p-4 sm:p-6">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <span className="rounded-md bg-surface-subtle px-2 py-0.5 font-mono text-[0.7rem] font-bold text-muted">
                     {product.sku}
@@ -258,7 +259,7 @@ export function ProductsCatalog({
               </div>
 
               {/* Bottom Action & Pricing Row */}
-              <div className="border-t border-border bg-surface-subtle/50 p-5 flex items-center justify-between">
+              <div className="border-t border-border bg-surface-subtle/50 p-4 sm:p-5 flex items-center justify-between">
                 <div>
                   <div className="font-bold text-heading text-body-sm sm:text-body">
                     {product.price ?? 'Price on enquiry'}
@@ -278,10 +279,10 @@ export function ProductsCatalog({
         })}
       </section>
 
-      <section className="relative mb-12 overflow-hidden rounded-2xl bg-primary-900 p-8 text-on-primary shadow-lg sm:p-10">
-        <div className="relative z-10 flex flex-col items-center justify-between gap-6 lg:flex-row">
+      <section className="relative mb-12 overflow-hidden rounded-2xl bg-primary-900 p-6 sm:p-10 text-on-primary shadow-lg">
+        <div className="relative z-10 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-on-primary/20 bg-on-primary/10 px-3 py-1 text-caption font-semibold text-accent uppercase">
+            <div className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-on-primary/20 bg-on-primary/10 px-3 py-1 text-caption font-semibold text-accent uppercase">
               <LabMouseIcon size={14} />
               Custom Animal House & Molecular Formulations
             </div>
@@ -294,11 +295,12 @@ export function ProductsCatalog({
               institutional ethics oversight.
             </Text>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
+          <div className="flex w-full shrink-0 items-center gap-3 sm:w-auto">
             <AppButtonLink
               href="/contact#contact-form"
               variant="accent"
               size="lg"
+              className="w-full sm:w-auto justify-center"
               iconStart={<LabMouseIcon size={18} />}
             >
               Consult Study Director

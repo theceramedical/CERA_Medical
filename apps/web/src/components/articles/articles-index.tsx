@@ -54,7 +54,7 @@ export function ArticlesIndex({
   return (
     <>
       <section className="border-b border-border bg-surface-tint">
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10">
+        <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10">
           <nav
             aria-label="Breadcrumb"
             className="mb-4 flex items-center gap-2 text-caption text-muted"
@@ -97,7 +97,7 @@ export function ArticlesIndex({
               </button>
             </div>
             <nav
-              className="mt-4 flex items-center gap-2 overflow-x-auto"
+              className="mt-4 flex items-center gap-2 overflow-x-auto touch-pan-x"
               aria-label="Article topics"
             >
               {ARTICLE_TOPICS.map((tab) => {
@@ -137,7 +137,7 @@ export function ArticlesIndex({
       </section>
 
       {featured ? (
-        <section className="mx-auto max-w-site px-6 py-12 md:px-10">
+        <section className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10">
           <article className="overflow-hidden rounded-lg border border-border bg-surface shadow-card">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="relative aspect-video overflow-hidden bg-surface-tint lg:col-span-6 lg:aspect-auto">
@@ -152,7 +152,7 @@ export function ArticlesIndex({
                   Flagship Technical Note
                 </div>
               </div>
-              <div className="flex flex-col justify-between p-6 sm:p-8 md:p-10 lg:col-span-6">
+              <div className="flex flex-col justify-between p-5 sm:p-8 md:p-10 lg:col-span-6">
                 <div>
                   <div className="mb-3 flex flex-wrap items-center gap-2.5 text-caption text-muted">
                     <span className="rounded-sm bg-primary-50 px-2.5 py-0.5 font-semibold text-primary uppercase">
@@ -175,7 +175,7 @@ export function ArticlesIndex({
           </article>
         </section>
       ) : (
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10">
+        <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10">
           <EmptyState
             heading="No articles yet"
             headingLevel={2}
@@ -187,7 +187,7 @@ export function ArticlesIndex({
 
       {rest.length > 0 ? (
         <section className="border-y border-border bg-surface py-12 md:py-16">
-          <div className="mx-auto max-w-site px-6 md:px-10">
+          <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
             <div className="mb-10 flex flex-col justify-between border-b border-border pb-4 md:flex-row md:items-end">
               <div>
                 <Heading level={2} size="h3">

@@ -201,10 +201,10 @@ export function HomeLandingPage({
         aria-labelledby="home-heading"
         className="relative isolate overflow-hidden border-b border-border bg-gradient-to-b from-surface-tint via-surface to-surface-tint-2"
       >
-        <div className="relative mx-auto grid max-w-site items-center gap-12 px-6 py-14 sm:py-20 md:px-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)] lg:gap-14 lg:py-24">
+        <div className="relative mx-auto grid max-w-site items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 md:px-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)] lg:gap-14 lg:py-24">
           <div className="relative z-10 max-w-3xl">
             {/* Live Vivarium & Ethics Status Bar */}
-            <div className="mb-5 inline-flex flex-wrap items-center gap-2 rounded-full border border-primary/25 bg-surface px-4 py-1.5 text-caption font-semibold text-heading shadow-xs">
+            <div className="mb-5 inline-flex max-w-full flex-wrap items-center gap-2 rounded-2xl sm:rounded-full border border-primary/25 bg-surface px-3.5 py-1.5 text-caption font-semibold text-heading shadow-xs">
               <span className="relative flex size-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
                 <span className="relative inline-flex size-2.5 rounded-full bg-accent" />
@@ -234,8 +234,8 @@ export function HomeLandingPage({
 
             {/* Action buttons with touching laboratory research mouse badge */}
             <div className="mt-8 flex flex-col gap-4">
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/25 bg-surface px-3.5 py-1.5 shadow-xs">
-                <span className="flex size-6 items-center justify-center rounded-full bg-primary-50 text-primary">
+              <div className="inline-flex max-w-full flex-wrap sm:flex-nowrap items-center gap-2 rounded-2xl sm:rounded-full border border-primary/25 bg-surface px-3.5 py-1.5 shadow-xs">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary">
                   <LabMouseIcon size={15} />
                 </span>
                 <span className="text-caption font-semibold tracking-tight text-foreground">
@@ -246,11 +246,12 @@ export function HomeLandingPage({
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
                 <AppButtonLink
                   href={copy.hero.primaryHref}
                   variant="primary"
                   size="lg"
+                  className="w-full sm:w-auto justify-center"
                   iconStart={
                     <LabMouseIcon
                       size={18}
@@ -265,6 +266,7 @@ export function HomeLandingPage({
                   href={copy.hero.secondaryHref}
                   variant="outline"
                   size="lg"
+                  className="w-full sm:w-auto justify-center"
                   iconEnd={<ArrowRight size={16} aria-hidden="true" />}
                 >
                   {copy.hero.secondaryLabel}
@@ -308,7 +310,7 @@ export function HomeLandingPage({
             </div>
 
             {/* 4 Pillars research capability strip */}
-            <div className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6 sm:grid-cols-4">
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 border-t border-border pt-6 sm:grid-cols-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary-50 text-primary">
                   <LabMouseIcon size={17} />
@@ -349,7 +351,7 @@ export function HomeLandingPage({
           </div>
 
           {/* High-Impact Interactive Vivarium & Research Core Dashboard */}
-          <div className="relative mx-auto w-full max-w-[28rem] rounded-2xl border border-primary/25 bg-surface p-6 shadow-xl lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-[28rem] rounded-2xl border border-primary/25 bg-surface p-4 sm:p-6 shadow-xl lg:max-w-none">
             {/* Console Header */}
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2.5">
@@ -457,7 +459,7 @@ export function HomeLandingPage({
             </div>
 
             {/* Bottom Guarantee Banner */}
-            <div className="mt-4 flex items-center justify-between rounded-lg bg-surface-tint p-3 text-[0.72rem]">
+            <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center justify-between rounded-lg bg-surface-tint p-3 text-[0.72rem]">
               <span className="flex items-center gap-1.5 font-semibold text-heading">
                 <ShieldCheck size={15} className="text-primary" />
                 SECP Registered & GLP Principles
@@ -475,9 +477,9 @@ export function HomeLandingPage({
 
       <section
         aria-labelledby="services-heading"
-        className="border-t border-border bg-surface py-14 sm:py-16 lg:py-20"
+        className="border-t border-border bg-surface py-12 sm:py-16 lg:py-20"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <SectionIntro
             eyebrow={copy.services.eyebrow}
             title={copy.services.heading}
@@ -545,9 +547,9 @@ export function HomeLandingPage({
 
       <section
         aria-labelledby="projects-heading"
-        className="border-t border-border bg-surface-tint-2 py-14 sm:py-16 lg:py-20"
+        className="border-t border-border bg-surface-tint-2 py-12 sm:py-16 lg:py-20"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <SectionIntro
             eyebrow={copy.projects.eyebrow}
             title={copy.projects.heading}
@@ -636,9 +638,9 @@ export function HomeLandingPage({
 
       <section
         aria-labelledby="products-heading"
-        className="border-t border-border bg-surface py-14 sm:py-16 lg:py-20"
+        className="border-t border-border bg-surface py-12 sm:py-16 lg:py-20"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <SectionIntro
             eyebrow={copy.products.eyebrow}
             title={copy.products.heading}
@@ -751,7 +753,7 @@ export function HomeLandingPage({
         aria-labelledby="working-heading"
         className="border-t border-border bg-surface-tint py-12 sm:py-14"
       >
-        <div className="mx-auto flex max-w-site flex-col gap-5 px-6 sm:flex-row sm:items-center sm:justify-between md:px-10">
+        <div className="mx-auto flex max-w-site flex-col gap-5 px-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between md:px-10">
           <div>
             <Text size="eyebrow" className="font-semibold tracking-[0.15em] text-accent uppercase">
               {copy.howWeWork.eyebrow}
@@ -766,6 +768,7 @@ export function HomeLandingPage({
           <AppButtonLink
             href={copy.howWeWork.href}
             variant="outline"
+            className="w-full sm:w-auto justify-center"
             iconEnd={<ArrowRight size={16} aria-hidden="true" />}
           >
             {copy.howWeWork.linkLabel}
@@ -777,12 +780,12 @@ export function HomeLandingPage({
         aria-label="Institutional Collaborations"
         className="border-y border-border bg-surface-subtle py-10"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <span className="text-caption font-semibold tracking-[0.14em] text-muted uppercase">
               Institutional Collaborations & Partners
             </span>
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-12">
               <div className="flex items-center gap-3">
                 <img
                   src="/images/partners/vet-tec.jpg"
@@ -817,9 +820,9 @@ export function HomeLandingPage({
 
       <section
         aria-labelledby="contact-cta-heading"
-        className="bg-primary py-14 text-on-primary sm:py-16"
+        className="bg-primary py-12 text-on-primary sm:py-16"
       >
-        <div className="mx-auto flex max-w-site flex-col gap-7 px-6 sm:flex-row sm:items-center sm:justify-between md:px-10">
+        <div className="mx-auto flex max-w-site flex-col gap-7 px-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between md:px-10">
           <div className="max-w-2xl">
             <Text
               size="eyebrow"
@@ -838,6 +841,7 @@ export function HomeLandingPage({
             href={copy.cta.href}
             variant="on-dark"
             size="lg"
+            className="w-full sm:w-auto justify-center"
             iconStart={
               <LabMouseIcon size={19} className="transition-transform group-hover:scale-110" />
             }

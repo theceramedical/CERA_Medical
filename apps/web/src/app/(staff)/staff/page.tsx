@@ -17,7 +17,7 @@ export default async function StaffQueuePage() {
   return (
     <>
       <PageHeader title="Enquiry queue" lede="Enquiries received by the team." />
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         <div className="flex flex-col justify-between gap-4 border-b border-border pb-8 sm:flex-row sm:items-end">
           <Text tone="muted">Review, assign and progress incoming research requests.</Text>
           <div className="flex flex-wrap items-center gap-4">

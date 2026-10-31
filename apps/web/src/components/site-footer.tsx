@@ -7,7 +7,7 @@ import { SiteWordmark } from './site-wordmark.tsx';
 export function SiteFooter() {
   return (
     <footer className="bg-surface-footer">
-      <div className="mx-auto grid max-w-site grid-cols-1 gap-9 px-6 py-12 sm:grid-cols-2 md:px-10 lg:grid-cols-[1.35fr_1fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-site grid-cols-1 gap-9 px-4 py-10 sm:px-6 sm:py-12 sm:grid-cols-2 md:px-10 lg:grid-cols-[1.35fr_1fr_1fr_1fr_1fr]">
         <div>
           <SiteWordmark />
           <Text size="body-sm" tone="muted" className="mt-4 max-w-xs">
@@ -23,14 +23,14 @@ export function SiteFooter() {
           </h2>
           <AppLink
             href="mailto:contact@ceramedical.org"
-            className="mt-4 inline-flex min-h-11 items-center"
+            className="mt-4 inline-flex min-h-11 items-center break-all sm:break-normal"
           >
             contact@ceramedical.org
           </AppLink>
         </div>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-site px-6 py-5 text-caption text-muted md:px-10">
+        <div className="mx-auto max-w-site px-4 py-5 text-caption text-muted sm:px-6 md:px-10">
           © 2026 CERA Medical. All rights reserved.
         </div>
       </div>

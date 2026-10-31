@@ -70,7 +70,7 @@ export function CartPageView({ initialCart }: { readonly initialCart: Cart }) {
               <Text size="body-sm" tone="muted">
                 {line.slug}
               </Text>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"

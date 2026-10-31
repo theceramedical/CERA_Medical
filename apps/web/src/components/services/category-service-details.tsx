@@ -306,14 +306,14 @@ export function CategoryServiceDetails({
   return (
     <>
       <header className="border-b border-border bg-gradient-to-b from-surface-tint via-surface to-surface-tint-2">
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
           <AppLink href="/services" className="text-body-sm font-semibold text-primary">
             ← All Research Divisions
           </AppLink>
 
           {isPreclinical ? (
-            <div className="mt-4 inline-flex flex-wrap items-center gap-2 rounded-full border border-primary/25 bg-surface px-3.5 py-1 text-caption font-semibold text-heading shadow-xs">
-              <span className="flex size-5 items-center justify-center rounded-full bg-primary-50 text-primary">
+            <div className="mt-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-2xl sm:rounded-full border border-primary/25 bg-surface px-3.5 py-1 text-caption font-semibold text-heading shadow-xs">
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary">
                 <LabMouseIcon size={13} />
               </span>
               <span className="text-primary font-bold">SPF Animal Vivarium</span>
@@ -333,7 +333,7 @@ export function CategoryServiceDetails({
           </Text>
 
           {/* Quick jump anchor navigator */}
-          <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-border/70 pt-6">
+          <div className="mt-8 flex flex-wrap items-center gap-1.5 sm:gap-2 border-t border-border/70 pt-6">
             <span className="text-[0.72rem] font-bold tracking-wider text-muted uppercase">
               Jump to capability:
             </span>
@@ -353,16 +353,16 @@ export function CategoryServiceDetails({
         </div>
       </header>
 
-      <main className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <main className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         <div className="max-w-4xl space-y-8">
           {page.sections.map((section) => (
             <ServiceSection key={section.anchor} section={section} />
           ))}
 
           {isPreclinical ? (
-            <div className="rounded-2xl border border-primary/25 bg-surface-tint p-6 sm:p-8">
+            <div className="rounded-2xl border border-primary/25 bg-surface-tint p-4 sm:p-8">
               <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-surface text-primary shadow-xs">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface text-primary shadow-xs">
                   <LabMouseIcon size={22} />
                 </span>
                 <div>
@@ -379,6 +379,7 @@ export function CategoryServiceDetails({
                 <AppButtonLink
                   href="/projects"
                   variant="primary"
+                  className="w-full sm:w-auto justify-center"
                   iconStart={<LabMouseIcon size={15} />}
                   iconEnd={<ArrowRight size={16} aria-hidden="true" />}
                 >

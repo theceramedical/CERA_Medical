@@ -26,11 +26,11 @@ export const metadata: Metadata = {
 
 export default function StaffLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-surface-subtle">
+    <div className="flex min-h-dvh flex-col overflow-x-hidden bg-surface-subtle">
       <SkipLink targetId="main" />
 
       <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-6 md:px-10">
+        <div className="mx-auto flex h-20 max-w-site items-center gap-4 px-4 sm:px-6 md:px-10">
           <SiteWordmark />
 
           {/*

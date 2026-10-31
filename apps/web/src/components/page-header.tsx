@@ -23,7 +23,7 @@ export interface PageHeaderProps {
 export function PageHeader({ title, lede, children }: PageHeaderProps) {
   return (
     <div className="border-b border-border bg-surface-tint">
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         {children}
 
         <Heading level={1} size="h1">

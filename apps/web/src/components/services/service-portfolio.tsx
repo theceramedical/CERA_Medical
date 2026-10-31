@@ -136,7 +136,7 @@ export function ServicePortfolio() {
   return (
     <>
       <header className="border-b border-border bg-surface-tint">
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary-50 px-3 py-1 text-caption font-bold text-primary">
               <LabMouseIcon size={14} />
@@ -159,7 +159,7 @@ export function ServicePortfolio() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         <ul className="grid list-none gap-8 p-0 lg:grid-cols-3 items-stretch">
           {SERVICE_PILLARS.map((pillar) => {
             const isPreclinical = pillar.slug === 'preclinical-studies';
@@ -168,7 +168,7 @@ export function ServicePortfolio() {
             return (
               <li
                 key={pillar.slug}
-                className="flex h-full flex-col justify-between rounded-2xl border border-border border-t-4 border-t-primary bg-surface p-6 sm:p-7 shadow-card transition-all hover:border-primary/50 hover:shadow-lg"
+                className="flex h-full flex-col justify-between rounded-2xl border border-border border-t-4 border-t-primary bg-surface p-5 sm:p-7 shadow-card transition-all hover:border-primary/50 hover:shadow-lg"
               >
                 <div>
                   {/* Card Header */}
@@ -256,7 +256,7 @@ export function ServicePortfolio() {
                 </div>
 
                 {/* Bottom Action Buttons: Aligned across all 3 cards! */}
-                <div className="mt-8 grid grid-cols-2 gap-3 border-t border-border pt-5">
+                <div className="mt-8 flex flex-col sm:grid sm:grid-cols-2 gap-2.5 sm:gap-3 border-t border-border pt-5">
                   <AppButtonLink
                     href={`/services/${pillar.slug}`}
                     variant="outline"

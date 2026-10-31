@@ -39,7 +39,7 @@ function ProjectCard({ project }: { readonly project: PublicProject }) {
         </div>
       ) : null}
 
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <span className="rounded-full border border-border bg-surface-tint px-3 py-1 text-caption font-semibold text-heading">
             {project.category}
@@ -153,9 +153,9 @@ export function ProjectsIndex({ projects }: { readonly projects: readonly Public
   return (
     <>
       <header className="border-b border-border bg-gradient-to-b from-surface-tint via-surface to-surface-tint-2">
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-surface px-3.5 py-1 text-caption font-semibold text-heading shadow-xs">
-            <span className="flex size-5 items-center justify-center rounded-full bg-primary-50 text-primary">
+        <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
+          <div className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-2xl sm:rounded-full border border-primary/25 bg-surface px-3.5 py-1 text-caption font-semibold text-heading shadow-xs">
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary">
               <LabMouseIcon size={13} />
             </span>
             <span className="text-primary font-bold">Haripur Animal House Vivarium</span>
@@ -194,7 +194,7 @@ export function ProjectsIndex({ projects }: { readonly projects: readonly Public
         </div>
       </header>
 
-      <main className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+      <main className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
         <div id="running">
           <ProjectGroup
             status="Running"
@@ -210,7 +210,7 @@ export function ProjectsIndex({ projects }: { readonly projects: readonly Public
         </div>
 
         {/* Study Scoping Action Banner */}
-        <div className="mt-16 rounded-2xl border border-primary/25 bg-gradient-to-r from-surface to-surface-tint p-6 sm:p-10 shadow-card">
+        <div className="mt-16 rounded-2xl border border-primary/25 bg-gradient-to-r from-surface to-surface-tint p-5 sm:p-10 shadow-card">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-eyebrow font-semibold tracking-wider text-primary uppercase">
@@ -230,6 +230,7 @@ export function ProjectsIndex({ projects }: { readonly projects: readonly Public
               href="/contact#contact-form"
               variant="primary"
               size="lg"
+              className="w-full sm:w-auto justify-center"
               iconStart={
                 <LabMouseIcon size={17} className="transition-transform group-hover:scale-110" />
               }

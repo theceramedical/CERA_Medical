@@ -25,7 +25,7 @@ export function ContactScoping({
   return (
     <>
       <section className="border-b border-border bg-surface-tint">
-        <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
+        <div className="mx-auto max-w-site px-4 py-8 sm:px-6 sm:py-12 md:px-10 lg:py-16">
           <Text size="eyebrow" className="font-semibold tracking-[0.15em] text-accent uppercase">
             Contact
           </Text>
@@ -39,11 +39,11 @@ export function ContactScoping({
         </div>
       </section>
 
-      <section className="py-10 md:py-14">
-        <div className="mx-auto grid max-w-site gap-8 px-6 md:px-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(17rem,0.75fr)]">
+      <section className="py-8 sm:py-10 md:py-14">
+        <div className="mx-auto grid max-w-site gap-8 px-4 sm:px-6 md:px-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(17rem,0.75fr)]">
           <div
             id="contact-form"
-            className="scroll-mt-28 border border-border bg-surface p-5 sm:p-8"
+            className="scroll-mt-28 border border-border bg-surface p-4 sm:p-8"
           >
             <div className="mb-7 border-b border-border pb-5">
               <Heading level={2} size="h3">

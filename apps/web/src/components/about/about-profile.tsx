@@ -216,7 +216,7 @@ export function AboutProfile({ teamDocument }: { readonly teamDocument?: Content
         aria-labelledby="facilities-heading"
         className="border-b border-border bg-surface-tint-2 py-12 md:py-16"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <Heading id="facilities-heading" level={2} size="h2">
             Facilities
           </Heading>
@@ -250,7 +250,7 @@ export function AboutProfile({ teamDocument }: { readonly teamDocument?: Content
         aria-labelledby="collaborators-heading"
         className="border-b border-border bg-surface py-12 md:py-16"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <div className="max-w-3xl">
             <Text size="eyebrow" className="font-semibold tracking-[0.15em] text-accent uppercase">
               Collaborations & Alliances
@@ -264,7 +264,7 @@ export function AboutProfile({ teamDocument }: { readonly teamDocument?: Content
             </Text>
           </div>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:gap-6 sm:grid-cols-3">
             <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface-subtle p-6 text-center">
               <div className="flex h-20 w-full items-center justify-center overflow-hidden">
                 <img
@@ -323,7 +323,7 @@ export function AboutProfile({ teamDocument }: { readonly teamDocument?: Content
         aria-labelledby="why-heading"
         className="border-b border-border bg-surface-tint py-12 md:py-16"
       >
-        <div className="mx-auto max-w-site px-6 md:px-10">
+        <div className="mx-auto max-w-site px-4 sm:px-6 md:px-10">
           <Heading id="why-heading" level={2} size="h2">
             Why CERA Medical
           </Heading>
