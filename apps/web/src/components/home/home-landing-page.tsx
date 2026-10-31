@@ -1,5 +1,14 @@
 import { Heading, Text } from '@cera/ui/typography';
-import { ArrowRight, Building2, Cpu, Dna, Microscope } from 'lucide-react';
+import {
+  Activity,
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  Cpu,
+  Dna,
+  Microscope,
+  ShieldCheck,
+} from 'lucide-react';
 
 import type { PublicProduct } from '@cera/contracts/projections';
 
@@ -192,11 +201,21 @@ export function HomeLandingPage({
         aria-labelledby="home-heading"
         className="relative isolate overflow-hidden border-b border-border bg-gradient-to-b from-surface-tint via-surface to-surface-tint-2"
       >
-        <div className="relative mx-auto grid max-w-site items-center gap-12 px-6 py-14 sm:py-20 md:px-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:gap-16 lg:py-24">
+        <div className="relative mx-auto grid max-w-site items-center gap-12 px-6 py-14 sm:py-20 md:px-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)] lg:gap-14 lg:py-24">
           <div className="relative z-10 max-w-3xl">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-3.5 py-1 text-eyebrow font-semibold tracking-[0.16em] text-accent uppercase shadow-2xs">
-              <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
-              {copy.hero.eyebrow}
+            {/* Live Vivarium & Ethics Status Bar */}
+            <div className="mb-5 inline-flex flex-wrap items-center gap-2 rounded-full border border-primary/25 bg-surface px-4 py-1.5 text-caption font-semibold text-heading shadow-xs">
+              <span className="relative flex size-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex size-2.5 rounded-full bg-accent" />
+              </span>
+              <span className="text-primary font-bold">SPF Rodent Vivarium (Mus musculus)</span>
+              <span className="text-muted">•</span>
+              <span className="text-muted">BSL-2</span>
+              <span className="text-muted">•</span>
+              <span className="text-accent font-semibold">Institutional Ethics (IAEC)</span>
+              <span className="text-muted">•</span>
+              <span className="text-muted">SECP Registered</span>
             </div>
 
             <Heading
@@ -214,7 +233,7 @@ export function HomeLandingPage({
             </Text>
 
             {/* Action buttons with touching laboratory research mouse badge */}
-            <div className="mt-8 flex flex-col gap-3">
+            <div className="mt-8 flex flex-col gap-4">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/25 bg-surface px-3.5 py-1.5 shadow-xs">
                 <span className="flex size-6 items-center justify-center rounded-full bg-primary-50 text-primary">
                   <LabMouseIcon size={15} />
@@ -251,10 +270,45 @@ export function HomeLandingPage({
                   {copy.hero.secondaryLabel}
                 </AppButtonLink>
               </div>
+
+              {/* Research Model Focus Navigator Inspired by Charles River & JAX */}
+              <div className="mt-2 flex flex-wrap items-center gap-2 pt-2">
+                <span className="text-[0.72rem] font-bold tracking-wider text-muted uppercase">
+                  Focus Models:
+                </span>
+                <AppLink
+                  href="/projects#methamphetamine-induced-neurotoxicity"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-[0.75rem] font-semibold text-heading no-underline transition-colors hover:border-primary hover:bg-primary-50 hover:text-primary"
+                >
+                  <LabMouseIcon size={13} className="text-primary" />
+                  Methamphetamine Neurotoxicity (Mouse Model)
+                </AppLink>
+                <AppLink
+                  href="/projects#morphine-dependence"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-[0.75rem] font-semibold text-heading no-underline transition-colors hover:border-primary hover:bg-primary-50 hover:text-primary"
+                >
+                  <LabMouseIcon size={13} className="text-primary" />
+                  Morphine Dependence & Withdrawal
+                </AppLink>
+                <AppLink
+                  href="/projects#social-isolation-stress"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-[0.75rem] font-semibold text-heading no-underline transition-colors hover:border-primary hover:bg-primary-50 hover:text-primary"
+                >
+                  <LabMouseIcon size={13} className="text-primary" />
+                  Social Isolation Stress
+                </AppLink>
+                <AppLink
+                  href="/projects#natural-products-in-glioblastoma"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-[0.75rem] font-semibold text-heading no-underline transition-colors hover:border-primary hover:bg-primary-50 hover:text-primary"
+                >
+                  <Dna size={13} className="text-accent" />
+                  Glioblastoma Therapeutics
+                </AppLink>
+              </div>
             </div>
 
             {/* 4 Pillars research capability strip */}
-            <div className="mt-12 grid grid-cols-2 gap-4 border-t border-border pt-6 sm:grid-cols-4">
+            <div className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6 sm:grid-cols-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary-50 text-primary">
                   <LabMouseIcon size={17} />
@@ -294,59 +348,126 @@ export function HomeLandingPage({
             </div>
           </div>
 
-          {/* Focal Research Modality Graphic */}
-          <div aria-hidden="true" className="relative mx-auto aspect-square w-full max-w-[32rem]">
-            <div className="absolute inset-[3%] rounded-full border border-dashed border-primary/20" />
-            <div className="absolute inset-[14%] rounded-full border border-primary/25" />
-            <div className="absolute inset-[26%] rounded-full border border-accent/30" />
-            <div className="absolute inset-[10%] rotate-45 rounded-[3rem] border border-primary/10" />
-            <div className="absolute inset-[20%] -rotate-[35deg] rounded-[3rem] border border-accent/15" />
-
-            {/* Central emblem */}
-            <div className="absolute inset-[28%] flex flex-col items-center justify-center rounded-full bg-primary text-on-primary shadow-xl">
-              <span className="font-wordmark text-4xl font-extrabold tracking-tight sm:text-5xl">
-                CERA
-              </span>
-              <span className="mt-1 text-[0.65rem] font-semibold tracking-[0.32em] text-on-primary/85 uppercase">
-                Medical
-              </span>
-              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-on-primary/15 px-2.5 py-0.5 text-[0.6rem] font-medium text-on-primary">
-                <LabMouseIcon size={11} />
-                Research Institute
+          {/* High-Impact Interactive Vivarium & Research Core Dashboard */}
+          <div className="relative mx-auto w-full max-w-[28rem] rounded-2xl border border-primary/25 bg-surface p-6 shadow-xl lg:max-w-none">
+            {/* Console Header */}
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-on-primary">
+                  <LabMouseIcon size={18} />
+                </div>
+                <div>
+                  <div className="text-caption font-bold tracking-tight text-heading">
+                    CERA Vivarium & Research Core
+                  </div>
+                  <div className="text-[0.68rem] text-muted">Haripur, Pakistan • PAF-IAST</div>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary-50 px-2.5 py-0.5 text-[0.68rem] font-bold text-primary">
+                <span className="size-1.5 rounded-full bg-accent" />
+                Active Facilities
               </span>
             </div>
 
-            {/* Floating Scientific Node 1: In Vivo Animal House */}
-            <div className="absolute -top-1 right-[8%] flex items-center gap-2.5 rounded-xl border border-primary/25 bg-surface p-2.5 shadow-md">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-primary-50 text-primary">
-                <LabMouseIcon size={20} />
-              </span>
-              <div>
-                <div className="text-caption font-bold text-heading">In Vivo Facility</div>
-                <div className="text-[0.65rem] text-muted">Mus musculus models</div>
+            {/* 3 Core Facilities Live Blocks */}
+            <div className="mt-4 space-y-3">
+              {/* Block 1: In Vivo Mus musculus Animal House */}
+              <div className="rounded-xl border border-primary/20 bg-surface-subtle p-3.5 transition-all hover:border-primary/40">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-7 items-center justify-center rounded-md bg-primary-50 text-primary">
+                      <LabMouseIcon size={16} />
+                    </span>
+                    <span className="text-caption font-bold text-heading">
+                      In Vivo Vivarium & Rodent Facility
+                    </span>
+                  </div>
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[0.65rem] font-bold text-primary">
+                    Mus musculus
+                  </span>
+                </div>
+                <p className="mt-2 text-[0.75rem] text-copy">
+                  SPF rodent barrier housing, open field & elevated plus maze behavioural tracking,
+                  morphine & methamphetamine drug dependence models.
+                </p>
+                <div className="mt-2.5 flex items-center gap-3 border-t border-border/60 pt-2 text-[0.7rem] font-medium text-muted">
+                  <span className="flex items-center gap-1 text-primary">
+                    <CheckCircle2 size={12} /> IAEC Ethics Approved
+                  </span>
+                  <span>•</span>
+                  <span>GLP In Vivo Protocols</span>
+                </div>
+              </div>
+
+              {/* Block 2: Molecular Core */}
+              <div className="rounded-xl border border-border bg-surface-subtle p-3.5 transition-all hover:border-primary/40">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-7 items-center justify-center rounded-md bg-teal-50 text-accent">
+                      <Microscope size={16} />
+                    </span>
+                    <span className="text-caption font-bold text-heading">
+                      Genomics & Histology Core
+                    </span>
+                  </div>
+                  <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-bold text-accent">
+                    BSL-2
+                  </span>
+                </div>
+                <p className="mt-2 text-[0.75rem] text-copy">
+                  Sanger sequencing, RT-qPCR gene expression, H&E & Nissl staining, Western blot,
+                  and immunohistochemistry in PAF-IAST laboratories.
+                </p>
+                <div className="mt-2.5 flex items-center gap-3 border-t border-border/60 pt-2 text-[0.7rem] font-medium text-muted">
+                  <span className="flex items-center gap-1 text-accent">
+                    <Activity size={12} /> High-Throughput
+                  </span>
+                  <span>•</span>
+                  <span>Validated Assays</span>
+                </div>
+              </div>
+
+              {/* Block 3: Tesla V100 GPU Core */}
+              <div className="rounded-xl border border-border bg-surface-subtle p-3.5 transition-all hover:border-primary/40">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-7 items-center justify-center rounded-md bg-primary-50 text-primary">
+                      <Cpu size={16} />
+                    </span>
+                    <span className="text-caption font-bold text-heading">
+                      NVIDIA Tesla V100 Compute
+                    </span>
+                  </div>
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[0.65rem] font-bold text-primary">
+                    In Silico
+                  </span>
+                </div>
+                <p className="mt-2 text-[0.75rem] text-copy">
+                  Molecular docking, 100ns molecular dynamics simulations, and PRISMA systematic
+                  evidence reviews.
+                </p>
+                <div className="mt-2.5 flex items-center gap-3 border-t border-border/60 pt-2 text-[0.7rem] font-medium text-muted">
+                  <span className="flex items-center gap-1 text-primary">
+                    <CheckCircle2 size={12} /> Publication-Ready
+                  </span>
+                  <span>•</span>
+                  <span>3-Week Delivery</span>
+                </div>
               </div>
             </div>
 
-            {/* Floating Scientific Node 2: Molecular & Histology */}
-            <div className="absolute bottom-[8%] -left-2 flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2.5 shadow-md">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-teal-50 text-accent">
-                <Dna size={18} />
+            {/* Bottom Guarantee Banner */}
+            <div className="mt-4 flex items-center justify-between rounded-lg bg-surface-tint p-3 text-[0.72rem]">
+              <span className="flex items-center gap-1.5 font-semibold text-heading">
+                <ShieldCheck size={15} className="text-primary" />
+                SECP Registered & GLP Principles
               </span>
-              <div>
-                <div className="text-caption font-bold text-heading">Genomics & Sanger</div>
-                <div className="text-[0.65rem] text-muted">PAF-IAST Labs</div>
-              </div>
-            </div>
-
-            {/* Floating Scientific Node 3: GPU Cluster */}
-            <div className="absolute right-[4%] bottom-[12%] flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2.5 shadow-md">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-primary-50 text-primary">
-                <Cpu size={18} />
-              </span>
-              <div>
-                <div className="text-caption font-bold text-heading">NVIDIA V100 GPU</div>
-                <div className="text-[0.65rem] text-muted">Molecular dynamics</div>
-              </div>
+              <AppLink
+                href="/methodology"
+                className="font-semibold text-primary no-underline hover:underline"
+              >
+                Our 5-Stage Methodology →
+              </AppLink>
             </div>
           </div>
         </div>
@@ -535,39 +656,88 @@ export function HomeLandingPage({
             {copy.products.body}
           </SectionIntro>
           {products.length > 0 ? (
-            <ul className="mt-9 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
-              {products.slice(0, 3).map((product) => (
-                <li
-                  key={product.sku}
-                  className="flex min-w-0 flex-col border border-border bg-surface"
-                >
-                  {product.imageUrl ? (
-                    <div className="relative aspect-[16/10] overflow-hidden bg-surface-subtle">
-                      <FacilityMedia src={product.imageUrl} alt="" />
+            <ul className="mt-9 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+              {products.slice(0, 3).map((product) => {
+                const isWellness = product.sku.startsWith('CERA-WELL');
+                const isPreclinical =
+                  product.sku.includes('PRE') ||
+                  product.title.toLowerCase().includes('mouse') ||
+                  product.title.toLowerCase().includes('animal');
+
+                return (
+                  <li
+                    key={product.sku}
+                    className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xs transition-all hover:border-primary/40 hover:shadow-card"
+                  >
+                    {/* Category Accent Stripe */}
+                    <div
+                      className={`h-1.5 w-full ${
+                        isWellness ? 'bg-accent' : isPreclinical ? 'bg-primary' : 'bg-primary-300'
+                      }`}
+                    />
+
+                    {product.imageUrl ? (
+                      <div className="relative aspect-[16/10] overflow-hidden bg-surface-subtle">
+                        <FacilityMedia src={product.imageUrl} alt="" />
+                      </div>
+                    ) : null}
+
+                    <div className="flex flex-1 flex-col p-5 sm:p-6">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="font-mono text-[0.7rem] text-muted">#{product.sku}</span>
+                        {isPreclinical ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary-50 px-2 py-0.5 text-[0.68rem] font-bold text-primary">
+                            <LabMouseIcon size={12} />
+                            In Vivo Rodent
+                          </span>
+                        ) : isWellness ? (
+                          <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[0.68rem] font-bold text-accent">
+                            Botanical Wellness
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-surface-subtle px-2 py-0.5 text-[0.68rem] font-semibold text-muted">
+                            Laboratory Reagent
+                          </span>
+                        )}
+                      </div>
+
+                      <Heading level={3} size="h4" className="mt-3">
+                        {product.title}
+                      </Heading>
+
+                      <Text size="body-sm" tone="muted" className="mt-2 flex-1 line-clamp-3">
+                        {product.summary || product.description}
+                      </Text>
+
+                      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                        <div>
+                          <span className="text-[0.65rem] font-semibold tracking-wider text-muted uppercase">
+                            Price
+                          </span>
+                          <div className="text-sm font-bold text-primary sm:text-base">
+                            {product.displayPrice ?? 'Price on enquiry'}
+                          </div>
+                        </div>
+
+                        <AppButtonLink
+                          href={`/products/${encodeURIComponent(product.sku)}`}
+                          variant="outline"
+                          size="sm"
+                          iconStart={
+                            <LabMouseIcon
+                              size={14}
+                              className="text-primary transition-transform group-hover:scale-110"
+                            />
+                          }
+                          iconEnd={<ArrowRight size={14} aria-hidden="true" />}
+                        >
+                          Enquire / View
+                        </AppButtonLink>
+                      </div>
                     </div>
-                  ) : null}
-                  <div className="flex flex-1 flex-col p-5">
-                    <Heading level={3} size="h4">
-                      {product.title}
-                    </Heading>
-                    <Text size="body-sm" tone="muted" className="mt-2 flex-1">
-                      {product.summary}
-                    </Text>
-                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-                      <span className="text-caption font-semibold text-accent">
-                        {copy.products.priceLabel}
-                      </span>
-                      <AppLink
-                        href={`/products/${encodeURIComponent(product.sku)}`}
-                        className="inline-flex min-h-11 items-center gap-1 font-semibold no-underline"
-                      >
-                        Details
-                        <ArrowRight size={15} aria-hidden="true" />
-                      </AppLink>
-                    </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="mt-9 border border-border bg-surface-subtle px-5 py-6 text-body-sm text-muted">

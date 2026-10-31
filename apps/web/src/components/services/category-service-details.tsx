@@ -1,10 +1,10 @@
 import { Heading, Text } from '@cera/ui/typography';
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 
 import type { ContentDocument } from '@cera/contracts';
 
-import { AppLink } from '../link.tsx';
-
-import type { ReactNode } from 'react';
+import { LabMouseIcon } from '../icons/lab-mouse-icon.tsx';
+import { AppButtonLink, AppLink } from '../link.tsx';
 
 interface ServiceSection {
   readonly anchor: string;
@@ -205,23 +205,41 @@ const PAGES: Readonly<Record<string, ServiceCategoryPage>> = {
 };
 
 function ServiceSection({ section }: { readonly section: ServiceSection }) {
+  const isVivo = section.anchor === 'in-vivo-studies';
+
   return (
     <section
       id={section.anchor}
-      className="scroll-mt-28 border-t border-border pt-8 first:border-0 first:pt-0"
+      className="scroll-mt-28 rounded-2xl border border-border bg-surface p-6 shadow-2xs sm:p-8"
     >
-      <Heading level={2} size="h3">
-        {section.heading}
-      </Heading>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Heading level={2} size="h3">
+          {section.heading}
+        </Heading>
+        {isVivo ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary-50 px-3 py-1 text-caption font-bold text-primary">
+            <LabMouseIcon size={14} />
+            Mus musculus Vivarium
+          </span>
+        ) : null}
+      </div>
+
       {section.description ? (
-        <Text tone="muted" measure className="mt-3">
+        <Text tone="muted" measure className="mt-3 text-body leading-relaxed">
           {section.description}
         </Text>
       ) : null}
+
       {section.points ? (
-        <ul className="mt-4 list-disc space-y-2 pl-5 text-copy">
+        <ul className="mt-5 grid gap-2.5 p-0 sm:grid-cols-1">
           {section.points.map((point) => (
-            <li key={point}>{point}</li>
+            <li
+              key={point}
+              className="flex items-start gap-3 rounded-lg border border-border/60 bg-surface-subtle p-3.5"
+            >
+              <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-accent" />
+              <span className="text-body-sm font-medium text-copy">{point}</span>
+            </li>
           ))}
         </ul>
       ) : null}
@@ -283,56 +301,143 @@ export function CategoryServiceDetails({
 }) {
   const page = pageContent(slug, document);
   if (!page) return null;
-  const projectLink: ReactNode =
-    slug === 'preclinical-studies' ? (
-      <>
-        Our current preclinical studies are listed on the{' '}
-        <AppLink href="/projects">Our Projects</AppLink> page.
-      </>
-    ) : null;
+  const isPreclinical = slug === 'preclinical-studies';
+
   return (
     <>
-      <header className="border-b border-border bg-surface-tint">
+      <header className="border-b border-border bg-gradient-to-b from-surface-tint via-surface to-surface-tint-2">
         <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-          <AppLink href="/services" className="text-body-sm font-medium">
-            All services
+          <AppLink href="/services" className="text-body-sm font-semibold text-primary">
+            ← All Research Divisions
           </AppLink>
-          <Heading level={1} size="h1" className="mt-3">
+
+          {isPreclinical ? (
+            <div className="mt-4 inline-flex flex-wrap items-center gap-2 rounded-full border border-primary/25 bg-surface px-3.5 py-1 text-caption font-semibold text-heading shadow-xs">
+              <span className="flex size-5 items-center justify-center rounded-full bg-primary-50 text-primary">
+                <LabMouseIcon size={13} />
+              </span>
+              <span className="text-primary font-bold">SPF Animal Vivarium</span>
+              <span className="text-muted">•</span>
+              <span className="text-accent font-semibold">Mus musculus Disease Models</span>
+              <span className="text-muted">•</span>
+              <span className="text-muted">IAEC Ethical Review</span>
+            </div>
+          ) : null}
+
+          <Heading level={1} size="h1" className="mt-3 max-w-3xl">
             {page.title}
           </Heading>
-          <Text size="body-lg" tone="muted" measure className="mt-4">
+
+          <Text size="body-lg" tone="muted" measure className="mt-4 max-w-3xl leading-relaxed">
             {page.intro}
           </Text>
+
+          {/* Quick jump anchor navigator */}
+          <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-border/70 pt-6">
+            <span className="text-[0.72rem] font-bold tracking-wider text-muted uppercase">
+              Jump to capability:
+            </span>
+            {page.sections.map((section) => (
+              <a
+                key={section.anchor}
+                href={`#${section.anchor}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-[0.75rem] font-semibold text-heading no-underline transition-colors hover:border-primary hover:bg-primary-50 hover:text-primary"
+              >
+                {section.anchor === 'in-vivo-studies' ? (
+                  <LabMouseIcon size={12} className="text-primary" />
+                ) : null}
+                {section.heading}
+              </a>
+            ))}
+          </div>
         </div>
       </header>
+
       <main className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <div className="max-w-4xl space-y-10">
+        <div className="max-w-4xl space-y-8">
           {page.sections.map((section) => (
             <ServiceSection key={section.anchor} section={section} />
           ))}
-          {projectLink ? <Text>{projectLink}</Text> : null}
-          <section className="border-t border-border pt-8">
-            <Text tone="muted">
-              Every project starts with a written scope and protocol and ends with documented
-              results and revision rounds. See how we work.
-            </Text>
-            <AppLink href="/methodology" className="mt-2 inline-flex font-medium">
-              See how we work
-            </AppLink>
-          </section>
-          <section className="border-t border-border pt-8">
-            <Heading level={2} size="h3">
-              Ready to discuss your study?
+
+          {isPreclinical ? (
+            <div className="rounded-2xl border border-primary/25 bg-surface-tint p-6 sm:p-8">
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-surface text-primary shadow-xs">
+                  <LabMouseIcon size={22} />
+                </span>
+                <div>
+                  <div className="font-bold text-heading text-lg">
+                    Current In Vivo Research Cohorts & Studies
+                  </div>
+                  <div className="text-caption text-muted">
+                    Explore active mouse models of addiction, stress, and natural product
+                    neuroprotection
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5">
+                <AppButtonLink
+                  href="/projects"
+                  variant="primary"
+                  iconStart={<LabMouseIcon size={15} />}
+                  iconEnd={<ArrowRight size={16} aria-hidden="true" />}
+                >
+                  View Active Animal House Projects
+                </AppButtonLink>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Canonical 5-stage methodology callout */}
+          <section className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-2xs">
+            <div className="flex items-center gap-2 text-eyebrow font-semibold tracking-wider text-accent uppercase">
+              <Sparkles size={16} />
+              Quality & Ethical Rigor
+            </div>
+            <Heading level={2} size="h3" className="mt-2">
+              Our 5-Stage Scientific Methodology
             </Heading>
-            <Text tone="muted" className="mt-3">
-              Tell us about your samples, compounds or data. We reply within three working days.
+            <Text tone="muted" className="mt-3 leading-relaxed">
+              Every project starts with a written scope and protocol and ends with documented
+              results and revision rounds. Animal studies begin only after Institutional Animal
+              Ethics Committee (IAEC) protocol review.
             </Text>
-            <AppLink
-              href={`/contact?service=${slug}#contact-form`}
-              className="mt-4 inline-flex rounded-md bg-primary-700 px-5 py-3 font-semibold text-on-primary no-underline"
-            >
-              Make an Enquiry
-            </AppLink>
+            <div className="mt-4">
+              <AppLink href="/methodology" className="inline-flex font-semibold text-primary">
+                Explore our 5-Stage Methodology →
+              </AppLink>
+            </div>
+          </section>
+
+          {/* Enquiry Action Band */}
+          <section className="rounded-2xl border border-primary/20 bg-gradient-to-r from-surface to-surface-tint p-6 sm:p-8 shadow-card">
+            <div className="flex items-center gap-2 text-eyebrow font-semibold tracking-wider text-primary uppercase">
+              <ShieldCheck size={16} />
+              Study Initiation
+            </div>
+            <Heading level={2} size="h3" className="mt-2">
+              Ready to scope your {page.title.toLowerCase()} study?
+            </Heading>
+            <Text tone="muted" className="mt-3 max-w-2xl leading-relaxed">
+              Tell us about your candidate compounds, cell lines, or dataset specifications. Our
+              study directors reply within three working days with a detailed protocol scope.
+            </Text>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <AppButtonLink
+                href={`/contact?service=${slug}#contact-form`}
+                variant="primary"
+                size="lg"
+                iconStart={
+                  <LabMouseIcon size={16} className="transition-transform group-hover:scale-110" />
+                }
+                iconEnd={<ArrowRight size={16} aria-hidden="true" />}
+              >
+                Scope Your Study
+              </AppButtonLink>
+              <AppButtonLink href="/projects" variant="outline" size="lg">
+                Browse Projects
+              </AppButtonLink>
+            </div>
           </section>
         </div>
       </main>

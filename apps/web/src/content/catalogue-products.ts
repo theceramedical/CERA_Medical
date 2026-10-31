@@ -1,5 +1,7 @@
 import type { PublicProduct } from '@cera/contracts/projections';
 
+import { VERIFIED_PORTFOLIO_PRODUCTS, type CatalogProduct } from './products-catalog.ts';
+
 export function catalogueProducts(): readonly PublicProduct[] {
   return [];
 }
@@ -7,6 +9,13 @@ export function catalogueProducts(): readonly PublicProduct[] {
 export function catalogueProductBySku(sku: string): PublicProduct | null {
   const normalized = sku.trim().toLowerCase();
   return catalogueProducts().find((product) => product.sku.toLowerCase() === normalized) ?? null;
+}
+
+export function getVerifiedPortfolioProductBySku(sku: string): CatalogProduct | null {
+  const normalized = sku.trim().toLowerCase();
+  return (
+    VERIFIED_PORTFOLIO_PRODUCTS.find((product) => product.sku.toLowerCase() === normalized) ?? null
+  );
 }
 
 export interface ProductMedia {

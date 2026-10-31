@@ -1,4 +1,5 @@
 import type { ContentDocument } from '@cera/contracts';
+import type { PublicProduct } from '@cera/contracts/projections';
 
 import { HomeLandingPage } from '../../components/home/home-landing-page.tsx';
 import {
@@ -11,6 +12,7 @@ import {
   organizationJsonLd,
   websiteJsonLd,
 } from '../../components/json-ld.tsx';
+import { VERIFIED_PORTFOLIO_PRODUCTS } from '../../content/products-catalog.ts';
 import { listPublicProducts } from '../../lib/catalogue/client.ts';
 import { getCurrentDocument } from '../../lib/cms/client.ts';
 import { getFeaturedProjects } from '../../lib/projects/getFeaturedProjects.ts';
@@ -157,6 +159,30 @@ export default async function HomePage() {
     listPublicProducts(),
   ]);
 
+  const apiItems = products.items;
+  const knownSkus = new Set(apiItems.map((p) => p.sku.toLowerCase()));
+  const fallbackProducts: PublicProduct[] = VERIFIED_PORTFOLIO_PRODUCTS.map((p) => ({
+    sku: p.sku,
+    title: p.title,
+    summary: p.description,
+    description: p.description,
+    displayPrice:
+      p.price ??
+      (p.listPriceMinor !== null
+        ? `PKR ${(p.listPriceMinor / 100).toLocaleString()}`
+        : 'Price on enquiry'),
+    availabilityText: p.inStock ? 'In stock • Dispatched from Haripur' : 'Price on enquiry',
+    listPriceMinor: p.listPriceMinor,
+    checkoutEnabled: p.checkoutEnabled ?? false,
+    enquiryEnabled: true,
+    imageUrl: p.imageUrl?.startsWith('http') ? p.imageUrl : null,
+  }));
+
+  const mergedProducts = [
+    ...apiItems,
+    ...fallbackProducts.filter((p) => !knownSkus.has(p.sku.toLowerCase())),
+  ];
+
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
@@ -164,7 +190,7 @@ export default async function HomePage() {
       <JsonLd data={medicalBusinessJsonLd(origin)} />
       <HomeLandingPage
         projects={projects}
-        products={products.items.slice(0, 3)}
+        products={mergedProducts.slice(0, 3)}
         copy={homeCopyFromDocument(document)}
       />
     </>

@@ -1,4 +1,5 @@
 import { ProductsCatalog } from '../../../components/products/products-catalog.tsx';
+import { VERIFIED_PORTFOLIO_PRODUCTS } from '../../../content/products-catalog.ts';
 import { listMergedCatalogProducts } from '../../../lib/catalogue/merged-catalog-products.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
@@ -8,9 +9,9 @@ export const revalidate = 30;
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Research Product Catalogue',
+    title: 'Research & Wellness Products',
     description:
-      'Browse published catalogue entries and enquire about product availability, documentation and terms.',
+      'Explore CERA Medical natural wellness formulations alongside validated laboratory research reagents, assay kits, and preclinical rodent preparations.',
     path: '/products',
   });
 }
@@ -24,10 +25,16 @@ export default async function ProductsPage({
   }>;
 }) {
   const params = await searchParams;
-  const products = await listMergedCatalogProducts();
+  const apiProducts = await listMergedCatalogProducts();
+  const apiSkus = new Set(apiProducts.map((p) => p.sku.toLowerCase()));
+  const mergedProducts = [
+    ...apiProducts,
+    ...VERIFIED_PORTFOLIO_PRODUCTS.filter((p) => !apiSkus.has(p.sku.toLowerCase())),
+  ];
+
   return (
     <ProductsCatalog
-      products={products}
+      products={mergedProducts}
       {...(params.q === undefined ? {} : { query: params.q })}
       {...(params.category === undefined ? {} : { category: params.category })}
     />
