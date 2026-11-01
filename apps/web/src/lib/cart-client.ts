@@ -56,7 +56,23 @@ export async function addCartLine(slug: string, quantity = 1): Promise<Cart> {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ slug, quantity }),
   });
-  if (!response.ok) throw new Error('add_failed');
+  if (!response.ok) {
+    let code = 'add_failed';
+    try {
+      const body: unknown = await response.json();
+      if (
+        body !== null &&
+        typeof body === 'object' &&
+        'error' in body &&
+        typeof body.error === 'string'
+      ) {
+        code = body.error;
+      }
+    } catch {
+      // Keep the stable generic error when the server did not return a JSON error body.
+    }
+    throw new Error(code);
+  }
   return CartSchema.parse(await response.json());
 }
 

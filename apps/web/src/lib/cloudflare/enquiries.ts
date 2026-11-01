@@ -195,20 +195,48 @@ export async function handleCloudflareEnquiry(request: Request): Promise<Respons
   }
 }
 
+export type CloudflareDeliveryStatus = 'pending' | 'processing' | 'succeeded' | 'failed';
+
+export type CloudflareDeliveryAttempt =
+  | {
+      readonly attempted: true;
+      readonly outcome: 'succeeded' | 'failed';
+      readonly deliveryStatus: 'succeeded' | 'failed';
+    }
+  | {
+      readonly attempted: false;
+      readonly outcome: 'not_claimed';
+      readonly deliveryStatus: CloudflareDeliveryStatus;
+    }
+  | {
+      readonly attempted: false;
+      readonly outcome: 'not_found';
+      readonly deliveryStatus: null;
+    };
+
 export async function deliverCloudflareIntegration(
   db: NonNullable<Awaited<ReturnType<typeof getCloudflareDatabase>>>,
   id: string,
   channel: string,
   payload: string,
-) {
+): Promise<CloudflareDeliveryAttempt> {
   const started = Math.floor(Date.now() / 1000);
-  await db
+  const claim = await db
     .prepare(
       `UPDATE integration_deliveries SET status = 'processing', attempts = attempts + 1, updated_at = ?
     WHERE aggregate_id = ? AND channel = ? AND status IN ('pending', 'failed')`,
     )
     .bind(started, id, channel)
     .run();
+  if ((claim.meta?.changes ?? 0) === 0) {
+    const current = await db
+      .prepare('SELECT status FROM integration_deliveries WHERE aggregate_id = ? AND channel = ?')
+      .bind(id, channel)
+      .first<{ status: 'pending' | 'processing' | 'succeeded' | 'failed' }>();
+    return current
+      ? { attempted: false, outcome: 'not_claimed', deliveryStatus: current.status }
+      : { attempted: false, outcome: 'not_found', deliveryStatus: null };
+  }
   try {
     const data = JSON.parse(payload) as {
       reference: string;
@@ -261,6 +289,7 @@ export async function deliverCloudflareIntegration(
       )
       .bind(Math.floor(Date.now() / 1000), id, channel)
       .run();
+    return { attempted: true, outcome: 'succeeded', deliveryStatus: 'succeeded' };
   } catch (error) {
     const reason = error instanceof Error ? error.message.slice(0, 200) : 'delivery_failed';
     await db
@@ -270,6 +299,7 @@ export async function deliverCloudflareIntegration(
       )
       .bind(reason, Math.floor(Date.now() / 1000), id, channel)
       .run();
+    return { attempted: true, outcome: 'failed', deliveryStatus: 'failed' };
   }
 }
 

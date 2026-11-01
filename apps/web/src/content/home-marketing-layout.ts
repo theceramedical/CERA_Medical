@@ -156,7 +156,7 @@ export function defaultHomeMarketingBlocks(): readonly LayoutBlock[] {
         {
           title: 'Clear communication',
           description:
-            'You receive a named reference for enquiries, status updates through your account when claimed, and a defined path for revisions.',
+            'You receive a named reference for enquiries, direct follow-up from our team, and a defined path for revisions.',
         },
       ],
     },

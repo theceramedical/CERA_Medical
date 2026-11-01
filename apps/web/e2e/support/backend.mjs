@@ -216,6 +216,22 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (request.method === 'GET' && path === '/v1/products/E2E-PRODUCT-001') {
+    json(response, 200, {
+      sku: 'E2E-PRODUCT-001',
+      title: 'E2E laboratory kit',
+      summary: 'A product used only by the browser test.',
+      description: 'A product used only by the browser test.',
+      displayPrice: 'PKR 3,400',
+      availabilityText: 'In stock',
+      listPriceMinor: 3400,
+      checkoutEnabled: true,
+      enquiryEnabled: true,
+      imageUrl: null,
+    });
+    return;
+  }
+
   if (request.method === 'GET' && path === '/api/globals/site-settings') {
     json(response, 200, SITE_SETTINGS);
     return;

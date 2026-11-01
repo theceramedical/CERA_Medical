@@ -57,13 +57,18 @@ export async function handleCloudflareOpsApi(
         .bind(parts[1])
         .first<{ aggregateId: string; channel: string; payload: string }>();
       if (!delivery) throw new CloudflareApiError('Not found', 404);
-      await deliverCloudflareIntegration(
+      const result = await deliverCloudflareIntegration(
         db,
         delivery.aggregateId,
         delivery.channel,
         delivery.payload,
       );
-      return { retried: true };
+      if (result.outcome === 'not_found') throw new CloudflareApiError('Not found', 404);
+      return {
+        attempted: result.attempted,
+        retryOutcome: result.outcome,
+        deliveryStatus: result.deliveryStatus,
+      };
     }
     if (method !== 'GET') return { items: [] };
     await db

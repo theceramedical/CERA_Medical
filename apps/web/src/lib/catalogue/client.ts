@@ -8,6 +8,12 @@ import {
 } from '@cera/contracts/projections';
 
 import { fixturePublicServices } from '../catalogue-fixtures.ts';
+import { checkoutEnabled } from '../checkout-enabled.ts';
+import {
+  getCloudflarePublicProduct,
+  listCloudflarePublicProducts,
+} from '../cloudflare/catalogue.ts';
+import { getCloudflareDatabase, isCloudflareWorkerRuntime } from '../cloudflare/runtime.ts';
 
 import { resolveCatalogueApiBaseUrl } from './api-base-url.ts';
 
@@ -89,6 +95,21 @@ export async function listPublicProducts(options?: CatalogueFetchOptions): Promi
   readonly items: readonly PublicProduct[];
   readonly degraded: boolean;
 }> {
+  const db = await getCloudflareDatabase();
+  if (db || (await isCloudflareWorkerRuntime())) {
+    try {
+      return {
+        items: await listCloudflarePublicProducts(db, checkoutEnabled()),
+        degraded: db === null,
+      };
+    } catch {
+      return {
+        items: await listCloudflarePublicProducts(null, false),
+        degraded: true,
+      };
+    }
+  }
+
   try {
     const url = `${apiUrl().replace(/\/$/, '')}/v1/products`;
     const response = await fetch(
@@ -112,6 +133,15 @@ export async function listPublicProducts(options?: CatalogueFetchOptions): Promi
 export async function getPublicProduct(sku: string): Promise<PublicProduct | null> {
   const normalized = sku.trim();
   if (normalized.length === 0) return null;
+  const db = await getCloudflareDatabase();
+  if (db || (await isCloudflareWorkerRuntime())) {
+    try {
+      return await getCloudflarePublicProduct(db, normalized, checkoutEnabled());
+    } catch {
+      return getCloudflarePublicProduct(null, normalized, false);
+    }
+  }
+
   try {
     const url = `${apiUrl().replace(/\/$/, '')}/v1/products/${encodeURIComponent(normalized)}`;
     const response = await fetch(

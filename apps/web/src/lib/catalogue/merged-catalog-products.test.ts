@@ -45,4 +45,31 @@ describe('public product listing', () => {
     );
     expect(products.some((product) => product.sku === 'CR-MOL-1021')).toBe(false);
   });
+
+  it('keeps verified copy while replacing stale price and checkout flags with the runtime projection', async () => {
+    listPublicProducts.mockResolvedValue({
+      items: [
+        {
+          ...publishedProduct,
+          sku: 'CERA-WELL-01',
+          checkoutEnabled: false,
+          listPriceMinor: null,
+          displayPrice: null,
+        },
+      ],
+      degraded: false,
+    });
+
+    const product = (await listMergedCatalogProducts()).find(
+      (candidate) => candidate.sku === 'CERA-WELL-01',
+    );
+
+    expect(product).toMatchObject({
+      description: expect.stringContaining('Plant-based'),
+      price: 'Price on enquiry',
+      listPriceMinor: null,
+      checkoutEnabled: false,
+      inStock: null,
+    });
+  });
 });

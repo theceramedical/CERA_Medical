@@ -26,6 +26,7 @@ import {
   type CatalogProduct,
 } from '../../../../content/products-catalog.ts';
 import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
+import { checkoutEnabled } from '../../../../lib/checkout-enabled.ts';
 import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
@@ -211,7 +212,13 @@ export default async function ProductDetailPage({
               {/* Action Buttons */}
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <ProductPurchaseActions
+                  sku={sku}
                   enquiryHref={productEnquiryHref(sku)}
+                  checkoutAvailable={
+                    checkoutEnabled() &&
+                    (product === undefined ? item.checkoutEnabled : product.checkoutEnabled) ===
+                      true
+                  }
                   label="Enquire / Order Product"
                 />
                 <AppButtonLink

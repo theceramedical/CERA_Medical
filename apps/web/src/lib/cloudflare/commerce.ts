@@ -71,13 +71,15 @@ export async function handleCloudflareCart(
 
   if (request.method === 'POST') {
     if (!addLine) return json({ error: 'invalid_cart_line' }, 400);
-    await db
+    const result = await db
       .prepare(
         `INSERT INTO commerce_cart_items (cart_id, sku, quantity) VALUES (?, ?, ?)
-      ON CONFLICT(cart_id, sku) DO UPDATE SET quantity = MIN(99, commerce_cart_items.quantity + excluded.quantity)`,
+      ON CONFLICT(cart_id, sku) DO UPDATE SET quantity = commerce_cart_items.quantity + excluded.quantity
+      WHERE commerce_cart_items.quantity + excluded.quantity <= 99`,
       )
       .bind(cartId, addLine.slug, addLine.quantity)
       .run();
+    if (result.meta?.changes === 0) return json({ error: 'cart_quantity_limit_exceeded' }, 409);
   } else if (request.method === 'PATCH') {
     if (!lineId) return json({ error: 'not_found' }, 404);
     let raw: unknown;

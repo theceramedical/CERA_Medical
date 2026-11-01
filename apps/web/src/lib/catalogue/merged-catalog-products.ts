@@ -2,25 +2,36 @@ import 'server-only';
 
 import type { PublicProduct } from '@cera/contracts/projections';
 
-import { catalogueProducts, productMediaFor } from '../../content/catalogue-products.ts';
+import {
+  catalogueProducts,
+  getVerifiedPortfolioProductBySku,
+  productMediaFor,
+} from '../../content/catalogue-products.ts';
 
 import { listPublicProducts } from './client.ts';
 
 import type { CatalogProduct } from '../../content/products-catalog.ts';
 
 function catalogRowFromApi(product: PublicProduct): CatalogProduct {
+  const verifiedPortfolioProduct = getVerifiedPortfolioProductBySku(product.sku);
   return {
+    ...(verifiedPortfolioProduct ?? {}),
     sku: product.sku,
-    category: 'catalogue',
-    categoryLabel: 'Catalogue product',
-    title: product.title,
-    description: product.summary.length > 0 ? product.summary : product.description,
-    specs: product.availabilityText === null ? [] : [product.availabilityText],
-    packLabel: '',
+    category: verifiedPortfolioProduct?.category ?? 'catalogue',
+    categoryLabel: verifiedPortfolioProduct?.categoryLabel ?? 'Catalogue product',
+    title: verifiedPortfolioProduct?.title ?? product.title,
+    description:
+      verifiedPortfolioProduct?.description ??
+      (product.summary.length > 0 ? product.summary : product.description),
+    specs:
+      verifiedPortfolioProduct?.specs ??
+      (product.availabilityText === null ? [] : [product.availabilityText]),
+    packLabel: verifiedPortfolioProduct?.packLabel ?? '',
     listPriceMinor: product.listPriceMinor,
     checkoutEnabled: product.checkoutEnabled,
+    price: product.displayPrice ?? 'Price on enquiry',
     inStock: null,
-    fulfillment: 'physical',
+    fulfillment: verifiedPortfolioProduct?.fulfillment ?? 'physical',
     ...(() => {
       const imageUrl = product.imageUrl ?? productMediaFor(product.sku)?.imageSrc;
       return imageUrl === undefined ? {} : { imageUrl };
