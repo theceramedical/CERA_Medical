@@ -31,23 +31,18 @@ const NON_ROUTER_HREF = /^(?:[a-z][\w+.-]*:|\/\/)/i;
 
 /**
  * Prefetching a protected route before a session exists can leave Next's router with a cached
- * sign-in redirect. Account and staff links are infrequent, so load them only when clicked.
+ * sign-in redirect. Staff links are infrequent, so load them only when clicked.
  */
 function NoPrefetchNextLink(props: ComponentProps<typeof NextLink>) {
   return <NextLink {...props} prefetch={false} />;
 }
 
 function requiresSession(href: string): boolean {
-  return (
-    href === '/account' ||
-    href.startsWith('/account/') ||
-    href === '/staff' ||
-    href.startsWith('/staff/')
-  );
+  return href === '/staff' || href.startsWith('/staff/');
 }
 
-/** OIDC routes redirect off-site; prefetch/RSC fetch must not hit Authentik before a real navigation. */
-function isOidcBrowserRoute(href: string): boolean {
+/** Authentication routes redirect away; do not prefetch Access login/logout redirects. */
+function isAuthBrowserRoute(href: string): boolean {
   return (
     href === '/auth/signin' ||
     href.startsWith('/auth/signin?') ||
@@ -57,12 +52,12 @@ function isOidcBrowserRoute(href: string): boolean {
 }
 
 function requiresNoPrefetch(href: string): boolean {
-  return requiresSession(href) || isOidcBrowserRoute(href);
+  return requiresSession(href) || isAuthBrowserRoute(href);
 }
 
 export function AppLink({ external = false, href, ...rest }: UiLinkProps) {
-  const oidcRoute = !external && isOidcBrowserRoute(href);
-  const routable = !external && !oidcRoute && !NON_ROUTER_HREF.test(href);
+  const authRoute = !external && isAuthBrowserRoute(href);
+  const routable = !external && !authRoute && !NON_ROUTER_HREF.test(href);
 
   return (
     <UiLink
@@ -86,7 +81,7 @@ export function AppButtonLink({ href, ...props }: UiButtonLinkProps) {
   const hrefStr = typeof href === 'string' ? href : '';
   const offSite = hrefStr.length > 0 && NON_ROUTER_HREF.test(hrefStr);
   const linkAs =
-    offSite || (hrefStr.length > 0 && isOidcBrowserRoute(hrefStr))
+    offSite || (hrefStr.length > 0 && isAuthBrowserRoute(hrefStr))
       ? 'a'
       : hrefStr.length > 0 && requiresNoPrefetch(hrefStr)
         ? NoPrefetchNextLink

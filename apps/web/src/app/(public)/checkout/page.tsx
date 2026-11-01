@@ -1,8 +1,6 @@
 import { CheckoutPageContent } from '../../../components/checkout-page-content.client.tsx';
 import { AppButtonLink } from '../../../components/link.tsx';
 import { MarketingPageHeader } from '../../../components/marketing-page-header.tsx';
-import { assertCustomerPortalSession } from '../../../lib/auth/portal-access.ts';
-import { getSession } from '../../../lib/auth/session.ts';
 import { checkoutEnabled } from '../../../lib/checkout-enabled.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
@@ -15,7 +13,7 @@ export const metadata: Metadata = pageMetadata({
   noIndex: true,
 });
 
-export default async function CheckoutPage() {
+export default function CheckoutPage() {
   if (!checkoutEnabled()) {
     return (
       <>
@@ -39,16 +37,11 @@ export default async function CheckoutPage() {
       </>
     );
   }
-  const session = assertCustomerPortalSession(await getSession(), {
-    returnTo: '/checkout',
-    emailVerified: true,
-  });
-
   return (
     <>
       <MarketingPageHeader
         title="Checkout"
-        lede="Complete payment for the signed-in account below. Orders appear under Your account → Orders."
+        lede="Place your order as a guest and pay the courier when it arrives."
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Cart', href: '/cart' },
@@ -56,7 +49,7 @@ export default async function CheckoutPage() {
         ]}
       />
       <div className="mx-auto max-w-site px-6 py-12 md:px-10 lg:py-16">
-        <CheckoutPageContent customerEmail={session.email} />
+        <CheckoutPageContent />
       </div>
     </>
   );

@@ -39,7 +39,6 @@ export async function handleCloudflareOpsApi(
   const canWrite = session.roles.some((role) => staffWriteRoles.includes(role));
   if (
     !rolesIncludeStaff(session.roles) ||
-    !session.mfa ||
     (parts[0] === 'deliveries' && parts[2] === 'retry' && !canRetry) ||
     (parts[0] === 'enquiries' &&
       parts.length >= 3 &&

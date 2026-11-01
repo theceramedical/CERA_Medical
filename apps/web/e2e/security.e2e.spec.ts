@@ -158,10 +158,9 @@ test('the response carries the rest of the security headers', async ({ page }) =
   expect(headers['strict-transport-security']).toBeUndefined();
 });
 
-test('an unauthenticated visitor is redirected away from the account area', async ({ page }) => {
+test('retired customer account URLs return visitors to contact', async ({ page }) => {
   const response = await page.goto('/account/enquiries');
 
-  expect(new URL(page.url()).pathname).toBe('/auth/sign-in');
-  expect(new URL(page.url()).searchParams.get('next')).toBe('/account/enquiries');
+  expect(new URL(page.url()).pathname).toBe('/contact');
   expect(response?.status()).toBe(200);
 });

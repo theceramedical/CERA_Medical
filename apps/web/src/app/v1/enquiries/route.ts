@@ -1,8 +1,17 @@
 import { handleCloudflareEnquiry } from '../../../lib/cloudflare/enquiries.ts';
+import { isCloudflareWorkerRuntime } from '../../../lib/cloudflare/runtime.ts';
 
 export async function POST(request: Request): Promise<Response> {
   const cloudflareResponse = await handleCloudflareEnquiry(request);
   if (cloudflareResponse !== null) return cloudflareResponse;
+  // In the Worker, a missing D1 binding must never route an accepted enquiry into a
+  // separate API database that staff cannot see. Local Next.js development may use the API.
+  if (await isCloudflareWorkerRuntime()) {
+    return Response.json(
+      { error: { message: 'service_unavailable', retryable: true } },
+      { status: 503 },
+    );
+  }
   const origin = request.headers.get('origin');
   if (origin !== new URL(request.url).origin) {
     return Response.json({ error: { message: 'forbidden' } }, { status: 403 });

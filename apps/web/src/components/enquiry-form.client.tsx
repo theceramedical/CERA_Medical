@@ -471,8 +471,8 @@ function EnquiryConfirmation({
         <a className="text-primary underline" href="mailto:contact@ceramedical.org">
           contact@ceramedical.org
         </a>{' '}
-        if you need to follow up. You can also create an account with this email to follow progress
-        and claim the enquiry.
+        if you need to follow up. No customer account is required; please keep your reference for
+        future correspondence.
       </Text>
     </div>
   );

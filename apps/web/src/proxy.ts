@@ -18,8 +18,8 @@ import type { NextRequest } from 'next/server';
  * 1. **Request ID.** One identifier for the whole request, forwarded downstream and echoed to the
  *    client, so a user who reports a problem can quote a value that appears in the logs.
  * 2. **Security headers,** including a per-request CSP nonce.
- * 3. **Redirect ergonomics,** sending an unauthenticated visitor on a portal or staff URL to
- *    sign-in with a return path, rather than letting them load a shell that then fails.
+ * 3. **Redirect ergonomics,** retiring the removed customer portal and directing staff visitors
+ *    to the protected staff entry point.
  *
  * **It is not an authorisation boundary,** and nothing here should ever be mistaken for one. It
  * checks that a session cookie is *present*; it does not open the seal, verify the signature,
@@ -37,10 +37,10 @@ import type { NextRequest } from 'next/server';
  * silently stops matching after a rename - and the consequence of a missed match is only a worse
  * redirect experience, never an authorisation hole, precisely because of the note above.
  */
-const AUTHENTICATED_PREFIXES = ['/account', '/staff'] as const;
+const AUTHENTICATED_PREFIXES = ['/staff'] as const;
 
 /** Where an unauthenticated visitor is sent. The page and API layers validate identity. */
-const SIGN_IN_PATH = '/auth/sign-in';
+const SIGN_IN_PATH = '/staff/sign-in';
 
 /**
  * The parameter carrying where to return to after signing in.
@@ -96,10 +96,6 @@ export function proxy(request: NextRequest): NextResponse {
     mediaOrigin: originOf(process.env.S3_PUBLIC_URL),
     catalogueOrigin: originOf(process.env.VENDURE_PUBLIC_URL),
     apiOrigin: originOf(process.env.NEXT_PUBLIC_API_URL),
-    authOrigins: [
-      originOf(process.env.OIDC_CUSTOMER_ISSUER ?? process.env.OIDC_ISSUER),
-      originOf(process.env.OIDC_STAFF_ISSUER ?? process.env.OIDC_ISSUER),
-    ].filter((origin): origin is string => origin !== undefined),
     formActionOrigins,
     allowDevEval: process.env.NODE_ENV === 'development',
   });
@@ -150,6 +146,17 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
 
   const pathname = normalisePath(request.nextUrl.pathname);
 
+  // Customer accounts and customer authentication have been retired. Send old bookmarks to the
+  // public contact path rather than rendering dormant account pages or offering a dead sign-in.
+  if (
+    pathname === '/account' ||
+    pathname.startsWith('/account/') ||
+    ['/auth/sign-in', '/auth/sign-up', '/auth/verify-email'].includes(pathname) ||
+    (pathname === '/auth/signed-out' && request.nextUrl.searchParams.get('audience') !== 'staff')
+  ) {
+    return NextResponse.redirect(new URL('/contact', request.nextUrl.origin), 308);
+  }
+
   const legacyServiceTarget = LEGACY_SERVICE_TARGETS[pathname];
   if (
     legacyServiceTarget !== undefined ||
@@ -175,7 +182,12 @@ function redirectOrContinue(request: NextRequest, requestHeaders: Headers): Next
   // console shell, but it must remain reachable before a session exists.
   const isStaffSignIn = pathname === '/staff/sign-in';
 
-  if (needsSession && !isStaffSignIn && !request.cookies.has(SESSION_COOKIE_NAME)) {
+  if (
+    needsSession &&
+    !isStaffSignIn &&
+    !request.cookies.has(SESSION_COOKIE_NAME) &&
+    !request.headers.has('Cf-Access-Jwt-Assertion')
+  ) {
     const target = new URL(SIGN_IN_PATH, request.nextUrl.origin);
     target.searchParams.set(RETURN_TO_PARAM, `${pathname}${request.nextUrl.search}`);
 
@@ -203,7 +215,6 @@ function canonicalRedirect(request: NextRequest): NextResponse | null {
     return null;
   }
   const publicOrigin = resolvePublicOrigin(request);
-  if (publicOrigin === canonical.origin) return null;
 
   let publicHostname: string;
   try {
@@ -211,10 +222,36 @@ function canonicalRedirect(request: NextRequest): NextResponse | null {
   } catch {
     return null;
   }
+
+  const pathname = normalisePath(request.nextUrl.pathname);
+  const siteHostname = canonical.hostname.toLowerCase();
+  const publicRootHostname = siteHostname.replace(/^www\./, '');
+  const staffHostname = `staff.${publicRootHostname}`;
+  const staffOrigin = `${canonical.protocol}//${staffHostname}`;
+  if (publicHostname === staffHostname) {
+    if (pathname === '/') return NextResponse.redirect(new URL('/staff', staffOrigin), 308);
+    return null;
+  }
+
+  const localHostname = ['localhost', '127.0.0.1', '::1'].includes(publicRootHostname);
+  if (
+    !localHostname &&
+    (pathname === '/staff' || pathname.startsWith('/staff/')) &&
+    (publicHostname === siteHostname || publicHostname === publicRootHostname)
+  ) {
+    const target = new URL(pathname, staffOrigin);
+    target.search = request.nextUrl.search;
+    return NextResponse.redirect(target, 308);
+  }
+
   const staffTargetPath = STAFF_HOST_TARGETS[publicHostname];
   if (staffTargetPath !== undefined) {
-    return NextResponse.redirect(new URL(staffTargetPath, canonical), 308);
+    const target = new URL(staffTargetPath, staffOrigin);
+    target.search = request.nextUrl.search;
+    return NextResponse.redirect(target, 308);
   }
+
+  if (publicOrigin === canonical.origin) return null;
 
   const target = new URL(request.nextUrl.pathname, canonical);
   target.search = request.nextUrl.search;

@@ -3,16 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { authErrorCopy } from './error-copy.ts';
 
 describe('auth error copy', () => {
-  it('explains when an authenticated account lacks a CERA role', () => {
-    expect(authErrorCopy('access').title).toBe('Your account does not have CERA access yet');
-    expect(authErrorCopy('access').plan).toContain('right CERA group');
+  it('explains when an authenticated identity lacks an assigned staff role', () => {
+    expect(authErrorCopy('access').title).toBe('This identity is not assigned staff access');
+    expect(authErrorCopy('access').plan).toContain('email and role allowlist');
   });
 
-  it('distinguishes expired attempts, MFA, provider, and service errors', () => {
-    expect(authErrorCopy('expired').title).toContain('expired');
-    expect(authErrorCopy('mfa').title).toContain('multi-factor');
-    expect(authErrorCopy('provider').lede).toContain('identity provider');
-    expect(authErrorCopy('unavailable').title).toContain('temporarily unavailable');
+  it('describes the Cloudflare Access staff configuration path', () => {
+    expect(authErrorCopy('configuration').title).toContain('Staff access');
+    expect(authErrorCopy('configuration').plan).toContain('guest orders');
   });
 
   it('uses safe generic copy for unknown or repeated query values', () => {

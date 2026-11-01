@@ -48,7 +48,7 @@ export default async function CartPage() {
     <>
       <MarketingPageHeader
         title="Your cart"
-        lede="Physical products and fixed-price service lines. Checkout needs a signed-in account with a verified email; orders then appear under Your account → Orders."
+        lede="Review your items before placing a guest order with cash on delivery."
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Products', href: '/products' },

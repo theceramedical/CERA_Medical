@@ -4,7 +4,7 @@ import { handleCloudflareOpsApi } from '../../../../lib/cloudflare/ops-api.ts';
 
 export async function GET(): Promise<Response> {
   const session = await getSession();
-  if (!session || !rolesIncludeStaff(session.roles) || !session.mfa)
+  if (!session || !rolesIncludeStaff(session.roles))
     return Response.json({ error: 'forbidden' }, { status: 403 });
   try {
     const result = await handleCloudflareOpsApi('/v1/ops/enquiries', 'GET', undefined, session);

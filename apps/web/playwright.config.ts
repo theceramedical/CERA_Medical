@@ -15,9 +15,6 @@ const BASE_URL = `http://localhost:${String(PORT)}`;
 const BACKEND_URL = 'http://localhost:3101';
 
 /** Inlined on the shell command so `pnpm build` always sees public env vars (Playwright webServer env alone is not always picked up by nested scripts). */
-/** Must match `e2e/support/session.mjs` so sealed cookies work in portal tests. */
-const E2E_SESSION_SECRET = Buffer.alloc(32, 0xe2).toString('base64');
-
 const E2E_APP_ENV = [
   'CERA_ENABLE_DEV_ROUTES=1',
   `API_INTERNAL_URL=${BACKEND_URL}`,
@@ -25,8 +22,6 @@ const E2E_APP_ENV = [
   `NEXT_PUBLIC_API_URL=${BACKEND_URL}`,
   `NEXT_PUBLIC_SITE_URL=${BASE_URL}`,
   'NEXT_PUBLIC_CHECKOUT_ENABLED=true',
-  'OIDC_GOOGLE_SOURCE_SLUG=google',
-  `SESSION_SECRET=${E2E_SESSION_SECRET}`,
 ].join(' ');
 
 export default defineConfig({
@@ -63,8 +58,6 @@ export default defineConfig({
         NEXT_PUBLIC_API_URL: BACKEND_URL,
         NEXT_PUBLIC_SITE_URL: BASE_URL,
         NEXT_PUBLIC_CHECKOUT_ENABLED: 'true',
-        OIDC_GOOGLE_SOURCE_SLUG: 'google',
-        SESSION_SECRET: E2E_SESSION_SECRET,
         PORT: String(PORT),
         HOSTNAME: 'localhost',
       },

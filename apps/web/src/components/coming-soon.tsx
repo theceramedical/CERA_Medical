@@ -8,7 +8,7 @@ import { PageHeader } from './page-header.tsx';
  *
  * The alternative was leaving these routes out until their phase, and that is worse in a way that is
  * easy to underestimate: the header and footer link to `/services`, `/articles`, `/search`,
- * `/enquiry`, `/faqs` and `/auth/sign-in`, so every one of those links would 404 for the whole of
+ * `/enquiry` and `/faqs`, so every one of those links would 404 for the whole of
  * Phase 04. A 404 is indistinguishable from a bug, so the shell's own navigation would be untestable -
  * the keyboard walk and the accessibility sweep would both be walking over broken links, and a real
  * broken link would hide in the noise.

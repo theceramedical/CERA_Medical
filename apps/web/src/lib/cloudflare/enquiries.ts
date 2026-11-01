@@ -99,7 +99,17 @@ export async function handleCloudflareEnquiry(request: Request): Promise<Respons
         .first<{ reference: string }>();
       if (previous) return accepted(previous.reference, 200);
     }
-    const fingerprint = await sha256(`${email}:${input.message.trim()}`);
+    const fingerprint = await sha256(
+      JSON.stringify({
+        email,
+        name: input.name,
+        phone: input.phone ?? null,
+        institution: input.institution ?? null,
+        country: input.country ?? null,
+        serviceId: input.serviceId,
+        message: input.message.trim(),
+      }),
+    );
     const duplicate = await db
       .prepare(
         'SELECT reference FROM enquiries WHERE fingerprint = ? AND created_at > ? ORDER BY created_at DESC LIMIT 1',

@@ -5,20 +5,11 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { handleCloudflareOpsApi } from '../cloudflare/ops-api.ts';
-import { handleCloudflarePortalApi } from '../cloudflare/portal-api.ts';
 import { getCloudflareDatabase } from '../cloudflare/runtime.ts';
 
 import { jsonBodyForApiRequest } from './api-request-body.ts';
-import {
-  apiPathRequiresVerifiedEmail,
-  assertCustomerPortalSession,
-  assertStaffPortalSession,
-  signInPath,
-  verifyEmailPath,
-} from './portal-access.ts';
+import { assertStaffPortalSession, signInPath } from './portal-access.ts';
 import { getSession } from './session.ts';
-
-const CUSTOMER_LIST_PATHS = new Set(['/v1/me/profile', '/v1/me/enquiries', '/v1/me/orders']);
 
 export async function authenticatedApi<T>(
   path: string,
@@ -26,33 +17,27 @@ export async function authenticatedApi<T>(
 ): Promise<T> {
   const returnTo = options.returnTo;
   const signIn = signInPath(returnTo);
+  const isOpsPath = path.startsWith('/v1/ops/');
+  if (!isOpsPath) redirect('/contact');
+
+  const db = await getCloudflareDatabase();
 
   const session = await getSession();
   const portalOptions = returnTo === undefined ? {} : { returnTo };
-  const authenticatedSession = path.startsWith('/v1/ops/')
-    ? assertStaffPortalSession(session, portalOptions)
-    : assertCustomerPortalSession(session, {
-        ...portalOptions,
-        emailVerified: apiPathRequiresVerifiedEmail(path),
-      });
+  const authenticatedSession = assertStaffPortalSession(session, portalOptions);
 
   const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
-  if (!token) redirect(signIn);
+  // Cloudflare runtime staff sessions are verified from the Access JWT and bound to the
+  // staff hostname. Local API fallback still uses the sealed CERA session cookie.
+  if (db === null && !token) redirect(signIn);
 
-  if (await getCloudflareDatabase()) {
-    const result = path.startsWith('/v1/ops/')
-      ? await handleCloudflareOpsApi(
-          path,
-          options.method ?? 'GET',
-          options.body,
-          authenticatedSession,
-        )
-      : await handleCloudflarePortalApi(
-          path,
-          options.method ?? 'GET',
-          options.body,
-          authenticatedSession,
-        );
+  if (db !== null) {
+    const result = await handleCloudflareOpsApi(
+      path,
+      options.method ?? 'GET',
+      options.body,
+      authenticatedSession,
+    );
     if (result === null)
       throw new Error('This operation is not available on the Cloudflare runtime.');
     return result as T;
@@ -76,8 +61,7 @@ export async function authenticatedApi<T>(
   });
 
   if (response.status === 401) redirect(signIn);
-  if (response.status === 403) redirect(verifyEmailPath(returnTo));
-  if (response.status === 404 && CUSTOMER_LIST_PATHS.has(path)) {
+  if (response.status === 403) {
     redirect('/auth/error?reason=access');
   }
   if (!response.ok) {

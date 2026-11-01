@@ -41,14 +41,15 @@ troubleshooting. `pnpm stack:reset` deletes local database, queue, and media vol
 integration secrets, D1 migrations, checkout and deployment configuration.
 
 The Worker is live on the production hostnames and uses D1 and R2. The retired `cera-web.pages.dev`
-deployment redirects to the Worker, and its prior deployment aliases were removed. Production
-customer/staff OIDC and Resend credentials are still pending, so COD checkout stays disabled. The
-GitHub Actions deploy also needs a scoped `CLOUDFLARE_API_TOKEN`; see the runbook for the current
-configuration and remaining setup.
+deployment redirects to the Worker, and its prior deployment aliases were removed. Customer
+accounts and customer sign-in are retired; customer orders are guest-only and COD-only. The latest
+guest-checkout and Cloudflare Access code is not yet deployed. Staff Access policy/role mapping,
+Resend credentials, and the GitHub Actions `CLOUDFLARE_API_TOKEN` remain to be configured; checkout
+stays disabled until product availability is verified.
 
-The Worker runs the Next.js route handlers and server-rendered app. Customer identity, enquiry
-intake, account pages, COD checkout, staff operations, and newsletter opt-in use the same Worker
-runtime and D1 database. Safepay is disabled.
+The Worker runs the Next.js route handlers and server-rendered app. Enquiry intake, guest COD
+checkout, staff operations, and newsletter opt-in use the same Worker runtime and D1 database.
+Safepay is retired; its old start endpoint returns `410`.
 
 ## Repository map
 

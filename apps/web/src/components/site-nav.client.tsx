@@ -197,17 +197,10 @@ export function MobileNav({
               {/* The two calls to action, which are hidden at this width in the header's right-hand
                 group. They are here rather than there so they exist exactly once in the document. */}
               <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-                {signedIn ? (
-                  <>
-                    {staff ? (
-                      <ButtonLink as={NextLink} href="/staff" variant="primary" fullWidth>
-                        Staff console
-                      </ButtonLink>
-                    ) : null}
-                    <ButtonLink as={NextLink} href="/account" variant="outline" fullWidth>
-                      Your account
-                    </ButtonLink>
-                  </>
+                {signedIn && staff ? (
+                  <ButtonLink as={NextLink} href="/staff" variant="primary" fullWidth>
+                    Staff console
+                  </ButtonLink>
                 ) : null}
                 <ButtonLink as={NextLink} href="/contact#contact-form" variant="accent" fullWidth>
                   Make an Enquiry

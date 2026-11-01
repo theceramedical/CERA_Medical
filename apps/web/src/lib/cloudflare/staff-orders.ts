@@ -10,8 +10,7 @@ export async function handleCloudflareStaffOrders(
   const db = await getCloudflareDatabase();
   if (!db) return null;
   const session = await getSession();
-  if (!session || !rolesIncludeStaff(session.roles) || !session.mfa)
-    return json({ error: 'forbidden' }, 403);
+  if (!session || !rolesIncludeStaff(session.roles)) return json({ error: 'forbidden' }, 403);
   const canRead = session.roles.some((role) =>
     ['operations_manager', 'administrator', 'auditor'].includes(role),
   );

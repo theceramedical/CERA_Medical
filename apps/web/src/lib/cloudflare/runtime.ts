@@ -29,3 +29,13 @@ export async function getCloudflareDatabase(): Promise<D1Database | null> {
     return null;
   }
 }
+
+/** Distinguishes local Next.js, which has no Cloudflare module, from a Worker missing its D1 binding. */
+export async function isCloudflareWorkerRuntime(): Promise<boolean> {
+  try {
+    await import('cloudflare:workers');
+    return true;
+  } catch {
+    return false;
+  }
+}

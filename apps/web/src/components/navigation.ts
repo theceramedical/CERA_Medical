@@ -50,7 +50,7 @@ export function withProductsNav(items: readonly NavItem[]): readonly NavItem[] {
 /** Legacy footer export retained for import compatibility; Sign In is intentionally absent. */
 export const SUPPORT_NAV = FOOTER_POLICY_NAV;
 export function supportNavForSession(_signedIn: boolean): readonly NavItem[] {
-  return [{ href: '/auth/sign-in?next=/account', label: 'Sign In' }, ...FOOTER_POLICY_NAV];
+  return FOOTER_POLICY_NAV;
 }
 
 export function isCurrent(href: string, pathname: string): boolean {

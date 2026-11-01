@@ -1,22 +1,16 @@
 import { ALL_SESSION_COOKIE_NAMES } from '@cera/contracts/session';
 import { NextResponse } from 'next/server';
 
-import { oidcIssuer, type OidcAudience } from '../../../lib/auth/oidc.ts';
-import { siteUrl } from '../../../lib/site-url.ts';
+const STAFF_ACCESS_LOGOUT_URL = 'https://staff.ceramedical.org/cdn-cgi/access/logout';
 
 export function GET(request?: Request): NextResponse {
-  const url = siteUrl();
-  const requested =
-    request === undefined ? null : new URL(request.url).searchParams.get('audience');
-  const audience: OidcAudience = requested === 'staff' ? 'staff' : 'customer';
-  const issuer = oidcIssuer(audience);
-  const signedOutUrl = new URL('/auth/signed-out', url.origin);
-  signedOutUrl.searchParams.set('audience', audience);
-  const endSession =
-    issuer === undefined
-      ? signedOutUrl.pathname + signedOutUrl.search
-      : `${issuer.replace(/\/$/, '')}/end-session/?post_logout_redirect_uri=${encodeURIComponent(signedOutUrl.toString())}`;
-  const response = NextResponse.redirect(new URL(endSession, url.origin));
+  const url = request === undefined ? null : new URL(request.url);
+  const local = process.env.CERA_ENV === 'local';
+  const target =
+    local && url !== null
+      ? new URL('/auth/signed-out?audience=staff', url.origin)
+      : STAFF_ACCESS_LOGOUT_URL;
+  const response = NextResponse.redirect(target);
   for (const name of ALL_SESSION_COOKIE_NAMES) {
     response.cookies.set(name, '', {
       secure: true,

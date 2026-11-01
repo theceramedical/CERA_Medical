@@ -30,10 +30,6 @@ export interface CspOrigins {
   readonly catalogueOrigin?: string | undefined;
   /** `apps/api`, which the browser calls directly for enquiry submission and the portal. */
   readonly apiOrigin?: string | undefined;
-  /** Authentik (`OIDC_ISSUER`), used when the sign-in route prefetches the authorize redirect. */
-  readonly authOrigin?: string | undefined;
-  /** Authentik origins for both customer and staff providers. */
-  readonly authOrigins?: readonly string[] | undefined;
   /**
    * Extra `form-action` origins (e.g. apex when canonical is `www`), so a rare host mismatch does
    * not block legitimate sign-in forms.
@@ -71,10 +67,6 @@ export function buildCsp(nonce: string, origins: CspOrigins = {}): string {
 
   const connectSources = ["'self'"];
   if (origins.apiOrigin !== undefined) connectSources.push(origins.apiOrigin);
-  if (origins.authOrigin !== undefined) connectSources.push(origins.authOrigin);
-  for (const origin of origins.authOrigins ?? []) {
-    if (!connectSources.includes(origin)) connectSources.push(origin);
-  }
 
   const formActionSources = ["'self'", ...(origins.formActionOrigins ?? [])];
 

@@ -41,11 +41,30 @@ export function NewsletterForm() {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ email: email.trim() }),
         })
-          .then((response) => {
-            if (!response.ok)
-              throw new Error('The confirmation email could not be sent. Try again later.');
+          .then(async (response) => {
+            const payload: unknown = await response.json().catch(() => null);
+            const error =
+              payload !== null && typeof payload === 'object' && 'error' in payload
+                ? payload.error
+                : null;
+            if (!response.ok) {
+              const message =
+                error === 'newsletter_delivery_failed'
+                  ? "We couldn't send the confirmation email. Try again later."
+                  : error === 'rate_limited'
+                    ? 'Too many requests. Please wait a while and try again.'
+                    : 'Newsletter sign-up is temporarily unavailable. Try again later.';
+              throw new Error(message);
+            }
+            if (
+              payload === null ||
+              typeof payload !== 'object' ||
+              !('accepted' in payload) ||
+              payload.accepted !== true
+            )
+              throw new Error('Newsletter sign-up could not be confirmed. Try again later.');
             setNotice(
-              'Check your inbox for a confirmation link. You are subscribed only after confirming your address.',
+              'Your request was received. CERA Medical updates are sent only to confirmed addresses.',
             );
             setEmail('');
           })

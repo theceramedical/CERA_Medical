@@ -5,9 +5,8 @@
  * the visual baselines all want "every public page", and three copies of that answer means a route added
  * in Phase 07 gets picked up by whichever suite the author happened to remember.
  *
- * Authenticated routes are deliberately absent: `/account` and `/staff` redirect to sign-in without a
- * session cookie (`src/proxy.ts`), so a suite that listed them would be asserting about the sign-in page
- * under a misleading name. They join these lists in phases 11 and 12, behind a storage state.
+ * Staff routes are excluded because Cloudflare Access protects the staff hostname. Retired customer
+ * auth routes are checked by the auth-pages suite rather than treated as public content pages.
  */
 
 /** Pages a visitor can reach, in roughly the order the navigation offers them. */
@@ -23,7 +22,6 @@ export const PUBLIC_ROUTES = [
   '/privacy',
   '/terms',
   '/sitemap',
-  '/auth/sign-in',
 ] as const;
 
 /**

@@ -24,7 +24,7 @@ export default function robots(): MetadataRoute.Robots {
         '/account',
         '/staff',
 
-        // Sign-in and the OIDC callback. Crawling either creates sessions nobody asked for and
+        // Authentication entry points. Crawling them starts a redirect or Access flow nobody asked for and
         // generates authentication errors that look like an attack in the logs.
         '/auth',
 

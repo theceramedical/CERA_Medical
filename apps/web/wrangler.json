@@ -21,7 +21,9 @@
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://www.ceramedical.org",
     "NEXT_PUBLIC_CHECKOUT_ENABLED": "false",
-    "ENQUIRY_CONSENT_VERSION": "cera-brief-2026-10-03-v1"
+    "ENQUIRY_CONSENT_VERSION": "cera-brief-2026-10-03-v1",
+    "CLOUDFLARE_ACCESS_TEAM_DOMAIN": "https://super-bush-de78.cloudflareaccess.com",
+    "CLOUDFLARE_ACCESS_AUD": "5ffdfccf5d79358d158f5826a3711049ce1b5308ac9e9a21700754bd86258854"
   },
   "d1_databases": [
     {

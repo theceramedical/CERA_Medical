@@ -6,8 +6,8 @@ This replaces the older Payload, Vendure, and ERPNext operating guide. Those ser
 
 - The public website runs on the Cloudflare Worker with D1, R2, and KV bindings.
 - Enquiry submissions are stored in the D1 staff queue. Resend is not configured, so customer acknowledgements and staff alert emails are not being delivered.
-- The staff queue and order-fulfilment pages require a CERA staff session with an approved role and MFA. Cloudflare Access protects the staff hostname, but CERA OIDC credentials are still missing, so staff cannot yet sign in to the application.
-- Customer account pages use the same fail-closed OIDC integration. Customer sign-in is not available until its production identity client is configured.
+- The staff queue and order-fulfilment pages use a staff-only Cloudflare Access assertion, an explicit email-to-role allowlist, and an MFA policy. The Worker code fails closed until its Access issuer, audience, role map, and MFA-policy assertion are configured.
+- Customer sign-in and account pages are removed. Customers submit enquiries or use guest COD checkout when it is enabled.
 - Checkout accepts cash on delivery only. The production checkout gate remains off; no online payment method is active.
 - The current product catalogue is code and D1-seed managed. There is no production product editor or stock-management screen.
 - Payload CMS content editing is not deployed. The current Worker does not connect to the local Payload/PostgreSQL service. Content updates must go through the repository and a reviewed deployment until a Cloudflare-compatible editor is built.
@@ -15,13 +15,13 @@ This replaces the older Payload, Vendure, and ERPNext operating guide. Those ser
 
 ## Staff links
 
-Use the canonical site after the legacy-dashboard redirect change in PR #14 is deployed:
+Use the Access-protected staff hostname:
 
-- Enquiry queue: `https://www.ceramedical.org/staff`
-- Order fulfilment: `https://www.ceramedical.org/staff/orders`
-- Integration delivery status: `https://www.ceramedical.org/staff/deliveries`
+- Enquiry queue: `https://staff.ceramedical.org/staff`
+- Order fulfilment: `https://staff.ceramedical.org/staff/orders`
+- Integration delivery status: `https://staff.ceramedical.org/staff/deliveries`
 
-The staff hostname is additionally protected by Cloudflare Access. Access does not replace the CERA session, staff role, or MFA checks.
+Cloudflare Access is the staff identity boundary. The Worker verifies its JWT, binds the email to the configured role allowlist, and requires the operator to confirm that independent MFA is enforced by the Access policy.
 
 ## Operator runbook
 

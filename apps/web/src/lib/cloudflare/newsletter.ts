@@ -123,36 +123,41 @@ export async function confirmNewsletter(request: Request): Promise<Response> {
   }
   const hash = await sha256(token);
   const now = Math.floor(Date.now() / 1000);
-  const row = await db
+  if (request.method === 'GET') {
+    const row = await db
+      .prepare(
+        `SELECT email FROM newsletter_subscriptions
+      WHERE confirmation_token_hash = ? AND expires_at > ? AND confirmed_at IS NULL AND unsubscribed_at IS NULL`,
+      )
+      .bind(hash, now)
+      .first<{ email: string }>();
+    return row
+      ? actionPage(
+          'Confirm your subscription',
+          'Select confirm to subscribe to CERA Medical updates.',
+          '/newsletter/confirm',
+          token,
+          'Confirm subscription',
+        )
+      : htmlPage(
+          'Link expired',
+          'This confirmation link is invalid or expired. Submit the form again to request a new link.',
+        );
+  }
+  const result = await db
     .prepare(
-      `SELECT email FROM newsletter_subscriptions
+      `UPDATE newsletter_subscriptions SET confirmed_at = ?, confirmation_token_hash = '', updated_at = ?
     WHERE confirmation_token_hash = ? AND expires_at > ? AND confirmed_at IS NULL AND unsubscribed_at IS NULL`,
     )
-    .bind(hash, now)
-    .first<{ email: string }>();
-  if (row && request.method === 'POST') {
-    await db
-      .prepare(
-        `UPDATE newsletter_subscriptions SET confirmed_at = ?, confirmation_token_hash = '', updated_at = ?
-      WHERE email = ? AND confirmed_at IS NULL AND unsubscribed_at IS NULL`,
-      )
-      .bind(now, now, row.email)
-      .run();
-  }
-  return row && request.method === 'GET'
-    ? actionPage(
-        'Confirm your subscription',
-        'Select confirm to subscribe to CERA Medical updates.',
-        '/newsletter/confirm',
-        token,
-        'Confirm subscription',
-      )
-    : htmlPage(
-        row ? 'Subscription confirmed' : 'Link expired',
-        row
-          ? 'Your email is confirmed. You are subscribed to CERA Medical updates.'
-          : 'This confirmation link is invalid or expired. Submit the form again to request a new link.',
-      );
+    .bind(now, now, hash, now)
+    .run();
+  const confirmed = (result.meta?.changes ?? 0) > 0;
+  return htmlPage(
+    confirmed ? 'Subscription confirmed' : 'Link expired',
+    confirmed
+      ? 'Your email is confirmed. You are subscribed to CERA Medical updates.'
+      : 'This confirmation link is invalid or expired. Submit the form again to request a new link.',
+  );
 }
 
 export async function unsubscribeNewsletter(request: Request): Promise<Response> {
