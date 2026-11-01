@@ -1,0 +1,9 @@
+title = "CERA secret scanning"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Cloudflare Access audience IDs are public identifiers, not credentials."
+regexTarget = "line"
+regexes = ['''^\s*"CLOUDFLARE_ACCESS_AUD"\s*:\s*"[0-9a-f]{64}"\s*,?\s*$''']
