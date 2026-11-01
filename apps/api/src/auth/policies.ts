@@ -3,7 +3,6 @@ import { STAFF_ROLES, type Role } from '@cera/contracts';
 export type RoutePolicy =
   | { kind: 'public' }
   | { kind: 'signature' }
-  | { kind: 'customer'; emailVerified: boolean }
   | { kind: 'staff'; roles: readonly Role[]; mfa?: boolean };
 
 export interface RouteDeclaration {
@@ -27,41 +26,10 @@ export const ROUTE_POLICIES: readonly RouteDeclaration[] = [
   { method: 'POST', path: '/v1/enquiries', policy: { kind: 'public' } },
   { method: 'GET', path: '/v1/cart', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/cart/lines', policy: { kind: 'public' } },
-  {
-    method: 'POST',
-    path: '/v1/checkout/complete',
-    policy: { kind: 'customer', emailVerified: true },
-  },
-  {
-    method: 'POST',
-    path: '/v1/checkout/safepay/start',
-    policy: { kind: 'customer', emailVerified: true },
-  },
+  { method: 'POST', path: '/v1/checkout/complete', policy: { kind: 'public' } },
+  // Retired payment-provider endpoint. Keep public so old clients receive the route's 410.
+  { method: 'POST', path: '/v1/checkout/safepay/start', policy: { kind: 'public' } },
   { method: 'POST', path: '/v1/webhooks/resend', policy: { kind: 'signature' } },
-  {
-    method: 'POST',
-    path: '/v1/enquiries/claim/request',
-    policy: { kind: 'customer', emailVerified: true },
-  },
-  {
-    method: 'POST',
-    path: '/v1/enquiries/claim/consume',
-    policy: { kind: 'customer', emailVerified: true },
-  },
-  { method: 'GET', path: '/v1/me/profile', policy: { kind: 'customer', emailVerified: false } },
-  { method: 'PATCH', path: '/v1/me/profile', policy: { kind: 'customer', emailVerified: false } },
-  { method: 'GET', path: '/v1/me/enquiries', policy: { kind: 'customer', emailVerified: true } },
-  {
-    method: 'GET',
-    path: '/v1/me/enquiries/:reference',
-    policy: { kind: 'customer', emailVerified: true },
-  },
-  { method: 'GET', path: '/v1/me/orders', policy: { kind: 'customer', emailVerified: true } },
-  {
-    method: 'GET',
-    path: '/v1/me/orders/:orderCode',
-    policy: { kind: 'customer', emailVerified: true },
-  },
   { method: 'GET', path: '/v1/ops/enquiries', policy: { kind: 'staff', roles: STAFF_ROLES } },
   { method: 'GET', path: '/v1/ops/enquiries/:id', policy: { kind: 'staff', roles: STAFF_ROLES } },
   {

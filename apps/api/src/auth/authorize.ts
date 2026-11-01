@@ -35,16 +35,6 @@ export function authorize(input: AuthorizeInput): AuthorizeResult {
     return { ok: false, error: new ApiError('unauthenticated'), reason: 'missing_session' };
   }
 
-  if (route.policy.kind === 'customer') {
-    if (!input.session.roles.includes('customer')) {
-      return { ok: false, error: new ApiError('not_found'), reason: 'role' };
-    }
-    if (route.policy.emailVerified && !input.session.emailVerified) {
-      return { ok: false, error: new ApiError('forbidden'), reason: 'email_unverified' };
-    }
-    return { ok: true, session: input.session };
-  }
-
   const allowed = route.policy.roles;
   if (!input.session.roles.some((role) => allowed.includes(role))) {
     return { ok: false, error: new ApiError('not_found'), reason: 'role' };

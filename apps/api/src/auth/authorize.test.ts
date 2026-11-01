@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { authorize } from './authorize.ts';
-import { ROUTE_POLICIES } from './policies.ts';
+import { matchRoute, ROUTE_POLICIES } from './policies.ts';
 import { issueClaims, type SessionClaims } from './session.ts';
 
 const ACTORS: Record<string, SessionClaims | null> = {
@@ -92,17 +92,24 @@ describe('authorization matrix', () => {
     expect(expectedStatus('customer', 'POST', '/v1/enquiries')).toBe(200);
   });
 
-  it('blocks anonymous customers from /v1/me/*', () => {
-    expect(expectedStatus('anonymous', 'GET', '/v1/me/enquiries')).toBe(401);
-    expect(expectedStatus('customer', 'GET', '/v1/me/enquiries')).toBe(200);
-    expect(expectedStatus('customer', 'GET', '/v1/me/orders')).toBe(200);
-    expect(expectedStatus('operations', 'GET', '/v1/me/enquiries')).toBe(404);
-    expect(expectedStatus('operations', 'GET', '/v1/me/orders')).toBe(404);
-  });
+  it('does not expose customer account or enquiry claim routes', () => {
+    const retiredRoutes = [
+      ['GET', '/v1/me/profile'],
+      ['PATCH', '/v1/me/profile'],
+      ['GET', '/v1/me/enquiries'],
+      ['GET', '/v1/me/enquiries/CERA-260101-AAAAA'],
+      ['GET', '/v1/me/orders'],
+      ['GET', '/v1/me/orders/CERA-ORDER-1'],
+      ['POST', '/v1/enquiries/claim/request'],
+      ['POST', '/v1/enquiries/claim/consume'],
+    ] as const;
 
-  it('requires a verified email to claim', () => {
-    expect(expectedStatus('customer_unverified', 'POST', '/v1/enquiries/claim/request')).toBe(403);
-    expect(expectedStatus('customer', 'POST', '/v1/enquiries/claim/request')).toBe(200);
+    for (const [method, path] of retiredRoutes) {
+      expect(matchRoute(method, path)).toBeNull();
+      expect(expectedStatus('anonymous', method, path)).toBe(404);
+      expect(expectedStatus('customer', method, path)).toBe(404);
+      expect(expectedStatus('customer_unverified', method, path)).toBe(404);
+    }
   });
 
   it('hides staff routes from customers as not_found', () => {

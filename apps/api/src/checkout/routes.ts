@@ -7,7 +7,6 @@ import {
 } from '@cera/contracts';
 import { ApiError } from '@cera/contracts/errors';
 
-import { authorize } from '../auth/authorize.ts';
 import {
   isEnquiryOnlyPhysicalSku,
   isUnapprovedSeedProductSku,
@@ -16,14 +15,12 @@ import { sendApiError, sendCode } from '../http.ts';
 
 import { createVendureShopClient } from './vendure-shop.ts';
 
-import type { SessionClaims } from '../auth/session.ts';
 import type { RecordCommerceOrderInput } from '../orders/postgres-store.ts';
-import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
+import type { FastifyPluginCallback } from 'fastify';
 
 export interface CheckoutRoutesOptions {
   readonly shopApiUrl: string;
   readonly recordOrder?: (input: RecordCommerceOrderInput) => Promise<void>;
-  readonly readSession?: (request: FastifyRequest) => Promise<SessionClaims | null>;
 }
 
 export const VENDURE_TOKEN_COOKIE = 'cera_vendure_token';
@@ -84,16 +81,6 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
       }
     }
     return false;
-  };
-
-  const requireVerifiedCustomer = async (request: FastifyRequest) => {
-    if (options.readSession === undefined) throw new ApiError('unauthenticated');
-    const session = await options.readSession(request);
-    const path = request.url.split('?')[0] ?? request.url;
-    const decision = authorize({ method: request.method, path, session });
-    if (!decision.ok) throw decision.error;
-    if (decision.session === null) throw new ApiError('unauthenticated');
-    return decision.session;
   };
 
   return (app, _options, done) => {
@@ -216,7 +203,6 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         return;
       }
       try {
-        const customer = await requireVerifiedCustomer(request);
         const vendureSession = { token: tokenFromRequest(request) };
         const { cart, token: cartToken } = await shop.getActiveCart(vendureSession);
         if (
@@ -227,11 +213,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
           sendCode(request, reply, 'validation_failed');
           return;
         }
-        const email = customer.email;
-        if (body.email.toLowerCase() !== email.toLowerCase()) {
-          sendCode(request, reply, 'validation_failed');
-          return;
-        }
+        const email = body.email.trim().toLowerCase();
         const result = await shop.completeCheckout(
           { token: cartToken },
           {
@@ -251,7 +233,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
             fullName: body.fullName,
             paymentMethod: body.paymentMethod,
             cart,
-            customerSubjectId: customer.sub,
+            customerSubjectId: null,
           });
         }
         return reply

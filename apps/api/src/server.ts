@@ -16,7 +16,6 @@ import { healthRoutes } from './health.ts';
 import { opsRoutes } from './ops/routes.ts';
 import { postgresCommerceOrderStore } from './orders/postgres-store.ts';
 import { postgresPortalStore } from './portal/postgres-store.ts';
-import { portalRoutes } from './portal/routes.ts';
 import { searchRoutes } from './search/routes.ts';
 import { resendWebhookRoutes } from './webhooks/resend.ts';
 
@@ -144,17 +143,9 @@ if (process.env.CHECKOUT_ENABLED === 'true') {
     checkoutRoutes({
       shopApiUrl: process.env.VENDURE_SHOP_API_URL ?? 'http://localhost:3002/shop-api',
       recordOrder: commerceOrderStore.record.bind(commerceOrderStore),
-      readSession,
     }),
   );
 }
-await app.register(
-  portalRoutes({
-    store: portalStore,
-    readSession,
-    orderStore: process.env.CHECKOUT_ENABLED === 'true' ? commerceOrderStore : null,
-  }),
-);
 await app.register(opsRoutes({ store: portalStore, readSession }));
 await app.register(
   resendWebhookRoutes(requiredProductionSecret('RESEND_WEBHOOK_SECRET', 'whsec_local')),

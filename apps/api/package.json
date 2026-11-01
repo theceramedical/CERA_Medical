@@ -24,7 +24,6 @@
     "@fastify/rate-limit": "catalog:",
     "fastify": "catalog:",
     "jose": "catalog:",
-    "openid-client": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },
