@@ -60,7 +60,7 @@ Branching model (PRD 11.2): `main` is production, `develop` is integration, and 
 - Deployment branch: `main` only
 - Current plan: required reviewers unavailable; the repository owner manually starts the workflow
 - Future paid plan: require two environment reviewers before exposing deployment secrets
-- Secrets: `PRODUCTION_HOST`, `PRODUCTION_USER`, `PRODUCTION_SSH_KEY`, and `PRODUCTION_KNOWN_HOSTS`; provider credentials stay in the host-only `.env`
+- Secrets: `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` for the Cloudflare Worker deploy workflow. The account ID is configured; the narrowly scoped API token still needs to be added. D1 migrations use an operator credential separately and are not run by this workflow.
 
 The owner-only workflow condition is weaker than a platform-enforced environment review: anyone
 who can change the workflow on `main` can remove that condition. Add required reviewers when the
