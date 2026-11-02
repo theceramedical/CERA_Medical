@@ -7,6 +7,7 @@ import {
   getVerifiedPortfolioProductBySku,
   productMediaFor,
 } from '../../content/catalogue-products.ts';
+import { VERIFIED_PORTFOLIO_PRODUCTS } from '../../content/products-catalog.ts';
 
 import { listPublicProducts } from './client.ts';
 
@@ -51,4 +52,26 @@ export async function listMergedCatalogProducts(): Promise<readonly CatalogProdu
     ...catalogueProducts().filter((product) => !known.has(product.sku.toLowerCase())),
   ];
   return listed.map(catalogRowFromApi).sort((a, b) => a.sku.localeCompare(b.sku));
+}
+
+/**
+ * Keeps verified portfolio copy visible when the runtime catalogue has not
+ * published a SKU, while ensuring static prices and stock flags never open
+ * checkout or imply current availability.
+ */
+export function mergePortfolioDisplayProducts(
+  apiProducts: readonly CatalogProduct[],
+): readonly CatalogProduct[] {
+  const known = new Set(apiProducts.map((product) => product.sku.toLowerCase()));
+  const portfolio = VERIFIED_PORTFOLIO_PRODUCTS.filter(
+    (product) => !known.has(product.sku.toLowerCase()),
+  ).map((product) => ({
+    ...product,
+    listPriceMinor: null,
+    checkoutEnabled: false,
+    price: 'Price on enquiry',
+    inStock: null,
+  }));
+
+  return [...apiProducts, ...portfolio];
 }

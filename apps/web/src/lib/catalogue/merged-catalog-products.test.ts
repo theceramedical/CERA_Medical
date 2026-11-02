@@ -6,7 +6,10 @@ const { listPublicProducts } = vi.hoisted(() => ({ listPublicProducts: vi.fn() }
 vi.mock('./client.ts', () => ({ listPublicProducts }));
 vi.mock('server-only', () => ({}));
 
-import { listMergedCatalogProducts } from './merged-catalog-products.ts';
+import {
+  listMergedCatalogProducts,
+  mergePortfolioDisplayProducts,
+} from './merged-catalog-products.ts';
 
 const publishedProduct: PublicProduct = {
   sku: 'REAL-001',
@@ -71,5 +74,30 @@ describe('public product listing', () => {
       checkoutEnabled: false,
       inStock: null,
     });
+  });
+
+  it('keeps missing portfolio products informational without using static price, stock, or checkout flags', () => {
+    const products = mergePortfolioDisplayProducts([]);
+    const wellnessProduct = products.find((product) => product.sku === 'CERA-WELL-01');
+
+    expect(wellnessProduct).toMatchObject({
+      price: 'Price on enquiry',
+      listPriceMinor: null,
+      checkoutEnabled: false,
+      inStock: null,
+    });
+  });
+
+  it('does not replace or duplicate a runtime product with portfolio copy', async () => {
+    listPublicProducts.mockResolvedValue({ items: [publishedProduct], degraded: false });
+    const runtimeProduct = (await listMergedCatalogProducts())[0];
+    expect(runtimeProduct).toBeDefined();
+    if (!runtimeProduct) throw new Error('Expected a runtime product');
+
+    const products = mergePortfolioDisplayProducts([runtimeProduct]);
+
+    expect(products.filter((product) => product.sku === runtimeProduct.sku)).toEqual([
+      runtimeProduct,
+    ]);
   });
 });
