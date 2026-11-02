@@ -1,6 +1,6 @@
 # Cloudflare Workers operations
 
-The web application runs as a full-stack Cloudflare Worker built by vinext. The Worker uses the bound D1 database (`cera-production-db`), R2 bucket (`cera-media`), and KV namespace (`VINEXT_KV_CACHE`). Worker version `c760c26a-7834-46c6-a198-9a25959a525d` is deployed to 100% of production traffic. PR #14 remains open; GitHub has `CLOUDFLARE_ACCOUNT_ID` but still needs a narrowly scoped `CLOUDFLARE_API_TOKEN` before automatic deployment can succeed.
+The web application runs as a full-stack Cloudflare Worker built by vinext. The Worker uses the bound D1 database (`cera-production-db`), R2 bucket (`cera-media`), and KV namespace (`VINEXT_KV_CACHE`). App-code version `894285b4-b23a-4bac-9a9e-b17872c13d03` was deployed from commit `67ec98c`; the subsequent secret-only version `6d758464-279c-47d5-bb41-e1abc6439142` is active at 100% production traffic and carries the same script plus the staff role-map secret. PR #14 remains open; GitHub has `CLOUDFLARE_ACCOUNT_ID` but still needs a narrowly scoped `CLOUDFLARE_API_TOKEN` before automatic deployment can succeed.
 
 ## Production scope and unavailable tools
 
@@ -78,7 +78,7 @@ The production D1 schema was compared with migration `0001`; the existing base t
 
 ## Current production state (2026-11-02 PKT)
 
-Worker version `c760c26a-7834-46c6-a198-9a25959a525d` is deployed to 100% of production traffic. It includes the staff role-map secret for the Cloudflare account owner login only, with the `administrator` role. Customer sign-in is removed and checkout is guest COD only but remains disabled. Safepay remains retired with HTTP `410`. Remote D1 migrations have no pending work; all catalogue products remain disabled pending owner verification of prices and available stock.
+App-code version `894285b4-b23a-4bac-9a9e-b17872c13d03`, deployed from commit `67ec98c`, was followed by secret-only version `6d758464-279c-47d5-bb41-e1abc6439142`, which is active at 100% production traffic and carries the same script plus the staff role-map secret. That secret maps only the Cloudflare account owner login to `administrator`. Customer sign-in is removed and checkout is guest COD only but remains disabled. Safepay remains retired with HTTP `410`. Remote D1 migrations have no pending work; all catalogue products remain disabled pending owner verification of prices and available stock.
 
 The `staff.ceramedical.org` Access application has only Cloudflare One-time PIN enabled and `auto_redirect_to_identity=true`. Its existing Access policy has one exact-email leadership rule matching the Cloudflare account owner login. The Wrangler CLI direct website requests from this runner returned `403`, so customer and staff page flows were not smoke-verified for this deployment.
 
