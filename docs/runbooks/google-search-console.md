@@ -16,13 +16,13 @@ Production must set `NEXT_PUBLIC_SITE_URL=https://www.ceramedical.org` so canoni
 
 1. In [Google Search Console](https://search.google.com/search-console), add property **URL prefix** `https://www.ceramedical.org`.
 2. Choose **HTML tag** verification.
-3. Set on the server (in `/opt/cera/.env` for web):
+3. Set `GOOGLE_SITE_VERIFICATION` in the Cloudflare Worker build environment:
 
    ```bash
    GOOGLE_SITE_VERIFICATION=your-token-from-google
    ```
 
-4. Redeploy **web**, then confirm verification in Search Console.
+4. Redeploy the Worker, then confirm verification in Search Console.
 
 ## Submit the sitemap
 

@@ -12,10 +12,9 @@
 # Default owner for everything not matched below.
 *                                   @cera-medical/platform
 
-# Design tokens are the single source of visual truth (ADR-001). An unreviewed
-# change here alters every surface at once.
+# Design tokens are the single source of visual truth. An unreviewed change
+# here alters every surface at once.
 /packages/ui/src/styles/            @cera-medical/design @cera-medical/platform
-/.planning/design-language.md       @cera-medical/design @cera-medical/platform
 
 # Shared contracts. A breaking change propagates to every app.
 /packages/contracts/                @cera-medical/platform
@@ -39,7 +38,3 @@
 # Database schema and migrations are effectively irreversible in production.
 /apps/api/src/db/                   @cera-medical/platform
 /apps/api/drizzle/                  @cera-medical/platform
-
-# Architecture decisions.
-/.planning/adr/                     @cera-medical/platform
-/docs/adr/                          @cera-medical/platform

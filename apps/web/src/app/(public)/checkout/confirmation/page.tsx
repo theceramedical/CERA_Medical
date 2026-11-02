@@ -1,7 +1,6 @@
-import { Heading, Text } from '@cera/ui/typography';
 import { notFound } from 'next/navigation';
 
-import { AppLink } from '../../../../components/link.tsx';
+import { CheckoutConfirmation } from '../../../../components/checkout-confirmation.client.tsx';
 import { checkoutEnabled } from '../../../../lib/checkout-enabled.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
@@ -25,20 +24,7 @@ export default async function CheckoutConfirmationPage({
 
   return (
     <div className="mx-auto max-w-site px-6 py-16 md:px-10">
-      <Heading level={1} size="h2">
-        Thank you
-      </Heading>
-      <Text className="mt-4">
-        Your order <strong>{order}</strong> is confirmed. We will email you next steps for project
-        scoping.
-      </Text>
-      <Text className="mt-6">
-        <AppLink href="/account/orders">View your orders</AppLink>
-        {' · '}
-        <AppLink href="/account">Account home</AppLink>
-        {' · '}
-        <AppLink href="/services">Browse more services</AppLink>
-      </Text>
+      <CheckoutConfirmation orderCode={order} />
     </div>
   );
 }

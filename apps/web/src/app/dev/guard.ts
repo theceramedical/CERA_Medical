@@ -13,10 +13,7 @@ import { notFound } from 'next/navigation';
  * as production is concerned; a 302 to the homepage confirms that something is there.
  *
  * **This does not remove the code from the production build.** The route's JavaScript still ships, it
- * just returns 404. Removing it entirely needs a build-time exclusion, and the honest trade is that
- * the guard is a few lines while an exclusion is a config mechanism to maintain. Phase 13 adds the
- * defence that actually keeps the request off the app: Caddy rejects `/dev/*` at the edge in the
- * production overlay.
+ * just returns 404. The production Worker also keeps this internal preview route unavailable.
  */
 
 /**

@@ -85,8 +85,6 @@ export {
   CheckoutPaymentMethodSchema,
   type DeliveryAddress,
   DeliveryAddressSchema,
-  SafepayCheckoutStartBodySchema,
-  SafepayCheckoutStartResponseSchema,
 } from './cart.ts';
 
 export {

@@ -89,9 +89,9 @@ export default async function StaffDeliveriesPage({
           </Alert>
         )}
         {error === 'retry_failed' && (
-          <Alert tone="danger" title="Retry could not be queued" className="mb-8">
-            The delivery may no longer be in dead-letter state, or the worker queue could not be
-            updated. Refresh the page and try again.
+          <Alert tone="danger" title="Retry failed" className="mb-8">
+            The delivery could not be retried. Check provider configuration, refresh this page, and
+            try again when the integration is available.
           </Alert>
         )}
 
@@ -127,8 +127,7 @@ export default async function StaffDeliveriesPage({
                             Retry delivery
                           </Button>
                           <Text size="body-sm" tone="muted">
-                            Re-queues the outbox job; the worker will attempt the provider call
-                            again.
+                            Sends the delivery again and records the provider response.
                           </Text>
                         </form>
                       ) : (

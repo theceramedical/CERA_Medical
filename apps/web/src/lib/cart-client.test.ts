@@ -112,6 +112,19 @@ describe('addVerifiedCartLine', () => {
     await expect(addVerifiedCartLine(line.slug)).rejects.toThrow('cart_not_saved');
   });
 
+  it('preserves server cart errors for a useful checkout message', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ error: 'cart_quantity_limit_exceeded' }), { status: 409 }),
+        ),
+    );
+
+    await expect(addVerifiedCartLine(line.slug)).rejects.toThrow('cart_quantity_limit_exceeded');
+  });
+
   it('rejects a USD cart before reporting success', async () => {
     const fetchMock = vi
       .fn()

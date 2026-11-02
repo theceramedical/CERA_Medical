@@ -121,13 +121,6 @@ describe('buildCsp', () => {
       expect(parsed.get('img-src')).not.toContain('https://api.example');
     });
 
-    it('adds the auth origin to connect-src for OIDC sign-in', () => {
-      const parsed = directives(buildCsp(NONCE, { authOrigin: 'https://auth.ceramedical.org' }));
-
-      expect(parsed.get('connect-src')).toContain('https://auth.ceramedical.org');
-      expect(parsed.get('script-src')).not.toContain('https://auth.ceramedical.org');
-    });
-
     it('omits both when unconfigured, rather than widening to a wildcard', () => {
       const parsed = directives(buildCsp(NONCE));
 
@@ -175,7 +168,7 @@ describe('STATIC_SECURITY_HEADERS', () => {
   );
 
   it('does not set HSTS, which belongs to the TLS terminator', () => {
-    // This process sits behind Caddy and cannot tell whether the external hop was HTTPS. Asserting
+    // This renderer cannot tell whether the visitor's original hop was HTTPS. Asserting
     // the absence so that adding it here is a deliberate change rather than a drive-by one.
     expect(Object.keys(STATIC_SECURITY_HEADERS)).not.toContain('Strict-Transport-Security');
   });

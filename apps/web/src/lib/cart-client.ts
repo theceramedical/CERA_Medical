@@ -1,15 +1,14 @@
-import {
-  CartSchema,
-  SafepayCheckoutStartResponseSchema,
-  type Cart,
-  type DeliveryAddress,
-} from '@cera/contracts';
+import { CartSchema, type Cart, type DeliveryAddress } from '@cera/contracts';
 
-function apiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+function cartUrl(path: string): string {
+  const origin =
+    typeof window === 'undefined'
+      ? (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000')
+      : window.location.origin;
+  return new URL(path, origin).toString();
 }
 
-export type CheckoutPaymentMethod = 'cod' | 'safepay' | 'test';
+export type CheckoutPaymentMethod = 'cod';
 
 export function cartItemCount(cart: Cart): number {
   return cart.lines.reduce((total, line) => total + line.quantity, 0);
@@ -45,19 +44,35 @@ export function notifyCartUpdated(cart?: Cart): void {
 export async function fetchCart(cookieHeader?: string | null): Promise<Cart> {
   const init: RequestInit = { credentials: 'include' };
   if (cookieHeader) init.headers = { cookie: cookieHeader };
-  const response = await fetch(`${apiUrl()}/v1/cart`, init);
+  const response = await fetch(cartUrl('/v1/cart'), init);
   if (!response.ok) throw new Error('cart_unavailable');
   return CartSchema.parse(await response.json());
 }
 
 export async function addCartLine(slug: string, quantity = 1): Promise<Cart> {
-  const response = await fetch(`${apiUrl()}/v1/cart/lines`, {
+  const response = await fetch(cartUrl('/v1/cart/lines'), {
     method: 'POST',
     credentials: 'include',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ slug, quantity }),
   });
-  if (!response.ok) throw new Error('add_failed');
+  if (!response.ok) {
+    let code = 'add_failed';
+    try {
+      const body: unknown = await response.json();
+      if (
+        body !== null &&
+        typeof body === 'object' &&
+        'error' in body &&
+        typeof body.error === 'string'
+      ) {
+        code = body.error;
+      }
+    } catch {
+      // Keep the stable generic error when the server did not return a JSON error body.
+    }
+    throw new Error(code);
+  }
   return CartSchema.parse(await response.json());
 }
 
@@ -80,7 +95,7 @@ export async function addVerifiedCartLine(slug: string, quantity = 1): Promise<C
 }
 
 export async function updateCartLine(lineId: string, quantity: number): Promise<Cart> {
-  const response = await fetch(`${apiUrl()}/v1/cart/lines/${encodeURIComponent(lineId)}`, {
+  const response = await fetch(cartUrl(`/v1/cart/lines/${encodeURIComponent(lineId)}`), {
     method: 'PATCH',
     credentials: 'include',
     headers: { 'content-type': 'application/json' },
@@ -103,9 +118,8 @@ export async function completeCheckout(body: {
   paymentMethod: CheckoutPaymentMethod;
   deliveryAddress: DeliveryAddress;
   billingAddress?: DeliveryAddress;
-  safepayTracker?: string;
 }): Promise<{ orderCode: string }> {
-  const response = await fetch('/api/checkout/complete', {
+  const response = await fetch(cartUrl('/api/checkout/complete'), {
     method: 'POST',
     credentials: 'include',
     headers: { 'content-type': 'application/json' },
@@ -114,22 +128,3 @@ export async function completeCheckout(body: {
   if (!response.ok) throw new Error('checkout_failed');
   return (await response.json()) as { orderCode: string };
 }
-
-export async function startSafepayCheckout(body: {
-  email: string;
-  fullName: string;
-  redirectUrl: string;
-  cancelUrl: string;
-  deliveryAddress: DeliveryAddress;
-}): Promise<{ checkoutUrl: string; tracker: string }> {
-  const response = await fetch('/api/checkout/safepay/start', {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error('safepay_start_failed');
-  return SafepayCheckoutStartResponseSchema.parse(await response.json());
-}
-
-export const CHECKOUT_CONTACT_STORAGE_KEY = 'cera_checkout_contact';

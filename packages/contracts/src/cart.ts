@@ -30,7 +30,7 @@ export const UpdateCartLineBodySchema = z.object({
   quantity: z.number().int().min(0).max(99),
 });
 
-export const CheckoutPaymentMethodSchema = z.enum(['cod', 'safepay', 'test']);
+export const CheckoutPaymentMethodSchema = z.enum(['cod', 'test']);
 
 export const DeliveryAddressSchema = z.object({
   streetLine1: z.string().trim().min(5).max(160),
@@ -49,19 +49,6 @@ export const CheckoutCompleteBodySchema = z.object({
   paymentMethod: CheckoutPaymentMethodSchema,
   deliveryAddress: DeliveryAddressSchema,
   billingAddress: DeliveryAddressSchema.optional(),
-  safepayTracker: z.string().max(120).optional(),
-});
-
-export const SafepayCheckoutStartBodySchema = z.object({
-  email: z.string().email().max(254),
-  fullName: z.string().min(1).max(160),
-  redirectUrl: z.string().url().max(500),
-  cancelUrl: z.string().url().max(500),
-});
-
-export const SafepayCheckoutStartResponseSchema = z.object({
-  checkoutUrl: z.string().url(),
-  tracker: z.string().min(1).max(120),
 });
 
 export const CheckoutCompleteResponseSchema = z.object({

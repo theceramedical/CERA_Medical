@@ -11,6 +11,7 @@ import {
   type CatalogProduct,
   type ProductCategory,
 } from '../../content/products-catalog.ts';
+import { checkoutEnabled } from '../../lib/checkout-enabled.ts';
 import { LabMouseIcon } from '../icons/lab-mouse-icon.tsx';
 import { AppButtonLink, AppLink } from '../link.tsx';
 
@@ -269,7 +270,9 @@ export function ProductsCatalog({
                   ) : null}
                 </div>
                 <ProductPurchaseActions
+                  sku={product.sku}
                   enquiryHref={productEnquiryHref(product.sku)}
+                  checkoutAvailable={checkoutEnabled() && product.checkoutEnabled === true}
                   compact
                   label={isWellness ? 'Order / Enquire' : 'Request Scoping'}
                 />

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { isInternalProbe, resolvePublicOrigin } from './public-origin.ts';
 
 describe('resolvePublicOrigin', () => {
-  it('uses forwarded proto and host behind Caddy', () => {
+  it('uses forwarded proto and host from the edge', () => {
     const request = new NextRequest(new URL('http://web:3000/services'), {
       headers: {
         host: 'web:3000',

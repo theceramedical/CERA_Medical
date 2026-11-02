@@ -5,15 +5,11 @@ import { Checkbox } from '@cera/ui/choice';
 import { Field } from '@cera/ui/field';
 import { Input, Select, Textarea } from '@cera/ui/input';
 import { Heading, Text } from '@cera/ui/typography';
-import { useActionState, useEffect, useId, useRef, useState } from 'react';
-
-import {
-  submitEnquiryAction,
-  type EnquiryFieldValues,
-  type EnquiryFormState,
-} from '../lib/enquiry/actions.ts';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 
 import { AppLink } from './link.tsx';
+
+import type { EnquiryFieldValues, EnquiryFormState } from '../lib/enquiry/types.ts';
 
 const FALLBACK_SERVICES: readonly { slug: string; title: string }[] = [
   { slug: 'preclinical-studies', title: 'Preclinical Studies' },
@@ -152,7 +148,8 @@ export function EnquiryForm({
   copy,
   services = FALLBACK_SERVICES,
 }: EnquiryFormProps) {
-  const [state, action, pending] = useActionState(submitEnquiryAction, INITIAL);
+  const [state, setState] = useState<EnquiryFormState>(INITIAL);
+  const [pending, setPending] = useState(false);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
   const serviceOptions = services.length > 0 ? services : FALLBACK_SERVICES;
   const [selectedService, setSelectedService] = useState(
@@ -167,6 +164,78 @@ export function EnquiryForm({
   const hints = copy?.hints ?? {};
   const summaryRef = useRef<HTMLDivElement>(null);
   const summaryId = useId();
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) return;
+    setPending(true);
+    setState(INITIAL);
+    const data = new FormData(event.currentTarget);
+    const field = (name: string) => {
+      const value = data.get(name);
+      return typeof value === 'string' ? value.trim() : '';
+    };
+    const values: EnquiryFieldValues = {
+      name: field('name'),
+      email: field('email'),
+      phone: field('phone'),
+      institution: field('institution'),
+      country: field('country'),
+      serviceId: field('serviceId'),
+      message: field('message'),
+      consent: data.get('consent') === 'on',
+      consentVersion: field('consentVersion'),
+      sequencingDataConsent: data.get('sequencingDataConsent') === 'on',
+      samplesCompoundsConsent: data.get('samplesCompoundsConsent') === 'on',
+      healthDataConsent: data.get('healthDataConsent') === 'on',
+      updatesOptIn: data.get('updatesOptIn') === 'on',
+    };
+    try {
+      const response = await fetch('/v1/enquiries', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json', 'idempotency-key': idempotencyKey },
+        body: JSON.stringify({
+          ...values,
+          phone: values.phone || null,
+          institution: values.institution || null,
+          country: values.country || null,
+          source,
+          company: field('company'),
+          startedAt: field('startedAt'),
+        }),
+      });
+      const payload = (await response.json()) as {
+        reference?: string;
+        error?: {
+          message?: string;
+          retryable?: boolean;
+          fieldErrors?: { path: string; message: string }[];
+        };
+      };
+      if (response.ok && payload.reference) {
+        setState({ status: 'success', reference: payload.reference });
+      } else {
+        setState({
+          status: 'error',
+          message: payload.error?.message ?? 'Please check the form and try again.',
+          retryable: payload.error?.retryable === true,
+          fieldErrors: payload.error?.fieldErrors ?? [],
+          values,
+        });
+      }
+    } catch {
+      setState({
+        status: 'error',
+        message: 'We could not confirm receipt. Please try again; your details have been kept.',
+        retryable: true,
+        fieldErrors: [],
+        values,
+      });
+    } finally {
+      setPending(false);
+    }
+  }
 
   useEffect(() => {
     if (state.status !== 'error') return;
@@ -196,7 +265,13 @@ export function EnquiryForm({
       : undefined;
 
   return (
-    <form action={action} className="flex max-w-measure flex-col gap-6" noValidate>
+    <form
+      onSubmit={(event) => {
+        void handleSubmit(event);
+      }}
+      className="flex max-w-measure flex-col gap-6"
+      noValidate
+    >
       {state.status === 'error' ? (
         <div
           ref={summaryRef}
@@ -346,7 +421,7 @@ export function EnquiryForm({
         </label>
       </div>
 
-      <Button type="submit" variant="primary" loading={pending}>
+      <Button type="submit" variant="primary" loading={pending} disabled={pending}>
         {labels.submit ?? 'Submit enquiry'}
       </Button>
     </form>
@@ -396,8 +471,8 @@ function EnquiryConfirmation({
         <a className="text-primary underline" href="mailto:contact@ceramedical.org">
           contact@ceramedical.org
         </a>{' '}
-        if you need to follow up. You can also create an account with this email to follow progress
-        and claim the enquiry.
+        if you need to follow up. No customer account is required; please keep your reference for
+        future correspondence.
       </Text>
     </div>
   );

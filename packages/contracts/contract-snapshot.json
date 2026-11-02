@@ -285,7 +285,7 @@
         },
         "paymentMethod": {
           "type": "string",
-          "enum": ["cod", "safepay", "test"]
+          "enum": ["cod", "test"]
         },
         "deliveryAddress": {
           "type": "object",
@@ -358,10 +358,6 @@
           },
           "required": ["streetLine1", "city", "province", "postalCode", "phoneNumber"],
           "additionalProperties": false
-        },
-        "safepayTracker": {
-          "type": "string",
-          "maxLength": 120
         }
       },
       "required": ["email", "fullName", "countryCode", "paymentMethod", "deliveryAddress"],
@@ -382,7 +378,7 @@
     "CheckoutPaymentMethodSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "string",
-      "enum": ["cod", "safepay", "test"]
+      "enum": ["cod", "test"]
     },
     "ClaimConsumeRequestSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -3631,52 +3627,6 @@
           }
         ]
       }
-    },
-    "SafepayCheckoutStartBodySchema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "maxLength": 254,
-          "format": "email",
-          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-        },
-        "fullName": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160
-        },
-        "redirectUrl": {
-          "type": "string",
-          "maxLength": 500,
-          "format": "uri"
-        },
-        "cancelUrl": {
-          "type": "string",
-          "maxLength": 500,
-          "format": "uri"
-        }
-      },
-      "required": ["email", "fullName", "redirectUrl", "cancelUrl"],
-      "additionalProperties": false
-    },
-    "SafepayCheckoutStartResponseSchema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object",
-      "properties": {
-        "checkoutUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "tracker": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        }
-      },
-      "required": ["checkoutUrl", "tracker"],
-      "additionalProperties": false
     },
     "SearchHitSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",

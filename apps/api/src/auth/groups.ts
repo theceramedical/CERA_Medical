@@ -5,7 +5,6 @@ import type { Role } from '@cera/contracts';
  * mapped to administrator.
  */
 export const GROUP_TO_ROLE = {
-  'cera-customers': 'customer',
   'cera-content-editors': 'content_editor',
   'cera-content-approvers': 'content_approver',
   'cera-enquiry-handlers': 'enquiry_handler',

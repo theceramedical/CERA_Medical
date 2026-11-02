@@ -23,27 +23,19 @@ export default async function AuthErrorPage({
   searchParams: Promise<{ reason?: string | string[] }>;
 }) {
   const params = await searchParams;
-  const reasonKey = typeof params.reason === 'string' ? params.reason : undefined;
   const { title, lede, plan } = authErrorCopy(params.reason);
-  const emailUnverified = reasonKey === 'email_unverified';
   return (
     <>
       <PageHeader title={title} lede={lede} />
       <div className="mx-auto grid max-w-site gap-8 px-6 py-12 md:px-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:py-16">
         <section className="rounded-lg border border-border bg-surface p-6 shadow-card sm:p-8">
-          <Alert tone="info" title="Your account and enquiry details are safe">
+          <Alert tone="info" title="Your staff session was not started">
             <Text size="body-sm">{plan}</Text>
           </Alert>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            {emailUnverified ? (
-              <AppButtonLink href="/auth/verify-email" variant="primary">
-                Verify email
-              </AppButtonLink>
-            ) : (
-              <AppButtonLink href="/auth/sign-in" variant="primary">
-                Try signing in again
-              </AppButtonLink>
-            )}
+            <AppButtonLink href="/staff/sign-in" variant="primary">
+              Return to staff sign-in
+            </AppButtonLink>
             <AppButtonLink href="/enquiry" variant="outline">
               Make an enquiry
             </AppButtonLink>
@@ -55,7 +47,7 @@ export default async function AuthErrorPage({
           </Heading>
           <Text size="body-sm" tone="muted" className="mt-3">
             If the problem continues, contact CERA Medical and mention that you had difficulty
-            signing in.
+            accessing the staff workspace.
           </Text>
           <AppLink href="mailto:contact@ceramedical.org" className="mt-4 inline-flex">
             contact@ceramedical.org

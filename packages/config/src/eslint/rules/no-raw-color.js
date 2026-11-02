@@ -43,7 +43,7 @@ export const noRawColor = {
     ],
     messages: {
       rawColor:
-        'Raw colour "{{value}}" is not allowed here. Use a semantic design token (see .planning/design-language.md section 1.3). Tokens are declared only in packages/ui/src/styles/.',
+        'Raw colour "{{value}}" is not allowed here. Use a semantic design token declared in packages/ui/src/styles/.',
     },
   },
 

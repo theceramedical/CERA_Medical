@@ -308,20 +308,24 @@ async function ensureCheckoutMethods(
     });
   }
 
-  const production = (process.env.CERA_ENV ?? 'local') === 'production';
-  const hasSafepay =
-    process.env.SAFEPAY_MERCHANT_SECRET !== undefined &&
-    process.env.SAFEPAY_MERCHANT_SECRET.length > 0;
+  const local = process.env.CERA_ENV === 'local';
   const handlerCodes: { code: string; name: string }[] = [
     { code: 'cera-cod', name: 'Cash on delivery' },
   ];
-  if (hasSafepay) {
-    handlerCodes.unshift({ code: 'cera-safepay', name: 'Pay online (Safepay)' });
-  } else if (!production) {
+  if (local) {
     handlerCodes.unshift({ code: 'cera-test-payment', name: 'Test payment' });
   }
 
   const existingPayments = await payments.findAll(ctx, { take: 20 });
+  for (const method of existingPayments.items) {
+    if (
+      (method.handler.code === 'cera-safepay' ||
+        (!local && method.handler.code === 'cera-test-payment')) &&
+      method.enabled
+    ) {
+      await payments.update(ctx, { id: method.id, enabled: false });
+    }
+  }
   for (const { code, name } of handlerCodes) {
     const hasHandler = existingPayments.items.some((method) => method.handler.code === code);
     if (hasHandler) continue;

@@ -1,6 +1,4 @@
 /**
- * The fixture set from `.planning/data-contracts.md` section 7.
- *
  * Every record is built by parsing it through its own schema, so a contract change
  * breaks this package's build rather than surfacing as a runtime failure in
  * whichever app happened to load the fixture first. That is the whole reason the

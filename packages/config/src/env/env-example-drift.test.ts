@@ -57,9 +57,6 @@ function schemaKeys(schema: unknown): string[] {
  */
 const EXAMPLE_ONLY = new Set([
   // Consumed by Docker Compose and the Postgres init script, never by app code.
-  // Used by the production Caddy edge and deployment health checks, not app code.
-  'CADDY_ACME_EMAIL',
-  'CERA_DOMAIN',
   'POSTGRES_HOST',
   'POSTGRES_PORT',
   'POSTGRES_SUPERUSER',
@@ -83,15 +80,25 @@ const EXAMPLE_ONLY = new Set([
   'AUTHENTIK_SECRET_KEY',
   'AUTHENTIK_BOOTSTRAP_PASSWORD',
   'AUTHENTIK_BOOTSTRAP_EMAIL',
+  // Used by the local-only Authentik bootstrap script; production staff auth uses Cloudflare Access.
+  'OIDC_CLIENT_ID',
+  'OIDC_CLIENT_SECRET',
+  'OIDC_REDIRECT_URI',
+  'OIDC_STAFF_ISSUER',
+  'OIDC_STAFF_CLIENT_ID',
+  'OIDC_STAFF_CLIENT_SECRET',
+  'OIDC_STAFF_REDIRECT_URI',
+  'OIDC_GOOGLE_SOURCE_SLUG',
   'GLITCHTIP_DOMAIN',
   'GLITCHTIP_SECRET_KEY',
   'GLITCHTIP_MAX_EVENT_LIFE_DAYS',
   'MINIO_ROOT_USER',
   'MINIO_ROOT_PASSWORD',
-  // Read by infra/scripts/backup.sh, not by any service.
-  'BACKUP_AGE_PUBLIC_KEY',
-  'BACKUP_RETENTION_DAYS',
-  'BACKUP_TARGET_DIR',
+  // Cloudflare Worker bindings are read directly by Worker route handlers, not
+  // by the Node service environment schemas in this package.
+  'ENQUIRY_CONSENT_VERSION',
+  'ENQUIRY_RATE_LIMIT_SALT',
+  'RESEND_FROM_EMAIL',
   // Per-service port aliases. Each schema reads PORT; Compose maps these to it.
   'API_PORT',
   'CMS_PORT',

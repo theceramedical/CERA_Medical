@@ -1,6 +1,8 @@
 import { ProductsCatalog } from '../../../components/products/products-catalog.tsx';
-import { VERIFIED_PORTFOLIO_PRODUCTS } from '../../../content/products-catalog.ts';
-import { listMergedCatalogProducts } from '../../../lib/catalogue/merged-catalog-products.ts';
+import {
+  listMergedCatalogProducts,
+  mergePortfolioDisplayProducts,
+} from '../../../lib/catalogue/merged-catalog-products.ts';
 import { pageMetadata } from '../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -26,11 +28,7 @@ export default async function ProductsPage({
 }) {
   const params = await searchParams;
   const apiProducts = await listMergedCatalogProducts();
-  const apiSkus = new Set(apiProducts.map((p) => p.sku.toLowerCase()));
-  const mergedProducts = [
-    ...apiProducts,
-    ...VERIFIED_PORTFOLIO_PRODUCTS.filter((p) => !apiSkus.has(p.sku.toLowerCase())),
-  ];
+  const mergedProducts = mergePortfolioDisplayProducts(apiProducts);
 
   return (
     <ProductsCatalog

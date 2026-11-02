@@ -6,10 +6,8 @@
  * it is a directive the browser ignores, or a page that renders with its scripts blocked. Neither
  * is visible from a passing build, so the policy needs tests that read it.
  *
- * Phase 13 adds the edge layer in the Caddyfile. The two are not duplicates: Caddy owns the
- * headers that describe the *transport* (HSTS, which is only meaningful on a connection Caddy
- * terminates and this process cannot observe), and this owns the ones that describe the
- * *document*. Setting HSTS from here would be a guess about a hop we are behind.
+ * Cloudflare owns edge transport settings; this policy describes the document. HSTS is configured
+ * at the edge because this renderer cannot observe the visitor's original TLS connection.
  */
 
 /** A per-request nonce for the CSP, and the policy that carries it. */
@@ -32,10 +30,6 @@ export interface CspOrigins {
   readonly catalogueOrigin?: string | undefined;
   /** `apps/api`, which the browser calls directly for enquiry submission and the portal. */
   readonly apiOrigin?: string | undefined;
-  /** Authentik (`OIDC_ISSUER`), used when the sign-in route prefetches the authorize redirect. */
-  readonly authOrigin?: string | undefined;
-  /** Authentik origins for both customer and staff providers. */
-  readonly authOrigins?: readonly string[] | undefined;
   /**
    * Extra `form-action` origins (e.g. apex when canonical is `www`), so a rare host mismatch does
    * not block legitimate sign-in forms.
@@ -73,10 +67,6 @@ export function buildCsp(nonce: string, origins: CspOrigins = {}): string {
 
   const connectSources = ["'self'"];
   if (origins.apiOrigin !== undefined) connectSources.push(origins.apiOrigin);
-  if (origins.authOrigin !== undefined) connectSources.push(origins.authOrigin);
-  for (const origin of origins.authOrigins ?? []) {
-    if (!connectSources.includes(origin)) connectSources.push(origin);
-  }
 
   const formActionSources = ["'self'", ...(origins.formActionOrigins ?? [])];
 

@@ -1,6 +1,8 @@
 import { OrdersFulfillmentView } from '../../../../components/orders-fulfillment-view.client.tsx';
 import { PageHeader } from '../../../../components/page-header.tsx';
 import { VERIFIED_PORTFOLIO_PRODUCTS } from '../../../../content/products-catalog.ts';
+import { assertStaffPortalSession } from '../../../../lib/auth/portal-access.ts';
+import { getSession } from '../../../../lib/auth/session.ts';
 
 import type { Metadata } from 'next';
 
@@ -9,7 +11,9 @@ export const metadata: Metadata = {
   description: 'Manage natural wellness product orders, packing slips, and deliveries.',
 };
 
-export default function StaffOrdersPage() {
+export default async function StaffOrdersPage() {
+  assertStaffPortalSession(await getSession(), { returnTo: '/staff/orders' });
+
   return (
     <>
       <div className="print:hidden">

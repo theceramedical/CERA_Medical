@@ -48,7 +48,7 @@ describe('request id', () => {
 
   it('always sets one, even on the redirect path', () => {
     // The redirect is a response too, and a response without a request id is one nobody can trace.
-    const response = proxy(requestFor('/account'));
+    const response = proxy(requestFor('/staff'));
 
     expect(response.status).toBe(307);
     expect(response.headers.get(REQUEST_ID_HEADER)).not.toBeNull();
@@ -114,32 +114,45 @@ describe('security headers', () => {
   });
 });
 
+describe('retired customer account routes', () => {
+  it.each(['/account', '/account/enquiries', '/auth/sign-in', '/auth/sign-up'])(
+    'redirects %s to contact without offering customer sign-in',
+    (path) => {
+      const response = proxy(requestFor(path));
+      const location = new URL(response.headers.get('location') ?? '');
+
+      expect(response.status).toBe(308);
+      expect(location.pathname).toBe('/contact');
+    },
+  );
+});
+
 describe('session presence', () => {
-  it.each(['/account', '/account/enquiries', '/staff', '/staff/queue/abc'])(
-    'redirects %s to sign-in when no session cookie is present',
+  it.each(['/staff', '/staff/queue/abc'])(
+    'redirects %s to staff sign-in when no session cookie is present',
     (path) => {
       const response = proxy(requestFor(path));
       const location = new URL(response.headers.get('location') ?? '');
 
       expect(response.status).toBe(307);
-      expect(location.pathname).toBe('/auth/sign-in');
+      expect(location.pathname).toBe('/staff/sign-in');
     },
   );
 
   it('preserves the path and query as a return target', () => {
-    const response = proxy(requestFor('/account/enquiries?page=2'));
+    const response = proxy(requestFor('/staff/queue?page=2'));
     const location = new URL(response.headers.get('location') ?? '');
 
-    expect(location.searchParams.get('next')).toBe('/account/enquiries?page=2');
+    expect(location.searchParams.get('next')).toBe('/staff/queue?page=2');
   });
 
   it('keeps an absolute URL in the query as an inert query value', () => {
-    // The return target is still a path - `/account?next=...` - so Phase 09 redirecting to it stays
+    // The return target is still a path - `/staff?next=...` - so redirecting to it stays
     // on this origin, and the attacker's URL is just text in a parameter nothing dereferences.
-    const response = proxy(requestFor('/account?next=https://attacker.example'));
+    const response = proxy(requestFor('/staff?next=https://attacker.example'));
     const next = new URL(response.headers.get('location') ?? '').searchParams.get('next');
 
-    expect(next).toBe('/account?next=https://attacker.example');
+    expect(next).toBe('/staff?next=https://attacker.example');
   });
 
   it('collapses a protocol-relative path, which would otherwise leave the site', () => {
@@ -151,12 +164,12 @@ describe('session presence', () => {
      * host - so it is an absolute URL wearing a path's clothing. Found by writing the test above
      * and noticing the assertion it was actually making.
      */
-    const request = new NextRequest('https://cera.example//account/enquiries');
+    const request = new NextRequest('https://cera.example//staff/queue');
     const response = proxy(request);
     const next = new URL(response.headers.get('location') ?? '').searchParams.get('next');
 
-    expect(request.nextUrl.pathname).toBe('//account/enquiries');
-    expect(next).toBe('/account/enquiries');
+    expect(request.nextUrl.pathname).toBe('//staff/queue');
+    expect(next).toBe('/staff/queue');
   });
 
   it('lets a request through when the cookie is merely present', () => {
@@ -170,9 +183,7 @@ describe('session presence', () => {
      * fail-open, and the lesson was to move the decision, not to write the middleware more
      * carefully.
      */
-    const response = proxy(
-      requestFor('/account', { cookies: { [SESSION_COOKIE_NAME]: 'forged' } }),
-    );
+    const response = proxy(requestFor('/staff', { cookies: { [SESSION_COOKIE_NAME]: 'forged' } }));
 
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
@@ -189,8 +200,8 @@ describe('session presence', () => {
   });
 
   it('does not treat a route that merely starts with the same letters as protected', () => {
-    // `/accounts-payable` is not under `/account`. Prefix matching without the boundary check is
-    // how an unrelated future route starts redirecting to sign-in.
+    // `/accounts-payable` is not a retired account route. Prefix matching without the boundary
+    // check would redirect unrelated routes to contact.
     expect(proxy(requestFor('/accounts-payable')).status).toBe(200);
   });
 });
@@ -223,6 +234,29 @@ describe('canonical host', () => {
     const response = proxy(request);
     expect(response.status).toBe(308);
     expect(response.headers.get('location')).toBe('https://www.ceramedical.org/about');
+    vi.unstubAllEnvs();
+  });
+
+  it('sends staff URLs from the public hostname to the Access-protected staff hostname', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ceramedical.org');
+    const request = new NextRequest('https://www.ceramedical.org/staff/orders?status=open');
+
+    const response = proxy(request);
+    expect(response.status).toBe(308);
+    expect(response.headers.get('location')).toBe(
+      'https://staff.ceramedical.org/staff/orders?status=open',
+    );
+    vi.unstubAllEnvs();
+  });
+
+  it('keeps the staff hostname and accepts an Access assertion for page-level verification', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ceramedical.org');
+    const request = new NextRequest('https://staff.ceramedical.org/staff/orders', {
+      headers: { 'cf-access-jwt-assertion': 'signed-by-access' },
+    });
+
+    const response = proxy(request);
+    expect(response.status).toBe(200);
     vi.unstubAllEnvs();
   });
 

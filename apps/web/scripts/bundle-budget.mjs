@@ -8,8 +8,8 @@
  *
  * **Gzip, not raw.** What matters is the bytes on the wire, and a raw figure is roughly three times the
  * transferred size - so a raw budget is either far too loose to catch anything or gets set by whoever
- * last regenerated it. Brotli would be closer still to reality, but Caddy's compression settings are
- * Phase 13's and gzip is the floor every client supports; the ratio between the two is stable enough
+ * last regenerated it. Brotli would be closer still to reality, but edge compression settings are
+ * platform-managed and gzip is the floor every client supports; the ratio between the two is stable enough
  * that a gzip budget tracks a Brotli one.
  *
  * **Two numbers, because they fail differently.**

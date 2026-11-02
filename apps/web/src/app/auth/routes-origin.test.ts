@@ -1,43 +1,29 @@
-import { NextRequest } from 'next/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GET as callback } from './callback/route.ts';
 import { GET as signin } from './signin/route.ts';
 import { GET as signout } from './signout/route.ts';
 
-const PUBLIC_SITE = 'https://www.ceramedical.org';
-const INTERNAL_ORIGIN = 'http://0.0.0.0:3000';
-
 afterEach(() => vi.unstubAllEnvs());
 
-describe('auth routes use the configured public origin', () => {
-  it('sends callback failures to the public site, not the container address', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SITE_URL', PUBLIC_SITE);
-
-    const response = await callback(new NextRequest(`${INTERNAL_ORIGIN}/auth/callback`));
-
-    expect(response.headers.get('location')).toBe(`${PUBLIC_SITE}/auth/error?reason=expired`);
+describe('retired customer auth and Access staff redirects', () => {
+  it('rejects OIDC callbacks because authentication belongs to Cloudflare Access', () => {
+    const response = callback();
+    expect(response.status).toBe(410);
   });
 
-  it('sends sign-in failures to the public site', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SITE_URL', PUBLIC_SITE);
-    vi.stubEnv('OIDC_ISSUER', 'https://auth.ceramedical.org/application/o/cera-production/');
-    vi.stubEnv('OIDC_CLIENT_ID', '');
-    vi.stubEnv('OIDC_CLIENT_SECRET', '');
-
-    const response = await signin(new Request(`${INTERNAL_ORIGIN}/auth/signin`));
-
-    expect(response.headers.get('location')).toBe(`${PUBLIC_SITE}/auth/error?reason=unavailable`);
+  it('sends staff sign-in to the Access-protected staff host', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ceramedical.org');
+    const response = signin(
+      new Request('https://www.ceramedical.org/auth/signin?next=/staff/orders'),
+    );
+    expect(response.headers.get('location')).toBe('https://staff.ceramedical.org/staff/orders');
   });
 
-  it('returns after sign-out to the public site', () => {
-    vi.stubEnv('NEXT_PUBLIC_SITE_URL', PUBLIC_SITE);
-    vi.stubEnv('OIDC_ISSUER', 'https://auth.ceramedical.org/application/o/cera-production/');
-
+  it('ends staff sessions through Cloudflare Access', () => {
     const response = signout();
-
     expect(response.headers.get('location')).toBe(
-      'https://auth.ceramedical.org/application/o/cera-production/end-session/?post_logout_redirect_uri=https%3A%2F%2Fwww.ceramedical.org%2Fauth%2Fsigned-out%3Faudience%3Dcustomer',
+      'https://staff.ceramedical.org/cdn-cgi/access/logout',
     );
   });
 });

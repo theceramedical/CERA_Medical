@@ -22,7 +22,6 @@ import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq/i
 import { productCustomFields } from './plugins/catalogue-fields.js';
 import { ceraCodPaymentHandler } from './plugins/cera-cod-payment.js';
 import { ceraTestPaymentHandler } from './plugins/cera-payments.js';
-import { ceraSafepayPaymentHandler } from './plugins/cera-safepay-payment.js';
 import { RejectCheckoutInterceptor } from './plugins/checkout-neutralisation/order-interceptor.js';
 import {
   denyAdminPaymentRule,
@@ -36,12 +35,7 @@ function isCheckoutEnabled(): boolean {
 function paymentMethodHandlers() {
   if (!isCheckoutEnabled()) return [];
   const handlers = [ceraCodPaymentHandler];
-  const hasSafepay =
-    process.env.SAFEPAY_MERCHANT_SECRET !== undefined &&
-    process.env.SAFEPAY_MERCHANT_SECRET.length > 0;
-  if (hasSafepay) {
-    handlers.unshift(ceraSafepayPaymentHandler);
-  } else if ((process.env.CERA_ENV ?? 'local') !== 'production') {
+  if (process.env.CERA_ENV === 'local') {
     handlers.unshift(ceraTestPaymentHandler);
   }
   return handlers;

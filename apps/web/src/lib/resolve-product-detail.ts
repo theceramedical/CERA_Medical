@@ -9,6 +9,13 @@ export interface ResolvedProductDetail {
   readonly product: PublicProduct;
 }
 
+export function isProductCheckoutAvailable(
+  product: Pick<PublicProduct, 'checkoutEnabled'> | undefined,
+  checkoutGateEnabled: boolean,
+): boolean {
+  return checkoutGateEnabled && product?.checkoutEnabled === true;
+}
+
 export async function resolveProductDetail(sku: string): Promise<ResolvedProductDetail | null> {
   const catalogue = await getPublicProduct(sku);
   if (catalogue !== null) return { kind: 'catalogue', product: catalogue };

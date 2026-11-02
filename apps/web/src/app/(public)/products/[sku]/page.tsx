@@ -26,7 +26,11 @@ import {
   type CatalogProduct,
 } from '../../../../content/products-catalog.ts';
 import { listPublicProducts } from '../../../../lib/catalogue/client.ts';
-import { resolveProductDetail } from '../../../../lib/resolve-product-detail.ts';
+import { checkoutEnabled } from '../../../../lib/checkout-enabled.ts';
+import {
+  isProductCheckoutAvailable,
+  resolveProductDetail,
+} from '../../../../lib/resolve-product-detail.ts';
 import { pageMetadata } from '../../../../lib/seo.ts';
 
 import type { Metadata } from 'next';
@@ -95,7 +99,7 @@ export default async function ProductDetailPage({
 
   const title = item.title ?? product?.title ?? sku;
   const description = item.description ?? product?.summary ?? product?.description ?? '';
-  const price = item.price ?? product?.displayPrice ?? 'Price on enquiry';
+  const price = product?.displayPrice ?? 'Price on enquiry';
   const packLabel = item.packLabel ?? '';
   const specs = item.specs ?? (product?.availabilityText ? [product.availabilityText] : []);
   const ingredients = item.ingredients ?? [];
@@ -203,7 +207,9 @@ export default async function ProductDetailPage({
                 <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-3 py-1.5 shadow-2xs">
                   <span className="size-2 rounded-full bg-accent" />
                   <span className="text-caption font-semibold text-heading">
-                    {item.inStock ? 'In Stock (Haripur Vivarium)' : 'Available for Scoping'}
+                    {isProductCheckoutAvailable(product, checkoutEnabled())
+                      ? 'Available for COD ordering'
+                      : 'Availability on enquiry'}
                   </span>
                 </div>
               </div>
@@ -211,7 +217,9 @@ export default async function ProductDetailPage({
               {/* Action Buttons */}
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <ProductPurchaseActions
+                  sku={sku}
                   enquiryHref={productEnquiryHref(sku)}
+                  checkoutAvailable={isProductCheckoutAvailable(product, checkoutEnabled())}
                   label="Enquire / Order Product"
                 />
                 <AppButtonLink

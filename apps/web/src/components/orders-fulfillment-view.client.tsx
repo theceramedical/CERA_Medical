@@ -47,66 +47,10 @@ const COURIER_OPTIONS = [
   { id: 'RIDER', name: 'Direct Rider / Staff Dispatch' },
 ] as const;
 
-const DEFAULT_ORDERS: readonly OrderSummary[] = [
-  {
-    id: 'ord_1',
-    orderCode: 'CERA-261031-MOS01',
-    customerName: 'Fatima Al-Hassan',
-    customerCity: 'Islamabad',
-    customerPhone: '+92 300 5551234',
-    customerAddress: 'House 14, Street 28, Sector F-8/2',
-    items: [
-      { title: 'Mosscent: Plant-Based Mosquito Repellent (100ml)', quantity: 2, unitPrice: 600 },
-    ],
-    totalPkr: 'PKR 1,200',
-    status: 'UNFULFILLED',
-    paymentMethod: 'Cash on Delivery',
-    date: '31 Oct 2026, 17:45',
-    courierName: 'TCS Express',
-    trackingNumber: '',
-  },
-  {
-    id: 'ord_2',
-    orderCode: 'CERA-261031-ACT02',
-    customerName: 'Tariq Mehmood',
-    customerCity: 'Haripur',
-    customerPhone: '+92 333 4445678',
-    customerAddress: 'Commercial Plaza, Main GT Road',
-    items: [
-      {
-        title: 'Activ-P: Fast-Absorbing Pain-Relief Botanical Oil (60ml)',
-        quantity: 1,
-        unitPrice: 1400,
-      },
-    ],
-    totalPkr: 'PKR 1,400',
-    status: 'DISPATCHED',
-    paymentMethod: 'Bank Transfer (Verified)',
-    date: '31 Oct 2026, 14:20',
-    courierName: 'TCS Express',
-    trackingNumber: '7721984210',
-  },
-  {
-    id: 'ord_3',
-    orderCode: 'CERA-261031-ZES03',
-    customerName: 'Amina Bibi',
-    customerCity: 'Peshawar',
-    customerPhone: '+92 312 9998877',
-    customerAddress: 'Apartment 4B, University Town',
-    items: [{ title: 'Zest: Inhalable Herbal Sinus Vapor (10ml)', quantity: 3, unitPrice: 200 }],
-    totalPkr: 'PKR 600',
-    status: 'DELIVERED',
-    paymentMethod: 'Cash on Delivery',
-    date: '30 Oct 2026, 11:15',
-    courierName: 'Leopards Courier',
-    trackingNumber: 'LEO-9918234',
-  },
-];
-
-const LOCAL_STORAGE_KEY = 'cera_staff_orders_overrides_v1';
-
 export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: number }) {
-  const [orders, setOrders] = useState<readonly OrderSummary[]>(DEFAULT_ORDERS);
+  const [orders, setOrders] = useState<readonly OrderSummary[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedSlipOrder, setSelectedSlipOrder] = useState<OrderSummary | null>(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState<OrderSummary | null>(null);
   const [filter, setFilter] = useState<'ALL' | 'UNFULFILLED' | 'DISPATCHED' | 'DELIVERED'>('ALL');
@@ -120,82 +64,62 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load from D1 or LocalStorage fallback
+  // Load only authoritative orders from D1. Never mix demo or browser-local data into operations.
   useEffect(() => {
     async function loadLiveOrders() {
       try {
-        let baseOrders: OrderSummary[] = [...DEFAULT_ORDERS];
-
         const res = await fetch('/api/staff/orders');
-        if (res.ok) {
-          const data = (await res.json()) as {
-            ok?: boolean;
-            orders?: {
-              id: string;
-              order_code: string;
-              customer_name: string;
-              customer_city: string;
-              customer_phone: string;
-              shipping_address?: string;
-              total_amount_minor: number;
-              payment_method: string;
-              fulfillment_status: string;
-              courier_name?: string;
-              tracking_number?: string;
-              created_at: number;
-            }[];
-          };
-          if (data.ok && Array.isArray(data.orders) && data.orders.length > 0) {
-            const mapped: OrderSummary[] = data.orders.map((o) => ({
-              id: o.id,
-              orderCode: o.order_code,
-              customerName: o.customer_name,
-              customerCity: o.customer_city || 'Pakistan',
-              customerPhone: o.customer_phone || 'N/A',
-              customerAddress: o.shipping_address ?? 'Customer Delivery Address Provided',
-              items: [
-                {
-                  title: 'Natural Wellness Botanical Package',
-                  quantity: 1,
-                  unitPrice: o.total_amount_minor / 100,
-                },
-              ],
-              totalPkr: `PKR ${(o.total_amount_minor / 100).toLocaleString()}`,
-              status: o.fulfillment_status as OrderSummary['status'],
-              paymentMethod:
-                o.payment_method === 'CASH_ON_DELIVERY'
-                  ? 'Cash on Delivery (COD)'
-                  : o.payment_method,
-              date: new Date(o.created_at * 1000).toLocaleString('en-GB', {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-              }),
-              courierName: o.courier_name ?? 'TCS Express',
-              trackingNumber: o.tracking_number ?? '',
-            }));
-            baseOrders = [...mapped, ...DEFAULT_ORDERS];
-          }
-        }
-
-        // Apply local overrides if saved
-        if (typeof window !== 'undefined') {
-          const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-          if (saved) {
-            try {
-              const overrides = JSON.parse(saved) as Record<string, Partial<OrderSummary>>;
-              baseOrders = baseOrders.map((o) => {
-                const match = overrides[o.id] ?? overrides[o.orderCode];
-                return match ? { ...o, ...match } : o;
-              });
-            } catch {
-              // Ignore invalid storage
-            }
-          }
-        }
-
-        setOrders(baseOrders);
-      } catch {
-        // Retain default orders
+        if (!res.ok) throw new Error('Orders could not be loaded. Refresh the page to try again.');
+        const data = (await res.json()) as {
+          ok?: boolean;
+          orders?: {
+            id: string;
+            order_code: string;
+            customer_name: string;
+            shipping_city?: string;
+            customer_phone: string;
+            shipping_address?: string;
+            total_amount_minor: number;
+            payment_method: string;
+            fulfillment_status: string;
+            courier_name?: string;
+            tracking_number?: string;
+            created_at: number;
+            items?: { title: string; quantity: number; unit_price_minor: number }[];
+          }[];
+        };
+        if (!data.ok || !Array.isArray(data.orders))
+          throw new Error('The orders response was invalid.');
+        setOrders(
+          data.orders.map((o) => ({
+            id: o.id,
+            orderCode: o.order_code,
+            customerName: o.customer_name,
+            customerCity: o.shipping_city ?? '—',
+            customerPhone: o.customer_phone || '—',
+            customerAddress: o.shipping_address ?? '—',
+            items: (o.items ?? []).map((item) => ({
+              title: item.title,
+              quantity: item.quantity,
+              unitPrice: item.unit_price_minor / 100,
+            })),
+            totalPkr: `PKR ${(o.total_amount_minor / 100).toLocaleString()}`,
+            status: o.fulfillment_status as OrderSummary['status'],
+            paymentMethod:
+              o.payment_method === 'CASH_ON_DELIVERY' ? 'Cash on Delivery (COD)' : o.payment_method,
+            date: new Date(o.created_at * 1000).toLocaleString('en-GB', {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            }),
+            ...(o.courier_name ? { courierName: o.courier_name } : {}),
+            ...(o.tracking_number ? { trackingNumber: o.tracking_number } : {}),
+          })),
+        );
+        setLoadError(null);
+      } catch (error) {
+        setLoadError(error instanceof Error ? error.message : 'Orders could not be loaded.');
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -209,31 +133,9 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
     courierName: string,
     trackingNumber: string,
   ) => {
-    // 1. Optimistic UI update
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId || o.orderCode === orderCode
-          ? { ...o, status: newStatus, courierName, trackingNumber }
-          : o,
-      ),
-    );
-
-    // 2. Save in localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-        const existing = raw ? (JSON.parse(raw) as Record<string, Partial<OrderSummary>>) : {};
-        existing[orderId] = { status: newStatus, courierName, trackingNumber };
-        existing[orderCode] = { status: newStatus, courierName, trackingNumber };
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
-      } catch {
-        // Storage full/sandboxed
-      }
-    }
-
-    // 3. Post to D1 backend
+    setLoadError(null);
     try {
-      await fetch('/api/staff/orders/update', {
+      const response = await fetch('/api/staff/orders/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -244,8 +146,20 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
           trackingNumber,
         }),
       });
-    } catch {
-      // Offline / fallback handled optimistically
+      if (!response.ok) throw new Error('The update was rejected by the order service.');
+      const result = (await response.json()) as { ok?: boolean };
+      if (!result.ok) throw new Error('The order service did not confirm the update.');
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId || o.orderCode === orderCode
+            ? { ...o, status: newStatus, courierName, trackingNumber }
+            : o,
+        ),
+      );
+      return true;
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Order update failed.');
+      return false;
     }
   };
 
@@ -259,7 +173,7 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
   const handleSaveTrackingModal = async () => {
     if (!trackingModalOrder) return;
     setIsSaving(true);
-    await persistOrderUpdate(
+    const saved = await persistOrderUpdate(
       trackingModalOrder.id,
       trackingModalOrder.orderCode,
       modalStatus,
@@ -267,7 +181,7 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
       modalTracking.trim(),
     );
     setIsSaving(false);
-    setTrackingModalOrder(null);
+    if (saved) setTrackingModalOrder(null);
   };
 
   const handleQuickMarkDelivered = async (order: OrderSummary) => {
@@ -361,12 +275,6 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
             <AppLink href="/staff" className="text-body-sm text-muted hover:text-heading">
               Enquiry Queue
             </AppLink>
-            <AppLink
-              href="/staff/deliveries"
-              className="text-body-sm text-muted hover:text-heading"
-            >
-              Deliveries
-            </AppLink>
           </div>
 
           <div className="flex items-center gap-2 text-caption text-muted">
@@ -376,6 +284,24 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
         </div>
 
         {/* Orders Grid */}
+        {loadError ? (
+          <div
+            role="alert"
+            className="mt-6 rounded-lg border border-danger/30 bg-danger/5 p-4 text-body-sm text-danger"
+          >
+            {loadError}
+          </div>
+        ) : null}
+        {isLoading ? (
+          <div className="mt-8 rounded-lg border border-border bg-surface p-6 text-body-sm text-muted">
+            Loading orders…
+          </div>
+        ) : null}
+        {!isLoading && !loadError && orders.length === 0 ? (
+          <div className="mt-8 rounded-lg border border-border bg-surface p-6 text-body-sm text-muted">
+            No customer orders have been recorded.
+          </div>
+        ) : null}
         <div className="mt-8 grid list-none gap-5 p-0">
           {filteredOrders.map((order) => {
             const isUnfulfilled = order.status === 'UNFULFILLED';
@@ -788,7 +714,7 @@ export function OrdersFulfillmentView({ totalSkus }: { readonly totalSkus: numbe
                       COURIER: {selectedSlipOrder.courierName ?? 'TCS Express'}
                     </div>
                     <div className="font-mono text-xs font-bold text-neutral-700">
-                      CN: {selectedSlipOrder.trackingNumber ?? '7721984210'}
+                      CN: {selectedSlipOrder.trackingNumber ?? 'Not assigned'}
                     </div>
                   </div>
                 </div>

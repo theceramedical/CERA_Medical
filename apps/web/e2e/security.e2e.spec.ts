@@ -151,17 +151,16 @@ test('the response carries the rest of the security headers', async ({ page }) =
   /**
    * No HSTS from the application, on purpose.
    *
-   * Caddy terminates TLS and owns transport headers (Phase 13). Two sources for `Strict-Transport-Security`
-   * is how a `max-age` of 31536000 ends up shadowed by a stale one of 0, and the application cannot know
-   * whether it is being served over HTTPS in the first place.
+   * Cloudflare owns transport headers. Two sources for `Strict-Transport-Security` is how a `max-age`
+   * of 31536000 ends up shadowed by a stale one of 0, and the renderer cannot know whether the visitor
+   * connected over HTTPS in the first place.
    */
   expect(headers['strict-transport-security']).toBeUndefined();
 });
 
-test('an unauthenticated visitor is redirected away from the account area', async ({ page }) => {
+test('retired customer account URLs return visitors to contact', async ({ page }) => {
   const response = await page.goto('/account/enquiries');
 
-  expect(new URL(page.url()).pathname).toBe('/auth/sign-in');
-  expect(new URL(page.url()).searchParams.get('next')).toBe('/account/enquiries');
+  expect(new URL(page.url()).pathname).toBe('/contact');
   expect(response?.status()).toBe(200);
 });

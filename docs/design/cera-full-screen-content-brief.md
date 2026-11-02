@@ -1,10 +1,8 @@
 # CERA Medical — full screen & content brief
 
-> **Most complete copy-paste doc:** [`.planning/ALL-SCREENS-AND-CONTENT.md`](../../.planning/ALL-SCREENS-AND-CONTENT.md) — every screen with full on-page text, forms, policies, and account/staff UI.
-
 **Purpose:** Single reference for redesign tools (Stitch, Figma, etc.) with every public tier, route, section order, and copy as implemented in the codebase (October 2026).
 
-**Canonical design system:** [`.planning/design-language.md`](../../.planning/design-language.md) — colours, type scale, layout grids, component specs. This document focuses on **product context, tiers, screens, and text**.
+This document focuses on product context, tiers, screens, and text. Visual tokens and components are maintained in `packages/ui`.
 
 **Production site:** `https://www.ceramedical.org` (use `www`; apex redirects for cookies/canonical).
 
@@ -16,14 +14,14 @@
 
 CERA Medical is a **biomedical research and development** company (Haripur, Pakistan). The digital platform:
 
-| Does                                                               | Does not                                  |
-| ------------------------------------------------------------------ | ----------------------------------------- |
-| Presents five research service lines                               | Take payments online                      |
-| Publishes research updates / articles                              | Store clinical records on the public site |
-| Captures **project enquiries** (forms)                             | Replace formal project contracts          |
-| Lets customers **sign in** (OIDC via Authentik) to track enquiries | Offer consumer “patient portal” care      |
+| Does                                             | Does not                                   |
+| ------------------------------------------------ | ------------------------------------------ |
+| Presents research services and eligible products | Provide clinical care                      |
+| Publishes research updates / articles            | Store clinical records on the public site  |
+| Captures **project enquiries** (forms)           | Replace formal project contracts           |
+| Captures guest COD orders and staff operations   | Provide customer accounts or clinical care |
 
-**Back office (not visual design targets for marketing):** Payload CMS (content), Vendure (service catalogue), Fastify API, worker → ERPNext CRM, PostgreSQL, object storage for media.
+**Production runtime:** Cloudflare Worker, D1 application records, and R2 media storage.
 
 **Audience:** Universities, biotech R&D, health/public-sector research teams — **not** direct-to-consumer clinical patients.
 
@@ -34,15 +32,14 @@ CERA Medical is a **biomedical research and development** company (Haripur, Paki
 ### Tier A — Public marketing site `(public)`
 
 - **Chrome:** Skip link → **header** (80px) → **main** → **footer** (4 columns + bottom bar).
-- **Header:** Wordmark (home) | centre nav (5 items) | search icon | **Sign In** (outline) | **Make an Enquiry** (accent/teal fill).
+- **Header:** Wordmark (home) | centre nav (5 items) | search icon | **Make an Enquiry** (accent/teal fill). Staff sign-in is private and not part of public navigation.
 - **Footer:** Wordmark + tagline | Quick Links | Support | Contact email | copyright bar.
 - **Background rhythm:** Alternating `surface-tint` (#EBF6FC), white, `surface-tint-2` (#E6F2FA), gradient CTA, `surface-footer` (#F0F7FD).
 
-### Tier B — Customer account `(account)` — `/account/*`
+### Tier B — Guest commerce
 
-- **Chrome:** Minimal header (wordmark → home only). **No** marketing nav, **no** footer, **no** “Make an Enquiry”.
-- **Background:** Subtle grey (`surface-subtle`).
-- **Auth:** Unauthenticated users redirected to sign-in; pages are `noindex`.
+- Customers do not create accounts or sign in. Eligible orders use guest checkout and cash on delivery only.
+- Legacy `/account/*` and customer sign-in/registration URLs redirect to `/contact`.
 
 ### Tier C — Staff console `(staff)` — `/staff/*`
 
@@ -72,7 +69,6 @@ Home, Services, Research Updates, About, Contact.
 | Label                 | Path              |
 | --------------------- | ----------------- |
 | Make an Enquiry       | `/enquiry`        |
-| Sign In               | `/auth/sign-in`   |
 | FAQs                  | `/faqs`           |
 | Methodology           | `/methodology`    |
 | Data Retention Policy | `/data-retention` |
@@ -243,18 +239,16 @@ Covers: `/images/article-cover-data.svg`, `article-cover-research.svg`, `article
 ### Make an Enquiry (`/enquiry`)
 
 - **Title:** Make an Enquiry
-- **Lede:** Tell us which service… follow progress in your account.
+- **Lede:** Tell us which service… CERA will follow up using the contact details you provide.
 - **Form fields:** Name* · Email* · Phone · Institution · Country · Service required* · Project description* · Privacy consent* · Service-specific consent checklists (sequencing / samples / health data) · Optional marketing opt-in · Submit enquiry.
-- **Success:** Enquiry received + reference number + 3 working days + contact@ceramedical.org + hint to create account.
+- **Success:** Enquiry received + reference number + expected response time + contact@ceramedical.org. No account is required.
 
 **Extra service options in dropdown:** Research collaboration · Other enquiry.
 
-### Sign in (`/auth/sign-in`)
+### Retired customer authentication
 
-- **Title:** Sign in
-- **Lede:** Passwords are never held by this application.
-- **Card:** Your CERA account — **Continue to secure sign in** (OIDC).
-- **Aside:** New to CERA? — submit without account → Make an enquiry.
+- `/auth/sign-in`, `/auth/sign-up`, `/auth/verify-email`, and `/account/*` redirect to `/contact`.
+- Staff authentication is handled by Cloudflare Access on `staff.ceramedical.org`.
 
 ### Sign-in error (`/auth/error`)
 
@@ -293,15 +287,10 @@ Covers: `/images/article-cover-data.svg`, `article-cover-research.svg`, `article
 
 ---
 
-## 8. Customer account screens
+## 8. Guest customer journeys
 
-| Route                            | Title            | Lede / purpose                                                                                                                    |
-| -------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `/account`                       | Your account     | Your enquiries and their progress. Signed-out: prompt to sign in. Signed-in: email, links to profile, claim, enquiries, sign out. |
-| `/account/enquiries`             | Your enquiries   | List with reference, status badge, link to detail. Empty: Make an enquiry / Claim.                                                |
-| `/account/enquiries/[reference]` | (dynamic)        | Single enquiry timeline for customer.                                                                                             |
-| `/account/claim`                 | Claim an enquiry | Link enquiry to verified email; request claim links or paste token.                                                               |
-| `/account/profile`               | Your profile     | Display name, phone; save.                                                                                                        |
+- **Enquiries:** submit without an account; staff handle the request in the D1 queue and follow up using the submitted contact details.
+- **Orders:** when checkout and verified products are enabled, submit contact and delivery details and pay cash on delivery.
 
 ---
 
@@ -318,8 +307,8 @@ Covers: `/images/article-cover-data.svg`, `article-cover-research.svg`, `article
 ## 10. Key user flows (for storyboards)
 
 1. **Discover → enquire:** Home → Services → service detail → Request this service → form → confirmation reference.
-2. **Enquire without account:** Footer Make an Enquiry → submit → email follow-up.
-3. **Track enquiry:** Sign in (OIDC) → Claim enquiry (email link) → Account enquiries → detail.
+2. **Enquire:** Footer Make an Enquiry → submit → receive a reference for follow-up.
+3. **Order:** Products → cart → enter delivery/contact details → COD confirmation.
 4. **Research content:** Research Updates → article → optional enquiry from service links.
 5. **Staff:** Sign in with staff role → Queue → open enquiry → update status (internal).
 
@@ -370,7 +359,7 @@ Link: full FAQs page.
 | Navigation                  | `apps/web/src/components/navigation.ts`                                    |
 | Catalogue seed              | `apps/commerce/src/seed-data.ts`                                           |
 | Enquiry form                | `apps/web/src/components/enquiry-form.client.tsx`                          |
-| Design authority            | `.planning/design-language.md`                                             |
+| Design system               | `packages/ui/src/styles/` and `packages/ui/src/`                           |
 | CMS bootstrap / client copy | `apps/cms/src/content/client-website-content.json`, `bootstrap-content.ts` |
 
 ---

@@ -4,48 +4,29 @@ import {
   CartSchema,
   CheckoutCompleteBodySchema,
   CheckoutCompleteResponseSchema,
-  SafepayCheckoutStartBodySchema,
-  SafepayCheckoutStartResponseSchema,
 } from '@cera/contracts';
 import { ApiError } from '@cera/contracts/errors';
 
-import { authorize } from '../auth/authorize.ts';
 import {
   isEnquiryOnlyPhysicalSku,
   isUnapprovedSeedProductSku,
 } from '../catalogue/unapproved-seed-products.ts';
 import { sendApiError, sendCode } from '../http.ts';
 
-import { createSafepayHostedCheckout } from './safepay.ts';
 import { createVendureShopClient } from './vendure-shop.ts';
 
-import type { SessionClaims } from '../auth/session.ts';
 import type { RecordCommerceOrderInput } from '../orders/postgres-store.ts';
-import type { FastifyPluginCallback, FastifyRequest } from 'fastify';
+import type { FastifyPluginCallback } from 'fastify';
 
 export interface CheckoutRoutesOptions {
   readonly shopApiUrl: string;
   readonly recordOrder?: (input: RecordCommerceOrderInput) => Promise<void>;
-  readonly readSession?: (request: FastifyRequest) => Promise<SessionClaims | null>;
 }
 
 export const VENDURE_TOKEN_COOKIE = 'cera_vendure_token';
 
 function checkoutEnabled(): boolean {
   return process.env.CHECKOUT_ENABLED === 'true';
-}
-
-function allowedRedirectOrigin(url: string): boolean {
-  const origins = (process.env.CORS_ALLOWED_ORIGINS ?? '')
-    .split(',')
-    .map((part) => part.trim())
-    .filter((part) => part.length > 0);
-  try {
-    const origin = new URL(url).origin;
-    return origins.some((allowed) => allowed === origin);
-  } catch {
-    return false;
-  }
 }
 
 function tokenFromRequest(request: { headers: { cookie?: string | undefined } }): string | null {
@@ -100,16 +81,6 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
       }
     }
     return false;
-  };
-
-  const requireVerifiedCustomer = async (request: FastifyRequest) => {
-    if (options.readSession === undefined) throw new ApiError('unauthenticated');
-    const session = await options.readSession(request);
-    const path = request.url.split('?')[0] ?? request.url;
-    const decision = authorize({ method: request.method, path, session });
-    if (!decision.ok) throw decision.error;
-    if (decision.session === null) throw new ApiError('unauthenticated');
-    return decision.session;
   };
 
   return (app, _options, done) => {
@@ -212,53 +183,8 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
       }
     });
 
-    app.post('/v1/checkout/safepay/start', async (request, reply) => {
-      if (!checkoutEnabled()) {
-        sendCode(request, reply, 'not_found');
-        return;
-      }
-      const parsed = SafepayCheckoutStartBodySchema.safeParse(request.body);
-      if (!parsed.success) {
-        sendCode(request, reply, 'validation_failed');
-        return;
-      }
-      if (
-        !allowedRedirectOrigin(parsed.data.redirectUrl) ||
-        !allowedRedirectOrigin(parsed.data.cancelUrl)
-      ) {
-        sendCode(request, reply, 'validation_failed');
-        return;
-      }
-      try {
-        await requireVerifiedCustomer(request);
-        const session = { token: tokenFromRequest(request) };
-        const { cart, token } = await shop.getActiveCart(session);
-        setTokenCookie(reply, token);
-        if (
-          cart === null ||
-          cart.lines.length === 0 ||
-          cart.totalMinor <= 0 ||
-          (await cartContainsEnquiryOnlyPhysicalProduct(session, cart))
-        ) {
-          sendCode(request, reply, 'validation_failed');
-          return;
-        }
-        const { checkoutUrl, tracker } = await createSafepayHostedCheckout({
-          amountMinor: cart.totalMinor,
-          currency: cart.currencyCode,
-          redirectUrl: parsed.data.redirectUrl,
-          cancelUrl: parsed.data.cancelUrl,
-        });
-        return reply
-          .code(200)
-          .send(SafepayCheckoutStartResponseSchema.parse({ checkoutUrl, tracker }));
-      } catch (error) {
-        if (error instanceof ApiError) {
-          sendApiError(request, reply, error);
-          return;
-        }
-        sendCode(request, reply, 'upstream_unavailable');
-      }
+    app.post('/v1/checkout/safepay/start', async (_request, reply) => {
+      return reply.code(410).send({ error: 'checkout_method_unavailable' });
     });
 
     app.post('/v1/checkout/complete', async (request, reply) => {
@@ -272,16 +198,11 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
         return;
       }
       const body = parsed.data;
-      if (body.paymentMethod === 'safepay' && body.safepayTracker === undefined) {
-        sendCode(request, reply, 'validation_failed');
-        return;
-      }
-      if (body.paymentMethod === 'test' && (process.env.CERA_ENV ?? 'local') === 'production') {
+      if (body.paymentMethod === 'test' && process.env.CERA_ENV !== 'local') {
         sendCode(request, reply, 'validation_failed');
         return;
       }
       try {
-        const customer = await requireVerifiedCustomer(request);
         const vendureSession = { token: tokenFromRequest(request) };
         const { cart, token: cartToken } = await shop.getActiveCart(vendureSession);
         if (
@@ -292,11 +213,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
           sendCode(request, reply, 'validation_failed');
           return;
         }
-        const email = customer.email;
-        if (body.email.toLowerCase() !== email.toLowerCase()) {
-          sendCode(request, reply, 'validation_failed');
-          return;
-        }
+        const email = body.email.trim().toLowerCase();
         const result = await shop.completeCheckout(
           { token: cartToken },
           {
@@ -306,7 +223,6 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
             deliveryAddress: body.deliveryAddress,
             billingAddress: body.billingAddress ?? body.deliveryAddress,
             paymentMethod: body.paymentMethod,
-            ...(body.safepayTracker !== undefined ? { safepayTracker: body.safepayTracker } : {}),
           },
         );
         setTokenCookie(reply, result.token);
@@ -317,7 +233,7 @@ export const checkoutRoutes = (options: CheckoutRoutesOptions): FastifyPluginCal
             fullName: body.fullName,
             paymentMethod: body.paymentMethod,
             cart,
-            customerSubjectId: customer.sub,
+            customerSubjectId: null,
           });
         }
         return reply

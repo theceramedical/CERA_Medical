@@ -8,10 +8,3 @@ pnpm -r typecheck
 
 echo "[pre-push] unit tests"
 pnpm -r test:unit
-
-# Auto-deploy to Cloudflare Pages whenever pushing to main
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [ "$current_branch" = "main" ]; then
-  echo "[pre-push] Branch is main: Auto-deploying to Cloudflare Pages (cera-web)..."
-  node scripts/deploy-cloudflare.mjs
-fi

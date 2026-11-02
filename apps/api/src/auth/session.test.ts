@@ -11,18 +11,18 @@ import {
 const KEY = sessionKeyFromSecret('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
 
 describe('session seal', () => {
-  it('round-trips a customer session', async () => {
+  it('round-trips a staff session', async () => {
     const claims = issueClaims({
       sub: 'sub-1',
       email: 'alex@example.com',
       emailVerified: true,
-      roles: ['customer'],
+      roles: ['administrator'],
       mfa: false,
     });
     const token = await sealSession(claims, KEY);
     const opened = await unsealSession(token, KEY, claims.iat + 10);
     expect(opened?.sub).toBe('sub-1');
-    expect(opened?.roles).toEqual(['customer']);
+    expect(opened?.roles).toEqual(['administrator']);
   });
 
   it('rejects a tampered payload', async () => {
@@ -30,7 +30,7 @@ describe('session seal', () => {
       sub: 'sub-1',
       email: 'alex@example.com',
       emailVerified: true,
-      roles: ['customer'],
+      roles: ['administrator'],
       mfa: false,
     });
     const token = await sealSession(claims, KEY);
@@ -43,7 +43,7 @@ describe('session seal', () => {
         sub: 'sub-2',
         email: 'alex@example.com',
         emailVerified: true,
-        roles: ['customer'],
+        roles: ['administrator'],
         mfa: false,
       },
       1_000,
@@ -55,7 +55,7 @@ describe('session seal', () => {
       sub: 'sub-2',
       email: 'alex@example.com',
       emailVerified: true,
-      roles: ['customer'],
+      roles: ['administrator'],
       mfa: false,
     });
     revokeSubject('sub-2');

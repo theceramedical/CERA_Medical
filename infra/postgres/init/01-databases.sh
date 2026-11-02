@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # Create the five CERA databases with least-privilege roles.
-# Implements .planning/architecture.md section 5 and PRD section 9.
+# Creates isolated local-development databases and least-privilege roles.
 #
 # Runs only once, against an empty data directory. To re-run:
 #     docker compose down -v

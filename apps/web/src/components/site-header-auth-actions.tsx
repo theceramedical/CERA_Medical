@@ -3,7 +3,7 @@ import { AppButtonLink } from './link.tsx';
 /**
  * Desktop header auth actions.
  * Per October 2026 revision: unauthenticated public visitors see only "Make an Enquiry".
- * Authenticated visitors see their account / staff portal links.
+ * Staff sessions get a staff portal link. Customers do not have accounts.
  */
 export function SiteHeaderAuthActions({
   signedIn,
@@ -12,16 +12,11 @@ export function SiteHeaderAuthActions({
   readonly signedIn: boolean;
   readonly staff?: boolean;
 }) {
-  if (signedIn) {
+  if (signedIn && staff) {
     return (
       <div className="flex items-center gap-2">
-        {staff ? (
-          <AppButtonLink href="/staff" variant="primary" size="sm">
-            Staff
-          </AppButtonLink>
-        ) : null}
-        <AppButtonLink href="/account" variant="outline" size="sm">
-          Your account
+        <AppButtonLink href="/staff" variant="primary" size="sm">
+          Staff
         </AppButtonLink>
       </div>
     );

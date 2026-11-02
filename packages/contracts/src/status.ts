@@ -9,9 +9,8 @@ import {
  * The enquiry status machine.
  *
  * Expressed as data rather than as a `switch` so the machine, its tests, and the
- * documentation cannot drift: the diagram in `.planning/data-contracts.md`
- * section 4.1 is a rendering of this table, and the tests assert properties of
- * the table itself rather than of a list of examples.
+ * documentation cannot drift: tests assert properties of this table rather
+ * than of a separate list of examples.
  *
  * `satisfies Record<InternalStatus, ...>` is what makes this exhaustive: adding
  * a status to the enum without adding it here fails to compile.

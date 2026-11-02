@@ -1,4 +1,4 @@
-/** Base URL for server-side catalogue reads (Docker internal URL in production). */
+/** Base URL for server-side catalogue reads in local and application-server workflows. */
 function firstNonEmpty(...values: (string | undefined)[]): string | undefined {
   for (const value of values) {
     if (value !== undefined && value.length > 0) return value;
